@@ -184,7 +184,7 @@ function no_bones_level(lev) {
  */
 /** C ref: bones.c:42 — @param {CInt} id */
 function goodfruit(id) {
-    let f = fruit_from_indx(-id | 0);
+    let f = fruit_from_indx(-id);
 
     if (f)
         cptr.stI32o(f, $fruit_fid, id);
@@ -199,7 +199,7 @@ function resetobjs(ochain, restore) {
         nobj = cptr.ldPtr(otmp);
         if (cptr.ldPtro(otmp, $obj_cobj))
             resetobjs(cptr.ldPtro(otmp, $obj_cobj), restore);
-        if (cptr.ldBits(cptr.add(otmp, $obj_in_use), 2, 1, 0)) {
+        if ((cptr.ldI32o(otmp, $obj_in_use) & 1)) {
             obj_extract_self(otmp);
             dealloc_obj(otmp);
             continue;
@@ -223,12 +223,11 @@ function resetobjs(ochain, restore) {
             }
             /* 3.6.3: set no_charge for partly eaten food in shop;
                all other items become goods for sale if in a shop */
-            if (cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS &&
-                    cptr.ldI32o(otmp, $obj_oeaten) >>> 0) {
+            if (cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS && cptr.ldI32o(otmp, $obj_oeaten)) {
                 let top;
                 let p;
-                let ox = cptr.box(0, "i16");
-                let oy = cptr.box(0, "i16");
+                let ox = cptr.box(0);
+                let oy = cptr.box(0);
 
                 for (
                     top = otmp;
@@ -236,11 +235,9 @@ function resetobjs(ochain, restore) {
                     top = cptr.ldPtro(top, $obj_v)
                 )
                     continue;
-                cptr.stBits(
-                    cptr.add(otmp, $obj_no_charge),
-                    3,
-                    1,
-                    0,
+                cptr.stI32o(
+                    otmp,
+                    $obj_no_charge,
                     (cptr.ld1so(top, $obj_where) == NHM.OBJ_FLOOR &&
                         get_obj_location(top, ox, oy, 0) &&
                         inside_shop(ox.v, oy.v) &&
@@ -257,30 +254,21 @@ function resetobjs(ochain, restore) {
         } else {
             /* do not zero out o_ids for ghost levels anymore */
 
-            if (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_uses_known
-                ),
-                2,
-                1,
-                0
-            ))
-                cptr.stBits(cptr.add(otmp, $obj_known), 0, 1, 0, 0);
-            cptr.stBits(
-                cptr.add(otmp, $obj_dknown),
-                1,
-                1,
-                0,
-                cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, 0)
-            );
-            cptr.stBits(cptr.add(otmp, $obj_rknown), 3, 1, 0, 0);
-            cptr.stBits(cptr.add(otmp, $obj_lknown), 5, 1, 0, 0);
-            cptr.stBits(cptr.add(otmp, $obj_cknown), 4, 1, 0, 0);
-            cptr.stBits(cptr.add(otmp, $obj_tknown), 6, 1, 0, 0);
+            if ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_uses_known
+            ) & 1))
+                cptr.stI32o(otmp, $obj_known, 0);
+            cptr.stI32o(otmp, $obj_dknown, cptr.stI32o(otmp, $obj_bknown, 0));
+            cptr.stI32o(otmp, $obj_rknown, 0);
+            cptr.stI32o(otmp, $obj_lknown, 0);
+            cptr.stI32o(otmp, $obj_cknown, 0);
+            cptr.stI32o(otmp, $obj_tknown, 0);
             cptr.st1o(otmp, $obj_invlet, 0);
-            cptr.stBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0, 0);
-            cptr.stBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0, NHM.LOST_NONE);
+            cptr.stI32o(otmp, $obj_no_charge, 0);
+            cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_NONE);
 
             /* strip user-supplied names */
             /* Statue and some corpse names are left intact,
@@ -337,23 +325,22 @@ function resetobjs(ochain, restore) {
                     if (mnum.v == NHC.PM_DOPPELGANGER && cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
                         set_corpsenm(otmp, mnum.v);
                 }
-            } else if ((cptr.ldI32o((otmp), $obj_o_id) >>> 0 ==
-                cptr.ldI32o(svc, $context_info_achieveo) >>> 0) ||
-                    (cptr.ldI32o((otmp), $obj_o_id) >>> 0 ==
+            } else if ((cptr.ldI32o((otmp), $obj_o_id) ==
+                cptr.ldI32o(svc, $context_info_achieveo)) ||
+                    (cptr.ldI32o((otmp), $obj_o_id) ==
                         cptr.ldI32o(
                             svc,
                             $context_info_achieveo + $achievement_tracking_soko_prize_oid
-                        ) >>>
-                            0)) {
+                        ))) {
                 /* achievement tracking; in case prize was moved off its
                    original level (which is always a no-bones level) */
-                cptr.stBits(cptr.add(otmp, $obj_nomerge), 7, 1, 0, 0);
+                cptr.stI32o(otmp, $obj_nomerge, 0);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
                 /* no longer the real Amulet */
                 cptr.stI16o(otmp, $obj_otyp, NHC.FAKE_AMULET_OF_YENDOR);
                 curse(otmp);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
-                if (cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0))
+                if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
                     end_burn(otmp, 1);
                 cptr.stI16o(otmp, $obj_otyp, NHC.WAX_CANDLE);
                 cptr.stI64o(otmp, $obj_age, 50n);  /* assume used */
@@ -528,24 +515,16 @@ function fixuporacle(oracle) {
             ))))
         return 0;
 
-    cptr.stBits(cptr.add(oracle, $monst_mpeaceful), 1, 1, 0, 1);  /* for behavior toward next character */
-    o_ridx = ((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16o(oracle, $monst_mx),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16o(oracle, $monst_my),
-                $sizeof_rm
-            ),
-            $rm_roomno
-        ),
-        0,
-        6,
-        0
-    ) |
+    cptr.stI32o(oracle, $monst_mpeaceful, 1);  /* for behavior toward next character */
+    o_ridx = (((cptr.ldI32o3(
+        svl,
+        cptr.ldI16o(oracle, $monst_mx),
+        $sizeof_rm_x21,
+        cptr.ldI16o(oracle, $monst_my),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_roomno
+    ) &
+        63) |
         0) -
             NHM.ROOMOFFSET) | 0;
     if (o_ridx >= 0 && cptr.ld1so2(svr, o_ridx, $sizeof_mkroom, $mkroom_rtype) == NHC.DELPHI)
@@ -587,23 +566,15 @@ function fixuporacle(oracle) {
             cptr.ldPtro(oracle, $monst_data)
         )) {
             rloc_to(oracle, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-            o_ridx = ((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16o(oracle, $monst_mx),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(oracle, $monst_my),
-                        $sizeof_rm
-                    ),
-                    $rm_roomno
-                ),
-                0,
-                6,
-                0
-            ) |
+            o_ridx = (((cptr.ldI32o3(
+                svl,
+                cptr.ldI16o(oracle, $monst_mx),
+                $sizeof_rm_x21,
+                cptr.ldI16o(oracle, $monst_my),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_roomno
+            ) &
+                63) |
                 0) -
                     NHM.ROOMOFFSET) | 0;
         }
@@ -627,13 +598,13 @@ export function can_make_bones() {
         return 0;
     if (no_bones_level(cptr.add(u, $you_uz)))
         return 0;  /* no bones for specific levels */
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         return 0;  /* no bones when swallowed */
     }
     if (!Is_branchlev(cptr.add(u, $you_uz))) {
         /* no bones on non-branches with portals */
         for (ttmp = cptr.ldPtr(gf); ttmp; ttmp = cptr.ldPtr(ttmp))
-            if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.MAGIC_PORTAL)
+            if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                 return 0;
     }
 
@@ -653,7 +624,7 @@ export function can_make_bones() {
 function remove_mon_from_bones(mtmp) {
     let mptr = cptr.ldPtro(mtmp, $monst_data);
 
-    if (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 ||
+    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 ||
             cptr.eq(mptr, cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)) ||
             cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_NEMESIS ||
             cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_LEADER ||
@@ -676,7 +647,7 @@ export function savebones(how, when, corpse) {
     let mtmp;
     let f;
     let newbones;
-    let c = cptr.box(0, "i8");
+    let c = cptr.box(0);
     let bonesid = cptr.box(0);
     let whynot = new Uint8Array(256);
     let nhfp;
@@ -726,7 +697,7 @@ export function savebones(how, when, corpse) {
     /* mark all named fruits as nonexistent; if/when we come to instances
        of any of them we'll mark those as existing (using goodfruit()) */
     for (f = cptr.ldPtro(gf, $instance_globals_f_ffruit); f; f = cptr.ldPtro(f, $fruit_nextf))
-        cptr.stI32o(f, $fruit_fid, -cptr.ldI32o(f, $fruit_fid) | 0);
+        cptr.stI32o(f, $fruit_fid, -cptr.ldI32o(f, $fruit_fid));
 
     set_ghostly_objlist(cptr.ldPtro(gi, $instance_globals_i_invent));
     /* dispose of your possessions, usually cursed */
@@ -792,7 +763,7 @@ export function savebones(how, when, corpse) {
             return;
         mtmp = christen_monst(mtmp, svp);
         if (corpse)
-            void obj_attach_mid(corpse, cptr.ldI32o(mtmp, $monst_m_id) >>> 0);
+            void obj_attach_mid(corpse, cptr.ldI32o(mtmp, $monst_m_id));
     }
     if (mtmp) {
         let i;
@@ -807,8 +778,8 @@ export function savebones(how, when, corpse) {
             $monst_mhp,
             cptr.stI32o(mtmp, $monst_mhpmax, cptr.ldI32o(u, $you_uhpmax))
         );
-        cptr.stBits(cptr.add(mtmp, $monst_female), 0, 1, 0, cptr.ld1so(flags, $flag_female) >>> 0);
-        cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 1);
+        cptr.stI32o(mtmp, $monst_female, cptr.ld1so(flags, $flag_female));
+        cptr.stI32o(mtmp, $monst_msleeping, 1);
 
         if (!has_ebones(mtmp))
             newebones(mtmp);
@@ -866,35 +837,20 @@ export function savebones(how, when, corpse) {
                 $ebones_mnum,
                 Role_switch()
             );
-            cptr.stBits(
-                cptr.add(
-                    (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
-                    $ebones_female
-                ),
-                0,
-                1,
-                0,
-                cptr.ld1so(flags, $flag_female) >>> 0
+            cptr.stI32o(
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
+                $ebones_female,
+                cptr.ld1so(flags, $flag_female)
             );
-            cptr.stBits(
-                cptr.add(
-                    (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
-                    $ebones_demigod
-                ),
-                1,
-                1,
-                0,
-                cptr.ldBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0)
+            cptr.stI32o(
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
+                $ebones_demigod,
+                (cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1)
             );
-            cptr.stBits(
-                cptr.add(
-                    (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
-                    $ebones_crowned
-                ),
-                2,
-                1,
-                0,
-                cptr.ldBits(cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth), 3, 2, 0)
+            cptr.stI32o(
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
+                $ebones_crowned,
+                (cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3)
             );
         }
     }
@@ -908,22 +864,16 @@ export function savebones(how, when, corpse) {
         /* do not zero out m_ids for bones levels any more */
         cptr.stI64o(mtmp, $monst_mlstmv, 0n);
         if (cptr.ld1so(mtmp, $monst_mtame))
-            cptr.st1o(
-                mtmp,
-                $monst_mtame,
-                schar(cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0))
-            );
+            cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0)));
         /* observations about the current hero won't apply to future game */
         cptr.stU64o(mtmp, $monst_seen_resistance, 0n);
     }
     for (ttmp = cptr.ldPtr(gf); ttmp; ttmp = cptr.ldPtr(ttmp)) {
-        cptr.stBits(cptr.add(ttmp, $trap_madeby_u), 7, 1, 0, 0);
-        cptr.stBits(
-            cptr.add(ttmp, $trap_tseen),
-            5,
-            1,
-            0,
-            (((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0)) | 0) == NHC.HOLE) >>> 0
+        cptr.stI32o(ttmp, $trap_madeby_u, 0);
+        cptr.stI32o(
+            ttmp,
+            $trap_tseen,
+            ((((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) | 0) == NHC.HOLE) >>> 0
         );
     }
     set_ghostly_objlist(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist));
@@ -939,8 +889,8 @@ export function savebones(how, when, corpse) {
     cptr.stI16(u, cptr.stI16o(u, $you_uy, 0));
 
     /* Clear all memory from the level. */
-    for (x = 1; x < NHM.COLNO; x = i16(x + 1))
-        for (y = 0; y < NHM.ROWNO; y = i16(y + 1)) {
+    for (x = 1; x < NHM.COLNO; x++)
+        for (y = 0; y < NHM.ROWNO; y++) {
             cptr.st1o3(
                 svl,
                 x,
@@ -950,18 +900,13 @@ export function savebones(how, when, corpse) {
                 $instance_globals_saved_l_level + $rm_seenv,
                 0
             );
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_waslit
-                ),
-                7,
-                1,
-                0,
+            cptr.stI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_waslit,
                 0
             );
             cptr.stI32o3(
@@ -1007,14 +952,9 @@ export function savebones(how, when, corpse) {
        they might already be flagged as such, even when we're playing
        in normal mode, if this level came from a previous bones file */
     if (wizard())
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_wizard_bones
-            ),
-            4,
-            1,
-            0,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_wizard_bones,
             1
         );
 
@@ -1054,7 +994,7 @@ export function savebones(how, when, corpse) {
 export function getbones() {
     let ok;
     let nhfp = null;
-    let c = cptr.box(0, "i8");
+    let c = cptr.box(0);
     let bonesid = cptr.box(0);
     let oldbonesid = [0];  /* was [10]; more should be safer */
     let ancestor_nhuuid = new Uint8Array(37);
@@ -1097,14 +1037,14 @@ export function getbones() {
         }
         sfi_char(nhfp, cptr.add(cptr.decay(ancestor_nhuuid), 0, 1), __s_ancestor_nhuuid, 37);
         sfi_char(nhfp, c, __s_bones_count, 1);  /* length incl. '\0' */
-        if (BigInt((c.v >>> 0) >>> 0) <= 40n) {
+        if (BigInt(c.v >>> 0) <= 40n) {
             sfi_char(nhfp, cptr.decay(oldbonesid), __s_bonesid, c.v);
         } else {
             if (wizard())
                 {
                     if (debugcore(__s_bones_c, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                        pline(__s_abandoning_bones_u_u, c.v >>> 0, 40);
+                        pline(__s_abandoning_bones_u_u, c.v, 40);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
                 }
@@ -1231,7 +1171,7 @@ export function bones_include_name(name) {
 /** C ref: bones.c:784 — @param {CPtr<struct obj>} objchain */
 function set_ghostly_objlist(objchain) {
     while (objchain) {
-        cptr.stBits(cptr.add(objchain, $obj_ghostly), 5, 1, 0, 1);
+        cptr.stI32o(objchain, $obj_ghostly, 1);
         objchain = cptr.ldPtr(objchain);
     }
 }
@@ -1241,7 +1181,7 @@ function set_ghostly_objlist(objchain) {
    cleared. obj->ghostly has no other usage at this time. */
 /** C ref: bones.c:796 — @param {CPtr<struct obj>} obj */
 export function fix_ghostly_obj(obj) {
-    if (!cptr.ldBits(cptr.add(obj, $obj_ghostly), 5, 1, 0))
+    if (!(cptr.ldI32o(obj, $obj_ghostly) & 1))
         return;
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.BOW:
@@ -1258,20 +1198,19 @@ export function fix_ghostly_obj(obj) {
         default:
             break;
     }
-    cptr.stBits(cptr.add(obj, $obj_ghostly), 5, 1, 0, 0);
+    cptr.stI32o(obj, $obj_ghostly, 0);
 }
 
 /** C ref: bones.c:818 — @param {CPtr<struct monst>} mtmp */
 export function newebones(mtmp) {
-    let __r1;
     if (!cptr.ldPtro(mtmp, $monst_mextra))
         cptr.stPtro(mtmp, $monst_mextra, newmextra());
     if (!(cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones))) {
-        (__r1 = alloc(28), cptr.stPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones, __r1));
+        cptr.stPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones, alloc(36));
         void __builtin___memset_chk(
             (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
             0,
-            28n,
+            36n,
             __builtin_object_size(
                 (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
                 0
@@ -1279,7 +1218,7 @@ export function newebones(mtmp) {
         );
         cptr.stI32(
             (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
-            cptr.ldI32o(mtmp, $monst_m_id) >>> 0
+            cptr.ldI32o(mtmp, $monst_m_id)
         );
     }
 }

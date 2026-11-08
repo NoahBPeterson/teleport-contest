@@ -4521,7 +4521,7 @@ function dump_enums() {
             raw_printf(
                 __s_s_s_3d_s,
                 nmprefix,
-                -nmwidth | 0,
+                -nmwidth,
                 cptr.ldPtro2(
                     cptr.ldPtro(__static_dump_enums_ed, i, 8),
                     j,

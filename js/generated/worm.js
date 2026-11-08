@@ -168,7 +168,7 @@ export function get_wormno() {
 export function initworm(worm, wseg_count) {
     let seg;
     let new_tail = create_worm_tail(wseg_count);
-    let wnum = cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
 
     if (new_tail) {
         cptr.stPtro(wtails, wnum, new_tail, 8);
@@ -248,10 +248,9 @@ function shrink_worm(wnum) {
  */
 /** C ref: worm.c:196 — @param {CPtr<struct monst>} worm */
 export function worm_move(worm) {
-    let __r1;
     let seg;
     let new_seg;  /* new segment */
-    let wnum = cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0) | 0;  /* worm number */
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;  /* worm number */
 
     /*
      *  Place a segment at the old worm head.  The head has already moved.
@@ -328,7 +327,7 @@ export function worm_move(worm) {
             whplimit = NHM.MHPMAX;
 
         prev_mhp = cptr.ldI32o(worm, $monst_mhp);
-        (__r1 = d(2, 2), cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) + __r1) | 0));  /* 2..4, average 3 */
+        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) + d(2, 2)) | 0);  /* 2..4, average 3 */
         whpcap = max(whplimit, cptr.ldI32o(worm, $monst_mhpmax));
         if (cptr.ldI32o(worm, $monst_mhp) < whpcap) {
             /* can't exceed segment-derived limit unless level increase after
@@ -360,11 +359,10 @@ export function worm_move(worm) {
  */
 /** C ref: worm.c:288 — @param {CPtr<struct monst>} worm */
 export function worm_nomove(worm) {
-    let __r2;
-    shrink_worm(cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0) | 0);  /* shrink */
+    shrink_worm((cptr.ldI32o(worm, $monst_wormno) & 31) | 0);  /* shrink */
 
     if (cptr.ldI32o(worm, $monst_mhp) > count_wsegs(worm)) {
-        (__r2 = d(2, 2), cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) - __r2) | 0));  /* 2..4, average 3; note: mhpmax not changed! */
+        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) - d(2, 2)) | 0);  /* 2..4, average 3; note: mhpmax not changed! */
         if (cptr.ldI32o(worm, $monst_mhp) < 1)
             cptr.stI32o(worm, $monst_mhp, 1);
     }
@@ -380,12 +378,12 @@ export function worm_nomove(worm) {
  */
 /** C ref: worm.c:308 — @param {CPtr<struct monst>} worm */
 export function wormgone(worm) {
-    let wnum = cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
 
     if (!wnum)
         impossible(__s_wormgone_wormno_is_0);
 
-    cptr.stBits(cptr.add(worm, $monst_wormno), 1, 5, 0, 0);  /* still a long worm but doesn't grow/shrink anymore */
+    cptr.stI32o(worm, $monst_wormno, 0);  /* still a long worm but doesn't grow/shrink anymore */
     /*
      *  This will also remove the real monster (ie 'w') from the its
      *  position in level.monsters[][].  (That happens when removing
@@ -419,7 +417,7 @@ export function wormgone(worm) {
  */
 /** C ref: worm.c:344 — @param {CPtr<struct monst>} worm @returns {CInt} */
 export function wormhitu(worm) {
-    let wnum = cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     let seg;
 
     /*  This does not work right now because mattacku() thinks that the head
@@ -465,7 +463,7 @@ export function cutworm(worm, x, y, cuttier) {
     let curr;
     let new_tail;
     let new_worm;
-    let wnum = cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     let cut_chance;
     let new_wnum;
 
@@ -538,8 +536,8 @@ export function cutworm(worm, x, y, cuttier) {
         return;
     }
 
-    cptr.stBits(cptr.add(new_worm, $monst_wormno), 1, 5, 0, new_wnum >>> 0);  /* affix new worm number */
-    cptr.stBits(cptr.add(new_worm, $monst_mcloned), 5, 1, 0, 0);  /* treat second worm as a normal monster */
+    cptr.stI32o(new_worm, $monst_wormno, new_wnum >>> 0);  /* affix new worm number */
+    cptr.stI32o(new_worm, $monst_mcloned, 0);  /* treat second worm as a normal monster */
 
     /* Devalue the monster level of both halves of the worm.
        Note: m_lev is always at least 3 in order to get this far. */
@@ -585,12 +583,9 @@ export function cutworm(worm, x, y, cuttier) {
  */
 /** C ref: worm.c:487 — @param {CPtr<struct monst>} worm */
 export function see_wsegs(worm) {
-    let curr = cptr.ldPtro(wtails, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
 
-    while (!cptr.eq(
-        curr,
-        cptr.ldPtro(wheads, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8)
-    )) {
+    while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, $monst_wormno) & 31), 8))) {
         newsym(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy));
         curr = cptr.ldPtr(curr);
     }
@@ -604,33 +599,24 @@ export function see_wsegs(worm) {
 /** C ref: worm.c:503 — @param {CPtr<struct monst>} worm @param {CInt} use_detection_glyph */
 export function detect_wsegs(worm, use_detection_glyph) {
     let num;
-    let curr = cptr.ldPtro(wtails, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
     let what_tail = (Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : NHC.PM_LONG_WORM_TAIL);
 
-    while (!cptr.eq(
-        curr,
-        cptr.ldPtro(wheads, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8)
-    )) {
+    while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, $monst_wormno) & 31), 8))) {
         num = use_detection_glyph
                 ? (((what_tail) +
-                    (((cptr.ldBits(cptr.add(worm, $monst_female), 0, 1, 0) | 0
-                        ? NHC.FEMALE
-                        : NHC.MALE) ==
+                    ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) ==
                         NHC.MALE)
                         ? NHC.GLYPH_DETECT_MALE_OFF
                         : NHC.GLYPH_DETECT_FEM_OFF)) | 0)
                 : (cptr.ld1so(worm, $monst_mtame)
                     ? (((what_tail) +
-                        (((cptr.ldBits(cptr.add(worm, $monst_female), 0, 1, 0) | 0
-                            ? NHC.FEMALE
-                            : NHC.MALE) ==
+                        ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) ==
                             NHC.MALE)
                             ? NHC.GLYPH_PET_MALE_OFF
                             : NHC.GLYPH_PET_FEM_OFF)) | 0)
                     : (((what_tail) +
-                        (((cptr.ldBits(cptr.add(worm, $monst_female), 0, 1, 0) | 0
-                            ? NHC.FEMALE
-                            : NHC.MALE) ==
+                        ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) ==
                             NHC.MALE)
                             ? NHC.GLYPH_MON_MALE_OFF
                             : NHC.GLYPH_MON_FEM_OFF)) | 0));
@@ -736,12 +722,9 @@ export function rest_worm(nhfp) {
  */
 /** C ref: worm.c:615 — @param {CPtr<struct monst>} worm @param {CPtr<struct monst>} oldworm */
 export function place_wsegs(worm, oldworm) {
-    let curr = cptr.ldPtro(wtails, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
 
-    while (!cptr.eq(
-        curr,
-        cptr.ldPtro(wheads, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8)
-    )) {
+    while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, $monst_wormno) & 31), 8))) {
         let x = cptr.ldI16o(curr, $wseg_wx);
         let y = cptr.ldI16o(curr, $wseg_wy);
         let mtmp = (cptr.ldPtro3(
@@ -792,12 +775,12 @@ export function sanity_check_worm(worm) {
        be greater that MAX_NUM_WORMS - 1 (which uses all available bits)
        so checking for 0 is all we can manage for wormno validation;
        since caller has already done that, this is rather pointless... */
-    if (!cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0)) {
+    if (!(cptr.ldI32o(worm, $monst_wormno) & 31)) {
         impossible(__s_worm_sanity_not_a_worm);
         return;
     }
 
-    wnum = cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0) | 0;
+    wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     if (!cptr.ldPtro(wtails, wnum, 8) || !cptr.ldPtro(wheads, wnum, 8)) {
         impossible(__s_wormno_d_is_set_without_proper_tail, wnum);
         return;
@@ -847,7 +830,7 @@ export function wormno_sanity_check() {
  */
 /** C ref: worm.c:714 — @param {CPtr<struct monst>} worm */
 export function remove_worm(worm) {
-    let curr = cptr.ldPtro(wtails, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
 
     while (curr) {
         if (cptr.ldI16o(curr, $wseg_wx)) {
@@ -878,8 +861,7 @@ export function remove_worm(worm) {
  */
 /** C ref: worm.c:738 — @param {CPtr<struct monst>} worm @param {CInt} x @param {CInt} y */
 export function place_worm_tail_randomly(worm, x, y) {
-    let __r3;
-    let wnum = cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     let curr = cptr.ldPtro(wtails, wnum, 8);
     let new_tail;
     let ox = x;
@@ -931,9 +913,10 @@ export function place_worm_tail_randomly(worm, x, y) {
     /* remove head segment from map in case we end up calling toss_wsegs();
        if it doesn't get tossed, it will become the final tail segment and
        get new coordinates */
-    (
-        __r3 = cptr.stI16o(cptr.ldPtro(wheads, wnum, 8), $wseg_wy, 0),
-        cptr.stI16o(cptr.ldPtro(wheads, wnum, 8), $wseg_wx, __r3)
+    cptr.stI16o(
+        cptr.ldPtro(wheads, wnum, 8),
+        $wseg_wx,
+        cptr.stI16o(cptr.ldPtro(wheads, wnum, 8), $wseg_wy, 0)
     );
 
     cptr.stPtro(wheads, wnum, new_tail = curr, 8);
@@ -943,8 +926,8 @@ export function place_worm_tail_randomly(worm, x, y) {
     cptr.stI16o(new_tail, $wseg_wy, y);
 
     while (curr) {
-        let nx = cptr.box(i16(ox), "i16");
-        let ny = cptr.box(i16(oy), "i16");
+        let nx = cptr.box(i16(ox));
+        let ny = cptr.box(i16(oy));
 
         if (rnd_nextto_goodpos(nx, ny, worm)) {
             cptr.stPtro3(
@@ -988,13 +971,9 @@ export function count_wsegs(mtmp) {
     let i = 0;
     let curr;
 
-    if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0)) {
+    if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
         for (
-            curr = cptr.ldPtr(cptr.ldPtro(
-                wtails,
-                cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0),
-                8
-            ));
+            curr = cptr.ldPtr(cptr.ldPtro(wtails, (cptr.ldI32o(mtmp, $monst_wormno) & 31), 8));
             curr;
             curr = cptr.ldPtr(curr)
         )
@@ -1039,7 +1018,7 @@ function create_worm_tail(num_segs) {
  */
 /** C ref: worm.c:883 — @param {CPtr<struct monst>} worm @returns {CInt} */
 export function worm_known(worm) {
-    let curr = cptr.ldPtro(wtails, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
 
     while (curr) {
         if (((cptr.ld1uo(
@@ -1116,7 +1095,7 @@ export function worm_cross(x1, y1, x2, y2) {
     /* same monster is at both adjacent spots, so must be a worm; we need
        to figure out if the two spots are occupied by consecutive segments */
     for (
-        curr = cptr.ldPtro(wtails, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8);
+        curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
         curr;
         curr = wnxt
     ) {
@@ -1151,7 +1130,7 @@ export function wseg_at(worm, x, y) {
     let res = 0;
 
     if (worm &&
-            cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0) | 0 &&
+            (cptr.ldI32o(worm, $monst_wormno) & 31) | 0 &&
             cptr.eq(
                 (cptr.ldPtro3(
                     svl,
@@ -1171,7 +1150,7 @@ export function wseg_at(worm, x, y) {
 
         for (
             i = 0,
-            curr = cptr.ldPtro(wtails, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8);
+            curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
             curr;
             curr = cptr.ldPtr(curr)
         ) {
@@ -1188,7 +1167,7 @@ export function wseg_at(worm, x, y) {
 
 /** C ref: worm.c:968 — @param {CPtr<struct monst>} worm @param {CInt} miny @param {CInt} maxy */
 export function flip_worm_segs_vertical(worm, miny, maxy) {
-    let curr = cptr.ldPtro(wtails, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
 
     while (curr) {
         cptr.stI16o(curr, $wseg_wy, i16(((maxy - cptr.ldI16o(curr, $wseg_wy) + miny) | 0)));
@@ -1198,7 +1177,7 @@ export function flip_worm_segs_vertical(worm, miny, maxy) {
 
 /** C ref: worm.c:979 — @param {CPtr<struct monst>} worm @param {CInt} minx @param {CInt} maxx */
 export function flip_worm_segs_horizontal(worm, minx, maxx) {
-    let curr = cptr.ldPtro(wtails, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
 
     while (curr) {
         cptr.stI16o(curr, $wseg_wx, i16(((maxx - cptr.ldI16o(curr, $wseg_wx) + minx) | 0)));
@@ -1208,7 +1187,7 @@ export function flip_worm_segs_horizontal(worm, minx, maxx) {
 
 /** C ref: worm.c:990 — @param {CPtr<struct monst>} worm */
 export function redraw_worm(worm) {
-    let curr = cptr.ldPtro(wtails, cptr.ldBits(cptr.add(worm, $monst_wormno), 1, 5, 0), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
 
     while (curr) {
         newsym(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy));

@@ -464,7 +464,7 @@ export function init_nhfile(nhfp) {
     cptr.st1o(nhfp, $NHFILE_structlevel, 1);
     cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
     cptr.st1o(nhfp, $NHFILE_addinfo, 0);
-    cptr.st1o(nhfp, $NHFILE_bendian, schar(((cptr.ld1s(cptr.byteView(bei))) == 0)));
+    cptr.st1o(nhfp, $NHFILE_bendian, schar(((cptr.ld1s(bei)) == 0)));
     cptr.stPtro(nhfp, $NHFILE_fplog, null);
     cptr.stPtro(nhfp, $NHFILE_fpdebug, null);
     cptr.stI64o(nhfp, $NHFILE_rcount, cptr.stI64o(nhfp, $NHFILE_wcount, 0n));
@@ -1098,7 +1098,7 @@ export function check_panic_save() {
         32,
         (BigInt.asUintN(64, cptr.strlen(savef) + cptr.strlen(__s_dot_z)))
     ));
-    let cfn = cptr.byteView(alloc((ln + 1) >>> 0));
+    let cfn = alloc((ln + 1) >>> 0);
 
     void cptr.strcpy(cfn, savef);
     void cptr.strcat(cfn, __s_dot_z);
@@ -1151,12 +1151,12 @@ export function plname_from_file(filename, without_wait_synch_per_file) {
             /* room for "name+role+race+gend+algn X" where the space before
                X is actually NUL and X is playmode: one of '-', 'X', or 'D' */
             ln = 49;
-            result = cptr.byteView(__builtin___memset_chk(
+            result = __builtin___memset_chk(
                 alloc(ln),
                 0,
                 BigInt(ln >>> 0),
                 __builtin_object_size(alloc(ln), 0)
-            ));
+            );
             get_plname_from_file(nhfp, result, 0);
         }
         close_nhfile(nhfp);
@@ -1226,7 +1226,7 @@ export function get_saved_games() {
     if (j > 0) {
         if (j > 1)
             nh_deterministic_qsort((result), BigInt.asUintN(64, BigInt((j))), 8n, (strcmp_wrap));
-        cptr.stPtro(result, j, cptr.byteView((null)), 8);
+        cptr.stPtro(result, j, (null), 8);
     } else if (result) {
         free_saved_games(result);
         result = (null);
@@ -1293,7 +1293,7 @@ function docompress_file(filename, uncomp) {
         32,
         (BigInt.asUintN(64, cptr.strlen(filename) + cptr.strlen(xtra)))
     ));
-    cfn = cptr.byteView(alloc((ln + 1) >>> 0));
+    cfn = alloc((ln + 1) >>> 0);
 
     void cptr.strcpy(cfn, filename);
     void cptr.strcat(cfn, xtra);
@@ -1567,15 +1567,12 @@ function make_converted_name(filename) {
                     cptr.ld1s(finaldirchar) == 92 ||
                     cptr.ld1s(finaldirchar) == 58)) {
                 needsep = 1;
-                ln = (ln + 1) >>> 0;
+                ln = (ln + 1) | 0;
             }
-            ln = Number(BigInt.asUintN(
-                32,
-                BigInt.asUintN(64, BigInt(ln >>> 0) + cptr.strlen(dir))
-            ));
+            ln = Number(BigInt.asUintN(32, BigInt(ln >>> 0) + cptr.strlen(dir)));
         }
     }
-    unconverted_filename = cptr.byteView(alloc((ln + 1) >>> 0));
+    unconverted_filename = alloc((ln + 1) >>> 0);
     nh_snprintf(
         __s_make_converted_name,
         2146,
@@ -1587,8 +1584,8 @@ function make_converted_name(filename) {
         filename
     );
     xtra = __s_exportascii;
-    ln = (ln + Number(BigInt.asUintN(32, cptr.strlen(xtra)))) >>> 0;
-    converted_filename = cptr.byteView(alloc((ln + 1) >>> 0));
+    ln = (ln + Number(BigInt.asUintN(32, cptr.strlen(xtra)))) | 0;
+    converted_filename = alloc((ln + 1) >>> 0);
     void cptr.strcpy(converted_filename, unconverted_filename);
     void cptr.strcat(converted_filename, xtra);
     return 1;
@@ -1791,7 +1788,7 @@ function wizkit_addinv(obj) {
     /* subset of starting inventory pre-ID */
     observe_object(obj);
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
-        cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
+        cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() */
     /* same criteria as lift_object()'s check for available inventory slot */
     if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
             inv_cnt(0) >= NHC.invlet_basic &&
@@ -1864,27 +1861,21 @@ function fopen_sym_file() {
 export function read_sym_file(which_set) {
     let fp;
 
-    cptr.stBits(
-        cptr.add(
-            cptr.add(cptr.add(gs, $instance_globals_s_symset), which_set, $sizeof_symsetentry),
-            $symsetentry_explicitly
-        ),
-        3,
-        1,
-        0,
+    cptr.stI32o2(
+        gs,
+        which_set,
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_explicitly,
         0
     );
     if (!(fp = fopen_sym_file()))
         return 0;
 
-    cptr.stBits(
-        cptr.add(
-            cptr.add(cptr.add(gs, $instance_globals_s_symset), which_set, $sizeof_symsetentry),
-            $symsetentry_explicitly
-        ),
-        3,
-        1,
-        0,
+    cptr.stI32o2(
+        gs,
+        which_set,
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_explicitly,
         1
     );
     cptr.st1o(
@@ -1942,18 +1933,11 @@ export function read_sym_file(which_set) {
             $sizeof_symsetentry,
             $instance_globals_s_symset + $symsetentry_name
         )) {
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(gs, $instance_globals_s_symset),
-                        which_set,
-                        $sizeof_symsetentry
-                    ),
-                    $symsetentry_explicitly
-                ),
-                3,
-                1,
-                0,
+            cptr.stI32o2(
+                gs,
+                which_set,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_explicitly,
                 0
             );
             return 0;
@@ -2230,7 +2214,6 @@ export function reveal_paths(code) {
    been chosen, reset the tracking to make all passages available again */
 /** C ref: files.c:3431 — @param {CInt} passagecnt @param {CUInt} oid @returns {CInt} */
 function choose_passage(passagecnt, oid) {
-    let __r1;
     let idx;
     let res;
 
@@ -2239,7 +2222,7 @@ function choose_passage(passagecnt, oid) {
 
     /* if a different book or we've used up all the passages already,
        reset in order to have all 'passagecnt' passages available */
-    if (oid != cptr.ldI32o(svc, $context_info_novel) >>> 0 ||
+    if (oid != cptr.ldI32o(svc, $context_info_novel) ||
             cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) == 0) {
         let i;
         let range = passagecnt;
@@ -2282,8 +2265,12 @@ function choose_passage(passagecnt, oid) {
     res = cptr.ld1so2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg);
     /* move the last slot's passage index into the slot just used
        and reduce the number of passages available */
-    (
-        __r1 = cptr.ld1so2(
+    cptr.st1o2(
+        svc,
+        idx,
+        1,
+        $context_info_novel + $novel_tracking_pasg,
+        cptr.ld1so2(
             svc,
             cptr.stI32o(
                 svc,
@@ -2292,8 +2279,7 @@ function choose_passage(passagecnt, oid) {
             ),
             1,
             $context_info_novel + $novel_tracking_pasg
-        ),
-        cptr.st1o2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg, __r1)
+        )
     );
     return res;
 }

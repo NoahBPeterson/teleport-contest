@@ -47,7 +47,7 @@ const __s_bs_sp_bs = cptr.lit("\b \b");
 const __s_s_60s_unknown_extended_command = cptr.lit("%s%.60s: unknown extended command.");
 
 /** C ref: getline.c:17 — char */
-export let morc = cptr.box(0, "i8");
+export let morc = cptr.box(0);
 
 /** C ref: getline.c:18 — signed char */
 let suppress_history = 0;

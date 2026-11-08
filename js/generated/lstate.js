@@ -99,24 +99,24 @@ const __s_rparen = cptr.lit(")");
 /** C ref: lstate.c:71 — @param {CPtr<lua_State>} L @returns {CUInt} */
 function luai_makeseed(L) {
     let buff = new Uint8Array(24);
-    let h = cptr.box((Number(BigInt.asUintN(32, ((time(null)))))), "u32");
+    let h = cptr.box((Number(BigInt.asUintN(32, ((time(null)))))));
     let p = 0;
     {
-        let t = cptr.box((cptr.addr(((L)))), "u64");  /* heap variable */
+        let t = cptr.box((cptr.addr(((L)))));  /* heap variable */
         cptr.memcpy(cptr.add(cptr.decay(buff), p), t, 8n);
-        p = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(p)) + 8n)));
+        p = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(p)) + 8n));
     }
     ;
     {
-        let t = cptr.box((cptr.addr(((h)))), "u64");  /* local variable */
+        let t = cptr.box((cptr.addr(((h)))));  /* local variable */
         cptr.memcpy(cptr.add(cptr.decay(buff), p), t, 8n);
-        p = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(p)) + 8n)));
+        p = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(p)) + 8n));
     }
     ;
     {
-        let t = cptr.box((cptr.addr(((lua_newstate)))), "u64");  /* public function */
+        let t = cptr.box((cptr.addr(((lua_newstate)))));  /* public function */
         cptr.memcpy(cptr.add(cptr.decay(buff), p), t, 8n);
-        p = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(p)) + 8n)));
+        p = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(p)) + 8n));
     }
     ;
     (void 0);
@@ -160,7 +160,7 @@ export function luaE_extendCI(L) {
     cptr.stPtro(ci, $CallInfo_previous, cptr.ldPtro(L, $lua_State_ci));
     cptr.stPtro(ci, $CallInfo_next, null);
     cptr.stI32o(ci, $CallInfo_u + 8, 0);
-    (cptr.stI16o(L, $lua_State_nci, cptr.ldU16o(L, $lua_State_nci) + 1)) - (1);
+    (cptr.stI16o(L, $lua_State_nci, cptr.ldI16o(L, $lua_State_nci) + 1)) - (1);
     return ci;
 }
 
@@ -175,7 +175,7 @@ function freeCI(L) {
     while (!cptr.eq((ci = next), (null))) {
         next = cptr.ldPtro(ci, $CallInfo_next);
         luaM_free_(L, (ci), 64n);
-        (cptr.stI16o(L, $lua_State_nci, cptr.ldU16o(L, $lua_State_nci) + -1)) - (-1);
+        (cptr.stI16o(L, $lua_State_nci, cptr.ldI16o(L, $lua_State_nci) + -1)) - (-1);
     }
 }
 
@@ -192,7 +192,7 @@ export function luaE_shrinkCI(L) {
     while (!cptr.eq((next = cptr.ldPtro(ci, $CallInfo_next)), (null))) {
         let next2 = cptr.ldPtro(next, $CallInfo_next);  /* next's next */
         cptr.stPtro(ci, $CallInfo_next, next2);  /* remove next from the list */
-        (cptr.stI16o(L, $lua_State_nci, cptr.ldU16o(L, $lua_State_nci) + -1)) - (-1);
+        (cptr.stI16o(L, $lua_State_nci, cptr.ldI16o(L, $lua_State_nci) + -1)) - (-1);
         luaM_free_(L, (next), 64n);  /* free next */
         if (cptr.eq(next2, (null)))
             break;  /* no more elements */
@@ -212,17 +212,17 @@ export function luaE_shrinkCI(L) {
 */
 /** C ref: lstate.c:165 — @param {CPtr<lua_State>} L */
 export function luaE_checkcstack(L) {
-    if (((cptr.ldI32o((L), $lua_State_nCcalls) >>> 0 & 65535) >>> 0) == 200)
+    if (((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) == 200)
         luaG_runerror(L, __s_c_stack_overflow);
-    else if (((cptr.ldI32o((L), $lua_State_nCcalls) >>> 0 & 65535) >>> 0) >= 220)
+    else if (((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 220)
         luaD_errerr(L);  /* error while handling stack error */
 }
 
 /** C ref: lstate.c:173 — @param {CPtr<lua_State>} L */
 export function luaE_incCstack(L) {
-    (cptr.stI32o(L, $lua_State_nCcalls, (cptr.ldI32o(L, $lua_State_nCcalls) >>> 0) + 1)) - (1);
+    (cptr.stI32o(L, $lua_State_nCcalls, cptr.ldI32o(L, $lua_State_nCcalls) + 1)) - (1);
     if ((__builtin_expect(
-        BigInt(((((cptr.ldI32o((L), $lua_State_nCcalls) >>> 0 & 65535) >>> 0) >= 200) != 0)),
+        BigInt(((((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200) != 0)),
         0n
     )))
         luaE_checkcstack(L);
@@ -302,8 +302,8 @@ function init_registry(L, g) {
     {
         /* registry[LUA_RIDX_MAINTHREAD] = L */
         let io = (cptr.add(cptr.ldPtro(registry, $Table_array), 0, $sizeof_TValue));
-        let x___2 = (L);
-        cptr.stPtr(((io)), ((((x___2)))));
+        let x_ = (L);
+        cptr.stPtr(((io)), ((((x_)))));
         (cptr.st1o((io), $TValue_tt_, 72));
         (void L, (void 0));
     }
@@ -495,7 +495,7 @@ export function lua_closethread(L, from) {
     cptr.stI32o(
         L,
         $lua_State_nCcalls,
-        (from) ? ((cptr.ldI32o((from), $lua_State_nCcalls) >>> 0 & 65535) >>> 0) : 0
+        (from) ? ((cptr.ldI32o((from), $lua_State_nCcalls) & 65535) >>> 0) : 0
     );
     status = luaE_resetthread(L, cptr.ld1uo(L, $lua_State_status));
     (void 0);
@@ -526,11 +526,7 @@ export function lua_newstate(f, ud) {
     preinit_thread(L, g);
     cptr.stPtro(g, $global_State_allgc, ((((L)))));  /* by now, only object is the main thread */
     cptr.stPtr(L, null);
-    (cptr.stI32o(
-        (L),
-        $lua_State_nCcalls,
-        ((cptr.ldI32o((L), $lua_State_nCcalls) >>> 0) + 65536) >>> 0
-    ));  /* main thread is always non yieldable */
+    (cptr.stI32o((L), $lua_State_nCcalls, (cptr.ldI32o((L), $lua_State_nCcalls) + 65536) | 0));  /* main thread is always non yieldable */
     cptr.stPtr(g, f);
     cptr.stPtro(g, $global_State_ud, ud);
     cptr.stPtro(g, $global_State_warnf, null);

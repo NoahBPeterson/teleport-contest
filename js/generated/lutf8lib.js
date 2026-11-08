@@ -58,13 +58,13 @@ function u_posrelat(pos, len) {
 ** entry forces an error for non-ascii bytes with no continuation
 ** bytes (count == 0).
 */
-const __static_utf8_decode_limits = cptr.alloc(6 * 4);
-cptr.stI32o(__static_utf8_decode_limits, 0, ~0 >>> 0);
-cptr.stI32o(__static_utf8_decode_limits, 4, 128);
-cptr.stI32o(__static_utf8_decode_limits, 8, 2048);
-cptr.stI32o(__static_utf8_decode_limits, 12, 65536);
-cptr.stI32o(__static_utf8_decode_limits, 16, 2097152);
-cptr.stI32o(__static_utf8_decode_limits, 20, 67108864); /** C ref: lutf8lib.c:62 — unsigned int[6] (function-static) */
+const __static_utf8_decode_limits = cptr.alloc(6 * 8);
+cptr.stU64o(__static_utf8_decode_limits, 0, ~0);
+cptr.stU64o(__static_utf8_decode_limits, 8, 128);
+cptr.stU64o(__static_utf8_decode_limits, 16, 2048);
+cptr.stU64o(__static_utf8_decode_limits, 24, 65536);
+cptr.stU64o(__static_utf8_decode_limits, 32, 2097152);
+cptr.stU64o(__static_utf8_decode_limits, 40, 67108864); /** C ref: lutf8lib.c:62 — unsigned long[6] (function-static) */
 
 /**
  * C ref: lutf8lib.c:61
@@ -80,16 +80,16 @@ function utf8_decode(s, val, strict) {
         res = c;
     else {
         let count = 0;  /* to count number of continuation bytes */
-        for (; (c & 64) >>> 0; c = (c << 1) >>> 0) {
+        for (; (c & 64) >>> 0; c <<= 1) {
             let cc = uchar(cptr.ld1so(s, ++count));  /* read next byte */
             if (!((((cc) & 192) >>> 0) == 128))
                 return null;  /* invalid byte sequence */
             res = (((res << 6) >>> 0) | ((cc & 63) >>> 0)) >>> 0;  /* add lower 6 bits from cont. byte */
         }
-        res = (res | ((((c & 127) >>> 0) << (Math.imul(count, 5))) >>> 0)) >>> 0;  /* add first byte */
+        res |= ((((c & 127) >>> 0) << (Math.imul(count, 5))) >>> 0);  /* add first byte */
         if (count > 5 ||
                 res > 2147483647 ||
-                res < cptr.ldI32o(__static_utf8_decode_limits, count, 4) >>> 0)
+                res < cptr.ldU64o(__static_utf8_decode_limits, count, 8))
             return null;  /* invalid byte sequence */
         s = cptr.add(s, count);  /* skip continuation bytes read */
     }
@@ -99,7 +99,7 @@ function utf8_decode(s, val, strict) {
             return null;
     }
     if (val)
-        cptr.stI32(val, res);
+        cptr.stU64(val, res);
     return cptr.add(s, 1);  /* +1 to include first byte */
 }
 
@@ -111,7 +111,7 @@ function utf8_decode(s, val, strict) {
 /** C ref: lutf8lib.c:96 — @param {CPtr<lua_State>} L @returns {CInt} */
 function utflen(L) {
     let n = 0n;  /* counter for the number of characters */
-    let len = cptr.box(0n, "u64");  /* string length in bytes */
+    let len = cptr.box(0n);  /* string length in bytes */
     let s = luaL_checklstring(L, 1, len);
     let posi = u_posrelat(luaL_optinteger(L, 2, 1n), len.v);
     let posj = u_posrelat(luaL_optinteger(L, 3, -1n), len.v);
@@ -129,7 +129,7 @@ function utflen(L) {
             : 0));
     while (posi <= posj) {
         let s1 = utf8_decode(cptr.add(s, posi), null, !lax);
-        if (cptr.eq(s1, cptr.byteView((null)))) {
+        if (cptr.eq(s1, (null))) {
             lua_pushnil(L);  /* return fail ... */
             lua_pushinteger(L, BigInt.asIntN(64, posi + 1n));  /* ... and current position */
             return 2;
@@ -147,7 +147,7 @@ function utflen(L) {
 */
 /** C ref: lutf8lib.c:126 — @param {CPtr<lua_State>} L @returns {CInt} */
 function codepoint(L) {
-    let len = cptr.box(0n, "u64");
+    let len = cptr.box(0n);
     let s = luaL_checklstring(L, 1, len);
     let posi = u_posrelat(luaL_optinteger(L, 2, 1n), len.v);
     let pose = u_posrelat(luaL_optinteger(L, 3, posi), len.v);
@@ -171,9 +171,9 @@ function codepoint(L) {
     n = 0;  /* count the number of returns */
     se = cptr.add(s, pose);  /* string end */
     for (s = cptr.add(s, BigInt.asIntN(64, posi - 1n)); cptr.cmp(s, se) < 0; ) {
-        let code = cptr.box(0, "u32");
+        let code = cptr.box(0);
         s = utf8_decode(s, code, !lax);
-        if (cptr.eq(s, cptr.byteView((null))))
+        if (cptr.eq(s, (null)))
             return luaL_error(L, __s_invalid_utf_8_code);
         lua_pushinteger(L, BigInt(code.v >>> 0));
         n++;
@@ -218,7 +218,7 @@ function utfchar(L) {
 */
 /** C ref: lutf8lib.c:187 — @param {CPtr<lua_State>} L @returns {CInt} */
 function byteoffset(L) {
-    let len = cptr.box(0n, "u64");
+    let len = cptr.box(0n);
     let s = luaL_checklstring(L, 1, len);
     let n = luaL_checkinteger(L, 2);
     let posi = BigInt.asIntN(64, ((n >= 0n) ? 1n : len.v + 1n));
@@ -263,19 +263,19 @@ function byteoffset(L) {
 
 /** C ref: lutf8lib.c:228 — @param {CPtr<lua_State>} L @param {CInt} strict @returns {CInt} */
 function iter_aux(L, strict) {
-    let len = cptr.box(0n, "u64");
+    let len = cptr.box(0n);
     let s = luaL_checklstring(L, 1, len);
     let n = BigInt.asUintN(64, lua_tointegerx(L, 2, null));
     if (n < len.v) {
         while ((((cptr.ld1s((cptr.add(s, n)))) & 192) == 128))
-            n = BigInt.asUintN(64, n + 1n);  /* go to next character */
+            n++;  /* go to next character */
     }
     if (n >= len.v)
         return 0;  /* no more codepoints */
     else {
-        let code = cptr.box(0, "u32");
+        let code = cptr.box(0);
         let next = utf8_decode(cptr.add(s, n), code, strict);
-        if (cptr.eq(next, cptr.byteView((null))) || (((cptr.ld1s((next))) & 192) == 128))
+        if (cptr.eq(next, (null)) || (((cptr.ld1s((next))) & 192) == 128))
             return luaL_error(L, __s_invalid_utf_8_code);
         lua_pushinteger(L, BigInt.asIntN(64, (n + 1n)));
         lua_pushinteger(L, BigInt(code.v >>> 0));

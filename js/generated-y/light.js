@@ -181,10 +181,10 @@ export function* del_light_source(type, id) {
             cptr.stI32(tmp_id, 0);
             break;
         case NHC.LS_OBJECT:
-            cptr.stI32(tmp_id, cptr.ldPtr(id) ? cptr.ldI32o(cptr.ldPtr(id), $obj_o_id) >>> 0 : 0);
+            cptr.stI32(tmp_id, cptr.ldPtr(id) ? cptr.ldI32o(cptr.ldPtr(id), $obj_o_id) : 0);
             break;
         case NHC.LS_MONSTER:
-            cptr.stI32(tmp_id, cptr.ldI32o(cptr.ldPtr(id), $monst_m_id) >>> 0);
+            cptr.stI32(tmp_id, cptr.ldI32o(cptr.ldPtr(id), $monst_m_id));
             break;
         default:
             cptr.stI32(tmp_id, 0);
@@ -316,7 +316,7 @@ export function do_light_sources(cs_rows) {
                 cptr.ldI16o(ls, $light_source_range)) |
                     0))) < 0)
                 y = 0;
-            for (; y <= max_y; y = i16(y + 1)) {
+            for (; y <= max_y; y++) {
                 row = cptr.ldPtro(cs_rows, y, 8);
                 offset = cptr.ldI16o(
                     limits,
@@ -341,11 +341,11 @@ export function do_light_sources(cs_rows) {
                      * make things look "correct".  The vision system
                      * does this.
                      */
-                    for (x = min_x; x <= max_x; x = i16(x + 1))
+                    for (x = min_x; x <= max_x; x++)
                         if (cptr.ld1uo(row, x) & NHM.COULD_SEE)
                             cptr.st1o(row, x, cptr.ld1uo(row, x) | NHM.TEMP_LIT);
                 } else {
-                    for (x = min_x; x <= max_x; x = i16(x + 1))
+                    for (x = min_x; x <= max_x; x++)
                         if ((cptr.ldI16o(ls, $light_source_x) == x &&
                             cptr.ldI16o(ls, $light_source_y) == y) ||
                                 clear_path(
@@ -375,19 +375,14 @@ export function* show_transient_light(obj, x, y) {
     /* Null object indicates camera flash */
     if (!obj) {
         /* no need to temporarily light an already lit spot */
-        if (cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_lit
-            ),
-            6,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_lit
+        ) & 1))
             return;
 
         cptr.memcpy(cameraflash, cptr.add(cg, $const_globals_zeroany), 8);
@@ -413,7 +408,7 @@ export function* show_transient_light(obj, x, y) {
         if (!ls || cptr.ld1so(obj, $obj_where) != NHM.OBJ_FREE) {
             (yield* impossible(
                 __s_transient_light_s_s_s_not_s,
-                cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0 ? __s_lit : __s_unlit,
+                (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ? __s_lit : __s_unlit,
                 (yield* simpleonames(obj)),
                 (yield* otense(obj, __s_are)),
                 !ls ? __s_a_light_source : __s_free
@@ -445,8 +440,7 @@ export function* show_transient_light(obj, x, y) {
         mon = cptr.ldPtr(mon)
     ) {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1) ||
-                (cptr.ldBits(cptr.add(mon, $monst_isgd), 6, 1, 0) | 0 &&
-                    !cptr.ldI16o(mon, $monst_mx)))
+                ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
             continue;
         /* light range is the radius of a circle and we're limiting
            canseemon() to a square enclosing that circle, but setting
@@ -456,7 +450,7 @@ export function* show_transient_light(obj, x, y) {
         if (dist2(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), x, y) <=
                 radius_squared) {
             if (canseemon(mon))
-                cptr.stBits(cptr.add(mon, $monst_mtemplit), 6, 1, 0, 1);
+                cptr.stI32o(mon, $monst_mtemplit, 1);
         }
         /* [what about worm tails?] */
     }
@@ -492,8 +486,8 @@ export function* transient_light_cleanup() {
     ) {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1))
             continue;
-        if (cptr.ldBits(cptr.add(mon, $monst_mtemplit), 6, 1, 0)) {
-            cptr.stBits(cptr.add(mon, $monst_mtemplit), 6, 1, 0, 0);
+        if ((cptr.ldI32o(mon, $monst_mtemplit) & 1)) {
+            cptr.stI32o(mon, $monst_mtemplit, 0);
             ++mtempcount;
             if (!canspotmon(mon))
                 (yield* map_invisible(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
@@ -529,8 +523,7 @@ export function find_mid(nid, fmflags) {
             mtmp;
             mtmp = cptr.ldPtr(mtmp)
         )
-            if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) &&
-                    cptr.ldI32o(mtmp, $monst_m_id) >>> 0 == nid)
+            if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) && cptr.ldI32o(mtmp, $monst_m_id) == nid)
                 return mtmp;
     if ((fmflags & NHM.FM_MIGRATE) >>> 0)
         for (
@@ -538,11 +531,11 @@ export function find_mid(nid, fmflags) {
             mtmp;
             mtmp = cptr.ldPtr(mtmp)
         )
-            if (cptr.ldI32o(mtmp, $monst_m_id) >>> 0 == nid)
+            if (cptr.ldI32o(mtmp, $monst_m_id) == nid)
                 return mtmp;
     if ((fmflags & NHM.FM_MYDOGS) >>> 0)
         for (mtmp = cptr.ldPtro(gm, $instance_globals_m_mydogs); mtmp; mtmp = cptr.ldPtr(mtmp))
-            if (cptr.ldI32o(mtmp, $monst_m_id) >>> 0 == nid)
+            if (cptr.ldI32o(mtmp, $monst_m_id) == nid)
                 return mtmp;
     return null;
 }
@@ -684,7 +677,7 @@ export function light_stats(hdrfmt, hdrbuf, count, size) {
 /** C ref: light.c:517 — @param {CInt} ghostly */
 export function* relink_light_sources(ghostly) {
     let which;
-    let nid = cptr.box(0, "u32");
+    let nid = cptr.box(0);
     let ls;
 
     /*
@@ -707,7 +700,7 @@ export function* relink_light_sources(ghostly) {
         if (cptr.ldI16o(ls, $light_source_flags) & 2) {
             if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT ||
                     cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
-                nid.v = cptr.ldI32o(ls, $light_source_id) >>> 0;
+                nid.v = cptr.ldI32o(ls, $light_source_id);
                 if (ghostly && !lookup_id_mapping(nid.v, nid))
                     (yield* panic(__s_relink_light_sources_no_id_mapping));
 
@@ -790,12 +783,12 @@ export function* light_sources_sanity_check() {
             (yield* panic(__s_insane_light_source_no_id));
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT) {
             otmp = cptr.ldPtro(ls, $light_source_id);
-            auint = cptr.ldI32o(otmp, $obj_o_id) >>> 0;
+            auint = cptr.ldI32o(otmp, $obj_o_id);
             if (!cptr.eq(find_oid(auint), otmp))
                 (yield* panic(__s_insane_light_source_can_t_find_obj_u, auint));
         } else if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
             mtmp = cptr.ldPtro(ls, $light_source_id);
-            auint = cptr.ldI32o(mtmp, $monst_m_id) >>> 0;
+            auint = cptr.ldI32o(mtmp, $monst_m_id);
             if (!cptr.eq(find_mid(auint, 15), mtmp))
                 (yield* panic(__s_insane_light_source_can_t_find_mon_u, auint));
         } else {
@@ -825,12 +818,9 @@ function* write_ls(nhfp, ls) {
                     cptr.add(cg, $const_globals_zeroany),
                     8
                 );
-                cptr.stI32o(ls, $light_source_id, cptr.ldI32o(otmp, $obj_o_id) >>> 0);
-                if (!cptr.eq(find_oid(cptr.ldI32o(ls, $light_source_id) >>> 0), otmp)) {
-                    (yield* impossible(
-                        __s_write_ls_can_t_find_obj_u,
-                        cptr.ldI32o(ls, $light_source_id) >>> 0
-                    ));
+                cptr.stI32o(ls, $light_source_id, cptr.ldI32o(otmp, $obj_o_id));
+                if (!cptr.eq(find_oid(cptr.ldI32o(ls, $light_source_id)), otmp)) {
+                    (yield* impossible(__s_write_ls_can_t_find_obj_u, cptr.ldI32o(ls, $light_source_id)));
                     cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 4);
                 }
             } else {
@@ -858,14 +848,14 @@ function* write_ls(nhfp, ls) {
                         cptr.add(cg, $const_globals_zeroany),
                         8
                     );
-                    cptr.stI32o(ls, $light_source_id, cptr.ldI32o(mtmp, $monst_m_id) >>> 0);
-                    if (!cptr.eq(find_mid(cptr.ldI32o(ls, $light_source_id) >>> 0, monloc), mtmp)) {
+                    cptr.stI32o(ls, $light_source_id, cptr.ldI32o(mtmp, $monst_m_id));
+                    if (!cptr.eq(find_mid(cptr.ldI32o(ls, $light_source_id), monloc), mtmp)) {
                         (yield* impossible(
                             __s_write_ls_can_t_find_mon_s_u,
                             (cptr.ldI32o((mtmp), $monst_mhp) < 1)
                                 ? __s_because_it_s_dead
                                 : __s_empty,
-                            cptr.ldI32o(ls, $light_source_id) >>> 0
+                            cptr.ldI32o(ls, $light_source_id)
                         ));
                         cptr.stI16o(
                             ls,
@@ -901,8 +891,8 @@ export function obj_move_light_source(src, dest) {
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT &&
                 cptr.eq(cptr.ldPtro(ls, $light_source_id), src))
             cptr.stPtro(ls, $light_source_id, dest);
-    cptr.stBits(cptr.add(src, $obj_lamplit), 7, 1, 0, 0);
-    cptr.stBits(cptr.add(dest, $obj_lamplit), 7, 1, 0, 1);
+    cptr.stI32o(src, $obj_lamplit, 0);
+    cptr.stI32o(dest, $obj_lamplit, 1);
 }
 
 /* return true if there exist any light sources */
@@ -959,7 +949,7 @@ export function obj_sheds_light(obj) {
 /* Return TRUE if sheds light AND will be snuffed by end_burn(). */
 /** C ref: light.c:771 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_is_burning(obj) {
-    return schar((cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0 &&
+    return schar(((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 &&
         (ignitable(obj) || artifact_light(obj))
             ? 1
             : 0));
@@ -990,7 +980,7 @@ export function* obj_split_light_source(src, dest) {
             cptr.stPtro(new_ls, $light_source_id, dest);
             cptr.stPtr(new_ls, cptr.ldPtro(gl, $instance_globals_l_light_base));
             cptr.stPtro(gl, $instance_globals_l_light_base, new_ls);
-            cptr.stBits(cptr.add(dest, $obj_lamplit), 7, 1, 0, 1);  /* now an active light source */
+            cptr.stI32o(dest, $obj_lamplit, 1);  /* now an active light source */
         }
 }
 
@@ -1080,15 +1070,15 @@ export function arti_light_radius(obj) {
      */
 
     /* sanity check [simplifies usage by bless()/curse()/&c] */
-    if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) || !artifact_light(obj))
+    if (!(cptr.ldI32o(obj, $obj_lamplit) & 1) || !artifact_light(obj))
         return 0;
 
     /* cursed radius of 1 is not noticeable for an item that's
        carried by the hero but is if it's carried by a monster
        or left lit on the floor (not applicable for Sunsword) */
-    res = (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0
+    res = ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0
             ? 3
-            : (!cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) ? 2 : 1));
+            : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 2 : 1));
 
     /* if poly'd into gold dragon with embedded scales, make the scales
        have minimum radiance (hero as light source will use light radius

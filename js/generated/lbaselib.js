@@ -85,7 +85,7 @@ function luaB_print(L) {
     let n = lua_gettop(L);  /* number of arguments */
     let i;
     for (i = 1; i <= n; i++) {
-        let l = cptr.box(0n, "u64");
+        let l = cptr.box(0n);
         let s = luaL_tolstring(L, i, l);  /* convert it to string */
         if (i > 1)
             fwrite((__s_tab), 1n, 1n, __stdoutp);  /* add a tab before it */
@@ -156,18 +156,17 @@ function luaB_tonumber(L) {
             lua_settop(L, 1);  /* yes; return it */
             return 1;
         } else {
-            let l = cptr.box(0n, "u64");
+            let l = cptr.box(0n);
             let s = lua_tolstring(L, 1, l);
-            if (!cptr.eq(s, cptr.byteView((null))) &&
-                    lua_stringtonumber(L, s) == BigInt.asUintN(64, l.v + 1n))
+            if (!cptr.eq(s, (null)) && lua_stringtonumber(L, s) == BigInt.asUintN(64, l.v + 1n))
                 return 1;  /* successful conversion to number */
             /* else not a number */
             luaL_checkany(L, 1);  /* (but there must be some parameter) */
         }
     } else {
-        let l = cptr.box(0n, "u64");
+        let l = cptr.box(0n);
         let s;
-        let n = cptr.box(0n, "i64");  /* to avoid warnings */
+        let n = cptr.box(0n);  /* to avoid warnings */
         let base = luaL_checkinteger(L, 2);
         luaL_checktype(L, 1, 4);  /* no numbers as strings */
         s = lua_tolstring(L, 1, l);
@@ -515,11 +514,11 @@ function generic_reader(L, ud, size) {
 /** C ref: lbaselib.c:387 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_load(L) {
     let status;
-    let l = cptr.box(0n, "u64");
+    let l = cptr.box(0n);
     let s = lua_tolstring(L, 1, l);
     let mode = (luaL_optlstring(L, 3, (__s_bt), null));
     let env = (!(lua_type(L, 4) == -1) ? 4 : 0);  /* 'env' index or 0 if no 'env' */
-    if (!cptr.eq(s, cptr.byteView((null)))) {
+    if (!cptr.eq(s, (null))) {
         let chunkname = (luaL_optlstring(L, 2, (s), null));
         status = luaL_loadbufferx(L, s, l.v, chunkname, mode);
     } else {

@@ -73,7 +73,7 @@ function* auxresume(L, co, narg) {
     status = (yield* lua_resume(co, L, narg, nres));
     if ((__builtin_expect(BigInt(((status == 0 || status == 1 ? 1 : 0) != 0)), 1n))) {
         if ((__builtin_expect(BigInt(((!(yield* lua_checkstack(L, (nres.v + 1) | 0))) != 0)), 0n))) {
-            (yield* lua_settop(co, ((-(nres.v) | 0) - 1) | 0));  /* remove results anyway */
+            (yield* lua_settop(co, (-(nres.v) - 1) | 0));  /* remove results anyway */
             (yield* lua_pushstring(L, __s_too_many_results_to_resume));
             return -1;  /* error flag */
         }
@@ -96,7 +96,7 @@ function* luaB_coresume(L) {
         return 2;  /* return false + error message */
     } else {
         (yield* lua_pushboolean(L, 1));
-        lua_rotate(L, (-((r + 1) | 0) | 0), 1);
+        lua_rotate(L, (-((r + 1) | 0)), 1);
         return (r + 1) | 0;  /* return true + 'resume' returns */
     }
 }

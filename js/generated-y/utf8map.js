@@ -78,7 +78,6 @@ export function* unicode_val(cp) {
  * @returns {CInt}
  */
 export function* set_map_u(gmap, utf32ch, utf8str) {
-    let __r1;
     let tmpgm = gmap;
 
     if (!tmpgm || !utf32ch)
@@ -92,10 +91,7 @@ export function* set_map_u(gmap, utf32ch, utf8str) {
         cptr.free(cptr.ldPtro(cptr.ldPtro(gmap, $glyph_map_u), $unicode_representation_utf8str));
         cptr.stPtro(cptr.ldPtro(gmap, $glyph_map_u), $unicode_representation_utf8str, null);
     }
-    (
-        __r1 = (yield* dupstr(utf8str)),
-        cptr.stPtro(cptr.ldPtro(gmap, $glyph_map_u), $unicode_representation_utf8str, __r1)
-    );
+    cptr.stPtro(cptr.ldPtro(gmap, $glyph_map_u), $unicode_representation_utf8str, (yield* dupstr(utf8str)));
     cptr.stI32(cptr.ldPtro(gmap, $glyph_map_u), utf32ch);
     return 1;
 }

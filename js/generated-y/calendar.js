@@ -29,7 +29,7 @@ const __s_nethack_mktime_now = cptr.lit("NETHACK_MKTIME_NOW");
 /** C ref: calendar.c:32 @returns {*} */
 export function* getnow() {
     let fixed_dt = nh_getenv(__s_nethack_fixed_datetime);
-    let datetime = cptr.box(0n, "i64");
+    let datetime = cptr.box(0n);
 
     if (fixed_dt && cptr.ld1s(fixed_dt)) {
         let parsed = (yield* time_from_yyyymmddhhmmss(fixed_dt));
@@ -42,7 +42,7 @@ export function* getnow() {
 
 /** C ref: calendar.c:47 @returns {CPtr<struct tm>} */
 function* getlt() {
-    let date = cptr.box((yield* getnow()), "i64");
+    let date = cptr.box((yield* getnow()));
 
     return localtime(date);
 }
@@ -54,7 +54,7 @@ export function* getyear() {
 
 /** C ref: calendar.c:62 — @param {CLongLong} date @returns {CLongLong} */
 export function* yyyymmdd(date) {
-    date = cptr.box(date, "i64");
+    date = cptr.box(date);
     let datenum;
     let lt;
 
@@ -78,7 +78,7 @@ export function* yyyymmdd(date) {
 
 /** C ref: calendar.c:86 — @param {CLongLong} date @returns {CLongLong} */
 export function* hhmmss(date) {
-    date = cptr.box(date, "i64");
+    date = cptr.box(date);
     let timenum;
     let lt;
 
@@ -100,7 +100,7 @@ const __static_yyyymmddhhmmss_datestr = new Uint8Array(15); /** C ref: calendar.
 
 /** C ref: calendar.c:101 — @param {CLongLong} date @returns {CPtr<char>} */
 export function* yyyymmddhhmmss(date) {
-    date = cptr.box(date, "i64");
+    date = cptr.box(date);
     let datenum;
     let lt;
 
@@ -138,7 +138,7 @@ export function* time_from_yyyymmddhhmmss(buf) {
     let timeresult = 0n;
     let t = cptr.alloc(56);
     let lt;
-    let now = cptr.box(0n, "i64");
+    let now = cptr.box(0n);
     let d;
     let p;
     let y = new Uint8Array(5);

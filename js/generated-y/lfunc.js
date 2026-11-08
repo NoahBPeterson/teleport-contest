@@ -207,7 +207,7 @@ function* checkclosemth(L, level) {
             ((cptr.diff(level, cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci))) / 16n))
         )));  /* variable index */
         let vname = luaG_findlocal(L, cptr.ldPtro(L, $lua_State_ci), idx, null);
-        if (cptr.eq(vname, cptr.byteView((null))))
+        if (cptr.eq(vname, (null)))
             vname = __s_query;
         (yield* luaG_runerror(L, __s_variable_s_got_a_non_closable_value, vname));
     }
@@ -301,7 +301,7 @@ export function luaF_closeupval(L, level) {
         ;
         cptr.stPtro(uv, $UpVal_v, slot);  /* now current value lives here */
         if (!((cptr.ld1uo((uv), $UpVal_marked)) & 24)) {
-            ((cptr.st1o((uv), $UpVal_marked, uchar((cptr.ld1uo((uv), $UpVal_marked) | 32)))));  /* closed upvalues cannot be gray */
+            ((cptr.st1o((uv), $UpVal_marked, cptr.ld1uo((uv), $UpVal_marked) | 32)));  /* closed upvalues cannot be gray */
             (((cptr.ld1uo((slot), $TValue_tt_)) & 64)
                     ? ((((cptr.ld1uo((uv), $UpVal_marked)) & 32) &&
                         ((cptr.ld1uo(((cptr.ldPtr(((slot))))), $GCObject_marked)) & 24))

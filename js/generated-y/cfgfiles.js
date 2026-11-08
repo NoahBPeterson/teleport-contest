@@ -1776,13 +1776,13 @@ function* cnf_parser_init(parser) {
     cptr.st1o(parser, $_cnf_parser_state_skip, 0);
     cptr.st1o(parser, $_cnf_parser_state_morelines, 0);
     cptr.stI32o(parser, $_cnf_parser_state_inbufsz, 1024);
-    cptr.stPtr(parser, cptr.byteView((yield* alloc(cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) >>> 0))));
+    cptr.stPtr(parser, (yield* alloc(cptr.ldI32o(parser, $_cnf_parser_state_inbufsz))));
     cptr.st1o(parser, $_cnf_parser_state_cont, 0);
     cptr.st1o(parser, $_cnf_parser_state_pbreak, 0);
     __builtin___memset_chk(
         cptr.ldPtr(parser),
         0,
-        BigInt((cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) >>> 0) >>> 0),
+        BigInt(cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) >>> 0),
         __builtin_object_size(cptr.ldPtr(parser), 0)
     );
 }
@@ -1815,8 +1815,7 @@ function* parse_conf_buf(p, proc) {
     } else {
         if (!cptr.ldPtro(p, $_cnf_parser_state_ep)) {
             if (cptr.strlen(cptr.ldPtr(p)) <
-                    BigInt((((cptr.ldI32o(p, $_cnf_parser_state_inbufsz) >>> 0) - 2) >>> 0) >>>
-                        0)) {
+                    BigInt(((cptr.ldI32o(p, $_cnf_parser_state_inbufsz) - 2) >>> 0) >>> 0)) {
                 /* likely the last line of file is just
                    missing a newline; process it anyway  */
                 cptr.stPtro(p, $_cnf_parser_state_ep, eos(cptr.ldPtr(p)));
@@ -1903,7 +1902,7 @@ function* parse_conf_buf(p, proc) {
                                 cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf))
                             )) +
                                 1)) | 0;  /* +1: space */
-                tmpbuf = cptr.byteView((yield* alloc(len >>> 0)));
+                tmpbuf = (yield* alloc(len >>> 0));
                 cptr.st1(tmpbuf, 0);
                 if (cptr.ldPtro(p, $_cnf_parser_state_buf)) {
                     void cptr.strcat(
@@ -1919,10 +1918,10 @@ function* parse_conf_buf(p, proc) {
                     cptr.strcat(tmpbuf, cptr.ldPtro(p, $_cnf_parser_state_ep))
                 );
                 if (cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf)) >=
-                        BigInt((cptr.ldI32o(p, $_cnf_parser_state_inbufsz) >>> 0) >>> 0))
+                        BigInt(cptr.ldI32o(p, $_cnf_parser_state_inbufsz) >>> 0))
                     cptr.st1o(
                         cptr.ldPtro(p, $_cnf_parser_state_buf),
-                        ((cptr.ldI32o(p, $_cnf_parser_state_inbufsz) >>> 0) - 1) >>> 0,
+                        (cptr.ldI32o(p, $_cnf_parser_state_inbufsz) - 1) >>> 0,
                         0
                     );
             }
@@ -1985,11 +1984,9 @@ export function* parse_conf_str(str, proc) {
     while (str && cptr.ld1s(str)) {
         len = 0n;
         while (cptr.ld1s(str) &&
-                len <
-                    BigInt((((cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) >>> 0) - 1) >>> 0) >>>
-                        0)) {
+                len < BigInt(((cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) - 1) >>> 0) >>> 0)) {
             cptr.st1o(cptr.ldPtr(parser), len, cptr.ld1s(str));
-            len = BigInt.asUintN(64, len + 1n);
+            len++;
             str = cptr.add(str, 1);
             if (cptr.ld1so(cptr.ldPtr(parser), BigInt.asUintN(64, len - 1n)) == 10)
                 break;
@@ -2017,11 +2014,7 @@ export function* parse_conf_file(fp, proc) {
     (yield* cnf_parser_init(parser));
     free_config_sections();
 
-    while (fgets(
-        cptr.ldPtr(parser),
-        (cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) >>> 0) | 0,
-        fp
-    )) {
+    while (fgets(cptr.ldPtr(parser), cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) | 0, fp)) {
         (yield* parse_conf_buf(parser, proc));
         if (cptr.ld1so(parser, $_cnf_parser_state_pbreak))
             break;

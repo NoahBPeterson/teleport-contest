@@ -224,16 +224,16 @@ function get_mplname(mtmp, nam) {
         void cptr.strcpy(nam, devnam);
 
     if (fmlkind || !strcmp(nam, __s_janet))
-        cptr.stBits(cptr.add(mtmp, $monst_female), 0, 1, 0, 1);
+        cptr.stI32o(mtmp, $monst_female, 1);
     else
-        cptr.stBits(cptr.add(mtmp, $monst_female), 0, 1, 0, 0);
+        cptr.stI32o(mtmp, $monst_female, 0);
     void cptr.strcat(nam, __s_the);
     void cptr.strcat(
         nam,
         rank_of(
             cptr.ld1uo(mtmp, $monst_m_lev),
             (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)),
-            schar(cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0))
+            schar((cptr.ldI32o(mtmp, $monst_female) & 1))
         )
     );
 }
@@ -245,15 +245,9 @@ function* mk_mplayer_armor(mon, typ) {
     if (typ == NHC.STRANGE_OBJECT)
         return;
     obj = (yield* mksobj(typ, 0, 0));
-    cptr.stBits(
-        cptr.add(obj, $obj_oeroded),
-        0,
-        2,
-        0,
-        cptr.stBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0, 0)
-    );
+    cptr.stI32o(obj, $obj_oeroded, cptr.stI32o(obj, $obj_oeroded2, 0));
     if (!rn2(3))
-        cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, 1);
+        cptr.stI32o(obj, $obj_oerodeproof, 1);
     if (!rn2(3))
         (yield* curse(obj));
     if (!rn2(3))
@@ -262,11 +256,7 @@ function* mk_mplayer_armor(mon, typ) {
      * have it because the wizard or other monsters cursed it, so its
      * chances of having plusses is the same as usual....
      */
-    cptr.st1o(
-        obj,
-        $obj_spe,
-        schar((rn2(10) ? (rn2(3) ? rn2(5) : ((rn2(4) + 4) | 0)) : -rnd(3) | 0))
-    );
+    cptr.st1o(obj, $obj_spe, schar((rn2(10) ? (rn2(3) ? rn2(5) : ((rn2(4) + 4) | 0)) : -rnd(3))));
     void (yield* mpickobj(mon, obj));
 }
 
@@ -279,7 +269,6 @@ function* mk_mplayer_armor(mon, typ) {
  * @returns {CPtr<struct monst>}
  */
 export function* mk_mplayer(ptr, x, y, special) {
-    let __r1;
     let mtmp;
     let nam = new Uint8Array(32);
 
@@ -332,7 +321,7 @@ export function* mk_mplayer(ptr, x, y, special) {
             /* that's why they are "stuck" in the endgame :-) */
             void (yield* mongets(mtmp, NHC.FAKE_AMULET_OF_YENDOR));
         }
-        cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
+        cptr.stI32o(mtmp, $monst_mpeaceful, 0);
         set_malign(mtmp);  /* peaceful may have changed again */
 
         /* default equipment; much of it will be overridden below */
@@ -448,37 +437,30 @@ export function* mk_mplayer(ptr, x, y, special) {
 
         if (weapon != NHC.STRANGE_OBJECT) {
             otmp = (yield* mksobj(weapon, 1, 0));
-            cptr.stBits(
-                cptr.add(otmp, $obj_oeroded),
-                0,
-                2,
-                0,
-                cptr.stBits(cptr.add(otmp, $obj_oeroded2), 2, 2, 0, 0)
-            );
+            cptr.stI32o(otmp, $obj_oeroded, cptr.stI32o(otmp, $obj_oeroded2, 0));
             cptr.st1o(otmp, $obj_spe, schar((special ? ((rn2(5) + 4) | 0) : rn2(4))));
             if (!rn2(3))
-                cptr.stBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0, 1);
+                cptr.stI32o(otmp, $obj_oerodeproof, 1);
             else if (!rn2(2))
-                cptr.stBits(cptr.add(otmp, $obj_greased), 1, 1, 0, 1);
+                cptr.stI32o(otmp, $obj_greased, 1);
             /* mk_artifact() with otmp and A_NONE will never return NULL */
             if (special && rn2(2))
                 otmp = (yield* mk_artifact(otmp, -128, 99, 0));
             /* usually increase stack size if stackable weapon */
-            if (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_merge
-                ),
-                1,
-                1,
-                0
-            ) |
+            if ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_merge
+            ) &
+                1) |
                 0 &&
                     !cptr.ld1so(otmp, $obj_oartifact) &&
                     monmightthrowwep(otmp))
-                (
-                    __r1 = BigInt(rn2(is_spear(otmp) ? 4 : 8)),
-                    cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + __r1)
+                cptr.stI64o(
+                    otmp,
+                    $obj_quan,
+                    cptr.ldI64o(otmp, $obj_quan) + BigInt(rn2(is_spear(otmp) ? 4 : 8))
                 );
             cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
             /* mplayers knew better than to overenchant Magicbane */
@@ -541,9 +523,9 @@ export function* create_mplayers(num, special) {
     let pm;
     let x;
     let y;
-    let fakemon = cptr.alloc(192);
+    let fakemon = cptr.alloc(320);
 
-    cptr.memcpy(fakemon, cptr.add(cg, $const_globals_zeromonst), 192);
+    cptr.memcpy(fakemon, cptr.add(cg, $const_globals_zeromonst), 320);
     while (num) {
         let tryct = 0;
 
@@ -578,7 +560,7 @@ cptr.stPtro(__static_mplayer_talk_other_class_msg, 16, __s_here_is_what_i_have_t
 /** C ref: mplayer.c:356 — @param {CPtr<struct monst>} mtmp */
 export function* mplayer_talk(mtmp) {
 
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
         return;  /* will drop to humanoid talk */
 
     ;

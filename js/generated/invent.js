@@ -207,6 +207,8 @@ const $Loot_disco = FLD.Loot_disco, $Loot_inuse = FLD.Loot_inuse,
       $to_core_maxslot = FLD.to_core_maxslot, $to_core_needcols = FLD.to_core_needcols,
       $to_core_needrows = FLD.to_core_needrows, $trap_tseen = FLD.trap_tseen,
       $trap_ttyp = FLD.trap_ttyp, $u_conduct_literate = FLD.u_conduct_literate,
+      $u_have_bell = FLD.u_have_bell, $u_have_book = FLD.u_have_book,
+      $u_have_menorah = FLD.u_have_menorah, $u_have_questart = FLD.u_have_questart,
       $u_roleplay_numrerolls = FLD.u_roleplay_numrerolls,
       $win_request_info_t_fromcore = FLD.win_request_info_t_fromcore,
       $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
@@ -634,7 +636,7 @@ function inuse_classify(sort_item, obj) {
             ++rating;
             if ((!w_mask &&
                 cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS &&
-                cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0
+                (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0
                     ? 1
                     : 0) != 0)
                 break __lbl_assign_rating;
@@ -761,12 +763,12 @@ export function loot_classify(sort_item, obj) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let oclass = cptr.ld1so(obj, $obj_oclass);
     let seen;
-    let discovered = schar((cptr.ldBits(
-        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
-        0,
-        1,
-        0
-    ) | 0
+    let discovered = schar(((cptr.ldI32o2(
+        objects,
+        otyp,
+        $sizeof_objclass,
+        $objclass_oc_name_known
+    ) & 1) | 0
             ? 1
             : 0));
 
@@ -776,7 +778,7 @@ export function loot_classify(sort_item, obj) {
      */
     if (!Blind())
         observe_object(obj);  /* xname(obj) does this; we want it sooner */
-    seen = schar((cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0 ? 1 : 0)),
+    seen = schar(((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 ? 1 : 0)),
             classorder = cptr.ld1so(flags, $flag_sortpack)
                 ? cptr.add(flags, $flag_inv_order)
                 : cptr.decay(__static_loot_classify_def_srt_order);
@@ -857,7 +859,7 @@ export function loot_classify(sort_item, obj) {
                     break;
                 default:
                     /* [maybe separate one-bite foods from rations and such?] */
-                    k = cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0) | 0 ? 6 : 2;
+                    k = (cptr.ldI32o(obj, $obj_globby) & 1) | 0 ? 6 : 2;
                     break;
                 case NHC.TIN:
                     k = 3;
@@ -887,15 +889,13 @@ export function loot_classify(sort_item, obj) {
              *  7) discovered gray stones ("touchstone"),
              *  8) seen rocks ("rock").
              */
-            switch (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            switch ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                     0) {
                 case NHC.GEMSTONE:
                     k = !seen ? 1 : (!discovered ? 2 : 3);
@@ -942,7 +942,7 @@ export function loot_classify(sort_item, obj) {
 /* sortloot() formatting routine; for alphabetizing, not shown to user */
 /** C ref: invent.c:309 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function loot_xname(obj) {
-    let saveo = cptr.alloc(112);
+    let saveo = cptr.alloc(216);
     let save_debug;
     let res;
     let save_oname;
@@ -952,38 +952,19 @@ function loot_xname(obj) {
      * want such because they change alphabetical ordering.  First,
      * remember 'obj's current settings.
      */
-    cptr.stBits(
-        cptr.add(saveo, $obj_oeroded),
-        0,
-        2,
-        0,
-        cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0)
-    );
-    cptr.stBits(
-        cptr.add(saveo, $obj_blessed),
-        1,
-        1,
-        0,
-        cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0)
-    ),
-            cptr.stBits(
-                cptr.add(saveo, $obj_cursed),
-                0,
-                1,
-                0,
-                cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)
-            );
+    cptr.stI32o(saveo, $obj_oeroded, (cptr.ldI32o(obj, $obj_oeroded) & 3));
+    cptr.stI32o(saveo, $obj_blessed, (cptr.ldI32o(obj, $obj_blessed) & 1)),
+            cptr.stI32o(saveo, $obj_cursed, (cptr.ldI32o(obj, $obj_cursed) & 1));
     cptr.st1o(saveo, $obj_spe, cptr.ld1so(obj, $obj_spe));
-    cptr.stI32o(saveo, $obj_owt, cptr.ldI32o(obj, $obj_owt) >>> 0);
+    cptr.stI32o(saveo, $obj_owt, cptr.ldI32o(obj, $obj_owt));
     save_oname = has_oname(obj) ? (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))) : null;
     save_debug = cptr.ld1so(flags, $flag_debug);
     /* suppress "diluted" for potions and "holy/unholy" for water;
        sortloot() will deal with them using other criteria than name */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS) {
-        cptr.stBits(cptr.add(obj, $obj_oeroded), 0, 2, 0, 0);
+        cptr.stI32o(obj, $obj_oeroded, 0);
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER)
-            cptr.stBits(cptr.add(obj, $obj_blessed), 1, 1, 0, 0),
-                    cptr.stBits(cptr.add(obj, $obj_cursed), 0, 1, 0, 0);
+            cptr.stI32o(obj, $obj_blessed, 0), cptr.stI32o(obj, $obj_cursed, 0);
     }
     /* make "wet towel" and "moist towel" format as "towel" so that all
        three group together */
@@ -991,7 +972,7 @@ function loot_xname(obj) {
         cptr.st1o(obj, $obj_spe, 0);
     /* group globs by monster type rather than by size:  force all to
        have the same size adjective hence same "small glob of " prefix */
-    if (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0))
+    if ((cptr.ldI32o(obj, $obj_globby) & 1))
         cptr.stI32o(obj, $obj_owt, 20);  /* weight of a fresh glob (one pudding's worth) */
     /* suppress user-assigned name */
     if (save_oname && !cptr.ld1so(obj, $obj_oartifact))
@@ -1012,28 +993,10 @@ function loot_xname(obj) {
     }
     /* restore the object */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS) {
-        cptr.stBits(
-            cptr.add(obj, $obj_oeroded),
-            0,
-            2,
-            0,
-            cptr.ldBits(cptr.add(saveo, $obj_oeroded), 0, 2, 0)
-        );
+        cptr.stI32o(obj, $obj_oeroded, (cptr.ldI32o(saveo, $obj_oeroded) & 3));
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER)
-            cptr.stBits(
-                cptr.add(obj, $obj_blessed),
-                1,
-                1,
-                0,
-                cptr.ldBits(cptr.add(saveo, $obj_blessed), 1, 1, 0)
-            ),
-                    cptr.stBits(
-                        cptr.add(obj, $obj_cursed),
-                        0,
-                        1,
-                        0,
-                        cptr.ldBits(cptr.add(saveo, $obj_cursed), 0, 1, 0)
-                    );
+            cptr.stI32o(obj, $obj_blessed, (cptr.ldI32o(saveo, $obj_blessed) & 1)),
+                    cptr.stI32o(obj, $obj_cursed, (cptr.ldI32o(saveo, $obj_cursed) & 1));
     }
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.TOWEL) {
         cptr.st1o(obj, $obj_spe, cptr.ld1so(saveo, $obj_spe));
@@ -1045,8 +1008,8 @@ function loot_xname(obj) {
             is_wet_towel(obj) ? ((cptr.ld1so(obj, $obj_spe) >= 3) ? __s_x : __s_y) : __s_z
         );
     }
-    if (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0)) {
-        cptr.stI32o(obj, $obj_owt, cptr.ldI32o(saveo, $obj_owt) >>> 0);
+    if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
+        cptr.stI32o(obj, $obj_owt, cptr.ldI32o(saveo, $obj_owt));
         /* we've suppressed the size prefix (above); there normally won't
            be more than one of a given creature type because they coalesce,
            but globs with different bless/curse state won't merge so it is
@@ -1054,11 +1017,11 @@ function loot_xname(obj) {
            get such sorted by size (small first) */
         void cptr.strcat(
             res,
-            (cptr.ldI32o(obj, $obj_owt) >>> 0 <= 100)
+            (cptr.ldI32o(obj, $obj_owt) <= 100)
                 ? __s_a
-                : ((cptr.ldI32o(obj, $obj_owt) >>> 0 <= 300)
+                : ((cptr.ldI32o(obj, $obj_owt) <= 300)
                     ? __s_b
-                    : ((cptr.ldI32o(obj, $obj_owt) >>> 0 <= 500) ? __s_c : __s_d))
+                    : ((cptr.ldI32o(obj, $obj_owt) <= 500) ? __s_c : __s_d))
         );
     }
     if (save_oname && !cptr.ld1so(obj, $obj_oartifact))
@@ -1097,9 +1060,7 @@ function sortloot_cmp(vptr1, vptr2) {
     __lbl_tiebreak: {
 
         /* in-use takes precedence over all others */
-        if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) >>> 0 & NHM.SORTLOOT_INUSE) >>>
-            0) !=
-                0) {
+        if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) & NHM.SORTLOOT_INUSE) >>> 0) != 0) {
             /* Classify each object at most once no matter how many
                comparisons it is involved in. */
             if (!cptr.ld1so(sli1, $sortloot_item_orderclass))
@@ -1117,7 +1078,7 @@ function sortloot_cmp(vptr1, vptr2) {
         }
 
         /* order by object class unless we're doing by-invlet without sortpack */
-        if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) >>> 0 & 3) >>> 0) !=
+        if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) & 3) >>> 0) !=
                 NHM.SORTLOOT_INVLET) {
             /* Classify each object at most once no matter how many
                comparisons it is involved in. */
@@ -1133,8 +1094,7 @@ function sortloot_cmp(vptr1, vptr2) {
                 return (val1 - val2) | 0;
 
             /* skip sub-classes when ordering by sortpack+invlet */
-            if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) >>> 0 & NHM.SORTLOOT_INVLET) >>>
-                0) ==
+            if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) & NHM.SORTLOOT_INVLET) >>> 0) ==
                     0) {
                 /* Class matches; sort by subclass. */
                 val1 = cptr.ld1so(sli1, $sortloot_item_subclass);
@@ -1160,8 +1120,7 @@ function sortloot_cmp(vptr1, vptr2) {
         }
 
         /* order by assigned inventory letter */
-        if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) >>> 0 & NHM.SORTLOOT_INVLET) >>>
-            0) !=
+        if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) & NHM.SORTLOOT_INVLET) >>> 0) !=
                 0) {
             val1 = invletter_value(cptr.ld1so(obj1, $obj_invlet));
             val2 = invletter_value(cptr.ld1so(obj2, $obj_invlet));
@@ -1169,8 +1128,7 @@ function sortloot_cmp(vptr1, vptr2) {
                 return (val1 - val2) | 0;
         }
 
-        if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) >>> 0 & NHM.SORTLOOT_LOOT) >>>
-                0) == 0)
+        if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) & NHM.SORTLOOT_LOOT) >>> 0) == 0)
             break __lbl_tiebreak;
 
         /*
@@ -1195,22 +1153,22 @@ function sortloot_cmp(vptr1, vptr2) {
             return namcmp;
 
         /* Sort by BUCX. */
-        val1 = cptr.ldBits(cptr.add(obj1, $obj_bknown), 2, 1, 0) | 0
-                ? (cptr.ldBits(cptr.add(obj1, $obj_blessed), 1, 1, 0) | 0
+        val1 = (cptr.ldI32o(obj1, $obj_bknown) & 1) | 0
+                ? ((cptr.ldI32o(obj1, $obj_blessed) & 1) | 0
                     ? 3
-                    : (!cptr.ldBits(cptr.add(obj1, $obj_cursed), 0, 1, 0) ? 2 : 1))
+                    : (!(cptr.ldI32o(obj1, $obj_cursed) & 1) ? 2 : 1))
                 : 0;
-        val2 = cptr.ldBits(cptr.add(obj2, $obj_bknown), 2, 1, 0) | 0
-                ? (cptr.ldBits(cptr.add(obj2, $obj_blessed), 1, 1, 0) | 0
+        val2 = (cptr.ldI32o(obj2, $obj_bknown) & 1) | 0
+                ? ((cptr.ldI32o(obj2, $obj_blessed) & 1) | 0
                     ? 3
-                    : (!cptr.ldBits(cptr.add(obj2, $obj_cursed), 0, 1, 0) ? 2 : 1))
+                    : (!(cptr.ldI32o(obj2, $obj_cursed) & 1) ? 2 : 1))
                 : 0;
         if (val1 != val2)
             return (val2 - val1) | 0;  /* bigger is better */
 
         /* Sort by greasing.  This will put the objects in degreasing order. */
-        val1 = cptr.ldBits(cptr.add(obj1, $obj_greased), 1, 1, 0) | 0;
-        val2 = cptr.ldBits(cptr.add(obj2, $obj_greased), 1, 1, 0) | 0;
+        val1 = (cptr.ldI32o(obj1, $obj_greased) & 1) | 0;
+        val2 = (cptr.ldI32o(obj2, $obj_greased) & 1) | 0;
         if (val1 != val2)
             return (val2 - val1) | 0;  /* bigger is better */
 
@@ -1223,12 +1181,12 @@ function sortloot_cmp(vptr1, vptr2) {
         /* Sort by erodeproofing.  Map known-invulnerable to 1, and both
            known-vulnerable and unknown-vulnerability to 0, because that's
            how they're displayed. */
-        val1 = cptr.ldBits(cptr.add(obj1, $obj_rknown), 3, 1, 0) | 0 &&
-            cptr.ldBits(cptr.add(obj1, $obj_oerodeproof), 4, 1, 0) | 0
+        val1 = (cptr.ldI32o(obj1, $obj_rknown) & 1) | 0 &&
+            (cptr.ldI32o(obj1, $obj_oerodeproof) & 1) | 0
                 ? 1
                 : 0;
-        val2 = cptr.ldBits(cptr.add(obj2, $obj_rknown), 3, 1, 0) | 0 &&
-            cptr.ldBits(cptr.add(obj2, $obj_oerodeproof), 4, 1, 0) | 0
+        val2 = (cptr.ldI32o(obj2, $obj_rknown) & 1) | 0 &&
+            (cptr.ldI32o(obj2, $obj_oerodeproof) & 1) | 0
                 ? 1
                 : 0;
         if (val1 != val2)
@@ -1238,23 +1196,17 @@ function sortloot_cmp(vptr1, vptr2) {
            below the range of obj->spe.  oc_uses_known means that obj->known
            matters, which usually indirectly means that obj->spe is relevant.
            Lots of objects use obj->spe for some other purpose (see obj.h). */
-        if (cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(obj1, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_uses_known
-            ),
-            2,
-            1,
-            0
-        ) |
+        if ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(obj1, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_uses_known
+        ) &
+            1) |
             0 &&
                 cptr.ld1so(obj1, $obj_oclass) != NHC.FOOD_CLASS) {
-            val1 = cptr.ldBits(cptr.add(obj1, $obj_known), 0, 1, 0) | 0
-                    ? cptr.ld1so(obj1, $obj_spe)
-                    : -1000;
-            val2 = cptr.ldBits(cptr.add(obj2, $obj_known), 0, 1, 0) | 0
-                    ? cptr.ld1so(obj2, $obj_spe)
-                    : -1000;
+            val1 = (cptr.ldI32o(obj1, $obj_known) & 1) | 0 ? cptr.ld1so(obj1, $obj_spe) : -1000;
+            val2 = (cptr.ldI32o(obj2, $obj_known) & 1) | 0 ? cptr.ld1so(obj2, $obj_spe) : -1000;
             if (val1 != val2)
                 return (val2 - val1) | 0;  /* bigger is better */
         }
@@ -1326,7 +1278,7 @@ export function sortloot(olist, mode, by_nexthere, filterfunc) {
     let augment_filter;
 
     for (n = 0, o = cptr.ldPtr(olist); o; o = by_nexthere ? cptr.ldPtro(o, $obj_v) : cptr.ldPtr(o))
-        n = ((n + 1) >>> 0);
+        ++n;
     /* note: if there is a filter function, this might overallocate */
     sliarray = alloc(Number(BigInt.asUintN(
         32,
@@ -1335,7 +1287,7 @@ export function sortloot(olist, mode, by_nexthere, filterfunc) {
 
     /* the 'keep cockatrice corpses' flag is overloaded with sort mode */
     augment_filter = schar((((mode & NHM.SORTLOOT_PETRIFY) >>> 0) ? 1 : 0));
-    mode = (mode & 4294967263) >>> 0;  /* remove flag, leaving mode */
+    mode &= 4294967263;  /* remove flag, leaving mode */
     /* populate aliarray[0..n-1] */
     for (
         i = 0,
@@ -1356,7 +1308,7 @@ export function sortloot(olist, mode, by_nexthere, filterfunc) {
         cptr.memcpy(cptr.add(sliarray, i, $sizeof_Loot), __static_sortloot_zerosli, 24);
         cptr.stPtro(sliarray, i, o, $sizeof_Loot),
                 cptr.stI32o2(sliarray, i, $sizeof_Loot, $sortloot_item_indx, i | 0);
-        i = ((i + 1) >>> 0);
+        ++i;
     }
     n = i;
     /* add a terminator so that we don't have to pass 'n' back to caller */
@@ -1370,7 +1322,7 @@ export function sortloot(olist, mode, by_nexthere, filterfunc) {
         nh_deterministic_qsort((sliarray), BigInt((n) >>> 0), 24n, (sortloot_cmp));
         cptr.stI32o(gs, $instance_globals_s_sortlootmode, 0);  /* reset static mode flags */
         /* if sortloot_cmp formatted any objects, discard their strings now */
-        for (i = 0; i < n; i = ((i + 1) >>> 0))
+        for (i = 0; i < n; ++i)
             if (cptr.ldPtro2(sliarray, i, $sizeof_Loot, $sortloot_item_str))
                 cptr.free(cptr.ldPtro2(sliarray, i, $sizeof_Loot, $sortloot_item_str)),
                         cptr.stPtro2(sliarray, i, $sizeof_Loot, $sortloot_item_str, null);
@@ -1488,7 +1440,7 @@ export function merge_choice(objlist, obj) {
     /* if this is an item on the shop floor, the attributes it will
        have when carried are different from what they are now; prevent
        that from eliciting an incorrect result from mergable() */
-    save_nocharge = cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0);
+    save_nocharge = (cptr.ldI32o(obj, $obj_no_charge) & 1);
     if (cptr.eq(objlist, cptr.ldPtro(gi, $instance_globals_i_invent)) &&
             cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR &&
             (shkp = shop_keeper(inside_shop(
@@ -1496,8 +1448,8 @@ export function merge_choice(objlist, obj) {
                 cptr.ldI16o(obj, $obj_oy)
             ))) !==
                 null) {
-        if (cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0))
-            cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 0);
+        if ((cptr.ldI32o(obj, $obj_no_charge) & 1))
+            cptr.stI32o(obj, $obj_no_charge, 0);
         else if (inhishop(shkp))
             return null;
     }
@@ -1507,7 +1459,7 @@ export function merge_choice(objlist, obj) {
             break;
         objlist = cptr.ldPtr(objlist);
     } while (objlist);
-    cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, save_nocharge);
+    cptr.stI32o(obj, $obj_no_charge, save_nocharge);
     return objlist;
 }
 
@@ -1535,8 +1487,7 @@ export function merged(potmp, pobj) {
          * absorb routine, which uses weight rather than quantity
          * to adjust for proportion (glob quantity is always 1).
          */
-        if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) &&
-                !cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0))
+        if (!(cptr.ldI32o(obj, $obj_lamplit) & 1) && !(cptr.ldI32o(obj, $obj_globby) & 1))
             cptr.stI64o(
                 otmp,
                 $obj_age,
@@ -1548,7 +1499,7 @@ export function merged(potmp, pobj) {
                     (BigInt.asIntN(64, cptr.ldI64o(otmp, $obj_quan) + cptr.ldI64o(obj, $obj_quan)))
             );
 
-        if (!cptr.ldBits(cptr.add(otmp, $obj_globby), 0, 1, 0))
+        if (!(cptr.ldI32o(otmp, $obj_globby) & 1))
             cptr.stI64o(
                 otmp,
                 $obj_quan,
@@ -1556,8 +1507,7 @@ export function merged(potmp, pobj) {
             );
         /* temporary special case for gold objects!!!! */
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
-            cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0),
-                    cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, 0);
+            cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0), cptr.stI32o(otmp, $obj_bknown, 0);
         else if (!Is_pudding(otmp))
             cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
         if (!has_oname(otmp) && has_oname(obj))
@@ -1567,12 +1517,12 @@ export function merged(potmp, pobj) {
             );
         obj_extract_self(obj);
 
-        if (cptr.ldBits(cptr.add(obj, $obj_pickup_prev), 4, 1, 0) | 0 &&
+        if ((cptr.ldI32o(obj, $obj_pickup_prev) & 1) | 0 &&
                 cptr.ld1so(otmp, $obj_where) == NHM.OBJ_INVENT)
-            cptr.stBits(cptr.add(otmp, $obj_pickup_prev), 4, 1, 0, 1);
+            cptr.stI32o(otmp, $obj_pickup_prev, 1);
 
         /* really should merge the timeouts */
-        if (cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0))
+        if ((cptr.ldI32o(obj, $obj_lamplit) & 1))
             obj_merge_light_sources(obj, otmp);
         if (cptr.ldI16o(obj, $obj_timed))
             obj_stop_timers(obj);  /* follows lights */
@@ -1583,20 +1533,19 @@ export function merged(potmp, pobj) {
            previously identified in that dimension, and if the
            identification states don't match, one of them must have
            previously been identified */
-        if ((cptr.ldBits(cptr.add(obj, $obj_known), 0, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_known), 0, 1, 0) | 0)) {
-            cptr.stBits(cptr.add(otmp, $obj_known), 0, 1, 0, 1);
+        if (((cptr.ldI32o(obj, $obj_known) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_known) & 1) | 0)) {
+            cptr.stI32o(otmp, $obj_known, 1);
             discovered = 1;
         }
-        if ((cptr.ldBits(cptr.add(obj, $obj_rknown), 3, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_rknown), 3, 1, 0) | 0)) {
-            cptr.stBits(cptr.add(otmp, $obj_rknown), 3, 1, 0, 1);
-            if (cptr.ldBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0))
+        if (((cptr.ldI32o(obj, $obj_rknown) & 1) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_rknown) & 1) | 0)) {
+            cptr.stI32o(otmp, $obj_rknown, 1);
+            if ((cptr.ldI32o(otmp, $obj_oerodeproof) & 1))
                 discovered = 1;
         }
-        if ((cptr.ldBits(cptr.add(obj, $obj_bknown), 2, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_bknown), 2, 1, 0) | 0)) {
-            cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, 1);
+        if (((cptr.ldI32o(obj, $obj_bknown) & 1) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_bknown) & 1) | 0)) {
+            cptr.stI32o(otmp, $obj_bknown, 1);
             if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
                 discovered = 1;
         }
@@ -1638,12 +1587,12 @@ export function merged(potmp, pobj) {
            the same zap from affecting the new combined stack when it hits
            objects at the monster's spot (but also in case we're called by
            code that's using obj->bypass to track 'already processed') */
-        if (cptr.ldBits(cptr.add(obj, $obj_bypass), 3, 1, 0))
-            cptr.stBits(cptr.add(otmp, $obj_bypass), 3, 1, 0, 1);
+        if ((cptr.ldI32o(obj, $obj_bypass) & 1))
+            cptr.stI32o(otmp, $obj_bypass, 1);
 
         /* handle puddings a bit differently; absorption will free the
            other object automatically so we can just return out from here */
-        if (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0)) {
+        if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
             pudding_merge_message(otmp, obj);
             obj_absorb(potmp, pobj);
             return 1;
@@ -1655,8 +1604,8 @@ export function merged(potmp, pobj) {
            unidentified by monsters very frequently). */
         if (discovered &&
                 cptr.ld1so(otmp, $obj_where) == NHM.OBJ_INVENT &&
-                (cptr.ldBits(cptr.add(obj, $obj_how_lost), 0, 3, 0) | 0) != NHM.LOST_THROWN &&
-                (cptr.ldBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0) | 0) != NHM.LOST_THROWN) {
+                ((cptr.ldI32o(obj, $obj_how_lost) & 7) | 0) != NHM.LOST_THROWN &&
+                ((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) != NHM.LOST_THROWN) {
             pline(__s_you_learn_more_about_your_items_by);
         }
 
@@ -1680,30 +1629,30 @@ export function addinv_core1(obj) {
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
         cptr.st1(disp, 1);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
+        if ((cptr.ldI32o(u, $you_uhave) & 1))
             impossible(__s_already_have_amulet);
-        cptr.stBits(cptr.add(u, $you_uhave), 0, 1, 0, 1);
+        cptr.stI32o(u, $you_uhave, 1);
         record_achievement(NHC.ACH_AMUL);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0))
+        if ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1))
             impossible(__s_already_have_candelabrum);
-        cptr.stBits(cptr.add(u, $you_uhave), 3, 1, 0, 1);
+        cptr.stI32o(u, $you_uhave + $u_have_menorah, 1);
         record_achievement(NHC.ACH_CNDL);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING) {
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0))
+        if ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1))
             impossible(__s_already_have_silver_bell);
-        cptr.stBits(cptr.add(u, $you_uhave), 1, 1, 0, 1);
+        cptr.stI32o(u, $you_uhave + $u_have_bell, 1);
         record_achievement(NHC.ACH_BELL);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 2, 1, 0))
+        if ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1))
             impossible(__s_already_have_the_book);
-        cptr.stBits(cptr.add(u, $you_uhave), 2, 1, 0, 1);
+        cptr.stI32o(u, $you_uhave + $u_have_book, 1);
         record_achievement(NHC.ACH_BOOK);
     } else if (cptr.ld1so(obj, $obj_oartifact)) {
         if (is_quest_artifact(obj)) {
-            if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0))
+            if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
                 impossible(__s_already_have_quest_artifact);
-            cptr.stBits(cptr.add(u, $you_uhave), 4, 1, 0, 1);
+            cptr.stI32o(u, $you_uhave + $u_have_questart, 1);
             artitouch(obj);
         }
         set_artifact_intrinsic(obj, 1, 4096n);
@@ -1711,16 +1660,15 @@ export function addinv_core1(obj) {
 
     /* "special achievements"; revealed in end of game disclosure and
        dumplog, originally just recorded in XLOGFILE */
-    if ((cptr.ldI32o((obj), $obj_o_id) >>> 0 == cptr.ldI32o(svc, $context_info_achieveo) >>> 0)) {
+    if ((cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo))) {
         record_achievement(NHC.ACH_MINE_PRIZE);
         cptr.stI32o(svc, $context_info_achieveo, 0);  /* done w/ luckstone o_id */
-        cptr.stBits(cptr.add(obj, $obj_nomerge), 7, 1, 0, 0);  /* was set in create_object(sp_lev.c) */
-    } else if ((cptr.ldI32o((obj), $obj_o_id) >>> 0 ==
-            cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid) >>>
-                0)) {
+        cptr.stI32o(obj, $obj_nomerge, 0);  /* was set in create_object(sp_lev.c) */
+    } else if ((cptr.ldI32o((obj), $obj_o_id) ==
+            cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid))) {
         record_achievement(NHC.ACH_SOKO_PRIZE);
         cptr.stI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid, 0);  /* done w/ bag/amulet o_id */
-        cptr.stBits(cptr.add(obj, $obj_nomerge), 7, 1, 0, 0);  /* (got set in sp_lev.c) */
+        cptr.stI32o(obj, $obj_nomerge, 0);  /* (got set in sp_lev.c) */
     }
 }
 
@@ -1756,15 +1704,13 @@ export function addinv_core2(obj) {
             cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS &&
             cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_BLANK_PAPER &&
             !Blind() &&
-            !cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            )) {
+            !(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                1)) {
         observe_object(obj);
         pline(__s_you_decipher_the_label_on_s, yname(obj));
         discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1);
@@ -1801,17 +1747,16 @@ function addinv_core0(obj, other_obj, update_perm_invent) {
 
         if (cptr.ld1so(obj.v, $obj_where) != NHM.OBJ_FREE)
             panic(__s_addinv_obj_not_free);
-        if ((cptr.ldBits(cptr.add(obj.v, $obj_how_lost), 0, 3, 0) | 0) == NHM.LOST_EXPLODING)
+        if (((cptr.ldI32o(obj.v, $obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING)
             return (null);
 
         /* normally addtobill() clears no_charge when items in a shop are
            picked up, but won't do so if the shop has become untended */
-        cptr.stBits(cptr.add(obj.v, $obj_no_charge), 3, 1, 0, 0);  /* should not be set in hero's invent */
+        cptr.stI32o(obj.v, $obj_no_charge, 0);  /* should not be set in hero's invent */
         if ((cptr.ldPtro((obj.v), $obj_cobj) !== null))
             picked_container(obj.v);  /* clear no_charge */
-        obj_was_thrown = schar(((cptr.ldBits(cptr.add(obj.v, $obj_how_lost), 0, 3, 0) | 0) ==
-                NHM.LOST_THROWN));
-        cptr.stBits(cptr.add(obj.v, $obj_how_lost), 0, 3, 0, NHM.LOST_NONE);
+        obj_was_thrown = schar((((cptr.ldI32o(obj.v, $obj_how_lost) & 7) | 0) == NHM.LOST_THROWN));
+        cptr.stI32o(obj.v, $obj_how_lost, NHM.LOST_NONE);
 
         if (cptr.ld1so(gl, $instance_globals_l_loot_reset_justpicked)) {
             cptr.st1o(gl, $instance_globals_l_loot_reset_justpicked, 0);
@@ -1883,7 +1828,7 @@ function addinv_core0(obj, other_obj, update_perm_invent) {
                 (throwing_weapon(obj.v) || is_ammo(obj.v)))
             setuqwep(obj.v);
     }
-    cptr.stBits(cptr.add(obj.v, $obj_pickup_prev), 4, 1, 0, 1);
+    cptr.stI32o(obj.v, $obj_pickup_prev, 1);
     addinv_core2(obj.v);  /* handle extrinsics conferred by carrying obj */
     carry_obj_effects(obj.v);  /* carrying affects the obj */
     if (update_perm_invent)
@@ -1914,11 +1859,11 @@ export function addinv_before(obj, other_obj) {
 /** C ref: invent.c:1169 — @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function addinv_nomerge(obj) {
     let result;
-    let save_nomerge = cptr.ldBits(cptr.add(obj, $obj_nomerge), 7, 1, 0);
+    let save_nomerge = (cptr.ldI32o(obj, $obj_nomerge) & 1);
 
-    cptr.stBits(cptr.add(obj, $obj_nomerge), 7, 1, 0, 1);
+    cptr.stI32o(obj, $obj_nomerge, 1);
     result = addinv(obj);
-    cptr.stBits(cptr.add(obj, $obj_nomerge), 7, 1, 0, save_nomerge);
+    cptr.stI32o(obj, $obj_nomerge, save_nomerge);
     return result;
 }
 
@@ -1932,7 +1877,7 @@ export function addinv_nomerge(obj) {
 export function carry_obj_effects(obj) {
     /* Cursed figurines can spontaneously transform when carried. */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE) {
-        if (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 &&
+        if ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 &&
                 cptr.ldI32o(obj, $obj_corpsenm) != NHC.NON_PM &&
                 !dead_species(cptr.ldI32o(obj, $obj_corpsenm), 1)) {
             attach_fig_transform_timeout(obj);
@@ -1964,7 +1909,7 @@ export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
         if (cptr.ld1so(obj, $obj_oartifact)) {
             /* place_object may change these */
             let crysknife = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.CRYSKNIFE));
-            let oerode = cptr.ldBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0) | 0;
+            let oerode = (cptr.ldI32o(obj, $obj_oerodeproof) & 1) | 0;
             let wasUpolyd = schar((cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_umonster)));
 
             /* in case touching this object turns out to be fatal */
@@ -1985,11 +1930,11 @@ export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
             obj_extract_self(obj);
             if (crysknife) {
                 cptr.stI16o(obj, $obj_otyp, NHC.CRYSKNIFE);
-                cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, oerode >>> 0);
+                cptr.stI32o(obj, $obj_oerodeproof, oerode >>> 0);
             }
         }
         if (Fumbling()) {
-            cptr.stBits(cptr.add(obj, $obj_nomerge), 7, 1, 0, 1);
+            cptr.stI32o(obj, $obj_nomerge, 1);
             /* dropping expects obj to be in invent; since it's going to be
                dropped, avoid perminv update when temporarily adding it */
             obj = addinv_core0(obj, null, 0);
@@ -2019,7 +1964,7 @@ export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
             obj = addinv_core0(obj, null, 0);
             if (inv_cnt(0) > NHC.invlet_basic ||
                     ((cptr.ldI16o(obj, $obj_otyp) != NHC.LOADSTONE ||
-                        !cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)) &&
+                        !(cptr.ldI32o(obj, $obj_cursed) & 1)) &&
                         near_capacity() > prev_encumbr)) {
                 /* undo any merge which took place */
                 if (cptr.ldI64o(obj, $obj_quan) > oquan)
@@ -2044,8 +1989,8 @@ export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
     }
     if (drop_fmt)
         pline(drop_fmt, drop_arg);
-    cptr.stBits(cptr.add(obj, $obj_nomerge), 7, 1, 0, 0);
-    if (can_reach_floor(1) || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
+    cptr.stI32o(obj, $obj_nomerge, 0);
+    if (can_reach_floor(1) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
         dropx(obj);
     } else {
         freeinv(obj);
@@ -2068,7 +2013,7 @@ export function useup(obj) {
     /* Note:  This works correctly for containers because they (containers)
        don't merge. */
     if (cptr.ldI64o(obj, $obj_quan) > 1n) {
-        cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);  /* no longer in use */
+        cptr.stI32o(obj, $obj_in_use, 0);  /* no longer in use */
         (cptr.stI64o(obj, $obj_quan, cptr.ldI64o(obj, $obj_quan) + -1n)) - (-1n);
         cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
         update_inventory();
@@ -2083,7 +2028,7 @@ export function consume_obj_charge(obj, maybe_unpaid) {
     if (maybe_unpaid)
         check_unpaid(obj);
     cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) - 1);
-    if (cptr.ldBits(cptr.add(obj, $obj_known), 0, 1, 0))
+    if ((cptr.ldI32o(obj, $obj_known) & 1))
         update_inventory();
 }
 
@@ -2100,26 +2045,26 @@ export function freeinv_core(obj) {
         cptr.st1(disp, 1);
         return;
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
-        if (!cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
+        if (!(cptr.ldI32o(u, $you_uhave) & 1))
             impossible(__s_don_t_have_amulet);
-        cptr.stBits(cptr.add(u, $you_uhave), 0, 1, 0, 0);
+        cptr.stI32o(u, $you_uhave, 0);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
-        if (!cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0))
+        if (!(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1))
             impossible(__s_don_t_have_candelabrum);
-        cptr.stBits(cptr.add(u, $you_uhave), 3, 1, 0, 0);
+        cptr.stI32o(u, $you_uhave + $u_have_menorah, 0);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING) {
-        if (!cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0))
+        if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1))
             impossible(__s_don_t_have_silver_bell);
-        cptr.stBits(cptr.add(u, $you_uhave), 1, 1, 0, 0);
+        cptr.stI32o(u, $you_uhave + $u_have_bell, 0);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
-        if (!cptr.ldBits(cptr.add(u, $you_uhave), 2, 1, 0))
+        if (!(cptr.ldI32o(u, $you_uhave + $u_have_book) & 1))
             impossible(__s_don_t_have_the_book);
-        cptr.stBits(cptr.add(u, $you_uhave), 2, 1, 0, 0);
+        cptr.stI32o(u, $you_uhave + $u_have_book, 0);
     } else if (cptr.ld1so(obj, $obj_oartifact)) {
         if (is_quest_artifact(obj)) {
-            if (!cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0))
+            if (!(cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
                 impossible(__s_don_t_have_quest_artifact);
-            cptr.stBits(cptr.add(u, $you_uhave), 4, 1, 0, 0);
+            cptr.stI32o(u, $you_uhave + $u_have_questart, 0);
         }
         set_artifact_intrinsic(obj, 0, 4096n);
     }
@@ -2143,7 +2088,7 @@ export function freeinv_core(obj) {
 /** C ref: invent.c:1403 — @param {CPtr<struct obj>} obj */
 export function freeinv(obj) {
     extract_nobj(obj, cptr.add(gi, $instance_globals_i_invent));
-    cptr.stBits(cptr.add(obj, $obj_pickup_prev), 4, 1, 0, 0);
+    cptr.stI32o(obj, $obj_pickup_prev, 0);
     freeinv_core(obj);
     update_inventory();
 }
@@ -2189,7 +2134,7 @@ export function delobj_core(obj, force) {
          * are indestructible via drawbridges, and exploding
          * chests, and golem creation, and ...
          */
-        cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);  /* in case caller has set this to 1 */
+        cptr.stI32o(obj, $obj_in_use, 0);  /* in case caller has set this to 1 */
         return;
     }
     update_map = schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR));
@@ -2343,7 +2288,7 @@ export function o_on(id, objchn) {
     let temp;
 
     while (objchn) {
-        if (cptr.ldI32o(objchn, $obj_o_id) >>> 0 == id)
+        if (cptr.ldI32o(objchn, $obj_o_id) == id)
             return objchn;
         if ((cptr.ldPtro((objchn), $obj_cobj) !== null) &&
                 (temp = o_on(id, cptr.ldPtro(objchn, $obj_cobj))))
@@ -2403,7 +2348,7 @@ function compactify(buf) {
             if (ilet1 == ((ilet2 + 1) | 0))
                 cptr.st1o(buf, (i2 - 1) | 0, ilet1 = 45);
             else if (ilet2 == 45) {
-                cptr.st1o(buf, (i2 - 1) | 0, ilet1 = schar(ilet1 + 1));
+                cptr.st1o(buf, (i2 - 1) | 0, ++ilet1);
                 cptr.st1o(buf, i2, cptr.ld1so(buf, ++i1));
                 ilet = cptr.ld1so(buf, i1);
                 continue;
@@ -2432,7 +2377,7 @@ function compactify(buf) {
 /** C ref: invent.c:1664 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function splittable(obj) {
     return schar((!((cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE &&
-        cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0) ||
+        (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) ||
             (cptr.eq(obj, uwep.v) && welded(uwep.v)))));
 }
 
@@ -2564,9 +2509,9 @@ export function getobj(word, obj_ok, ctrlflags) {
             cmdq,
             need_more_cq,
             v,
-            tmpcnt = cptr.box(0, "i64"),
+            tmpcnt = cptr.box(0),
             allowed_choices,
-            ctmp = cptr.box(0, "i64"),
+            ctmp = cptr.box(0),
             menuquery,
             handsbuf,
             coins;
@@ -3029,7 +2974,7 @@ export function getobj(word, obj_ok, ctrlflags) {
                     if (splittable(otmp))
                         otmp = splitobj(otmp, cnt);
                     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOADSTONE &&
-                            cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0)
+                            (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)
                         /* kludge for canletgo()'s can't-drop-this message */
                         cptr.stI32o(otmp, $obj_corpsenm, Number(BigInt.asIntN(32, cnt)));
                 }
@@ -3048,7 +2993,7 @@ export function silly_thing(word, otmp) {
     if (!strcmp(word, __s_call) &&
             (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR ||
                 (cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR &&
-                    !cptr.ldBits(cptr.add(otmp, $obj_known), 0, 1, 0))))
+                    !(cptr.ldI32o(otmp, $obj_known) & 1))))
         pline_The(__s_amulet_doesn_t_like_being_called_names);
     else
         pline(cptr.ldPtro(c_common_strings, $c_common_strings_c_silly_thing_to), word);
@@ -3062,7 +3007,7 @@ function ckvalidcat(otmp) {
 
 /** C ref: invent.c:2143 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function ckunpaid(otmp) {
-    return (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) | 0 ||
+    return ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 ||
         ((cptr.ldPtro((otmp), $obj_cobj) !== null) && count_unpaid(cptr.ldPtro(otmp, $obj_cobj)))
             ? 1
             : 0);
@@ -3332,7 +3277,7 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
          * Fix for bug C331-1 reported by Irina Rempt-Drijfhout.
          */
         if (combo && allflag && resultflags)
-            cptr.stI32(resultflags, (cptr.ldI32(resultflags) >>> 0 | NHM.ALL_FINISHED) >>> 0);
+            cptr.stI32(resultflags, cptr.ldI32(resultflags) | NHM.ALL_FINISHED);
         return cnt;
     }
 }
@@ -3402,7 +3347,7 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
     __lbl_nextclass: while (true) {
         ilet = 96;
         if (cptr.ldPtr(objchn) && cptr.ld1so((cptr.ldPtr(objchn)), $obj_oclass) == NHC.COIN_CLASS)
-            ilet = schar(ilet + -1);  /* extra iteration */
+            ilet--;  /* extra iteration */
         /*
          * Multiple Drop can change the gi.invent chain while it operates
          * (dropping a burning potion of oil while levitating creates
@@ -3422,7 +3367,7 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
             else if (ilet == 90)
                 ilet = 35;  /* '#' */
             else
-                ilet = schar(ilet + 1);
+                ilet++;
             if (olets && cptr.ld1s(olets) && cptr.ld1so(otmp, $obj_oclass) != cptr.ld1s(olets))
                 continue;
             if (takeoff && !is_worn(otmp))
@@ -3856,15 +3801,9 @@ export function reroll_menu() {
 /** C ref: invent.c:2624 — @param {CPtr<struct obj>} obj */
 export function set_cknown_lknown(obj) {
     if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE)
-        cptr.stBits(
-            cptr.add(obj, $obj_cknown),
-            4,
-            1,
-            0,
-            cptr.stBits(cptr.add(obj, $obj_lknown), 5, 1, 0, 1)
-        );
+        cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
     else if (cptr.ldI16o(obj, $obj_otyp) == NHC.TIN)
-        cptr.stBits(cptr.add(obj, $obj_cknown), 4, 1, 0, 1);
+        cptr.stI32o(obj, $obj_cknown, 1);
     /* TODO? cknown might be extended to candy bar, where it would mean that
        wrapper's text was known which in turn indicates candy bar's content */
     return;
@@ -3877,18 +3816,10 @@ export function fully_identify_obj(otmp) {
     if (cptr.ld1so(otmp, $obj_oartifact))
         discover_artifact(i16(cptr.ld1so(otmp, $obj_oartifact)));
     observe_object(otmp);
-    cptr.stBits(
-        cptr.add(otmp, $obj_known),
-        0,
-        1,
-        0,
-        cptr.stBits(
-            cptr.add(otmp, $obj_bknown),
-            2,
-            1,
-            0,
-            cptr.stBits(cptr.add(otmp, $obj_rknown), 3, 1, 0, 1)
-        )
+    cptr.stI32o(
+        otmp,
+        $obj_known,
+        cptr.stI32o(otmp, $obj_bknown, cptr.stI32o(otmp, $obj_rknown, 1))
     );
     set_cknown_lknown(otmp);  /* set otmp->{cknown,lknown} if applicable */
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG && cptr.ldI32o(otmp, $obj_corpsenm) != NHC.NON_PM)
@@ -4009,8 +3940,8 @@ export function learn_unseen_invent() {
         return;  /* sanity check */
 
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
-        if (cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0) | 0 &&
-                (cptr.ldBits(cptr.add(otmp, $obj_bknown), 2, 1, 0) | 0 ||
+        if ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 &&
+                ((cptr.ldI32o(otmp, $obj_bknown) & 1) | 0 ||
                     !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC)) &&
                 (cptr.ld1so(otmp, $obj_oclass) != NHC.SCROLL_CLASS ||
                     !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
@@ -4292,7 +4223,7 @@ function find_unpaid(list, last_found) {
     let obj;
 
     while (list) {
-        if (cptr.ldBits(cptr.add(list, $obj_unpaid), 2, 1, 0)) {
+        if ((cptr.ldI32o(list, $obj_unpaid) & 1)) {
             if (cptr.ldPtr(last_found)) {
                 /* still looking for previous unpaid object */
                 if (cptr.eq(list, cptr.ldPtr(last_found)))
@@ -4337,8 +4268,8 @@ const __static_display_pickinv_only_carrying_gold = cptr.bytes("Only carrying go
  */
 function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cnt) {
     let otmp;
-    let wizid_fakeobj = cptr.alloc(112);
-    let inuse_fakeobj = cptr.alloc(112);
+    let wizid_fakeobj = cptr.alloc(216);
+    let inuse_fakeobj = cptr.alloc(216);
     let ilet;
     let ret;
     let formattedobj;
@@ -4468,7 +4399,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
             ? NHM.SORTLOOT_LOOT
             : NHM.SORTLOOT_INVLET) >>> 0;
     if (cptr.ld1so(flags, $flag_sortpack))
-        sortflags = (sortflags | NHM.SORTLOOT_PACK) >>> 0;
+        sortflags |= NHM.SORTLOOT_PACK;
     save_flags_sortpack = cptr.ld1so(flags, $flag_sortpack);
     if (inuse_only) {
         cptr.st1o(flags, $flag_sortpack, 0);
@@ -4482,7 +4413,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
              * in invent for it to be sorted into desired position.
              * It will need custom formatting below.
              */
-            cptr.memcpy(inuse_fakeobj, cg, 112);  /* STRANGE_OBJECT, ILLOBJ_CLASS */
+            cptr.memcpy(inuse_fakeobj, cg, 216);  /* STRANGE_OBJECT, ILLOBJ_CLASS */
             cptr.st1o(inuse_fakeobj, $obj_invlet, 45);  /* '-' */
             cptr.stI64o(inuse_fakeobj, $obj_owornmask, 256n);  /* inuse_classify needs this */
             cptr.st1o(inuse_fakeobj, $obj_where, NHM.OBJ_INVENT);  /* is_inuse filter needs this */
@@ -5245,7 +5176,7 @@ export function count_unpaid(list) {
     let count = 0;
 
     while (list) {
-        if (cptr.ldBits(cptr.add(list, $obj_unpaid), 2, 1, 0))
+        if ((cptr.ldI32o(list, $obj_unpaid) & 1))
             count++;
         if ((cptr.ldPtro((list), $obj_cobj) !== null))
             count = (count + count_unpaid(cptr.ldPtro(list, $obj_cobj))) | 0;
@@ -5274,13 +5205,7 @@ export function count_buc(list, type, filterfunc) {
     for (; list; list = cptr.ldPtr(list)) {
         /* priests always know bless/curse state */
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
-            cptr.stBits(
-                cptr.add(list, $obj_bknown),
-                2,
-                1,
-                0,
-                (cptr.ld1so(list, $obj_oclass) != NHC.COIN_CLASS) >>> 0
-            );
+            cptr.stI32o(list, $obj_bknown, (cptr.ld1so(list, $obj_oclass) != NHC.COIN_CLASS) >>> 0);
         /* some actions exclude some or most items */
         if (filterfunc && !(filterfunc)(list))
             continue;
@@ -5292,11 +5217,11 @@ export function count_buc(list, type, filterfunc) {
             continue;
         }
         /* check whether this object matches the requested type */
-        if (!cptr.ldBits(cptr.add(list, $obj_bknown), 2, 1, 0)
+        if (!(cptr.ldI32o(list, $obj_bknown) & 1)
                 ? (type == NHM.BUC_UNKNOWN)
-                : (cptr.ldBits(cptr.add(list, $obj_blessed), 1, 1, 0) | 0
+                : ((cptr.ldI32o(list, $obj_blessed) & 1) | 0
                     ? (type == NHM.BUC_BLESSED)
-                    : (cptr.ldBits(cptr.add(list, $obj_cursed), 0, 1, 0) | 0
+                    : ((cptr.ldI32o(list, $obj_cursed) & 1) | 0
                         ? (type == NHM.BUC_CURSED)
                         : (type == NHM.BUC_UNCURSED))))
             ++count;
@@ -5331,14 +5256,8 @@ export function tally_BUCX(list, by_nexthere, bcp, ucp, ccp, xcp, ocp, jcp) {
     for (; list; list = (by_nexthere ? cptr.ldPtro(list, $obj_v) : cptr.ldPtr(list))) {
         /* priests always know bless/curse state */
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
-            cptr.stBits(
-                cptr.add(list, $obj_bknown),
-                2,
-                1,
-                0,
-                (cptr.ld1so(list, $obj_oclass) != NHC.COIN_CLASS) >>> 0
-            );
-        if (cptr.ldBits(cptr.add(list, $obj_pickup_prev), 4, 1, 0))
+            cptr.stI32o(list, $obj_bknown, (cptr.ld1so(list, $obj_oclass) != NHC.COIN_CLASS) >>> 0);
+        if ((cptr.ldI32o(list, $obj_pickup_prev) & 1))
             cptr.stI32(jcp, cptr.ldI32(jcp) + 1);
         /* coins are either uncursed or unknown based upon option setting */
         if (cptr.ld1so(list, $obj_oclass) == NHC.COIN_CLASS) {
@@ -5349,11 +5268,11 @@ export function tally_BUCX(list, by_nexthere, bcp, ucp, ccp, xcp, ocp, jcp) {
             continue;
         }
         /* ordinary items */
-        if (!cptr.ldBits(cptr.add(list, $obj_bknown), 2, 1, 0))
+        if (!(cptr.ldI32o(list, $obj_bknown) & 1))
             cptr.stI32(xcp, cptr.ldI32(xcp) + 1);
-        else if (cptr.ldBits(cptr.add(list, $obj_blessed), 1, 1, 0))
+        else if ((cptr.ldI32o(list, $obj_blessed) & 1))
             cptr.stI32(bcp, cptr.ldI32(bcp) + 1);
-        else if (cptr.ldBits(cptr.add(list, $obj_cursed), 0, 1, 0))
+        else if ((cptr.ldI32o(list, $obj_cursed) & 1))
             cptr.stI32(ccp, cptr.ldI32(ccp) + 1);
         else
             cptr.stI32(ucp, cptr.ldI32(ucp) + 1);
@@ -5377,8 +5296,8 @@ export function count_contents(container, nested, quantity, everything, newdrop)
     let count = 0n;
 
     if (!everything && !newdrop) {
-        let x = cptr.box(0, "i16");
-        let y = cptr.box(0, "i16");
+        let x = cptr.box(0);
+        let y = cptr.box(0);
 
         for (
             topc = container;
@@ -5393,8 +5312,8 @@ export function count_contents(container, nested, quantity, everything, newdrop)
         if (nested && (cptr.ldPtro((otmp), $obj_cobj) !== null))
             count += count_contents(otmp, nested, quantity, everything, newdrop);
         if (everything ||
-                cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) | 0 ||
-                (shoppy && !cptr.ldBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0)))
+                (cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 ||
+                (shoppy && !(cptr.ldI32o(otmp, $obj_no_charge) & 1)))
             count += quantity ? cptr.ldI64o(otmp, $obj_quan) : 1n;
     }
     return count;
@@ -5460,7 +5379,7 @@ function dounpaid(count, floorcount, buriedcount) {
         classcount = 0;
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
             ilet = cptr.ld1so(otmp, $obj_invlet);
-            if (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0)) {
+            if ((cptr.ldI32o(otmp, $obj_unpaid) & 1)) {
                 if (!cptr.ld1so(flags, $flag_sortpack) ||
                         cptr.ld1so(otmp, $obj_oclass) == cptr.ld1s(invlet)) {
                     if (cptr.ld1so(flags, $flag_sortpack) && !classcount) {
@@ -5504,7 +5423,7 @@ function dounpaid(count, floorcount, buriedcount) {
                 while (find_unpaid(cptr.ldPtro(otmp, $obj_cobj), marker)) {
                     totcost += (cost = unpaid_cost(marker.v, NHC.COST_NOCONTENTS));
                     contcost += cost;
-                    if (cptr.ldBits(cptr.add(otmp, $obj_cknown), 4, 1, 0)) {
+                    if ((cptr.ldI32o(otmp, $obj_cknown) & 1)) {
                         (cptr.stI32o(
                             iflags,
                             $instance_flags_suppress_price,
@@ -5522,7 +5441,7 @@ function dounpaid(count, floorcount, buriedcount) {
                         )) - (-1);
                     }
                 }
-                if (!cptr.ldBits(cptr.add(otmp, $obj_cknown), 4, 1, 0)) {
+                if (!(cptr.ldI32o(otmp, $obj_cknown) & 1)) {
                     let contbuf = new Uint8Array(256);
 
                     /* Shopkeeper knows what to charge for contents */
@@ -5578,7 +5497,7 @@ function this_type_only(obj) {
             cptr.ldI32o(gt, $instance_globals_t_this_type)));
 
     if (cptr.ldI32o(gt, $instance_globals_t_this_type) == 80) {
-        res = schar(cptr.ldBits(cptr.add(obj, $obj_pickup_prev), 4, 1, 0));
+        res = schar((cptr.ldI32o(obj, $obj_pickup_prev) & 1));
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
         /* if filtering by bless/curse state, gold is classified as
            either unknown or uncursed based on user option setting */
@@ -5589,26 +5508,26 @@ function this_type_only(obj) {
     } else {
         switch (cptr.ldI32o(gt, $instance_globals_t_this_type)) {
             case 66:
-                res = schar((cptr.ldBits(cptr.add(obj, $obj_bknown), 2, 1, 0) | 0 &&
-                    cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0
+                res = schar(((cptr.ldI32o(obj, $obj_bknown) & 1) | 0 &&
+                    (cptr.ldI32o(obj, $obj_blessed) & 1) | 0
                         ? 1
                         : 0));
                 break;
             case 85:
-                res = schar((cptr.ldBits(cptr.add(obj, $obj_bknown), 2, 1, 0) | 0 &&
-                    !(cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 ||
-                        cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0)
+                res = schar(((cptr.ldI32o(obj, $obj_bknown) & 1) | 0 &&
+                    !((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ||
+                        (cptr.ldI32o(obj, $obj_cursed) & 1) | 0)
                         ? 1
                         : 0));
                 break;
             case 67:
-                res = schar((cptr.ldBits(cptr.add(obj, $obj_bknown), 2, 1, 0) | 0 &&
-                    cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0
+                res = schar(((cptr.ldI32o(obj, $obj_bknown) & 1) | 0 &&
+                    (cptr.ldI32o(obj, $obj_cursed) & 1) | 0
                         ? 1
                         : 0));
                 break;
             case 88:
-                res = schar((!cptr.ldBits(cptr.add(obj, $obj_bknown), 2, 1, 0)));
+                res = schar((!(cptr.ldI32o(obj, $obj_bknown) & 1)));
                 break;
             default:
                 break;  /* use 'res' as-is */
@@ -5900,7 +5819,7 @@ export function dfeature_at(x, y, buf) {
     let stway = stairway_at(x, y);
 
     if (((ltyp) == NHC.DOOR)) {
-        switch (cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) {
+        switch ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) {
             case NHM.D_NODOOR:
                 cmap = NHC.S_ndoor;
                 break;  /* "doorway" */
@@ -5933,18 +5852,14 @@ export function dfeature_at(x, y, buf) {
         void cptr.sprintf(
             cptr.decay(__static_dfeature_at_altbuf),
             __s_saltar_to_s_s,
-            ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.AM_SANCTUM)
-                ? __s_high
-                : __s_empty,
+            (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_SANCTUM) ? __s_high : __s_empty,
             a_gname(),
-            align_str((schar((((((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & -9) &
-                NHM.AM_MASK) == 0)
+            align_str((schar(((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == 0)
                 ? -128
-                : (((((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & -9) & NHM.AM_MASK) ==
+                : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) ==
                     NHM.AM_LAWFUL)
                     ? NHM.A_LAWFUL
-                    : (((((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & -9) &
-                        NHM.AM_MASK)) -
+                    : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK)) -
                         2) | 0)))))
         );
         dfeature = cptr.decay(__static_dfeature_at_altbuf);
@@ -5990,7 +5905,7 @@ export function look_here(obj_cnt, lookhere_flags) {
         obj_cnt >= cptr.ldI32o(flags, $flag_pile_limit)
             ? 1
             : 0));
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         let mtmp = cptr.ldPtro(u, $you_ustuck);
 
         /*
@@ -6050,7 +5965,7 @@ export function look_here(obj_cnt, lookhere_flags) {
                 reg_damg(reg) ? __s_poison_gas : __s_vapor
             );
         if ((trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null &&
-                !cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0))
+                !(cptr.ldI32o(trap, $trap_tseen) & 1))
             trap = (null);
 
         if (reg || trap)
@@ -6058,9 +5973,7 @@ export function look_here(obj_cnt, lookhere_flags) {
                 __s_is_s_s_s_here,
                 reg ? cptr.decay(regbuf) : __s_empty,
                 (reg && trap) ? __s_and : __s_empty,
-                trap
-                    ? an(trapname(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0, 0))
-                    : __s_empty
+                trap ? an(trapname((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0, 0)) : __s_empty
             );
     }
 
@@ -6075,7 +5988,7 @@ export function look_here(obj_cnt, lookhere_flags) {
     dfeature = dfeature_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(fbuf2));
     if (dfeature &&
             !strcmp(dfeature, __s_pool_of_water) &&
-            (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0)
+            ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
         dfeature = null;
 
     if (Blind()) {
@@ -6144,7 +6057,7 @@ export function look_here(obj_cnt, lookhere_flags) {
                 skip_dfeature = 1;  /* terrain feature already identified */
         }
         trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-        if (!can_reach_floor(schar((trap && is_pit(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0))
+        if (!can_reach_floor(schar((trap && is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31))
                 ? 1
                 : 0)))) {
             pline(__s_but_you_can_t_reach_it);
@@ -6354,81 +6267,75 @@ export function mergable(otmp, obj) {
        explicitly marked to prevent merge, or if not mergable in general */
     if (cptr.eq(obj, otmp) ||
             cptr.ldI16o(obj, $obj_otyp) != cptr.ldI16o(otmp, $obj_otyp) ||
-            cptr.ldBits(cptr.add(obj, $obj_nomerge), 7, 1, 0) | 0 ||
-            cptr.ldBits(cptr.add(otmp, $obj_nomerge), 7, 1, 0) | 0 ||
-            !cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_merge
-                ),
-                1,
-                1,
-                0
-            ))
+            (cptr.ldI32o(obj, $obj_nomerge) & 1) | 0 ||
+            (cptr.ldI32o(otmp, $obj_nomerge) & 1) | 0 ||
+            !(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_merge
+            ) & 1))
         return 0;
 
     /* coins of the same kind will always merge */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         return 1;
 
-    if ((cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0) !=
-        (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0) ||
-            (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0))
+    if (((cptr.ldI32o(obj, $obj_cursed) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) ||
+            ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0))
         return 0;
 
-    if ((cptr.ldBits(cptr.add(obj, $obj_how_lost), 0, 3, 0) | 0) == NHM.LOST_EXPLODING ||
-            (cptr.ldBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0) | 0) == NHM.LOST_EXPLODING)
+    if (((cptr.ldI32o(obj, $obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING ||
+            ((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING)
         return 0;
-    if ((cptr.ldBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0) | 0) != NHM.LOST_NONE &&
-            ((cptr.ldBits(cptr.add(obj, $obj_how_lost), 0, 3, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0) | 0)))
+    if (((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) != NHM.LOST_NONE &&
+            (((cptr.ldI32o(obj, $obj_how_lost) & 7) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0)))
         return 0;
 
-    if (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0))
+    if ((cptr.ldI32o(obj, $obj_globby) & 1))
         return 1;
     /* Checks beyond this point either aren't applicable to globs
      * or don't inhibit their merger.
      */
 
-    if ((cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0) !=
-        (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) | 0) ||
+    if (((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0) ||
             cptr.ld1so(obj, $obj_spe) != cptr.ld1so(otmp, $obj_spe) ||
-            (cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0) | 0) ||
-            (cptr.ldBits(cptr.add(obj, $obj_obroken), 6, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_obroken), 6, 1, 0) | 0) ||
-            (cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_otrapped), 7, 1, 0) | 0) ||
-            (cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0) | 0))
+            ((cptr.ldI32o(obj, $obj_no_charge) & 1) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_no_charge) & 1) | 0) ||
+            ((cptr.ldI32o(obj, $obj_obroken) & 1) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_obroken) & 1) | 0) ||
+            ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0) ||
+            ((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0))
         return 0;
 
     if (cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS &&
-            (cptr.ldI32o(obj, $obj_oeaten) >>> 0 != cptr.ldI32o(otmp, $obj_oeaten) >>> 0 ||
-                (cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) | 0) !=
-                    (cptr.ldBits(cptr.add(otmp, $obj_oeroded), 0, 2, 0) | 0)))
+            (cptr.ldI32o(obj, $obj_oeaten) != cptr.ldI32o(otmp, $obj_oeaten) ||
+                ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0) !=
+                    ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0)))
         return 0;
 
-    if ((cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0) !=
-        (cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0) | 0) ||
-            ((cptr.ldBits(cptr.add(obj, $obj_bknown), 2, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_bknown), 2, 1, 0) | 0) &&
+    if (((cptr.ldI32o(obj, $obj_dknown) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0) ||
+            (((cptr.ldI32o(obj, $obj_bknown) & 1) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_bknown) & 1) | 0) &&
                 !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) &&
                 (Blind() || Hallucination())) ||
-            (cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_oeroded), 0, 2, 0) | 0) ||
-            (cptr.ldBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_oeroded2), 2, 2, 0) | 0) ||
-            (cptr.ldBits(cptr.add(obj, $obj_greased), 1, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_greased), 1, 1, 0) | 0))
+            ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0) ||
+            ((cptr.ldI32o(obj, $obj_oeroded2) & 3) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_oeroded2) & 3) | 0) ||
+            ((cptr.ldI32o(obj, $obj_greased) & 1) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_greased) & 1) | 0))
         return 0;
 
     if ((erosion_matters(obj)) &&
-            ((cptr.ldBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0) | 0) !=
-                (cptr.ldBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0) | 0) ||
-                ((cptr.ldBits(cptr.add(obj, $obj_rknown), 3, 1, 0) | 0) !=
-                    (cptr.ldBits(cptr.add(otmp, $obj_rknown), 3, 1, 0) | 0) &&
+            (((cptr.ldI32o(obj, $obj_oerodeproof) & 1) | 0) !=
+                ((cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0) ||
+                (((cptr.ldI32o(obj, $obj_rknown) & 1) | 0) !=
+                    ((cptr.ldI32o(otmp, $obj_rknown) & 1) | 0) &&
                     (Blind() || Hallucination()))))
         return 0;
 
@@ -6453,12 +6360,11 @@ export function mergable(otmp, obj) {
         return 0;
 
     /* burning potions of oil never merge */
-    if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL &&
-            cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0)
+    if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0)
         return 0;
 
     /* don't merge surcharged item with base-cost item */
-    if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0 && !same_price(obj, otmp))
+    if ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 && !same_price(obj, otmp))
         return 0;
 
     /* some additional information is always incompatible */
@@ -6494,16 +6400,14 @@ export function mergable(otmp, obj) {
         return 0;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_MAIL &&
             cptr.ld1so(obj, $obj_spe) > 0 &&
-            (u32mod(cptr.ldI32o(obj, $obj_o_id) >>> 0, 2)) !=
-                (u32mod(cptr.ldI32o(otmp, $obj_o_id) >>> 0, 2)))
+            (u32mod(cptr.ldI32o(obj, $obj_o_id), 2)) != (u32mod(cptr.ldI32o(otmp, $obj_o_id), 2)))
         return 0;
 
     /* should be moot since matching artifacts wouldn't be unique */
     if (cptr.ld1so(obj, $obj_oartifact) != cptr.ld1so(otmp, $obj_oartifact))
         return 0;
 
-    if ((cptr.ldBits(cptr.add(obj, $obj_known), 0, 1, 0) | 0) !=
-        (cptr.ldBits(cptr.add(otmp, $obj_known), 0, 1, 0) | 0) &&
+    if (((cptr.ldI32o(obj, $obj_known) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_known) & 1) | 0) &&
             (Blind() || Hallucination()))
         return 0;
 
@@ -6722,7 +6626,7 @@ function tool_being_used(obj) {
         return 0;
     /* [don't actually need to check uwep here; caller catches it] */
     return schar((cptr.eq(obj, uwep.v) ||
-        cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0 ||
+        (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ||
         (cptr.ldI16o(obj, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, $obj_corpsenm))
             ? 1
             : 0));
@@ -6801,7 +6705,7 @@ export function useupf(obj, numused) {
     }
     delobj(otmp);
     if (at_u &&
-            cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
+            (cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
@@ -6875,14 +6779,14 @@ export function let_to_name(let$, unpaid, showsym) {
                     : 0) >>> 0)
         )
     ));
-    if (len > cptr.ldI32o(gi, $instance_globals_i_invbufsiz) >>> 0) {
+    if (len > cptr.ldI32o(gi, $instance_globals_i_invbufsiz)) {
         if (cptr.ldPtro(gi, $instance_globals_i_invbuf))
             cptr.free(cptr.ldPtro(gi, $instance_globals_i_invbuf));
         cptr.stI32o(gi, $instance_globals_i_invbufsiz, (len + 10) >>> 0);  /* add slop to reduce incremental realloc */
         cptr.stPtro(
             gi,
             $instance_globals_i_invbuf,
-            cptr.byteView(alloc(cptr.ldI32o(gi, $instance_globals_i_invbufsiz) >>> 0))
+            alloc(cptr.ldI32o(gi, $instance_globals_i_invbufsiz))
         );
     }
     if (unpaid)
@@ -7093,7 +6997,7 @@ const __static_adjust_split_Amount = cptr.bytes("Amount to split from current st
 /** C ref: invent.c:5008 @returns {CInt} */
 export function adjust_split() {
     let obj;
-    let splitamount = cptr.box(0n, "i64");
+    let splitamount = cptr.box(0n);
     let let$;
     let dig = 0;
 
@@ -7188,9 +7092,9 @@ function doorganize_core(obj) {
         1
     );
     for (ix = 1, let$ = 97; let$ <= 122; )
-        cptr.st1o(cptr.decay(lets), ix++, ((old_) => (let$ = schar(old_ + 1), old_))(let$), 1);
+        cptr.st1o(cptr.decay(lets), ix++, let$++, 1);
     for (let$ = 65; let$ <= 90; )
-        cptr.st1o(cptr.decay(lets), ix++, ((old_) => (let$ = schar(old_ + 1), old_))(let$), 1);
+        cptr.st1o(cptr.decay(lets), ix++, let$++, 1);
     cptr.st1o(cptr.decay(lets), ((1 + NHC.invlet_basic) | 0), 32, 1);
     cptr.st1o(cptr.decay(lets), 54n, 0, 1);
     /* for floating inv letters, truncate list after the first open slot */
@@ -7440,8 +7344,7 @@ export function display_minventory(mon, dflags, title) {
     let selected = cptr.box(null);
     let do_all = (dflags & NHM.MINV_ALL) != 0;
     let incl_hero = (do_all &&
-        (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
-            (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))
+        ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))
             ? 1
             : 0);
     let have_inv = (cptr.ldPtro(mon, $monst_minvent) !== null);
@@ -7519,7 +7422,7 @@ function cinv_doname(obj) {
     /* 'result' is an obuf[] but might point into the middle (&buf[PREFIX])
        rather than the beginning and we don't have access to that;
        assume that there is at least QBUFSZ available when reusing it */
-    if (cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0) | 0 &&
+    if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 &&
             BigInt.asUintN(64, cptr.strlen(result) + 9n) <= 128n) {
         /* obj->lknown has been set before calling us so either "locked" or
            "unlocked" should always be present (for a trapped container) */
@@ -7543,7 +7446,7 @@ function cinv_ansimpleoname(obj) {
     let result = ansimpleoname(obj);
 
     /* result is an obuf[] so we know this will always fit */
-    if (cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0)) {
+    if ((cptr.ldI32o(obj, $obj_otrapped) & 1)) {
         if (cptr.strncmp(result, __s_a_sp, 2n))
             void strsubst(result, __s_a_sp, __s_a_trapped);
         else if (cptr.strncmp(result, __s_an__2, 3n))
@@ -7593,7 +7496,7 @@ export function display_cinventory(obj) {
         cptr.free(selected.v);
     } else
         ret = null;
-    cptr.stBits(cptr.add(obj, $obj_cknown), 4, 1, 0, 1);
+    cptr.stI32o(obj, $obj_cknown, 1);
     return ret;
 }
 

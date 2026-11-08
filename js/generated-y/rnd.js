@@ -89,8 +89,7 @@ function sgn(n) { return n < 0 ? -1 : (n !== 0 ? 1 : 0); }
 // throw when no seed is available rather than silently using a made-up one.
 function sys_random_seed() {
   const envSeed = (typeof globalThis.getenv === 'function') && globalThis.getenv('NETHACK_SEED');
-  // strtoul, as in the recorder: a value past 2^64 saturates, and BigInt() would not.
-  if (envSeed) return globalThis.strtoul(envSeed, null, 10);
+  if (envSeed) return BigInt(cptr.cstr(envSeed));
   throw new Error('sys_random_seed: NETHACK_SEED not set');
 }
 
@@ -268,9 +267,9 @@ export function init_isaac64(seed, fn) {
     if (rngindx < 0)
         panic(__s_bad_rng_function_passed_to_init_isaac64);
 
-    for (i = 0; BigInt(i >>> 0) < 8n; i = ((i + 1) >>> 0)) {
+    for (i = 0; BigInt(i >>> 0) < 8n; i++) {
         cptr.st1o(cptr.decay(new_rng_state), i, Number(BigInt.asUintN(8, (seed & 255n))), 1);
-        seed = seed >> 8n;
+        seed >>= 8n;
     }
     cptr.stPtro2(
         rnglist,

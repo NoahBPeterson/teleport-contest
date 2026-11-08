@@ -120,10 +120,10 @@ function math_toint(L) {
 
 /** C ref: lmathlib.c:86 — @param {CPtr<lua_State>} L @param {CDouble} d */
 function pushnumint(L, d) {
-    let n = cptr.box(0n, "i64");
+    let n = cptr.box(0n);
     if (((d) >= Number((-9223372036854775808n)) &&
             (d) < -Number((-9223372036854775808n)) &&
-            (cptr.stI64((n), cptr.ftoi64((d))), 1)))
+            (cptr.stI64((n), BigInt.asIntN(64, BigInt(Math.trunc((d))))), 1)))
         lua_pushinteger(L, n.v);  /* result is integer */
     else
         lua_pushnumber(L, d);  /* result is float */
@@ -288,7 +288,7 @@ function math_type(L) {
 /* rotate left 'x' by 'n' bits */
 /** C ref: lmathlib.c:316 — @param {CLongLong} x @param {CInt} n @returns {CLongLong} */
 function rotl(x, n) {
-    return (BigInt.asUintN(64, x << BigInt.asUintN(64, BigInt(n)))) |
+    return (x << BigInt.asUintN(64, BigInt(n))) |
             (((x) & 18446744073709551615n) >> BigInt.asUintN(64, BigInt(((64 - n) | 0))));
 }
 
@@ -301,7 +301,7 @@ function nextrand(state) {
     let res = BigInt.asUintN(64, rotl(BigInt.asUintN(64, state1 * 5n), 7) * 9n);
     cptr.stU64o(state, 0, state0 ^ state3, 8);
     cptr.stU64o(state, 1, state1 ^ state2, 8);
-    cptr.stU64o(state, 2, state2 ^ (BigInt.asUintN(64, state1 << 17n)), 8);
+    cptr.stU64o(state, 2, state2 ^ (state1 << 17n), 8);
     cptr.stU64o(state, 3, rotl(state3, 45), 8);
     return res;
 }
@@ -346,14 +346,14 @@ function project(ran, n, state) {
     else {
         let lim = n;
         /* compute the smallest (2^b - 1) not smaller than 'n' */
-        lim = lim | (lim >> 1n);
-        lim = lim | (lim >> 2n);
-        lim = lim | (lim >> 4n);
-        lim = lim | (lim >> 8n);
-        lim = lim | (lim >> 16n);
-        lim = lim | (lim >> 32n);  /* integer type has more than 32 bits */
+        lim |= (lim >> 1n);
+        lim |= (lim >> 2n);
+        lim |= (lim >> 4n);
+        lim |= (lim >> 8n);
+        lim |= (lim >> 16n);
+        lim |= (lim >> 32n);  /* integer type has more than 32 bits */
         (void 0);  /* 'lim + 1' is a power of 2, */
-        while ((ran = ran & lim) > n)
+        while ((ran &= lim) > n)
             ran = (((nextrand(state)) & 18446744073709551615n));  /* not inside [0..n]? try again */
         return ran;
     }

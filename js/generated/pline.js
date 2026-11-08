@@ -102,7 +102,6 @@ const __s_nhassert_s_failed_in_file_s_at_line_d = cptr.lit("nhassert(%s) failed 
 /* keep the most recent DUMPLOG_MSG_COUNT messages */
 /** C ref: pline.c:22 — @param {CPtr<char>} line */
 export function dumplogmsg(line) {
-    let __r1;
     /*
      * TODO:
      *  This essentially duplicates message history, which is
@@ -110,7 +109,7 @@ export function dumplogmsg(line) {
      *  The core should take responsibility for that and have
      *  this share it.
      */
-    let indx = cptr.ldI32o(gs, $instance_globals_s_saved_pline_index) >>> 0;  /* next slot to use */
+    let indx = cptr.ldI32o(gs, $instance_globals_s_saved_pline_index);  /* next slot to use */
     let oldest = cptr.ldPtro2(gs, indx, 8, $instance_globals_s_saved_plines);  /* current content of that slot */
 
     if (!cptr.strncmp(line, __s_unknown_command, 15n))
@@ -122,7 +121,7 @@ export function dumplogmsg(line) {
     } else {
         if (oldest)
             cptr.free(oldest);
-        (__r1 = dupstr(line), cptr.stPtro2(gs, indx, 8, $instance_globals_s_saved_plines, __r1));
+        cptr.stPtro2(gs, indx, 8, $instance_globals_s_saved_plines, dupstr(line));
     }
     cptr.stI32o(
         gs,
@@ -138,7 +137,7 @@ export function dumplogmsg(line) {
 export function dumplogfreemessages() {
     let i;
 
-    for (i = 0; i < NHM.DUMPLOG_MSG_COUNT; i = ((i + 1) >>> 0))
+    for (i = 0; i < NHM.DUMPLOG_MSG_COUNT; ++i)
         if (cptr.ldPtro2(gs, i, 8, $instance_globals_s_saved_plines))
             cptr.free(cptr.ldPtro2(gs, i, 8, $instance_globals_s_saved_plines)),
                     cptr.stPtro2(gs, i, 8, $instance_globals_s_saved_plines, null);
@@ -153,12 +152,10 @@ function putmesg(line) {
     if (cptr.ld1so(iflags, $instance_flags_debug_prevent_pline))
         return;
 
-    if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) >>> 0 & NHM.URGENT_MESSAGE) >>> 0) !=
-        0 &&
+    if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.URGENT_MESSAGE) >>> 0) != 0 &&
             (cptr.ldU64o(windowprocs, $window_procs_wincap2) & 16384n) != 0n)
         attr |= NHM.ATR_URGENT;
-    if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) >>> 0 & NHM.SUPPRESS_HISTORY) >>> 0) !=
-        0 &&
+    if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.SUPPRESS_HISTORY) >>> 0) != 0 &&
             (cptr.ldU64o(windowprocs, $window_procs_wincap2) & 32768n) != 0n)
         attr |= NHM.ATR_NOHISTORY;
     putstr()(WIN_MESSAGE.v, attr, line);
@@ -275,10 +272,10 @@ function vpline(line, the_args) {
                     ? 102
                     : cptr.ldI32o(iflags, $instance_flags_getpos_coords)))
             );
-            tmp = cptr.byteView(alloc(Number(BigInt.asUintN(
+            tmp = alloc(Number(BigInt.asUintN(
                 32,
                 BigInt.asUintN(64, cptr.strlen(line) + 3n + cptr.strlen(dirstr))
-            ))));
+            )));
             void cptr.strcpy(tmp, dirstr);
             void cptr.strcat(tmp, __s_colon_sp);
             void cptr.strcat(tmp, line);
@@ -338,8 +335,7 @@ function vpline(line, the_args) {
          * Unfortunately, that means Norep() isn't honored (general issue) and
          * that short lines aren't combined into one longer one (tty behavior).
          */
-        if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) >>> 0 & NHM.SUPPRESS_HISTORY) >>>
-                0) == 0)
+        if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.SUPPRESS_HISTORY) >>> 0) == 0)
             dumplogmsg(line);
         /* use raw_print() if we're called too early (or perhaps too late
            during shutdown) or if we're being called recursively (probably
@@ -351,16 +347,14 @@ function vpline(line, the_args) {
             break __lbl_pline_done;
         }
 
-        no_repeat = schar((((cptr.ldI32o(gp, $instance_globals_p_pline_flags) >>> 0 &
+        no_repeat = schar((((cptr.ldI32o(gp, $instance_globals_p_pline_flags) &
             NHM.PLINE_NOREPEAT) >>> 0)
                 ? 1
                 : 0));
-        if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) >>> 0 & NHM.OVERRIDE_MSGTYPE) >>>
-            0) ==
+        if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.OVERRIDE_MSGTYPE) >>> 0) ==
                 0) {
             msgtyp = msgtype_type(line, no_repeat);
-            if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) >>> 0 & NHM.URGENT_MESSAGE) >>>
-                0) ==
+            if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.URGENT_MESSAGE) >>> 0) ==
                 0 &&
                     (msgtyp == NHM.MSGTYP_NOSHOW ||
                         (msgtyp == NHM.MSGTYP_NOREP &&
@@ -383,7 +377,7 @@ function vpline(line, the_args) {
             __static_vpline_in_pline = tmp_in_pline;
         }
         if (cptr.ldI16(u))
-            flush_screen(((cptr.ldI32o(gp, $instance_globals_p_pline_flags) >>> 0 &
+            flush_screen(((cptr.ldI32o(gp, $instance_globals_p_pline_flags) &
                 NHM.NO_CURS_ON_U) >>> 0)
                     ? 0
                     : 1);  /* %% */
@@ -456,7 +450,7 @@ function You_buf(siz) {
         cptr.stPtro(
             gy,
             $instance_globals_y_you_buf,
-            cptr.byteView(alloc(cptr.ldI32o(gy, $instance_globals_y_you_buf_siz) >>> 0))
+            alloc(cptr.ldI32o(gy, $instance_globals_y_you_buf_siz) >>> 0)
         );
     }
     return cptr.ldPtro(gy, $instance_globals_y_you_buf);
@@ -706,7 +700,7 @@ export function verbalize(line, ...__va) {
     cptr.stI32o(
         gp,
         $instance_globals_p_pline_flags,
-        (cptr.ldI32o(gp, $instance_globals_p_pline_flags) >>> 0 | NHM.PLINE_VERBALIZE) >>> 0
+        cptr.ldI32o(gp, $instance_globals_p_pline_flags) | NHM.PLINE_VERBALIZE
     );
     tmp = You_buf(Number(BigInt.asIntN(
         32,
@@ -722,7 +716,7 @@ export function verbalize(line, ...__va) {
     cptr.stI32o(
         gp,
         $instance_globals_p_pline_flags,
-        (cptr.ldI32o(gp, $instance_globals_p_pline_flags) >>> 0 & 4294967279) >>> 0
+        cptr.ldI32o(gp, $instance_globals_p_pline_flags) & 4294967279
     );
     the_args = null;
 }

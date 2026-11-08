@@ -157,7 +157,7 @@ export function* luaD_throw(L, errcode) {
  * @returns {CInt}
  */
 export function* luaD_rawrunprotected(L, f, ud) {
-    let oldnCcalls = cptr.ldI32o(L, $lua_State_nCcalls) >>> 0;
+    let oldnCcalls = cptr.ldI32o(L, $lua_State_nCcalls);
     let lj = cptr.alloc(208);
     cptr.stI32o(lj, $lua_longjmp_status, 0);
     cptr.stPtr(lj, cptr.ldPtro(L, $lua_State_errorJmp));  /* chain new error handler */
@@ -165,20 +165,24 @@ export function* luaD_rawrunprotected(L, f, ud) {
     {
         const __sj1 = cjmp.idOf(cptr.add((lj), $lua_longjmp_b));
         let __sv1 = 0;
-        __sjl1: for (;;) {
-            try {
-                if (__sv1 == 0) {
-                    (yield* Y.icall((f)(L, ud)));
-                }
-                ;
-                cptr.stPtro(L, $lua_State_errorJmp, cptr.ldPtr(lj));  /* restore old error handler */
-                cptr.stI32o(L, $lua_State_nCcalls, oldnCcalls);
-                return cptr.ldI32o(lj, $lua_longjmp_status);
-                break __sjl1;
-            } catch (__e1) {
-                if (!cjmp.matches(__e1, __sj1)) throw __e1;
-                __sv1 = cjmp.jbval(__e1);
+        try {
+            if (__sv1 == 0) {
+                (yield* Y.icall((f)(L, ud)));
             }
+            ;
+            cptr.stPtro(L, $lua_State_errorJmp, cptr.ldPtr(lj));  /* restore old error handler */
+            cptr.stI32o(L, $lua_State_nCcalls, oldnCcalls);
+            return cptr.ldI32o(lj, $lua_longjmp_status);
+        } catch (__e1) {
+            if (!cjmp.matches(__e1, __sj1)) throw __e1;
+            __sv1 = cjmp.jbval(__e1);
+            if (__sv1 == 0) {
+                (yield* Y.icall((f)(L, ud)));
+            }
+            ;
+            cptr.stPtro(L, $lua_State_errorJmp, cptr.ldPtr(lj));
+            cptr.stI32o(L, $lua_State_nCcalls, oldnCcalls);
+            return cptr.ldI32o(lj, $lua_longjmp_status);
         }
     }
 }
@@ -754,7 +758,7 @@ function* moveresults(L, res, nres, wanted) {
                     (yield* rethook(L, cptr.ldPtro(L, $lua_State_ci), nres));
                     res = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (savedres))));  /* hook can move stack */
                 }
-                wanted = (((-(wanted) | 0) - 3) | 0);
+                wanted = ((-(wanted) - 3) | 0);
                 if (wanted == -1)
                     wanted = nres;  /* we want all results */
             }
@@ -1105,9 +1109,9 @@ export function* luaD_precall(L, func, nresults) {
  */
 function* ccall(L, func, nResults, inc) {
     let ci;
-    cptr.stI32o(L, $lua_State_nCcalls, ((cptr.ldI32o(L, $lua_State_nCcalls) >>> 0) + inc) >>> 0);
+    cptr.stI32o(L, $lua_State_nCcalls, (cptr.ldI32o(L, $lua_State_nCcalls) + inc) | 0);
     if ((__builtin_expect(
-        BigInt(((((cptr.ldI32o((L), $lua_State_nCcalls) >>> 0 & 65535) >>> 0) >= 200) != 0)),
+        BigInt(((((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200) != 0)),
         0n
     ))) {
         if ((__builtin_expect(
@@ -1133,7 +1137,7 @@ function* ccall(L, func, nResults, inc) {
         cptr.stI16o(ci, $CallInfo_callstatus, 4);  /* mark that it is a "fresh" execute */
         (yield* luaV_execute(L, ci));  /* call it */
     }
-    cptr.stI32o(L, $lua_State_nCcalls, ((cptr.ldI32o(L, $lua_State_nCcalls) >>> 0) - inc) >>> 0);
+    cptr.stI32o(L, $lua_State_nCcalls, (cptr.ldI32o(L, $lua_State_nCcalls) - inc) | 0);
 }
 
 /*
@@ -1322,7 +1326,7 @@ function* resume_error(L, msg, narg) {
 */
 /** C ref: ldo.c:792 — @param {CPtr<lua_State>} L @param {CPtr<void>} ud */
 function* resume(L, ud) {
-    let n = cptr.ldI32(((cptr.castView((ud), "i32"))));  /* number of arguments */
+    let n = cptr.ldI32((((ud))));  /* number of arguments */
     let firstArg = cptr.add(cptr.ldPtro(L, $lua_State_top), -(n), 16);  /* first argument */
     let ci = cptr.ldPtro(L, $lua_State_ci);
     if (cptr.ld1uo(L, $lua_State_status) == 0)
@@ -1404,11 +1408,11 @@ export function* lua_resume(L, from, nargs, nresults) {
     cptr.stI32o(
         L,
         $lua_State_nCcalls,
-        (from) ? ((cptr.ldI32o((from), $lua_State_nCcalls) >>> 0 & 65535) >>> 0) : 0
+        (from) ? ((cptr.ldI32o((from), $lua_State_nCcalls) & 65535) >>> 0) : 0
     );
-    if (((cptr.ldI32o((L), $lua_State_nCcalls) >>> 0 & 65535) >>> 0) >= 200)
+    if (((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200)
         return (yield* resume_error(L, __s_c_stack_overflow, nargs.v));
-    (cptr.stI32o(L, $lua_State_nCcalls, (cptr.ldI32o(L, $lua_State_nCcalls) >>> 0) + 1)) - (1);
+    (cptr.stI32o(L, $lua_State_nCcalls, cptr.ldI32o(L, $lua_State_nCcalls) + 1)) - (1);
     (void L);
     (void L, (void 0));
     status = (yield* luaD_rawrunprotected(L, resume, nargs));
@@ -1439,7 +1443,7 @@ export function* lua_resume(L, from, nargs, nresults) {
 
 /** C ref: ldo.c:877 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lua_isyieldable(L) {
-    return (((cptr.ldI32o((L), $lua_State_nCcalls) >>> 0 & 4294901760) >>> 0) == 0) ? 1 : 0;
+    return (((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0) ? 1 : 0;
 }
 
 /**
@@ -1457,7 +1461,7 @@ export function* lua_yieldk(L, nresults, ctx, k) {
     ci = cptr.ldPtro(L, $lua_State_ci);
     (void L, (void 0));
     if ((__builtin_expect(
-        BigInt(((!(((cptr.ldI32o((L), $lua_State_nCcalls) >>> 0 & 4294901760) >>> 0) == 0)) != 0)),
+        BigInt(((!(((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0)) != 0)),
         0n
     ))) {
         if (!cptr.eq(L, cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_mainthread)))
@@ -1566,7 +1570,7 @@ export function* luaD_pcall(L, func, u, old_top, ef) {
 
 /** C ref: ldo.c:990 — @param {CPtr<lua_State>} L @param {CPtr<char>} mode @param {CPtr<char>} x */
 function* checkmode(L, mode, x) {
-    if (mode && cptr.eq(cptr.strchr(mode, cptr.ld1so(x, 0)), cptr.byteView((null)))) {
+    if (mode && cptr.eq(cptr.strchr(mode, cptr.ld1so(x, 0)), (null))) {
         (yield* luaO_pushfstring(L, __s_attempt_to_load_a_s_chunk_mode_is_s, x, mode));
         (yield* luaD_throw(L, 3));
     }
@@ -1611,11 +1615,7 @@ function* f_parser(L, ud) {
 export function* luaD_protectedparser(L, z, name, mode) {
     let p = cptr.alloc(96);
     let status;
-    (cptr.stI32o(
-        (L),
-        $lua_State_nCcalls,
-        ((cptr.ldI32o((L), $lua_State_nCcalls) >>> 0) + 65536) >>> 0
-    ));  /* cannot yield during parsing */
+    (cptr.stI32o((L), $lua_State_nCcalls, (cptr.ldI32o((L), $lua_State_nCcalls) + 65536) | 0));  /* cannot yield during parsing */
     cptr.stPtr(p, z);
     cptr.stPtro(p, $SParser_name, name);
     cptr.stPtro(p, $SParser_mode, mode);
@@ -1639,7 +1639,7 @@ export function* luaD_protectedparser(L, z, name, mode) {
     (
         cptr.stPtr(
             (cptr.add(p, $SParser_buff)),
-            (cptr.byteView((((yield* luaM_saferealloc_(
+            ((((yield* luaM_saferealloc_(
                 L,
                 (cptr.ldPtr((cptr.add(p, $SParser_buff)))),
                 BigInt.asUintN(
@@ -1647,7 +1647,7 @@ export function* luaD_protectedparser(L, z, name, mode) {
                     (cptr.ldU64o((cptr.add(p, $SParser_buff)), $Mbuffer_buffsize)) * 1n
                 ),
                 0n
-            ))))))
+            )))))
         ),
         cptr.stU64o((cptr.add(p, $SParser_buff)), $Mbuffer_buffsize, 0n)
     );
@@ -1678,10 +1678,6 @@ export function* luaD_protectedparser(L, z, name, mode) {
             ) * 24n
         )
     ));
-    (cptr.stI32o(
-        (L),
-        $lua_State_nCcalls,
-        ((cptr.ldI32o((L), $lua_State_nCcalls) >>> 0) - 65536) >>> 0
-    ));
+    (cptr.stI32o((L), $lua_State_nCcalls, (cptr.ldI32o((L), $lua_State_nCcalls) - 65536) | 0));
     return status;
 }

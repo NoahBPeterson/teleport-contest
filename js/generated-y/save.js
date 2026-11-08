@@ -322,7 +322,7 @@ export function* dosave() {
 /** C ref: save.c:74 @returns {CInt} */
 export function* dosave0() {
     let fq_save;
-    let ltmp = cptr.box(0, "i8");
+    let ltmp = cptr.box(0);
     let whynot = new Uint8Array(256);
     let nhfp;
     let onhfp;
@@ -344,16 +344,13 @@ export function* dosave0() {
         /* we may get here via hangup signal, in which case we want to fix up
            a few of things before saving so that they won't be restored in
            an improper state; these will be no-ops for normal save sequence */
-        cptr.stBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0, 0);
-        if (cptr.ldBits(cptr.add(iflags, $instance_flags_save_uswallow), 0, 1, 0))
-            cptr.stBits(cptr.add(u, $you_uswallow), 0, 1, 0, 1),
-                    cptr.stBits(cptr.add(iflags, $instance_flags_save_uswallow), 0, 1, 0, 0);
-        if (cptr.ldBits(cptr.add(iflags, $instance_flags_save_uinwater), 1, 1, 0))
-            cptr.stBits(cptr.add(u, $you_uinwater), 1, 1, 0, 1),
-                    cptr.stBits(cptr.add(iflags, $instance_flags_save_uinwater), 1, 1, 0, 0);  /* bypass set_uinwater() */
-        if (cptr.ldBits(cptr.add(iflags, $instance_flags_save_uburied), 2, 1, 0))
-            cptr.stBits(cptr.add(u, $you_uburied), 5, 1, 0, 1),
-                    cptr.stBits(cptr.add(iflags, $instance_flags_save_uburied), 2, 1, 0, 0);
+        cptr.stI32o(u, $you_uinvulnerable, 0);
+        if ((cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1))
+            cptr.stI32o(u, $you_uswallow, 1), cptr.stI32o(iflags, $instance_flags_save_uswallow, 0);
+        if ((cptr.ldI32o(iflags, $instance_flags_save_uinwater) & 1))
+            cptr.stI32o(u, $you_uinwater, 1), cptr.stI32o(iflags, $instance_flags_save_uinwater, 0);  /* bypass set_uinwater() */
+        if ((cptr.ldI32o(iflags, $instance_flags_save_uburied) & 1))
+            cptr.stI32o(u, $you_uburied, 1), cptr.stI32o(iflags, $instance_flags_save_uburied, 0);
         /* extra handling for hangup save or panic save; without this,
            a thrown light source might trigger an "obj_is_local" panic;
            if a thrown or kicked object is in transit, put it on the map;
@@ -402,7 +399,7 @@ export function* dosave0() {
         (yield* vision_recalc(2));
 
         /* undo date-dependent luck adjustments made at startup time */
-        if (cptr.ldI32o(flags, $flag_moonphase) >>> 0 == NHM.FULL_MOON)
+        if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON)
             change_luck(-1);  /* and unido!ab */
         if (cptr.ld1so(flags, $flag_friday13))
             change_luck(1);
@@ -438,7 +435,7 @@ export function* dosave0() {
         (yield* set_ustuck(null));  /* also clears u.uswallow */
         cptr.stPtro(u, $you_usteed, null);
 
-        for (ltmp.v = 1; ltmp.v <= maxledgerno(); ltmp.v = schar(ltmp.v + 1)) {
+        for (ltmp.v = 1; ltmp.v <= maxledgerno(); ltmp.v++) {
             if (ltmp.v == ledger_no(cptr.add(gu, $instance_globals_u_uz_save)))
                 continue;
             if (!(cptr.ld1uo2(svl, ltmp.v, $sizeof_linfo, $instance_globals_saved_l_level_info) &
@@ -530,9 +527,8 @@ function* save_gamelog(nhfp) {
 
 /** C ref: save.c:265 — @param {CPtr<NHFILE>} nhfp */
 function* savegamestate(nhfp) {
-    let __r1;
     let i;
-    let uid = cptr.box(0n, "u64");
+    let uid = cptr.box(0n);
 
     (cptr.stI32o(
         program_state,
@@ -553,12 +549,13 @@ function* savegamestate(nhfp) {
 
     (yield* sfo_flag(nhfp, flags, __s_gamestate_flags));
     cptr.stI64o(urealtime, $u_realtime_finish_time, (yield* getnow()));
-    (
-        __r1 = timet_delta(
-            cptr.ldI64o(urealtime, $u_realtime_finish_time),
-            cptr.ldI64o(urealtime, $u_realtime_start_timing)
-        ),
-        cptr.stI64(urealtime, cptr.ldI64(urealtime) + __r1)
+    cptr.stI64(
+        urealtime,
+        cptr.ldI64(urealtime) +
+            timet_delta(
+                cptr.ldI64o(urealtime, $u_realtime_finish_time),
+                cptr.ldI64o(urealtime, $u_realtime_start_timing)
+            )
     );
     (yield* sfo_long(nhfp, svw, __s_wreserve));
     ;
@@ -786,7 +783,7 @@ export function* savelev(nhfp, lev) {
 
 /** C ref: save.c:452 — @param {CPtr<NHFILE>} nhfp @param {CInt} lev */
 function* savelev_core(nhfp, lev) {
-    lev = cptr.box(lev, "i8");
+    lev = cptr.box(lev);
     let i;
     let c;
     let r;
@@ -954,7 +951,7 @@ function* savelevl(nhfp) {
 /* save Plane of Water's air bubbles and Plane of Air's clouds */
 /** C ref: save.c:591 — @param {CPtr<NHFILE>} nhfp @param {CInt} lev */
 function* save_bubbles(nhfp, lev) {
-    let bbubbly = cptr.box(0, "i8");
+    let bbubbly = cptr.box(0);
 
     /* air bubbles and clouds used to be saved as part of game state
        because restoring them needs dungeon data that isn't available
@@ -1010,11 +1007,11 @@ export function* savecemetery(nhfp, cemeteryaddr) {
 function* savedamage(nhfp) {
     let damageptr;
     let tmp_dam;
-    let xl = cptr.box(0, "u32");
+    let xl = cptr.box(0);
 
     damageptr = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_damagelist);
     for (tmp_dam = damageptr; tmp_dam; tmp_dam = cptr.ldPtr(tmp_dam))
-        xl.v = ((xl.v + 1) >>> 0);
+        xl.v++;
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         (yield* sfo_unsigned(nhfp, xl, __s_damage_damage_count));
     }
@@ -1108,7 +1105,7 @@ function* saveobj(nhfp, otmp) {
     let buflen = cptr.box(0);
     let zerobuf = cptr.box(0);
 
-    buflen.v = 112;
+    buflen.v = 216;
     (yield* sfo_int(nhfp, buflen, __s_obj_obj_length));
     (yield* sfo_obj(nhfp, otmp, __s_obj));
     if (cptr.ldPtro(otmp, $obj_oextra)) {
@@ -1181,23 +1178,19 @@ function* saveobjchn(nhfp, obj_p) {
                 cptr.stI32o(
                     svc,
                     $context_info_victual + $victual_info_o_id,
-                    cptr.ldI32o(otmp, $obj_o_id) >>> 0
+                    cptr.ldI32o(otmp, $obj_o_id)
                 );
                 cptr.stPtro(svc, $context_info_victual, null);
             }
             if (cptr.eq(otmp, cptr.ldPtro(svc, $context_info_tin))) {
-                cptr.stI32o(
-                    svc,
-                    $context_info_tin + $tin_info_o_id,
-                    cptr.ldI32o(otmp, $obj_o_id) >>> 0
-                );
+                cptr.stI32o(svc, $context_info_tin + $tin_info_o_id, cptr.ldI32o(otmp, $obj_o_id));
                 cptr.stPtro(svc, $context_info_tin, null);
             }
             if (cptr.eq(otmp, cptr.ldPtro(svc, $context_info_spbook))) {
                 cptr.stI32o(
                     svc,
                     $context_info_spbook + $book_info_o_id,
-                    cptr.ldI32o(otmp, $obj_o_id) >>> 0
+                    cptr.ldI32o(otmp, $obj_o_id)
                 );
                 cptr.stPtro(svc, $context_info_spbook, null);
             }
@@ -1205,7 +1198,7 @@ function* saveobjchn(nhfp, obj_p) {
             cptr.stPtr(otmp, null);  /* nobj saved into otmp2 */
             cptr.stPtro(otmp, $obj_cobj, null);  /* contents handled above */
             cptr.stI16o(otmp, $obj_timed, 0);  /* not timed any more */
-            cptr.stBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0, 0);  /* caller handled lights */
+            cptr.stI32o(otmp, $obj_lamplit, 0);  /* caller handled lights */
             cptr.stI32o(otmp, $obj_corpsenm, 0);
             /* clear 'uball' and 'uchain' pointers if resetting their mask;
                could also do same for other worn items but don't need to */
@@ -1240,8 +1233,8 @@ function* saveobjchn(nhfp, obj_p) {
 function* savemon(nhfp, mtmp) {
     let buflen = cptr.box(0);
 
-    cptr.stBits(cptr.add(mtmp, $monst_mtemplit), 6, 1, 0, 0);
-    buflen.v = 192;
+    cptr.stI32o(mtmp, $monst_mtemplit, 0);
+    buflen.v = 320;
     (yield* sfo_int(nhfp, buflen, __s_monst_monst_length));
     (yield* sfo_monst(nhfp, mtmp, __s_monst));
     if (cptr.ldPtro(mtmp, $monst_mextra)) {
@@ -1260,7 +1253,7 @@ function* savemon(nhfp, mtmp) {
                 buflen.v
             ));
         }
-        buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)) ? 640 : 0;
+        buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)) ? 652 : 0;
         (yield* sfo_int(nhfp, buflen, __s_monst_egd_length));
         if (buflen.v > 0) {
             (yield* sfo_egd(
@@ -1322,7 +1315,7 @@ function* savemon(nhfp, mtmp) {
                 $edog_hungrytime
             ));
         }
-        buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)) ? 28 : 0;
+        buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)) ? 36 : 0;
         (yield* sfo_int(nhfp, buflen, __s_monst_ebones_length));
         if (buflen.v > 0) {
             (yield* sfo_ebones(
@@ -1351,7 +1344,7 @@ function* savemonchn(nhfp, mtmp) {
                 $monst_mnum,
                 (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx))
             );
-            if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0))
+            if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1))
                 (yield* forget_temple_entry(mtmp));  /* EPRI() */
             (yield* savemon(nhfp, mtmp));
         }
@@ -1362,7 +1355,7 @@ function* savemonchn(nhfp, mtmp) {
                 cptr.stI32o(
                     svc,
                     $context_info_polearm + $polearm_info_m_id,
-                    cptr.ldI32o(mtmp, $monst_m_id) >>> 0
+                    cptr.ldI32o(mtmp, $monst_m_id)
                 );
                 cptr.stPtro(svc, $context_info_polearm, null);
             }
@@ -1370,13 +1363,13 @@ function* savemonchn(nhfp, mtmp) {
                 cptr.stI32o(
                     u,
                     $you_ustuck_mid,
-                    cptr.ldI32o(cptr.ldPtro(u, $you_ustuck), $monst_m_id) >>> 0
+                    cptr.ldI32o(cptr.ldPtro(u, $you_ustuck), $monst_m_id)
                 );
             if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
                 cptr.stI32o(
                     u,
                     $you_usteed_mid,
-                    cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_m_id) >>> 0
+                    cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_m_id)
                 );
             cptr.stPtr(mtmp, null);  /* nmon saved into mtmp2 */
             (yield* dealloc_monst(mtmp));

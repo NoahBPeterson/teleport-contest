@@ -233,29 +233,20 @@ function mkshop() {
         for (
             x = i16(((cptr.ldI16(sroom) - 1) | 0));
             x <= ((cptr.ldI16o(sroom, $mkroom_hx) + 1) | 0);
-            x = i16(x + 1)
+            x++
         )
             for (
                 y = i16(((cptr.ldI16o(sroom, $mkroom_ly) - 1) | 0));
                 y <= ((cptr.ldI16o(sroom, $mkroom_hy) + 1) | 0);
-                y = i16(y + 1)
+                y++
             )
-                cptr.stBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_lit
-                    ),
-                    6,
-                    1,
-                    0,
+                cptr.stI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_lit,
                     1
                 );
         cptr.st1o(sroom, $mkroom_rlit, 1);
@@ -348,8 +339,8 @@ function mk_zoo_thronemon(x, y) {
     let mon = makemon(cptr.add(mons, pm, $sizeof_permonst), x, y, NHM.NO_MM_FLAGS);
 
     if (mon) {
-        cptr.stBits(cptr.add(mon, $monst_msleeping), 7, 1, 0, 1);
-        cptr.stBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0, 0);
+        cptr.stI32o(mon, $monst_msleeping, 1);
+        cptr.stI32o(mon, $monst_mpeaceful, 0);
         set_malign(mon);
         /* Give him a sceptre to pound in judgment */
         void mongets(mon, NHC.MACE);
@@ -375,20 +366,16 @@ export function fill_zoo(sroom) {
     sh = cptr.ldI32o(sroom, $mkroom_fdoor);
     __sw_1: switch (type) {
         case NHC.COURT:
-            if (cptr.ldBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                ),
-                0,
-                1,
-                0
-            )) {
-                for (tx = cptr.ldI16(sroom); tx <= cptr.ldI16o(sroom, $mkroom_hx); tx = i16(tx + 1))
+            if ((cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+            ) &
+                    1)) {
+                for (tx = cptr.ldI16(sroom); tx <= cptr.ldI16o(sroom, $mkroom_hx); tx++)
                     for (
                         ty = cptr.ldI16o(sroom, $mkroom_ly);
                         ty <= cptr.ldI16o(sroom, $mkroom_hy);
-                        ty = i16(ty + 1)
+                        ty++
                     )
                         if (((cptr.ld1so3(
                             svl,
@@ -422,42 +409,26 @@ export function fill_zoo(sroom) {
                         0)) | 0));
             if (cptr.ld1so(sroom, $mkroom_irregular)) {
                 /* center might not be valid, so put queen elsewhere */
-                if ((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                tx,
-                                $sizeof_rm_x21
-                            ),
-                            ty,
-                            $sizeof_rm
-                        ),
-                        $rm_roomno
-                    ),
-                    0,
-                    6,
-                    0
-                ) |
+                if (((cptr.ldI32o3(
+                    svl,
+                    tx,
+                    $sizeof_rm_x21,
+                    ty,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_roomno
+                ) &
+                    63) |
                     0) !=
                     rmno ||
-                        cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        tx,
-                                        $sizeof_rm_x21
-                                    ),
-                                    ty,
-                                    $sizeof_rm
-                                ),
-                                $rm_edge
-                            ),
-                            6,
-                            1,
-                            0
-                        ) |
+                        (cptr.ldI32o3(
+                            svl,
+                            tx,
+                            $sizeof_rm_x21,
+                            ty,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_edge
+                        ) &
+                            1) |
                             0) {
                     void somexyspace(sroom, mm);
                     tx = cptr.ldI16(mm);
@@ -474,42 +445,26 @@ export function fill_zoo(sroom) {
     for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, $mkroom_hx); sx++)
         for (sy = cptr.ldI16o(sroom, $mkroom_ly); sy <= cptr.ldI16o(sroom, $mkroom_hy); sy++) {
             if (cptr.ld1so(sroom, $mkroom_irregular)) {
-                if ((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                sx,
-                                $sizeof_rm_x21
-                            ),
-                            sy,
-                            $sizeof_rm
-                        ),
-                        $rm_roomno
-                    ),
-                    0,
-                    6,
-                    0
-                ) |
+                if (((cptr.ldI32o3(
+                    svl,
+                    sx,
+                    $sizeof_rm_x21,
+                    sy,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_roomno
+                ) &
+                    63) |
                     0) !=
                     rmno ||
-                        cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        sx,
-                                        $sizeof_rm_x21
-                                    ),
-                                    sy,
-                                    $sizeof_rm
-                                ),
-                                $rm_edge
-                            ),
-                            6,
-                            1,
-                            0
-                        ) |
+                        (cptr.ldI32o3(
+                            svl,
+                            sx,
+                            $sizeof_rm_x21,
+                            sy,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_edge
+                        ) &
+                            1) |
                             0 ||
                         (cptr.ld1so(sroom, $mkroom_doorct) &&
                             (distmin(
@@ -602,10 +557,9 @@ export function fill_zoo(sroom) {
                 12288
             );
             if (mon) {
-                cptr.stBits(cptr.add(mon, $monst_msleeping), 7, 1, 0, 1);
-                if (type == NHC.COURT &&
-                        cptr.ldBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0) | 0) {
-                    cptr.stBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0, 0);
+                cptr.stI32o(mon, $monst_msleeping, 1);
+                if (type == NHC.COURT && (cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0) {
+                    cptr.stI32o(mon, $monst_mpeaceful, 0);
                     set_malign(mon);
                 }
             }
@@ -696,75 +650,45 @@ export function fill_zoo(sroom) {
                 add_to_container(chest, gold);
                 cptr.stI32o(chest, $obj_owt, weight(chest) >>> 0);
                 cptr.st1o(chest, $obj_spe, 2);  /* so it can be found later */
-                cptr.stBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court
-                    ),
-                    3,
-                    1,
-                    0,
+                cptr.stI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court,
                     1
                 );
                 break;
             }
         case NHC.BARRACKS:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks
-                ),
-                6,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks,
                 1
             );
             break;
         case NHC.ZOO:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo
-                ),
-                2,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo,
                 1
             );
             break;
         case NHC.MORGUE:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue
-                ),
-                4,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue,
                 1
             );
             break;
         case NHC.SWAMP:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
-                ),
-                0,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp,
                 1
             );
             break;
         case NHC.BEEHIVE:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive
-                ),
-                5,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive,
                 1
             );
             break;
@@ -793,13 +717,7 @@ export function mkundead(mm, revive_corpses, mm_flags) {
                     !revive(otmp, 0)))
             void makemon(mdat, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), mm_flags >>> 0);
     }
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard),
-        6,
-        1,
-        0,
-        1
-    );  /* reduced chance for undead corpse */
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard, 1);  /* reduced chance for undead corpse */
 }
 
 /** C ref: mkroom.c:478 @returns {CPtr<struct permonst>} */
@@ -899,12 +817,8 @@ function mkswamp() {
 
         /* satisfied; make a swamp */
         cptr.st1o(sroom, $mkroom_rtype, NHC.SWAMP);
-        for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, $mkroom_hx); sx = i16(sx + 1))
-            for (
-                sy = cptr.ldI16o(sroom, $mkroom_ly);
-                sy <= cptr.ldI16o(sroom, $mkroom_hy);
-                sy = i16(sy + 1)
-            ) {
+        for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, $mkroom_hx); sx++)
+            for (sy = cptr.ldI16o(sroom, $mkroom_ly); sy <= cptr.ldI16o(sroom, $mkroom_hy); sy++) {
                 if (!((cptr.ld1so3(
                     svl,
                     sx,
@@ -914,23 +828,15 @@ function mkswamp() {
                     $instance_globals_saved_l_level + $rm_typ
                 )) >=
                     NHC.ROOM) ||
-                        (cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        sx,
-                                        $sizeof_rm_x21
-                                    ),
-                                    sy,
-                                    $sizeof_rm
-                                ),
-                                $rm_roomno
-                            ),
-                            0,
-                            6,
-                            0
-                        ) |
+                        ((cptr.ldI32o3(
+                            svl,
+                            sx,
+                            $sizeof_rm_x21,
+                            sy,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_roomno
+                        ) &
+                            63) |
                             0) != rmno)
                     continue;
                 if (!(cptr.ldPtro3(
@@ -982,14 +888,9 @@ function mkswamp() {
                         void makemon(mkclass(NHC.S_FUNGUS, 0), sx, sy, NHM.NO_MM_FLAGS);
                 }
             }
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
-            ),
-            0,
-            1,
-            0,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp,
             1
         );
     }
@@ -1053,7 +954,7 @@ function mktemple() {
         $sizeof_rm
     );
     cptr.st1o(lev, $rm_typ, NHC.ALTAR);
-    cptr.stBits(cptr.add(lev, $rm_flags), 0, 5, 0, induced_align(80));
+    cptr.stI32o(lev, $rm_flags, induced_align(80));
     priestini(
         cptr.add(u, $you_uz),
         sroom,
@@ -1061,20 +962,8 @@ function mktemple() {
         cptr.ldI16o(shrine_spot, $coord_y),
         0
     );
-    cptr.stBits(
-        cptr.add(lev, $rm_flags),
-        0,
-        5,
-        0,
-        (cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 8) >>> 0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple),
-        7,
-        1,
-        0,
-        1
-    );
+    cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) | NHM.AM_SHRINE);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple, 1);
 }
 
 /** C ref: mkroom.c:623 — @param {CInt} sx @param {CInt} sy @returns {CInt} */
@@ -1150,32 +1039,24 @@ export function somey(croom) {
 export function inside_room(croom, x, y) {
     if (cptr.ld1so(croom, $mkroom_irregular)) {
         let i = Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff(croom, svr) / 224n) + 3n))));
-        return schar((!cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_edge
-            ),
-            6,
-            1,
-            0
-        ) &&
-            (cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_roomno
-                ),
-                0,
-                6,
-                0
-            ) | 0) == i
+        return schar((!(cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_edge
+        ) &
+            1) &&
+            ((cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_roomno
+            ) &
+                63) | 0) == i
                 ? 1
                 : 0));
     }
@@ -1208,40 +1089,24 @@ export function somexy(croom, c) {
         while (try_cnt++ < 100) {
             cptr.stI16(c, i16(somex(croom)));
             cptr.stI16o(c, $coord_y, i16(somey(croom)));
-            if (!cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(c),
-                            $sizeof_rm_x21
-                        ),
+            if (!(cptr.ldI32o3(
+                svl,
+                cptr.ldI16(c),
+                $sizeof_rm_x21,
+                cptr.ldI16o(c, $coord_y),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_edge
+            ) &
+                1) &&
+                    ((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(c),
+                        $sizeof_rm_x21,
                         cptr.ldI16o(c, $coord_y),
-                        $sizeof_rm
-                    ),
-                    $rm_edge
-                ),
-                6,
-                1,
-                0
-            ) &&
-                    (cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(c),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(c, $coord_y),
-                                $sizeof_rm
-                            ),
-                            $rm_roomno
-                        ),
-                        0,
-                        6,
-                        0
-                    ) |
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) &
+                        63) |
                         0) == i)
                 return 1;
         }
@@ -1256,40 +1121,24 @@ export function somexy(croom, c) {
                 cptr.ldI16o(c, $coord_y) <= cptr.ldI16o(croom, $mkroom_hy);
                 (cptr.stI16o(c, $coord_y, cptr.ldI16o(c, $coord_y) + 1)) - (1)
             )
-                if (!cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(c),
-                                $sizeof_rm_x21
-                            ),
+                if (!(cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(c),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(c, $coord_y),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_edge
+                ) &
+                    1) &&
+                        ((cptr.ldI32o3(
+                            svl,
+                            cptr.ldI16(c),
+                            $sizeof_rm_x21,
                             cptr.ldI16o(c, $coord_y),
-                            $sizeof_rm
-                        ),
-                        $rm_edge
-                    ),
-                    6,
-                    1,
-                    0
-                ) &&
-                        (cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        cptr.ldI16(c),
-                                        $sizeof_rm_x21
-                                    ),
-                                    cptr.ldI16o(c, $coord_y),
-                                    $sizeof_rm
-                                ),
-                                $rm_roomno
-                            ),
-                            0,
-                            6,
-                            0
-                        ) |
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_roomno
+                        ) &
+                            63) |
                             0) == i)
                     return 1;
         return 0;
@@ -1470,13 +1319,13 @@ function squadmon() {
 
         cpro = 0;
         for (i = 0; i < 4; i++) {
-            cpro = (((cpro >>> 0) + (cptr.ldI32o2(squadprob, i, 8, 4) >>> 0)) >>> 0) | 0;
+            cpro = (cpro + cptr.ldI32o2(squadprob, i, 8, 4)) | 0;
             if (cpro > sel_prob) {
-                mndx = (cptr.ldI32o(squadprob, i, 8) >>> 0) | 0;
+                mndx = cptr.ldI32o(squadprob, i, 8) | 0;
                 break __lbl_gotone;
             }
         }
-        mndx = (cptr.ldI32o(squadprob, rn2(4), 8) >>> 0) | 0;
+        mndx = cptr.ldI32o(squadprob, rn2(4), 8) | 0;
     }
     if (!(cptr.ld1uo2(
         svm,
@@ -1503,7 +1352,7 @@ function save_room(nhfp, r) {
      * the gs.subrooms pointers, but who cares ?
      */
     sfo_mkroom(nhfp, r, __s_room_mkroom);
-    for (i = 0; i < cptr.ld1so(r, $mkroom_nsubrooms); i = i16(i + 1)) {
+    for (i = 0; i < cptr.ld1so(r, $mkroom_nsubrooms); i++) {
         save_room(nhfp, cptr.ldPtro2(r, i, 8, $mkroom_sbrooms));
     }
 }
@@ -1517,7 +1366,7 @@ export function save_rooms(nhfp) {
 
     /* First, write the number of rooms */
     sfo_int(nhfp, cptr.add(svn, $instance_globals_saved_n_nroom), __s_room_nroom);
-    for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); i = i16(i + 1))
+    for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); i++)
         save_room(nhfp, cptr.add(svr, i, $sizeof_mkroom));
 }
 
@@ -1527,7 +1376,7 @@ function rest_room(nhfp, r) {
 
     sfi_mkroom(nhfp, r, __s_room_mkroom);
 
-    for (i = 0; i < cptr.ld1so(r, $mkroom_nsubrooms); i = i16(i + 1)) {
+    for (i = 0; i < cptr.ld1so(r, $mkroom_nsubrooms); i++) {
         cptr.stPtro2(
             r,
             i,
@@ -1574,7 +1423,7 @@ export function rest_rooms(nhfp) {
     ;
 
     cptr.stI32o(gn, $instance_globals_n_nsubroom, 0);
-    for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); i = i16(i + 1)) {
+    for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); i++) {
         rest_room(nhfp, cptr.add(svr, i, $sizeof_mkroom));
         cptr.stPtro2(svr, i, $sizeof_mkroom, $mkroom_resident, null);
     }
@@ -1756,12 +1605,12 @@ function invalid_shop_shape(sroom) {
     for (
         x = i16(max((doorx - 1) | 0, cptr.ldI16(sroom)));
         x <= min((doorx + 1) | 0, cptr.ldI16o(sroom, $mkroom_hx));
-        x = i16(x + 1)
+        x++
     ) {
         for (
             y = i16(max((doory - 1) | 0, cptr.ldI16o(sroom, $mkroom_ly)));
             y <= min((doory + 1) | 0, cptr.ldI16o(sroom, $mkroom_hy));
-            y = i16(y + 1)
+            y++
         ) {
             if (cptr.ld1so3(
                 svl,
@@ -1774,7 +1623,7 @@ function invalid_shop_shape(sroom) {
                     NHC.ROOM) {
                 insidex = x;
                 insidey = y;
-                insidect = i16(insidect + 1);
+                insidect++;
             }
         }
     }
@@ -1791,12 +1640,12 @@ function invalid_shop_shape(sroom) {
         for (
             x = i16(max((insidex - 1) | 0, cptr.ldI16(sroom)));
             x <= min((insidex + 1) | 0, cptr.ldI16o(sroom, $mkroom_hx));
-            x = i16(x + 1)
+            x++
         ) {
             for (
                 y = i16(max((insidey - 1) | 0, cptr.ldI16o(sroom, $mkroom_ly)));
                 y <= min((insidey + 1) | 0, cptr.ldI16o(sroom, $mkroom_hy));
-                y = i16(y + 1)
+                y++
             ) {
                 if (x == insidex && y == insidey)
                     continue;
@@ -1809,7 +1658,7 @@ function invalid_shop_shape(sroom) {
                     $instance_globals_saved_l_level + $rm_typ
                 ) ==
                         NHC.ROOM)
-                    insidect = i16(insidect + 1);
+                    insidect++;
             }
         }
         if (insidect == 1) {

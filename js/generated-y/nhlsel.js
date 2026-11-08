@@ -208,8 +208,8 @@ function* l_selection_clone(L) {
 /** C ref: nhlsel.c:159 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_setpoint(L) {
     let sel = null;
-    let x = cptr.box(-1, "i16");
-    let y = cptr.box(-1, "i16");
+    let x = cptr.box(-1);
+    let y = cptr.box(-1);
     let val = 1;
     let argc = lua_gettop(L);
     let crd = 0n;
@@ -267,8 +267,8 @@ function* l_selection_numpoints(L) {
 
     selection_getbounds(sel, rect);
 
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x = i16(x + 1))
-        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y = i16(y + 1))
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
             if (selection_getpoint(x, y, sel))
                 ret++;
 
@@ -281,10 +281,10 @@ function* l_selection_numpoints(L) {
 /** C ref: nhlsel.c:224 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_getpoint(L) {
     let sel = (yield* l_selection_check(L, 1));
-    let x = cptr.box(0, "i16");
-    let y = cptr.box(0, "i16");
-    let ix = cptr.box(0n, "i64");
-    let iy = cptr.box(0n, "i64");
+    let x = cptr.box(0);
+    let y = cptr.box(0);
+    let ix = cptr.box(0n);
+    let iy = cptr.box(0n);
     let val;
     let crd;
 
@@ -461,7 +461,7 @@ function* l_selection_filter_percent(L) {
     let tmp;
 
     tmp = (yield* selection_filter_percent(sel, p));
-    (yield* lua_settop(L, ((-(argc) | 0) - 1) | 0));
+    (yield* lua_settop(L, (-(argc) - 1) | 0));
     (yield* l_selection_push_copy(L, tmp));
     selection_free(tmp, 1);
 
@@ -474,8 +474,8 @@ function* l_selection_filter_percent(L) {
 function* l_selection_rndcoord(L) {
     let sel = (yield* l_selection_check(L, 1));
     let removeit = Number(BigInt.asIntN(32, (yield* luaL_optinteger(L, 2, 0n))));
-    let x = cptr.box(-1, "i16");
-    let y = cptr.box(-1, "i16");
+    let x = cptr.box(-1);
+    let y = cptr.box(-1);
     selection_rndcoord(sel, x, y, schar(removeit));
     if (!(x.v == -1 && y.v == -1)) {
         update_croom();
@@ -592,10 +592,10 @@ function* params_sel_2coords(L, sel, x1, y1, x2, y2) {
 /** C ref: nhlsel.c:509 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_line(L) {
     let sel = cptr.box(null);
-    let x1 = cptr.box(0, "i16");
-    let y1 = cptr.box(0, "i16");
-    let x2 = cptr.box(0, "i16");
-    let y2 = cptr.box(0, "i16");
+    let x1 = cptr.box(0);
+    let y1 = cptr.box(0);
+    let x2 = cptr.box(0);
+    let y2 = cptr.box(0);
 
     if (!(yield* params_sel_2coords(L, sel, x1, y1, x2, y2))) {
         (yield* nhl_error(L, __s_selection_line_illegal_arguments));
@@ -630,10 +630,10 @@ function* l_selection_line(L) {
 /** C ref: nhlsel.c:531 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_rect(L) {
     let sel = cptr.box(null);
-    let x1 = cptr.box(0, "i16");
-    let y1 = cptr.box(0, "i16");
-    let x2 = cptr.box(0, "i16");
-    let y2 = cptr.box(0, "i16");
+    let x1 = cptr.box(0);
+    let y1 = cptr.box(0);
+    let x2 = cptr.box(0);
+    let y2 = cptr.box(0);
 
     if (!(yield* params_sel_2coords(L, sel, x1, y1, x2, y2))) {
         (yield* nhl_error(L, __s_selection_rect_illegal_arguments));
@@ -675,10 +675,10 @@ function* l_selection_rect(L) {
 function* l_selection_fillrect(L) {
     let sel = cptr.box(null);
     let y;
-    let x1 = cptr.box(0, "i16");
-    let y1 = cptr.box(0, "i16");
-    let x2 = cptr.box(0, "i16");
-    let y2 = cptr.box(0, "i16");
+    let x1 = cptr.box(0);
+    let y1 = cptr.box(0);
+    let x2 = cptr.box(0);
+    let y2 = cptr.box(0);
 
     if (!(yield* params_sel_2coords(L, sel, x1, y1, x2, y2))) {
         (yield* nhl_error(L, __s_selection_fillrect_illegal_arguments));
@@ -723,10 +723,10 @@ function* l_selection_fillrect(L) {
 function* l_selection_randline(L) {
     let argc = lua_gettop(L);
     let sel;
-    let x1 = cptr.box(0, "i16");
-    let y1 = cptr.box(0, "i16");
-    let x2 = cptr.box(0, "i16");
-    let y2 = cptr.box(0, "i16");
+    let x1 = cptr.box(0);
+    let y1 = cptr.box(0);
+    let x2 = cptr.box(0);
+    let y2 = cptr.box(0);
     let roughness = 7;
 
     if (argc == 6) {
@@ -828,7 +828,7 @@ function* l_selection_filter_mapchar(L) {
         (yield* nhl_error(L, __s_erroneous_map_char));
 
     tmp = (yield* selection_filter_mapchar(sel, typ, lit));
-    (yield* lua_settop(L, ((-(argc) | 0) - 1) | 0));
+    (yield* lua_settop(L, (-(argc) - 1) | 0));
     (yield* l_selection_push_copy(L, tmp));
     selection_free(tmp, 1);
 
@@ -857,7 +857,7 @@ function* l_selection_match(L) {
         mf.v = (yield* mapfrag_fromstr(mapstr));
         cptr.free(mapstr);
 
-        if (!cptr.eq((err = (yield* mapfrag_error(mf.v))), cptr.byteView((null)))) {
+        if (!cptr.eq((err = (yield* mapfrag_error(mf.v))), (null))) {
             (yield* nhl_error(L, err));
             /*NOTREACHED*/
         }
@@ -886,8 +886,8 @@ function* l_selection_match(L) {
 function* l_selection_flood(L) {
     let argc = lua_gettop(L);
     let sel = null;
-    let x = cptr.box(0, "i16");
-    let y = cptr.box(0, "i16");
+    let x = cptr.box(0);
+    let y = cptr.box(0);
     let diagonals = 0;
 
     if (argc == 2 || argc == 3) {
@@ -895,7 +895,7 @@ function* l_selection_flood(L) {
         y.v = Number(BigInt.asIntN(16, (yield* luaL_checkinteger(L, 2))));
         if (argc == 3)
             diagonals = schar(lua_toboolean(L, 3));
-        (yield* lua_settop(L, ((-(argc) | 0) - 1) | 0));
+        (yield* lua_settop(L, (-(argc) - 1) | 0));
         void (yield* l_selection_new(L));
         sel = (yield* l_selection_check(L, 1));
     } else {
@@ -935,8 +935,8 @@ function* l_selection_flood(L) {
 function* l_selection_circle(L) {
     let argc = lua_gettop(L);
     let sel = null;
-    let x = cptr.box(0, "i16");
-    let y = cptr.box(0, "i16");
+    let x = cptr.box(0);
+    let y = cptr.box(0);
     let r = 0;
     let filled = 0;
 
@@ -991,8 +991,8 @@ function* l_selection_circle(L) {
 function* l_selection_ellipse(L) {
     let argc = lua_gettop(L);
     let sel = null;
-    let x = cptr.box(0, "i16");
-    let y = cptr.box(0, "i16");
+    let x = cptr.box(0);
+    let y = cptr.box(0);
     let r1 = 0;
     let r2 = 0;
     let filled = 0;
@@ -1063,10 +1063,10 @@ function* l_selection_gradient(L) {
     let sel = null;
     /* if x2 and y2 aren't set, the gradient has a single center point of x,y;
      * if they are set, the gradient is centered on a (x,y) to (x2,y2) line */
-    let x = cptr.box(0, "i16");
-    let y = cptr.box(0, "i16");
-    let x2 = cptr.box(-1, "i16");
-    let y2 = cptr.box(-1, "i16");
+    let x = cptr.box(0);
+    let y = cptr.box(0);
+    let x2 = cptr.box(-1);
+    let y2 = cptr.box(-1);
     /* points are always added within mindist of the center; the chance for a
      * point between mindist and maxdist to be added to the selection starts
      * at 100% at mindist and decreases linearly to 0% at maxdist */
@@ -1148,8 +1148,8 @@ function* l_selection_iterate(L) {
                     x++
                 )
                     if (selection_getpoint(i16(x), i16(y), sel)) {
-                        let tmpx = cptr.box(i16(x), "i16");
-                        let tmpy = cptr.box(i16(y), "i16");
+                        let tmpx = cptr.box(i16(x));
+                        let tmpy = cptr.box(i16(y));
                         cvt_to_relcoord(tmpx, tmpy);
                         (yield* lua_pushvalue(L, 2));
                         (yield* lua_pushinteger(L, BigInt(tmpx.v)));

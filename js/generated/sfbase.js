@@ -144,7 +144,7 @@ cptr.stPtr(zerosfiflprocs, null);
 export function sfo_arti_info(nhfp, d_arti_info, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         //#include "sfproto.h"
-        sf_log(nhfp, myname, 4n, 1, complex_dump(d_arti_info));
+        sf_log(nhfp, myname, 36n, 1, complex_dump(d_arti_info));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -198,7 +198,7 @@ export function sfi_arti_info(nhfp, d_arti_info, myname) {
             sfo_arti_info(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_arti_info, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 4n, 1, complex_dump(d_arti_info));
+            sf_log(nhfp, myname, 36n, 1, complex_dump(d_arti_info));
     }
 }
 
@@ -478,7 +478,7 @@ export function sfi_cemetery(nhfp, d_cemetery, myname) {
  */
 export function sfo_context_info(nhfp, d_context_info, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 704n, 1, complex_dump(d_context_info));
+        sf_log(nhfp, myname, 720n, 1, complex_dump(d_context_info));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -532,7 +532,7 @@ export function sfi_context_info(nhfp, d_context_info, myname) {
             sfo_context_info(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_context_info, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 704n, 1, complex_dump(d_context_info));
+            sf_log(nhfp, myname, 720n, 1, complex_dump(d_context_info));
     }
 }
 
@@ -808,7 +808,7 @@ export function sfi_dgn_topology(nhfp, d_dgn_topology, myname) {
  */
 export function sfo_dungeon(nhfp, d_dungeon, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 92n, 1, complex_dump(d_dungeon));
+        sf_log(nhfp, myname, 112n, 1, complex_dump(d_dungeon));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -862,7 +862,7 @@ export function sfi_dungeon(nhfp, d_dungeon, myname) {
             sfo_dungeon(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_dungeon, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 92n, 1, complex_dump(d_dungeon));
+            sf_log(nhfp, myname, 112n, 1, complex_dump(d_dungeon));
     }
 }
 
@@ -940,7 +940,7 @@ export function sfi_d_level(nhfp, d_d_level, myname) {
  */
 export function sfo_ebones(nhfp, d_ebones, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 28n, 1, complex_dump(d_ebones));
+        sf_log(nhfp, myname, 36n, 1, complex_dump(d_ebones));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -994,7 +994,7 @@ export function sfi_ebones(nhfp, d_ebones, myname) {
             sfo_ebones(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_ebones, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 28n, 1, complex_dump(d_ebones));
+            sf_log(nhfp, myname, 36n, 1, complex_dump(d_ebones));
     }
 }
 
@@ -1072,7 +1072,7 @@ export function sfi_edog(nhfp, d_edog, myname) {
  */
 export function sfo_egd(nhfp, d_egd, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 640n, 1, complex_dump(d_egd));
+        sf_log(nhfp, myname, 652n, 1, complex_dump(d_egd));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -1126,7 +1126,7 @@ export function sfi_egd(nhfp, d_egd, myname) {
             sfo_egd(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_egd, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 640n, 1, complex_dump(d_egd));
+            sf_log(nhfp, myname, 652n, 1, complex_dump(d_egd));
     }
 }
 
@@ -1204,7 +1204,7 @@ export function sfi_emin(nhfp, d_emin, myname) {
  */
 export function sfo_engr(nhfp, d_engr, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 64n, 1, complex_dump(d_engr));
+        sf_log(nhfp, myname, 80n, 1, complex_dump(d_engr));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -1258,7 +1258,7 @@ export function sfi_engr(nhfp, d_engr, myname) {
             sfo_engr(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_engr, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 64n, 1, complex_dump(d_engr));
+            sf_log(nhfp, myname, 80n, 1, complex_dump(d_engr));
     }
 }
 
@@ -1733,7 +1733,7 @@ export function sfi_kinfo(nhfp, d_kinfo, myname) {
  */
 export function sfo_levelflags(nhfp, d_levelflags, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 16n, 1, complex_dump(d_levelflags));
+        sf_log(nhfp, myname, 128n, 1, complex_dump(d_levelflags));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -1787,7 +1787,7 @@ export function sfi_levelflags(nhfp, d_levelflags, myname) {
             sfo_levelflags(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_levelflags, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 16n, 1, complex_dump(d_levelflags));
+            sf_log(nhfp, myname, 128n, 1, complex_dump(d_levelflags));
     }
 }
 
@@ -1931,7 +1931,7 @@ export function sfi_linfo(nhfp, d_linfo, myname) {
  */
 export function sfo_mapseen_feat(nhfp, d_mapseen_feat, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 4n, 1, complex_dump(d_mapseen_feat));
+        sf_log(nhfp, myname, 52n, 1, complex_dump(d_mapseen_feat));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -1985,7 +1985,7 @@ export function sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
             sfo_mapseen_feat(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_mapseen_feat, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 4n, 1, complex_dump(d_mapseen_feat));
+            sf_log(nhfp, myname, 52n, 1, complex_dump(d_mapseen_feat));
     }
 }
 
@@ -1997,7 +1997,7 @@ export function sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
  */
 export function sfo_mapseen_flags(nhfp, d_mapseen_flags, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 4n, 1, complex_dump(d_mapseen_flags));
+        sf_log(nhfp, myname, 64n, 1, complex_dump(d_mapseen_flags));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2051,7 +2051,7 @@ export function sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
             sfo_mapseen_flags(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_mapseen_flags, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 4n, 1, complex_dump(d_mapseen_flags));
+            sf_log(nhfp, myname, 64n, 1, complex_dump(d_mapseen_flags));
     }
 }
 
@@ -2063,7 +2063,7 @@ export function sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
  */
 export function sfo_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 4n, 1, complex_dump(d_mapseen_rooms));
+        sf_log(nhfp, myname, 8n, 1, complex_dump(d_mapseen_rooms));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2117,7 +2117,7 @@ export function sfi_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
             sfo_mapseen_rooms(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_mapseen_rooms, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 4n, 1, complex_dump(d_mapseen_rooms));
+            sf_log(nhfp, myname, 8n, 1, complex_dump(d_mapseen_rooms));
     }
 }
 
@@ -2195,7 +2195,7 @@ export function sfi_mkroom(nhfp, d_mkroom, myname) {
  */
 export function sfo_monst(nhfp, d_monst, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 192n, 1, complex_dump(d_monst));
+        sf_log(nhfp, myname, 320n, 1, complex_dump(d_monst));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2249,7 +2249,7 @@ export function sfi_monst(nhfp, d_monst, myname) {
             sfo_monst(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_monst, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 192n, 1, complex_dump(d_monst));
+            sf_log(nhfp, myname, 320n, 1, complex_dump(d_monst));
     }
 }
 
@@ -2261,7 +2261,7 @@ export function sfi_monst(nhfp, d_monst, myname) {
  */
 export function sfo_mvitals(nhfp, d_mvitals, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 4n, 1, complex_dump(d_mvitals));
+        sf_log(nhfp, myname, 12n, 1, complex_dump(d_mvitals));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2315,7 +2315,7 @@ export function sfi_mvitals(nhfp, d_mvitals, myname) {
             sfo_mvitals(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_mvitals, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 4n, 1, complex_dump(d_mvitals));
+            sf_log(nhfp, myname, 12n, 1, complex_dump(d_mvitals));
     }
 }
 
@@ -2327,7 +2327,7 @@ export function sfi_mvitals(nhfp, d_mvitals, myname) {
  */
 export function sfo_obj(nhfp, d_obj, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 112n, 1, complex_dump(d_obj));
+        sf_log(nhfp, myname, 216n, 1, complex_dump(d_obj));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2381,7 +2381,7 @@ export function sfi_obj(nhfp, d_obj, myname) {
             sfo_obj(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_obj, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 112n, 1, complex_dump(d_obj));
+            sf_log(nhfp, myname, 216n, 1, complex_dump(d_obj));
     }
 }
 
@@ -2393,7 +2393,7 @@ export function sfi_obj(nhfp, d_obj, myname) {
  */
 export function sfo_objclass(nhfp, d_objclass, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 72n, 1, complex_dump(d_objclass));
+        sf_log(nhfp, myname, 120n, 1, complex_dump(d_objclass));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2447,7 +2447,7 @@ export function sfi_objclass(nhfp, d_objclass, myname) {
             sfo_objclass(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_objclass, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 72n, 1, complex_dump(d_objclass));
+            sf_log(nhfp, myname, 120n, 1, complex_dump(d_objclass));
     }
 }
 
@@ -2459,7 +2459,7 @@ export function sfi_objclass(nhfp, d_objclass, myname) {
  */
 export function sfo_q_score(nhfp, d_q_score, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 8n, 1, complex_dump(d_q_score));
+        sf_log(nhfp, myname, 88n, 1, complex_dump(d_q_score));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2513,7 +2513,7 @@ export function sfi_q_score(nhfp, d_q_score, myname) {
             sfo_q_score(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_q_score, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 8n, 1, complex_dump(d_q_score));
+            sf_log(nhfp, myname, 88n, 1, complex_dump(d_q_score));
     }
 }
 
@@ -2525,7 +2525,7 @@ export function sfi_q_score(nhfp, d_q_score, myname) {
  */
 export function sfo_rm(nhfp, d_rm, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 8n, 1, complex_dump(d_rm));
+        sf_log(nhfp, myname, 36n, 1, complex_dump(d_rm));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2579,7 +2579,7 @@ export function sfi_rm(nhfp, d_rm, myname) {
             sfo_rm(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_rm, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 8n, 1, complex_dump(d_rm));
+            sf_log(nhfp, myname, 36n, 1, complex_dump(d_rm));
     }
 }
 
@@ -2723,7 +2723,7 @@ export function sfi_stairway(nhfp, d_stairway, myname) {
  */
 export function sfo_s_level(nhfp, d_s_level, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 40n, 1, complex_dump(d_s_level));
+        sf_log(nhfp, myname, 56n, 1, complex_dump(d_s_level));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2777,7 +2777,7 @@ export function sfi_s_level(nhfp, d_s_level, myname) {
             sfo_s_level(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_s_level, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 40n, 1, complex_dump(d_s_level));
+            sf_log(nhfp, myname, 56n, 1, complex_dump(d_s_level));
     }
 }
 
@@ -2789,7 +2789,7 @@ export function sfi_s_level(nhfp, d_s_level, myname) {
  */
 export function sfo_trap(nhfp, d_trap, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 32n, 1, complex_dump(d_trap));
+        sf_log(nhfp, myname, 40n, 1, complex_dump(d_trap));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2843,7 +2843,7 @@ export function sfi_trap(nhfp, d_trap, myname) {
             sfo_trap(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_trap, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 32n, 1, complex_dump(d_trap));
+            sf_log(nhfp, myname, 40n, 1, complex_dump(d_trap));
     }
 }
 
@@ -2855,7 +2855,7 @@ export function sfi_trap(nhfp, d_trap, myname) {
  */
 export function sfo_you(nhfp, d_you, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 2760n, 1, complex_dump(d_you));
+        sf_log(nhfp, myname, 2864n, 1, complex_dump(d_you));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2909,7 +2909,7 @@ export function sfi_you(nhfp, d_you, myname) {
             sfo_you(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_you, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 2760n, 1, complex_dump(d_you));
+            sf_log(nhfp, myname, 2864n, 1, complex_dump(d_you));
     }
 }
 
@@ -4832,7 +4832,7 @@ export function sfvalue_uint32(a) {
         cptr.decay(__static_sfvalue_uint32_buf),
         20n,
         __s_pct_u,
-        cptr.ldI32(a) >>> 0
+        cptr.ldI32(a)
     );
     return cptr.decay(__static_sfvalue_uint32_buf);
 }
@@ -4944,7 +4944,7 @@ export function sfvalue_unsigned(a) {
         cptr.decay(__static_sfvalue_unsigned_buf),
         20n,
         __s_pct_u,
-        cptr.ldI32(a) >>> 0
+        cptr.ldI32(a)
     );
     return cptr.decay(__static_sfvalue_unsigned_buf);
 }
@@ -5062,16 +5062,16 @@ export function complex_dump(a) {
         cptr.decay(__static_complex_dump_buf),
         50n,
         __s_03x_03x_03x_03x_03x_03x_03x_03x_03x_03x,
-        cptr.ldI32o(x, 0, 4) >>> 0,
-        cptr.ldI32o(x, 1, 4) >>> 0,
-        cptr.ldI32o(x, 2, 4) >>> 0,
-        cptr.ldI32o(x, 3, 4) >>> 0,
-        cptr.ldI32o(x, 4, 4) >>> 0,
-        cptr.ldI32o(x, 5, 4) >>> 0,
-        cptr.ldI32o(x, 6, 4) >>> 0,
-        cptr.ldI32o(x, 7, 4) >>> 0,
-        cptr.ldI32o(x, 8, 4) >>> 0,
-        cptr.ldI32o(x, 9, 4) >>> 0
+        cptr.ldI32o(x, 0, 4),
+        cptr.ldI32o(x, 1, 4),
+        cptr.ldI32o(x, 2, 4),
+        cptr.ldI32o(x, 3, 4),
+        cptr.ldI32o(x, 4, 4),
+        cptr.ldI32o(x, 5, 4),
+        cptr.ldI32o(x, 6, 4),
+        cptr.ldI32o(x, 7, 4),
+        cptr.ldI32o(x, 8, 4),
+        cptr.ldI32o(x, 9, 4)
     );
     cptr.st1o(cptr.decay(__static_complex_dump_buf), 40, 0, 1);
     return cptr.decay(__static_complex_dump_buf);

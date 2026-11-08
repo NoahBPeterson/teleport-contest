@@ -180,16 +180,22 @@ const __s_unknown_type_for_mon_explode_d = cptr.lit("unknown type for mon_explod
 
 /* Note: Arrays are column first, while the screen is row first */
 /** C ref: explode.c:11 — int[3][3] */
-const explosion = cptr.alloc(3 * 12);
-cptr.stI32(explosion, NHC.S_expl_tl);
-cptr.stI32o(explosion, 4, NHC.S_expl_ml);
-cptr.stI32o(explosion, 8, NHC.S_expl_bl);
-cptr.stI32o(explosion, 12, NHC.S_expl_tc);
-cptr.stI32o(explosion, 16, NHC.S_expl_mc);
-cptr.stI32o(explosion, 20, NHC.S_expl_bc);
-cptr.stI32o(explosion, 24, NHC.S_expl_tr);
-cptr.stI32o(explosion, 28, NHC.S_expl_mr);
-cptr.stI32o(explosion, 32, NHC.S_expl_br);
+const explosion = (function () {
+    const flat = new Uint8Array(3 * 3 * 4);
+    const a = [];
+    for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 3 * 4, (r + 1) * 3 * 4));
+    a.buf = flat;
+    return a;
+})();
+cptr.stI32o(cptr.decay(explosion[0]), 0, NHC.S_expl_tl);
+cptr.stI32o(cptr.decay(explosion[0]), 4, NHC.S_expl_ml);
+cptr.stI32o(cptr.decay(explosion[0]), 8, NHC.S_expl_bl);
+cptr.stI32o(cptr.decay(explosion[1]), 0, NHC.S_expl_tc);
+cptr.stI32o(cptr.decay(explosion[1]), 4, NHC.S_expl_mc);
+cptr.stI32o(cptr.decay(explosion[1]), 8, NHC.S_expl_bc);
+cptr.stI32o(cptr.decay(explosion[2]), 0, NHC.S_expl_tr);
+cptr.stI32o(cptr.decay(explosion[2]), 4, NHC.S_expl_mr);
+cptr.stI32o(cptr.decay(explosion[2]), 8, NHC.S_expl_br);
 
 /* what to do at [x+i][y+j] for i=-1,0,1 and j=-1,0,1 */
 /** C ref: explode.c:17 — enum */
@@ -397,7 +403,6 @@ function* engulfer_explosion_msg(adtyp, olet) {
  * @param {CInt} expltype
  */
 export function* explode(x, y, type, dam, olet, expltype) {
-    let __r1, __r2;
     let i;
     let j;
     let k;
@@ -410,10 +415,16 @@ export function* explode(x, y, type, dam, olet, expltype) {
     let mtmp;
     let mdef = null;
     let adtyp;
-    let explmask = cptr.alloc(3 * 12);  /* 0=normal explosion, 1=do shieldeff, 2=do nothing */
+    let explmask = (function () {
+        const flat = new Uint8Array(3 * 3 * 4);
+        const a = [];
+        for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 3 * 4, (r + 1) * 3 * 4));
+        a.buf = flat;
+        return a;
+    })();  /* 0=normal explosion, 1=do shieldeff, 2=do nothing */
     let xx;
     let yy;
-    let shopdamage = cptr.box(0, "i8");
+    let shopdamage = cptr.box(0);
     let generic = 0;
     let do_hallu = 0;
     let inside_engulfer;
@@ -430,17 +441,11 @@ export function* explode(x, y, type, dam, olet, expltype) {
         /* 'type' is passed as (wand's object type * -1); save
            object type and convert 'type' itself to zap-type */
         if (type < 0) {
-            type = -type | 0;
+            type = -type;
             exploding_wand_typ = i16(type);
             /* most attack wands produce specific explosions;
                other types produce a generic magical explosion */
-            if ((cptr.ldBits(
-                cptr.add(cptr.add(objects, type, $sizeof_objclass), $objclass_oc_dir),
-                0,
-                3,
-                0
-            ) |
-                0) ==
+            if (((cptr.ldI32o2(objects, type, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) ==
                 NHM.RAY &&
                     type != NHC.WAN_DIGGING &&
                     type != NHC.WAN_SLEEP) {
@@ -485,17 +490,15 @@ export function* explode(x, y, type, dam, olet, expltype) {
             8,
             $instance_globals_saved_l_level + $dlevel_t_monsters
         ));
-        expltype = -expltype | 0;
+        expltype = -expltype;
     }
     /* if hero is engulfed and caused the explosion, only hero and
        engulfer will be affected */
-    inside_engulfer = schar((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && type >= 0
-            ? 1
-            : 0));
+    inside_engulfer = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && type >= 0 ? 1 : 0));
     /* held but not engulfed implies holder is reaching into second spot
        so might get hit by double damage */
     grabbed = (grabbing = 0);
-    if (cptr.ldPtro(u, $you_ustuck) && !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if (cptr.ldPtro(u, $you_ustuck) && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
             grabbing = 1;
         else
@@ -580,15 +583,17 @@ export function* explode(x, y, type, dam, olet, expltype) {
             xx = i16(((x + i - 1) | 0));
             yy = i16(((y + j - 1) | 0));
             if (!isok(xx, yy)) {
-                cptr.stI32o3(explmask, i, 12, j, 4, 0, NHC.EXPL_SKIP);
+                cptr.stI32o(cptr.decay(explmask[i]), j, NHC.EXPL_SKIP, 4);
                 continue;
             }
-            cptr.stI32o3(explmask, i, 12, j, 4, 0, NHC.EXPL_NONE);
+            cptr.stI32o(cptr.decay(explmask[i]), j, NHC.EXPL_NONE, 4);
 
             if (((xx) == cptr.ldI16(u) && (yy) == cptr.ldI16o(u, $you_uy))) {
-                (
-                    __r1 = (yield* explosionmask(cptr.add(gy, $instance_globals_y_youmonst), adtyp, olet)),
-                    cptr.stI32o3(explmask, i, 12, j, 4, 0, __r1)
+                cptr.stI32o(
+                    cptr.decay(explmask[i]),
+                    j,
+                    (yield* explosionmask(cptr.add(gy, $instance_globals_y_youmonst), adtyp, olet)),
+                    4
                 );
             }
             /* can be both you and mtmp if you're swallowed or riding */
@@ -605,17 +610,11 @@ export function* explode(x, y, type, dam, olet, expltype) {
             if (mtmp && (cptr.ldI32o((mtmp), $monst_mhp) < 1))
                 mtmp = null;
             if (mtmp) {
-                (
-                    __r2 = (yield* explosionmask(mtmp, adtyp, olet)),
-                    cptr.stI32o3(
-                        explmask,
-                        i,
-                        12,
-                        j,
-                        4,
-                        0,
-                        cptr.ldI32o3(explmask, i, 12, j, 4, 0) | __r2
-                    )
+                cptr.stI32o(
+                    cptr.decay(explmask[i]),
+                    j,
+                    cptr.ldI32o(cptr.decay(explmask[i]), j, 4) | (yield* explosionmask(mtmp, adtyp, olet)),
+                    4
                 );
             }
 
@@ -636,7 +635,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
             ) &
                     NHM.IN_SIGHT) != 0))
                 visible = 1;
-            if ((cptr.ldI32o3(explmask, i, 12, j, 4, 0) & (NHC.EXPL_MON | NHC.EXPL_HERO)) != 0)
+            if ((cptr.ldI32o(cptr.decay(explmask[i]), j, 4) & (NHC.EXPL_MON | NHC.EXPL_HERO)) != 0)
                 any_shield = 1;
         }
 
@@ -644,13 +643,13 @@ export function* explode(x, y, type, dam, olet, expltype) {
         /* Start the explosion */
         for (i = 0; i < 3; i++)
             for (j = 0; j < 3; j++) {
-                if (cptr.ldI32o3(explmask, i, 12, j, 4, 0) == NHC.EXPL_SKIP)
+                if (cptr.ldI32o(cptr.decay(explmask[i]), j, 4) == NHC.EXPL_SKIP)
                     continue;
                 xx = i16(((x + i - 1) | 0));
                 yy = i16(((y + j - 1) | 0));
                 (yield* tmp_at(
                     i16((starting ? -1 : -6)),
-                    i16(explosion_to_glyph(expltype, cptr.ldI32o3(explosion, i, 12, j, 4, 0)))
+                    i16(explosion_to_glyph(expltype, cptr.ldI32o(cptr.decay(explosion[i]), j, 4)))
                 ));
                 (yield* tmp_at(xx, yy));
                 starting = 0;
@@ -663,7 +662,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
                     for (j = 0; j < 3; j++) {
                         xx = i16(((x + i - 1) | 0));
                         yy = i16(((y + j - 1) | 0));
-                        if ((cptr.ldI32o3(explmask, i, 12, j, 4, 0) &
+                        if ((cptr.ldI32o(cptr.decay(explmask[i]), j, 4) &
                                 (NHC.EXPL_MON | NHC.EXPL_HERO)) != 0)
                             /*
                              * Bypass tmp_at() and send the shield glyphs
@@ -736,12 +735,15 @@ export function* explode(x, y, type, dam, olet, expltype) {
                 for (j = 0; j < 3; j++) {
                     xx = i16(((x + i - 1) | 0));
                     yy = i16(((y + j - 1) | 0));
-                    if ((cptr.ldI32o3(explmask, i, 12, j, 4, 0) &
+                    if ((cptr.ldI32o(cptr.decay(explmask[i]), j, 4) &
                             (NHC.EXPL_MON | NHC.EXPL_HERO)) != 0)
                         (yield* show_glyph(
                             xx,
                             yy,
-                            explosion_to_glyph(expltype, cptr.ldI32o3(explosion, i, 12, j, 4, 0))
+                            explosion_to_glyph(
+                                expltype,
+                                cptr.ldI32o(cptr.decay(explosion[i]), j, 4)
+                            )
                         ));
                 }
 
@@ -773,12 +775,14 @@ export function* explode(x, y, type, dam, olet, expltype) {
             for (j = 0; j < 3; j++) {
                 let itemdmg = 0;
 
-                if (cptr.ldI32o3(explmask, i, 12, j, 4, 0) == NHC.EXPL_SKIP)
+                if (cptr.ldI32o(cptr.decay(explmask[i]), j, 4) == NHC.EXPL_SKIP)
                     continue;
                 xx = i16(((x + i - 1) | 0));
                 yy = i16(((y + j - 1) | 0));
                 if (((xx) == cptr.ldI16(u) && (yy) == cptr.ldI16o(u, $you_uy))) {
-                    uhurt = ((cptr.ldI32o3(explmask, i, 12, j, 4, 0) & NHC.EXPL_HERO) != 0) ? 1 : 2;
+                    uhurt = ((cptr.ldI32o(cptr.decay(explmask[i]), j, 4) & NHC.EXPL_HERO) != 0)
+                            ? 1
+                            : 2;
                     /* If the player is attacking via polyself into something
                      * with an explosion attack, leave them (and their gear)
                      * unharmed, to avoid punishing them from using such
@@ -792,7 +796,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
 
                 /* Affect the floor unless the player caused the explosion
                  * from inside their engulfer. */
-                if (!(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+                if (!((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                         !cptr.ld1so(svc, $context_info_mon_moving)))
                     void (yield* zap_over_floor(xx, yy, type, shopdamage, 0, exploding_wand_typ));
 
@@ -826,7 +830,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
                             ++tryct < 20);
                     str = cptr.decay(hallu_buf);
                 }
-                if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+                if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))) {
                     (yield* engulfer_explosion_msg(adtyp, olet));
                 } else if (((cptr.ld1uo(
@@ -846,7 +850,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
                     (yield* ignite_items(cptr.ldPtro(mtmp, $monst_minvent)));
                 }
 
-                if ((cptr.ldI32o3(explmask, i, 12, j, 4, 0) & NHC.EXPL_MON) != 0) {
+                if ((cptr.ldI32o(cptr.decay(explmask[i]), j, 4) & NHC.EXPL_MON) != 0) {
                     /* Damage from ring/wand explosion isn't itself
                      * electrical in nature, nor is damage from freezing
                      * potion really cold in nature, nor is damage from
@@ -1215,7 +1219,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
                 let trap;
 
                 if ((trap = t_at(sx, sy)) &&
-                        (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.STATUE_TRAP)
+                        ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.STATUE_TRAP)
                     (yield* deltrap(trap));
                 if (((cptr.ld1uo(
                     cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), sy, 8),
@@ -1237,15 +1241,13 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
             /* 1 in 10 chance of destruction of obj; glass, egg destruction */
         } else if (((scflags & NHM.MAY_DESTROY) >>> 0) != 0 &&
                 (!rn2(10) ||
-                    ((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_material
-                        ),
-                        3,
-                        5,
-                        0
-                    ) |
+                    (((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(otmp, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
                         0) ==
                         NHC.GLASS ||
                         cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG))) {
@@ -1262,7 +1264,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
             tmp = rn2(((NHC.N_DIRS_Z - 2) | 0));  /* get the direction */
             cptr.st1o(stmp, $scatter_chain_dx, cptr.ld1so(cptr.decay(xdir), tmp, 1));
             cptr.st1o(stmp, $scatter_chain_dy, cptr.ld1so(cptr.decay(ydir), tmp, 1));
-            tmp = ((blastforce >>> 0) - (u32div(cptr.ldI32o(otmp, $obj_owt) >>> 0, 40))) | 0;
+            tmp = ((blastforce >>> 0) - (u32div(cptr.ldI32o(otmp, $obj_owt), 40))) | 0;
             if (tmp < 1)
                 tmp = 1;
             cptr.stI32o(stmp, $scatter_chain_range, rnd(tmp));  /* anywhere up to that determ. by wt */
@@ -1488,7 +1490,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
     }
     (yield* newsym(sx, sy));
     if (((sx) == cptr.ldI16(u) && (sy) == cptr.ldI16o(u, $you_uy)) &&
-            cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
+            (cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
@@ -1504,8 +1506,8 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
         $instance_globals_saved_l_level + $dlevel_t_monsters
     ))) !==
         null) &&
-            cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0)
-        cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
+            (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
+        cptr.stI32o(mtmp, $monst_mtrapped, 0);
     (yield* maybe_unhide_at(sx, sy));
     if (lostgoods)
         (yield* credit_report(shkp, 1, 0));
@@ -1534,12 +1536,12 @@ export function* splatter_burning_oil(x, y, diluted_oil) {
    possibly killing the hero and attempting to save bones */
 /** C ref: explode.c:974 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 export function* explode_oil(obj, x, y) {
-    let diluted_oil = schar(cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0));
+    let diluted_oil = schar((cptr.ldI32o(obj, $obj_oeroded) & 3));
 
-    if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0))
+    if (!(cptr.ldI32o(obj, $obj_lamplit) & 1))
         (yield* impossible(__s_exploding_unlit_oil));
     (yield* end_burn(obj, 1));
-    cptr.stBits(cptr.add(obj, $obj_how_lost), 0, 3, 0, NHM.LOST_EXPLODING);
+    cptr.stI32o(obj, $obj_how_lost, NHM.LOST_EXPLODING);
     (yield* splatter_burning_oil(x, y, diluted_oil));
 }
 
@@ -1595,7 +1597,7 @@ export function* mon_explodes(mon, mattk) {
         /* The -1, +20, *-1 math is to set it up as a 'monster breath' type
          * for the explosions (it isn't, but this is the closest analogue). */
         /* FIXME: there are macros for kind of thing... */
-        type = -((cptr.ld1uo(mattk, $attack_adtyp) - 1 + 20) | 0) | 0;
+        type = -((cptr.ld1uo(mattk, $attack_adtyp) - 1 + 20) | 0);
     } else {
         (yield* impossible(__s_unknown_type_for_mon_explode_d, cptr.ld1uo(mattk, $attack_adtyp)));
         return;

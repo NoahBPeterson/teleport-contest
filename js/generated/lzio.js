@@ -13,13 +13,13 @@ const $ZIO_L = FLD.ZIO_L, $ZIO_data = FLD.ZIO_data, $ZIO_p = FLD.ZIO_p, $ZIO_rea
 
 /** C ref: lzio.c:23 — @param {CPtr<ZIO>} z @returns {CInt} */
 export function luaZ_fill(z) {
-    let size = cptr.box(0n, "u64");
+    let size = cptr.box(0n);
     let L = cptr.ldPtro(z, $ZIO_L);
     let buff;
     (void 0);
     buff = cptr.ldPtro(z, $ZIO_reader)(L, cptr.ldPtro(z, $ZIO_data), size);
     (void 0);
-    if (cptr.eq(buff, cptr.byteView((null))) || size.v == 0n)
+    if (cptr.eq(buff, (null)) || size.v == 0n)
         return -1;
     cptr.stU64(z, BigInt.asUintN(64, size.v - 1n));  /* discount char being returned */
     cptr.stPtro(z, $ZIO_p, buff);
@@ -65,10 +65,10 @@ export function luaZ_read(z, b, n) {
         }
         m = (n <= cptr.ldU64(z)) ? n : cptr.ldU64(z);  /* min. between n and z->n */
         cptr.memcpy(b, cptr.ldPtro(z, $ZIO_p), m);
-        cptr.stU64(z, BigInt.asUintN(64, cptr.ldU64(z) - m));
+        cptr.stU64(z, cptr.ldU64(z) - m);
         cptr.stPtro(z, $ZIO_p, cptr.add(cptr.ldPtro(z, $ZIO_p), m));
-        b = cptr.add(cptr.byteView(b), m);
-        n = BigInt.asUintN(64, n - m);
+        b = cptr.add(b, m);
+        n -= m;
     }
     return 0n;
 }

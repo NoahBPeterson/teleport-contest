@@ -488,8 +488,8 @@ const __s_could_not_create_role_selection_window = cptr.lit("could not create ro
 export const roles = cptr.alloc(14 * $sizeof_Role);
 cptr.stPtro(roles, 0, __s_archeologist);
 cptr.stPtro(roles, 0 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_rank, __s_digger);
-cptr.stPtro(roles, 0 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 0 + $Role_rank + 0, __s_digger);
+cptr.stPtro(roles, 0 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 0 + $Role_rank + 16, __s_field_worker);
 cptr.stPtro(roles, 0 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 0 + $Role_rank + 32, __s_investigator);
@@ -523,13 +523,13 @@ cptr.st1o(roles, 0 + $Role_enemy1sym, NHC.S_SNAKE);
 cptr.st1o(roles, 0 + $Role_enemy2sym, NHC.S_MUMMY);
 cptr.stI16o(roles, 0 + $Role_questarti, NHC.ART_ORB_OF_DETECTION);
 cptr.stI16o(roles, 0 + $Role_allow, 12398);
-cptr.stI16o(roles, 0 + $Role_attrbase, 7);
+cptr.stI16o(roles, 0 + $Role_attrbase + 0, 7);
 cptr.stI16o(roles, 0 + $Role_attrbase + 2, 10);
 cptr.stI16o(roles, 0 + $Role_attrbase + 4, 10);
 cptr.stI16o(roles, 0 + $Role_attrbase + 6, 7);
 cptr.stI16o(roles, 0 + $Role_attrbase + 8, 7);
 cptr.stI16o(roles, 0 + $Role_attrbase + 10, 7);
-cptr.stI16o(roles, 0 + $Role_attrdist, 20);
+cptr.stI16o(roles, 0 + $Role_attrdist + 0, 20);
 cptr.stI16o(roles, 0 + $Role_attrdist + 2, 20);
 cptr.stI16o(roles, 0 + $Role_attrdist + 4, 20);
 cptr.stI16o(roles, 0 + $Role_attrdist + 6, 10);
@@ -558,8 +558,8 @@ cptr.stI32o(roles, 0 + $Role_spelspec, NHC.SPE_MAGIC_MAPPING);
 cptr.stI32o(roles, 0 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 312, __s_barbarian);
 cptr.stPtro(roles, 312 + $RoleName_f, null);
-cptr.stPtro(roles, 312 + $Role_rank, __s_plunderer);
-cptr.stPtro(roles, 312 + $Role_rank + $RoleName_f, __s_plunderess);
+cptr.stPtro(roles, 312 + $Role_rank + 0, __s_plunderer);
+cptr.stPtro(roles, 312 + $Role_rank + 0 + $RoleName_f, __s_plunderess);
 cptr.stPtro(roles, 312 + $Role_rank + 16, __s_pillager);
 cptr.stPtro(roles, 312 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 312 + $Role_rank + 32, __s_bandit);
@@ -593,13 +593,13 @@ cptr.st1o(roles, 312 + $Role_enemy1sym, NHC.S_OGRE);
 cptr.st1o(roles, 312 + $Role_enemy2sym, NHC.S_TROLL);
 cptr.stI16o(roles, 312 + $Role_questarti, NHC.ART_HEART_OF_AHRIMAN);
 cptr.stI16o(roles, 312 + $Role_allow, 12427);
-cptr.stI16o(roles, 312 + $Role_attrbase, 16);
+cptr.stI16o(roles, 312 + $Role_attrbase + 0, 16);
 cptr.stI16o(roles, 312 + $Role_attrbase + 2, 7);
 cptr.stI16o(roles, 312 + $Role_attrbase + 4, 7);
 cptr.stI16o(roles, 312 + $Role_attrbase + 6, 15);
 cptr.stI16o(roles, 312 + $Role_attrbase + 8, 16);
 cptr.stI16o(roles, 312 + $Role_attrbase + 10, 6);
-cptr.stI16o(roles, 312 + $Role_attrdist, 30);
+cptr.stI16o(roles, 312 + $Role_attrdist + 0, 30);
 cptr.stI16o(roles, 312 + $Role_attrdist + 2, 6);
 cptr.stI16o(roles, 312 + $Role_attrdist + 4, 7);
 cptr.stI16o(roles, 312 + $Role_attrdist + 6, 20);
@@ -628,8 +628,8 @@ cptr.stI32o(roles, 312 + $Role_spelspec, NHC.SPE_HASTE_SELF);
 cptr.stI32o(roles, 312 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 624, __s_caveman);
 cptr.stPtro(roles, 624 + $RoleName_f, __s_cavewoman);
-cptr.stPtro(roles, 624 + $Role_rank, __s_troglodyte);
-cptr.stPtro(roles, 624 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 624 + $Role_rank + 0, __s_troglodyte);
+cptr.stPtro(roles, 624 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 624 + $Role_rank + 16, __s_aborigine);
 cptr.stPtro(roles, 624 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 624 + $Role_rank + 32, __s_wanderer);
@@ -663,13 +663,13 @@ cptr.st1o(roles, 624 + $Role_enemy1sym, NHC.S_HUMANOID);
 cptr.st1o(roles, 624 + $Role_enemy2sym, NHC.S_GIANT);
 cptr.stI16o(roles, 624 + $Role_questarti, NHC.ART_SCEPTRE_OF_MIGHT);
 cptr.stI16o(roles, 624 + $Role_allow, 12398);
-cptr.stI16o(roles, 624 + $Role_attrbase, 10);
+cptr.stI16o(roles, 624 + $Role_attrbase + 0, 10);
 cptr.stI16o(roles, 624 + $Role_attrbase + 2, 7);
 cptr.stI16o(roles, 624 + $Role_attrbase + 4, 7);
 cptr.stI16o(roles, 624 + $Role_attrbase + 6, 7);
 cptr.stI16o(roles, 624 + $Role_attrbase + 8, 8);
 cptr.stI16o(roles, 624 + $Role_attrbase + 10, 6);
-cptr.stI16o(roles, 624 + $Role_attrdist, 30);
+cptr.stI16o(roles, 624 + $Role_attrdist + 0, 30);
 cptr.stI16o(roles, 624 + $Role_attrdist + 2, 6);
 cptr.stI16o(roles, 624 + $Role_attrdist + 4, 7);
 cptr.stI16o(roles, 624 + $Role_attrdist + 6, 20);
@@ -698,8 +698,8 @@ cptr.stI32o(roles, 624 + $Role_spelspec, NHC.SPE_DIG);
 cptr.stI32o(roles, 624 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 936, __s_healer);
 cptr.stPtro(roles, 936 + $RoleName_f, null);
-cptr.stPtro(roles, 936 + $Role_rank, __s_rhizotomist);
-cptr.stPtro(roles, 936 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 936 + $Role_rank + 0, __s_rhizotomist);
+cptr.stPtro(roles, 936 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 936 + $Role_rank + 16, __s_empiric);
 cptr.stPtro(roles, 936 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 936 + $Role_rank + 32, __s_embalmer);
@@ -733,13 +733,13 @@ cptr.st1o(roles, 936 + $Role_enemy1sym, NHC.S_RODENT);
 cptr.st1o(roles, 936 + $Role_enemy2sym, NHC.S_YETI);
 cptr.stI16o(roles, 936 + $Role_questarti, NHC.ART_STAFF_OF_AESCULAPIUS);
 cptr.stI16o(roles, 936 + $Role_allow, 12362);
-cptr.stI16o(roles, 936 + $Role_attrbase, 7);
+cptr.stI16o(roles, 936 + $Role_attrbase + 0, 7);
 cptr.stI16o(roles, 936 + $Role_attrbase + 2, 7);
 cptr.stI16o(roles, 936 + $Role_attrbase + 4, 13);
 cptr.stI16o(roles, 936 + $Role_attrbase + 6, 7);
 cptr.stI16o(roles, 936 + $Role_attrbase + 8, 11);
 cptr.stI16o(roles, 936 + $Role_attrbase + 10, 16);
-cptr.stI16o(roles, 936 + $Role_attrdist, 15);
+cptr.stI16o(roles, 936 + $Role_attrdist + 0, 15);
 cptr.stI16o(roles, 936 + $Role_attrdist + 2, 20);
 cptr.stI16o(roles, 936 + $Role_attrdist + 4, 20);
 cptr.stI16o(roles, 936 + $Role_attrdist + 6, 15);
@@ -768,8 +768,8 @@ cptr.stI32o(roles, 936 + $Role_spelspec, NHC.SPE_CURE_SICKNESS);
 cptr.stI32o(roles, 936 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 1248, __s_knight);
 cptr.stPtro(roles, 1248 + $RoleName_f, null);
-cptr.stPtro(roles, 1248 + $Role_rank, __s_gallant);
-cptr.stPtro(roles, 1248 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 1248 + $Role_rank + 0, __s_gallant);
+cptr.stPtro(roles, 1248 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 1248 + $Role_rank + 16, __s_esquire);
 cptr.stPtro(roles, 1248 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 1248 + $Role_rank + 32, __s_bachelor);
@@ -803,13 +803,13 @@ cptr.st1o(roles, 1248 + $Role_enemy1sym, NHC.S_IMP);
 cptr.st1o(roles, 1248 + $Role_enemy2sym, NHC.S_JELLY);
 cptr.stI16o(roles, 1248 + $Role_questarti, NHC.ART_MAGIC_MIRROR_OF_MERLIN);
 cptr.stI16o(roles, 1248 + $Role_allow, 12300);
-cptr.stI16o(roles, 1248 + $Role_attrbase, 13);
+cptr.stI16o(roles, 1248 + $Role_attrbase + 0, 13);
 cptr.stI16o(roles, 1248 + $Role_attrbase + 2, 7);
 cptr.stI16o(roles, 1248 + $Role_attrbase + 4, 14);
 cptr.stI16o(roles, 1248 + $Role_attrbase + 6, 8);
 cptr.stI16o(roles, 1248 + $Role_attrbase + 8, 10);
 cptr.stI16o(roles, 1248 + $Role_attrbase + 10, 17);
-cptr.stI16o(roles, 1248 + $Role_attrdist, 30);
+cptr.stI16o(roles, 1248 + $Role_attrdist + 0, 30);
 cptr.stI16o(roles, 1248 + $Role_attrdist + 2, 15);
 cptr.stI16o(roles, 1248 + $Role_attrdist + 4, 15);
 cptr.stI16o(roles, 1248 + $Role_attrdist + 6, 10);
@@ -838,8 +838,8 @@ cptr.stI32o(roles, 1248 + $Role_spelspec, NHC.SPE_TURN_UNDEAD);
 cptr.stI32o(roles, 1248 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 1560, __s_monk);
 cptr.stPtro(roles, 1560 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_rank, __s_candidate);
-cptr.stPtro(roles, 1560 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 1560 + $Role_rank + 0, __s_candidate);
+cptr.stPtro(roles, 1560 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 1560 + $Role_rank + 16, __s_novice);
 cptr.stPtro(roles, 1560 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 1560 + $Role_rank + 32, __s_initiate);
@@ -873,13 +873,13 @@ cptr.st1o(roles, 1560 + $Role_enemy1sym, NHC.S_ELEMENTAL);
 cptr.st1o(roles, 1560 + $Role_enemy2sym, NHC.S_XORN);
 cptr.stI16o(roles, 1560 + $Role_questarti, NHC.ART_EYES_OF_THE_OVERWORLD);
 cptr.stI16o(roles, 1560 + $Role_allow, 12303);
-cptr.stI16o(roles, 1560 + $Role_attrbase, 10);
+cptr.stI16o(roles, 1560 + $Role_attrbase + 0, 10);
 cptr.stI16o(roles, 1560 + $Role_attrbase + 2, 7);
 cptr.stI16o(roles, 1560 + $Role_attrbase + 4, 8);
 cptr.stI16o(roles, 1560 + $Role_attrbase + 6, 8);
 cptr.stI16o(roles, 1560 + $Role_attrbase + 8, 7);
 cptr.stI16o(roles, 1560 + $Role_attrbase + 10, 7);
-cptr.stI16o(roles, 1560 + $Role_attrdist, 25);
+cptr.stI16o(roles, 1560 + $Role_attrdist + 0, 25);
 cptr.stI16o(roles, 1560 + $Role_attrdist + 2, 10);
 cptr.stI16o(roles, 1560 + $Role_attrdist + 4, 20);
 cptr.stI16o(roles, 1560 + $Role_attrdist + 6, 20);
@@ -908,8 +908,8 @@ cptr.stI32o(roles, 1560 + $Role_spelspec, NHC.SPE_RESTORE_ABILITY);
 cptr.stI32o(roles, 1560 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 1872, __s_priest);
 cptr.stPtro(roles, 1872 + $RoleName_f, __s_priestess);
-cptr.stPtro(roles, 1872 + $Role_rank, __s_aspirant);
-cptr.stPtro(roles, 1872 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 1872 + $Role_rank + 0, __s_aspirant);
+cptr.stPtro(roles, 1872 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 1872 + $Role_rank + 16, __s_acolyte);
 cptr.stPtro(roles, 1872 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 1872 + $Role_rank + 32, __s_adept);
@@ -943,13 +943,13 @@ cptr.st1o(roles, 1872 + $Role_enemy1sym, NHC.S_ZOMBIE);
 cptr.st1o(roles, 1872 + $Role_enemy2sym, NHC.S_WRAITH);
 cptr.stI16o(roles, 1872 + $Role_questarti, NHC.ART_MITRE_OF_HOLINESS);
 cptr.stI16o(roles, 1872 + $Role_allow, 12319);
-cptr.stI16o(roles, 1872 + $Role_attrbase, 7);
+cptr.stI16o(roles, 1872 + $Role_attrbase + 0, 7);
 cptr.stI16o(roles, 1872 + $Role_attrbase + 2, 7);
 cptr.stI16o(roles, 1872 + $Role_attrbase + 4, 10);
 cptr.stI16o(roles, 1872 + $Role_attrbase + 6, 7);
 cptr.stI16o(roles, 1872 + $Role_attrbase + 8, 7);
 cptr.stI16o(roles, 1872 + $Role_attrbase + 10, 7);
-cptr.stI16o(roles, 1872 + $Role_attrdist, 15);
+cptr.stI16o(roles, 1872 + $Role_attrdist + 0, 15);
 cptr.stI16o(roles, 1872 + $Role_attrdist + 2, 10);
 cptr.stI16o(roles, 1872 + $Role_attrdist + 4, 30);
 cptr.stI16o(roles, 1872 + $Role_attrdist + 6, 15);
@@ -978,8 +978,8 @@ cptr.stI32o(roles, 1872 + $Role_spelspec, NHC.SPE_REMOVE_CURSE);
 cptr.stI32o(roles, 1872 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 2184, __s_rogue);
 cptr.stPtro(roles, 2184 + $RoleName_f, null);
-cptr.stPtro(roles, 2184 + $Role_rank, __s_footpad);
-cptr.stPtro(roles, 2184 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 2184 + $Role_rank + 0, __s_footpad);
+cptr.stPtro(roles, 2184 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 2184 + $Role_rank + 16, __s_cutpurse);
 cptr.stPtro(roles, 2184 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 2184 + $Role_rank + 32, __s_rogue);
@@ -1013,13 +1013,13 @@ cptr.st1o(roles, 2184 + $Role_enemy1sym, NHC.S_NYMPH);
 cptr.st1o(roles, 2184 + $Role_enemy2sym, NHC.S_NAGA);
 cptr.stI16o(roles, 2184 + $Role_questarti, NHC.ART_MASTER_KEY_OF_THIEVERY);
 cptr.stI16o(roles, 2184 + $Role_allow, 12425);
-cptr.stI16o(roles, 2184 + $Role_attrbase, 7);
+cptr.stI16o(roles, 2184 + $Role_attrbase + 0, 7);
 cptr.stI16o(roles, 2184 + $Role_attrbase + 2, 7);
 cptr.stI16o(roles, 2184 + $Role_attrbase + 4, 7);
 cptr.stI16o(roles, 2184 + $Role_attrbase + 6, 10);
 cptr.stI16o(roles, 2184 + $Role_attrbase + 8, 7);
 cptr.stI16o(roles, 2184 + $Role_attrbase + 10, 6);
-cptr.stI16o(roles, 2184 + $Role_attrdist, 20);
+cptr.stI16o(roles, 2184 + $Role_attrdist + 0, 20);
 cptr.stI16o(roles, 2184 + $Role_attrdist + 2, 10);
 cptr.stI16o(roles, 2184 + $Role_attrdist + 4, 10);
 cptr.stI16o(roles, 2184 + $Role_attrdist + 6, 30);
@@ -1048,8 +1048,8 @@ cptr.stI32o(roles, 2184 + $Role_spelspec, NHC.SPE_DETECT_TREASURE);
 cptr.stI32o(roles, 2184 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 2496, __s_ranger);
 cptr.stPtro(roles, 2496 + $RoleName_f, null);
-cptr.stPtro(roles, 2496 + $Role_rank, __s_tenderfoot);
-cptr.stPtro(roles, 2496 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 2496 + $Role_rank + 0, __s_tenderfoot);
+cptr.stPtro(roles, 2496 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 2496 + $Role_rank + 16, __s_lookout);
 cptr.stPtro(roles, 2496 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 2496 + $Role_rank + 32, __s_trailblazer);
@@ -1083,13 +1083,13 @@ cptr.st1o(roles, 2496 + $Role_enemy1sym, NHC.S_CENTAUR);
 cptr.st1o(roles, 2496 + $Role_enemy2sym, NHC.S_SPIDER);
 cptr.stI16o(roles, 2496 + $Role_questarti, NHC.ART_LONGBOW_OF_DIANA);
 cptr.stI16o(roles, 2496 + $Role_allow, 12507);
-cptr.stI16o(roles, 2496 + $Role_attrbase, 13);
+cptr.stI16o(roles, 2496 + $Role_attrbase + 0, 13);
 cptr.stI16o(roles, 2496 + $Role_attrbase + 2, 13);
 cptr.stI16o(roles, 2496 + $Role_attrbase + 4, 13);
 cptr.stI16o(roles, 2496 + $Role_attrbase + 6, 9);
 cptr.stI16o(roles, 2496 + $Role_attrbase + 8, 13);
 cptr.stI16o(roles, 2496 + $Role_attrbase + 10, 7);
-cptr.stI16o(roles, 2496 + $Role_attrdist, 30);
+cptr.stI16o(roles, 2496 + $Role_attrdist + 0, 30);
 cptr.stI16o(roles, 2496 + $Role_attrdist + 2, 10);
 cptr.stI16o(roles, 2496 + $Role_attrdist + 4, 10);
 cptr.stI16o(roles, 2496 + $Role_attrdist + 6, 20);
@@ -1118,8 +1118,8 @@ cptr.stI32o(roles, 2496 + $Role_spelspec, NHC.SPE_INVISIBILITY);
 cptr.stI32o(roles, 2496 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 2808, __s_samurai);
 cptr.stPtro(roles, 2808 + $RoleName_f, null);
-cptr.stPtro(roles, 2808 + $Role_rank, __s_hatamoto);
-cptr.stPtro(roles, 2808 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 2808 + $Role_rank + 0, __s_hatamoto);
+cptr.stPtro(roles, 2808 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 2808 + $Role_rank + 16, __s_ronin);
 cptr.stPtro(roles, 2808 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 2808 + $Role_rank + 32, __s_ninja);
@@ -1153,13 +1153,13 @@ cptr.st1o(roles, 2808 + $Role_enemy1sym, NHC.S_DOG);
 cptr.st1o(roles, 2808 + $Role_enemy2sym, NHC.S_ELEMENTAL);
 cptr.stI16o(roles, 2808 + $Role_questarti, NHC.ART_TSURUGI_OF_MURAMASA);
 cptr.stI16o(roles, 2808 + $Role_allow, 12300);
-cptr.stI16o(roles, 2808 + $Role_attrbase, 10);
+cptr.stI16o(roles, 2808 + $Role_attrbase + 0, 10);
 cptr.stI16o(roles, 2808 + $Role_attrbase + 2, 8);
 cptr.stI16o(roles, 2808 + $Role_attrbase + 4, 7);
 cptr.stI16o(roles, 2808 + $Role_attrbase + 6, 10);
 cptr.stI16o(roles, 2808 + $Role_attrbase + 8, 17);
 cptr.stI16o(roles, 2808 + $Role_attrbase + 10, 6);
-cptr.stI16o(roles, 2808 + $Role_attrdist, 30);
+cptr.stI16o(roles, 2808 + $Role_attrdist + 0, 30);
 cptr.stI16o(roles, 2808 + $Role_attrdist + 2, 10);
 cptr.stI16o(roles, 2808 + $Role_attrdist + 4, 8);
 cptr.stI16o(roles, 2808 + $Role_attrdist + 6, 30);
@@ -1188,8 +1188,8 @@ cptr.stI32o(roles, 2808 + $Role_spelspec, NHC.SPE_CLAIRVOYANCE);
 cptr.stI32o(roles, 2808 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 3120, __s_tourist);
 cptr.stPtro(roles, 3120 + $RoleName_f, null);
-cptr.stPtro(roles, 3120 + $Role_rank, __s_rambler);
-cptr.stPtro(roles, 3120 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 3120 + $Role_rank + 0, __s_rambler);
+cptr.stPtro(roles, 3120 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 3120 + $Role_rank + 16, __s_sightseer);
 cptr.stPtro(roles, 3120 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 3120 + $Role_rank + 32, __s_excursionist);
@@ -1223,13 +1223,13 @@ cptr.st1o(roles, 3120 + $Role_enemy1sym, NHC.S_SPIDER);
 cptr.st1o(roles, 3120 + $Role_enemy2sym, NHC.S_CENTAUR);
 cptr.stI16o(roles, 3120 + $Role_questarti, NHC.ART_YENDORIAN_EXPRESS_CARD);
 cptr.stI16o(roles, 3120 + $Role_allow, 12298);
-cptr.stI16o(roles, 3120 + $Role_attrbase, 7);
+cptr.stI16o(roles, 3120 + $Role_attrbase + 0, 7);
 cptr.stI16o(roles, 3120 + $Role_attrbase + 2, 10);
 cptr.stI16o(roles, 3120 + $Role_attrbase + 4, 6);
 cptr.stI16o(roles, 3120 + $Role_attrbase + 6, 7);
 cptr.stI16o(roles, 3120 + $Role_attrbase + 8, 7);
 cptr.stI16o(roles, 3120 + $Role_attrbase + 10, 10);
-cptr.stI16o(roles, 3120 + $Role_attrdist, 15);
+cptr.stI16o(roles, 3120 + $Role_attrdist + 0, 15);
 cptr.stI16o(roles, 3120 + $Role_attrdist + 2, 10);
 cptr.stI16o(roles, 3120 + $Role_attrdist + 4, 10);
 cptr.stI16o(roles, 3120 + $Role_attrdist + 6, 15);
@@ -1258,8 +1258,8 @@ cptr.stI32o(roles, 3120 + $Role_spelspec, NHC.SPE_CHARM_MONSTER);
 cptr.stI32o(roles, 3120 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 3432, __s_valkyrie);
 cptr.stPtro(roles, 3432 + $RoleName_f, null);
-cptr.stPtro(roles, 3432 + $Role_rank, __s_stripling);
-cptr.stPtro(roles, 3432 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 3432 + $Role_rank + 0, __s_stripling);
+cptr.stPtro(roles, 3432 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 3432 + $Role_rank + 16, __s_skirmisher);
 cptr.stPtro(roles, 3432 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 3432 + $Role_rank + 32, __s_fighter);
@@ -1293,13 +1293,13 @@ cptr.st1o(roles, 3432 + $Role_enemy1sym, NHC.S_ANT);
 cptr.st1o(roles, 3432 + $Role_enemy2sym, NHC.S_GIANT);
 cptr.stI16o(roles, 3432 + $Role_questarti, NHC.ART_ORB_OF_FATE);
 cptr.stI16o(roles, 3432 + $Role_allow, 8238);
-cptr.stI16o(roles, 3432 + $Role_attrbase, 10);
+cptr.stI16o(roles, 3432 + $Role_attrbase + 0, 10);
 cptr.stI16o(roles, 3432 + $Role_attrbase + 2, 7);
 cptr.stI16o(roles, 3432 + $Role_attrbase + 4, 7);
 cptr.stI16o(roles, 3432 + $Role_attrbase + 6, 7);
 cptr.stI16o(roles, 3432 + $Role_attrbase + 8, 10);
 cptr.stI16o(roles, 3432 + $Role_attrbase + 10, 7);
-cptr.stI16o(roles, 3432 + $Role_attrdist, 30);
+cptr.stI16o(roles, 3432 + $Role_attrdist + 0, 30);
 cptr.stI16o(roles, 3432 + $Role_attrdist + 2, 6);
 cptr.stI16o(roles, 3432 + $Role_attrdist + 4, 7);
 cptr.stI16o(roles, 3432 + $Role_attrdist + 6, 20);
@@ -1328,8 +1328,8 @@ cptr.stI32o(roles, 3432 + $Role_spelspec, NHC.SPE_CONE_OF_COLD);
 cptr.stI32o(roles, 3432 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 3744, __s_wizard);
 cptr.stPtro(roles, 3744 + $RoleName_f, null);
-cptr.stPtro(roles, 3744 + $Role_rank, __s_evoker);
-cptr.stPtro(roles, 3744 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 3744 + $Role_rank + 0, __s_evoker);
+cptr.stPtro(roles, 3744 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 3744 + $Role_rank + 16, __s_conjurer);
 cptr.stPtro(roles, 3744 + $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(roles, 3744 + $Role_rank + 32, __s_thaumaturge);
@@ -1363,13 +1363,13 @@ cptr.st1o(roles, 3744 + $Role_enemy1sym, NHC.S_BAT);
 cptr.st1o(roles, 3744 + $Role_enemy2sym, NHC.S_WRAITH);
 cptr.stI16o(roles, 3744 + $Role_questarti, NHC.ART_EYE_OF_THE_AETHIOPICA);
 cptr.stI16o(roles, 3744 + $Role_allow, 12507);
-cptr.stI16o(roles, 3744 + $Role_attrbase, 7);
+cptr.stI16o(roles, 3744 + $Role_attrbase + 0, 7);
 cptr.stI16o(roles, 3744 + $Role_attrbase + 2, 10);
 cptr.stI16o(roles, 3744 + $Role_attrbase + 4, 7);
 cptr.stI16o(roles, 3744 + $Role_attrbase + 6, 7);
 cptr.stI16o(roles, 3744 + $Role_attrbase + 8, 7);
 cptr.stI16o(roles, 3744 + $Role_attrbase + 10, 7);
-cptr.stI16o(roles, 3744 + $Role_attrdist, 10);
+cptr.stI16o(roles, 3744 + $Role_attrdist + 0, 10);
 cptr.stI16o(roles, 3744 + $Role_attrdist + 2, 30);
 cptr.stI16o(roles, 3744 + $Role_attrdist + 4, 10);
 cptr.stI16o(roles, 3744 + $Role_attrdist + 6, 20);
@@ -1398,8 +1398,8 @@ cptr.stI32o(roles, 3744 + $Role_spelspec, NHC.SPE_MAGIC_MISSILE);
 cptr.stI32o(roles, 3744 + $Role_spelsbon, -4);
 cptr.stPtro(roles, 4056, null);
 cptr.stPtro(roles, 4056 + $RoleName_f, null);
-cptr.stPtro(roles, 4056 + $Role_rank, null);
-cptr.stPtro(roles, 4056 + $Role_rank + $RoleName_f, null);
+cptr.stPtro(roles, 4056 + $Role_rank + 0, null);
+cptr.stPtro(roles, 4056 + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(roles, 4056 + $Role_lgod, null);
 cptr.stPtro(roles, 4056 + $Role_ngod, null);
 cptr.stPtro(roles, 4056 + $Role_cgod, null);
@@ -1417,8 +1417,8 @@ cptr.st1o(roles, 4056 + $Role_enemy1sym, 0);
 cptr.st1o(roles, 4056 + $Role_enemy2sym, 0);
 cptr.stI16o(roles, 4056 + $Role_questarti, NHC.STRANGE_OBJECT);
 cptr.stI16o(roles, 4056 + $Role_allow, 0);
-cptr.stI16o(roles, 4056 + $Role_attrbase, 0);
-cptr.stI16o(roles, 4056 + $Role_attrdist, 0);
+cptr.stI16o(roles, 4056 + $Role_attrbase + 0, 0);
+cptr.stI16o(roles, 4056 + $Role_attrdist + 0, 0);
 cptr.stI16o(roles, 4056 + $Role_hpadv, 0);
 cptr.stI16o(roles, 4056 + $Role_enadv, 0);
 cptr.stI16o(roles, 4056 + $Role_xlev, 0);
@@ -1449,13 +1449,13 @@ cptr.stI16o(races, 0 + $Race_allow, 12303);
 cptr.stI16o(races, 0 + $Race_selfmask, NHM.M2_HUMAN);
 cptr.stI16o(races, 0 + $Race_lovemask, 0);
 cptr.stI16o(races, 0 + $Race_hatemask, 192);
-cptr.stI16o(races, 0 + $Race_attrmin, 3);
+cptr.stI16o(races, 0 + $Race_attrmin + 0, 3);
 cptr.stI16o(races, 0 + $Race_attrmin + 2, 3);
 cptr.stI16o(races, 0 + $Race_attrmin + 4, 3);
 cptr.stI16o(races, 0 + $Race_attrmin + 6, 3);
 cptr.stI16o(races, 0 + $Race_attrmin + 8, 3);
 cptr.stI16o(races, 0 + $Race_attrmin + 10, 3);
-cptr.stI16o(races, 0 + $Race_attrmax, 118);
+cptr.stI16o(races, 0 + $Race_attrmax + 0, 118);
 cptr.stI16o(races, 0 + $Race_attrmax + 2, 18);
 cptr.stI16o(races, 0 + $Race_attrmax + 4, 18);
 cptr.stI16o(races, 0 + $Race_attrmax + 6, 18);
@@ -1486,13 +1486,13 @@ cptr.stI16o(races, 112 + $Race_allow, 12305);
 cptr.stI16o(races, 112 + $Race_selfmask, NHM.M2_ELF);
 cptr.stI16o(races, 112 + $Race_lovemask, NHM.M2_ELF);
 cptr.stI16o(races, 112 + $Race_hatemask, NHM.M2_ORC);
-cptr.stI16o(races, 112 + $Race_attrmin, 3);
+cptr.stI16o(races, 112 + $Race_attrmin + 0, 3);
 cptr.stI16o(races, 112 + $Race_attrmin + 2, 3);
 cptr.stI16o(races, 112 + $Race_attrmin + 4, 3);
 cptr.stI16o(races, 112 + $Race_attrmin + 6, 3);
 cptr.stI16o(races, 112 + $Race_attrmin + 8, 3);
 cptr.stI16o(races, 112 + $Race_attrmin + 10, 3);
-cptr.stI16o(races, 112 + $Race_attrmax, 18);
+cptr.stI16o(races, 112 + $Race_attrmax + 0, 18);
 cptr.stI16o(races, 112 + $Race_attrmax + 2, 20);
 cptr.stI16o(races, 112 + $Race_attrmax + 4, 20);
 cptr.stI16o(races, 112 + $Race_attrmax + 6, 18);
@@ -1523,13 +1523,13 @@ cptr.stI16o(races, 224 + $Race_allow, 12324);
 cptr.stI16o(races, 224 + $Race_selfmask, NHM.M2_DWARF);
 cptr.stI16o(races, 224 + $Race_lovemask, 96);
 cptr.stI16o(races, 224 + $Race_hatemask, NHM.M2_ORC);
-cptr.stI16o(races, 224 + $Race_attrmin, 3);
+cptr.stI16o(races, 224 + $Race_attrmin + 0, 3);
 cptr.stI16o(races, 224 + $Race_attrmin + 2, 3);
 cptr.stI16o(races, 224 + $Race_attrmin + 4, 3);
 cptr.stI16o(races, 224 + $Race_attrmin + 6, 3);
 cptr.stI16o(races, 224 + $Race_attrmin + 8, 3);
 cptr.stI16o(races, 224 + $Race_attrmin + 10, 3);
-cptr.stI16o(races, 224 + $Race_attrmax, 118);
+cptr.stI16o(races, 224 + $Race_attrmax + 0, 118);
 cptr.stI16o(races, 224 + $Race_attrmax + 2, 16);
 cptr.stI16o(races, 224 + $Race_attrmax + 4, 16);
 cptr.stI16o(races, 224 + $Race_attrmax + 6, 20);
@@ -1560,13 +1560,13 @@ cptr.stI16o(races, 336 + $Race_allow, 12354);
 cptr.stI16o(races, 336 + $Race_selfmask, NHM.M2_GNOME);
 cptr.stI16o(races, 336 + $Race_lovemask, 96);
 cptr.stI16o(races, 336 + $Race_hatemask, NHM.M2_HUMAN);
-cptr.stI16o(races, 336 + $Race_attrmin, 3);
+cptr.stI16o(races, 336 + $Race_attrmin + 0, 3);
 cptr.stI16o(races, 336 + $Race_attrmin + 2, 3);
 cptr.stI16o(races, 336 + $Race_attrmin + 4, 3);
 cptr.stI16o(races, 336 + $Race_attrmin + 6, 3);
 cptr.stI16o(races, 336 + $Race_attrmin + 8, 3);
 cptr.stI16o(races, 336 + $Race_attrmin + 10, 3);
-cptr.stI16o(races, 336 + $Race_attrmax, 68);
+cptr.stI16o(races, 336 + $Race_attrmax + 0, 68);
 cptr.stI16o(races, 336 + $Race_attrmax + 2, 19);
 cptr.stI16o(races, 336 + $Race_attrmax + 4, 18);
 cptr.stI16o(races, 336 + $Race_attrmax + 6, 18);
@@ -1597,13 +1597,13 @@ cptr.stI16o(races, 448 + $Race_allow, 12417);
 cptr.stI16o(races, 448 + $Race_selfmask, NHM.M2_ORC);
 cptr.stI16o(races, 448 + $Race_lovemask, 0);
 cptr.stI16o(races, 448 + $Race_hatemask, 56);
-cptr.stI16o(races, 448 + $Race_attrmin, 3);
+cptr.stI16o(races, 448 + $Race_attrmin + 0, 3);
 cptr.stI16o(races, 448 + $Race_attrmin + 2, 3);
 cptr.stI16o(races, 448 + $Race_attrmin + 4, 3);
 cptr.stI16o(races, 448 + $Race_attrmin + 6, 3);
 cptr.stI16o(races, 448 + $Race_attrmin + 8, 3);
 cptr.stI16o(races, 448 + $Race_attrmin + 10, 3);
-cptr.stI16o(races, 448 + $Race_attrmax, 68);
+cptr.stI16o(races, 448 + $Race_attrmax + 0, 68);
 cptr.stI16o(races, 448 + $Race_attrmax + 2, 16);
 cptr.stI16o(races, 448 + $Race_attrmax + 4, 16);
 cptr.stI16o(races, 448 + $Race_attrmax + 6, 18);
@@ -1634,8 +1634,8 @@ cptr.stI16o(races, 560 + $Race_allow, 0);
 cptr.stI16o(races, 560 + $Race_selfmask, 0);
 cptr.stI16o(races, 560 + $Race_lovemask, 0);
 cptr.stI16o(races, 560 + $Race_hatemask, 0);
-cptr.stI16o(races, 560 + $Race_attrmin, 0);
-cptr.stI16o(races, 560 + $Race_attrmax, 0);
+cptr.stI16o(races, 560 + $Race_attrmin + 0, 0);
+cptr.stI16o(races, 560 + $Race_attrmax + 0, 0);
 cptr.stI16o(races, 560 + $Race_hpadv, 0);
 cptr.stI16o(races, 560 + $Race_enadv, 0);
 
@@ -2812,7 +2812,6 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
  * @returns {CPtr<char>}
  */
 export function* build_plselection_prompt(buf, buflen, rolenum, racenum, gendnum, alignnum) {
-    let __r1, __r2, __r3, __r4;
     let defprompt = __s_shall_i_pick_a_character_for_you_ynaq;
     let num_post_attribs = 0;
     let tmpbuf = new Uint8Array(256);
@@ -2860,43 +2859,55 @@ export function* build_plselection_prompt(buf, buflen, rolenum, racenum, gendnum
            some prompting that would have been omitted is needed after all */
         if (cptr.ldI32o(flags, $flag_initrole) == -1 &&
                 !cptr.ld1so2(gr, NHM.BP_ROLE, 1, $instance_globals_r_role_pa))
-            (
-                __r1 = schar(cptr.st1o(
+            cptr.st1o2(
+                gr,
+                NHM.BP_ROLE,
+                1,
+                $instance_globals_r_role_pa,
+                cptr.st1o(
                     gr,
                     $instance_globals_r_role_post_attribs,
                     cptr.ld1so(gr, $instance_globals_r_role_post_attribs) + 1
-                )),
-                cptr.st1o2(gr, NHM.BP_ROLE, 1, $instance_globals_r_role_pa, __r1)
+                )
             );
         if (cptr.ldI32o(flags, $flag_initrace) == -1 &&
                 !cptr.ld1so2(gr, NHM.BP_RACE, 1, $instance_globals_r_role_pa))
-            (
-                __r2 = schar(cptr.st1o(
+            cptr.st1o2(
+                gr,
+                NHM.BP_RACE,
+                1,
+                $instance_globals_r_role_pa,
+                cptr.st1o(
                     gr,
                     $instance_globals_r_role_post_attribs,
                     cptr.ld1so(gr, $instance_globals_r_role_post_attribs) + 1
-                )),
-                cptr.st1o2(gr, NHM.BP_RACE, 1, $instance_globals_r_role_pa, __r2)
+                )
             );
         if (cptr.ldI32o(flags, $flag_initalign) == -1 &&
                 !cptr.ld1so2(gr, NHM.BP_ALIGN, 1, $instance_globals_r_role_pa))
-            (
-                __r3 = schar(cptr.st1o(
+            cptr.st1o2(
+                gr,
+                NHM.BP_ALIGN,
+                1,
+                $instance_globals_r_role_pa,
+                cptr.st1o(
                     gr,
                     $instance_globals_r_role_post_attribs,
                     cptr.ld1so(gr, $instance_globals_r_role_post_attribs) + 1
-                )),
-                cptr.st1o2(gr, NHM.BP_ALIGN, 1, $instance_globals_r_role_pa, __r3)
+                )
             );
         if (cptr.ldI32o(flags, $flag_initgend) == -1 &&
                 !cptr.ld1so2(gr, NHM.BP_GEND, 1, $instance_globals_r_role_pa))
-            (
-                __r4 = schar(cptr.st1o(
+            cptr.st1o2(
+                gr,
+                NHM.BP_GEND,
+                1,
+                $instance_globals_r_role_pa,
+                cptr.st1o(
                     gr,
                     $instance_globals_r_role_post_attribs,
                     cptr.ld1so(gr, $instance_globals_r_role_post_attribs) + 1
-                )),
-                cptr.st1o2(gr, NHM.BP_GEND, 1, $instance_globals_r_role_pa, __r4)
+                )
             );
         num_post_attribs = cptr.ld1so(gr, $instance_globals_r_role_post_attribs);
     }
@@ -3456,11 +3467,9 @@ export function* role_init() {
         cptr.st1o(pm, $permonst_maligntyp, schar(Math.imul(alignmnt, 3)));
         /* if gender is random, we choose it now instead of waiting
            until the leader monster is created */
-        cptr.stBits(
-            cptr.add(svq, $q_score_ldrgend),
-            5,
-            2,
-            0,
+        cptr.stI32o(
+            svq,
+            $q_score_ldrgend,
             (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n)
                 ? 2
                 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n)
@@ -3500,11 +3509,9 @@ export function* role_init() {
         cptr.stI16o(pm, $permonst_mflags3, cptr.ldU16o(pm, $permonst_mflags3) | 80);
         /* if gender is random, we choose it now instead of waiting
            until the nemesis monster is created */
-        cptr.stBits(
-            cptr.add(svq, $q_score_nemgend),
-            7,
-            2,
-            0,
+        cptr.stI32o(
+            svq,
+            $q_score_nemgend,
             (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n)
                 ? 2
                 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n)
@@ -3550,11 +3557,9 @@ export function* role_init() {
         );
     }
     /* 0 or 1; no gods are neuter, nor is gender randomized */
-    cptr.stBits(
-        cptr.add(svq, $q_score_godgend),
-        1,
-        2,
-        0,
+    cptr.stI32o(
+        svq,
+        $q_score_godgend,
         (!(yield* strncmpi((align_gtitle(schar(alignmnt))), (__s_goddess), -1))) >>> 0
     );
 
@@ -3624,7 +3629,7 @@ export function Goodbye() {
 export function character_race(pmindex) {
     let r;
 
-    for (r = races; !cptr.eq(cptr.ldPtr(r), cptr.byteView((null))); r = cptr.add(r, 1, 112))
+    for (r = races; !cptr.eq(cptr.ldPtr(r), (null)); r = cptr.add(r, 1, 112))
         if (cptr.ldI16o(r, $Race_mnum) == pmindex)
             return r;
     return (null);

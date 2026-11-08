@@ -165,7 +165,7 @@ function getbaseline(f, pc, basepc) {
 */
 /** C ref: ldebug.c:86 — @param {CPtr<Proto>} f @param {CInt} pc @returns {CInt} */
 export function luaG_getfuncline(f, pc) {
-    if (cptr.eq(cptr.ldPtro(f, $Proto_lineinfo), cptr.byteView((null))))
+    if (cptr.eq(cptr.ldPtro(f, $Proto_lineinfo), (null)))
         return -1;
     else {
         let basepc = cptr.box(0);
@@ -299,7 +299,7 @@ function findvararg(ci, n, pos) {
         $Proto_is_vararg
     )) {
         let nextra = cptr.ldI32o(ci, $CallInfo_u + 12);
-        if (n >= (-nextra | 0)) {
+        if (n >= -nextra) {
             cptr.stPtr(
                 pos,
                 cptr.add(cptr.add(cptr.ldPtr(ci), -(nextra), 16), -(((n + 1) | 0)), 16)
@@ -331,7 +331,7 @@ export function luaG_findlocal(L, ci, n, pos) {
                 currentpc(ci)
             );
     }
-    if (cptr.eq(name, cptr.byteView((null)))) {
+    if (cptr.eq(name, (null))) {
         let limit = (cptr.eq(ci, cptr.ldPtro(L, $lua_State_ci)))
                 ? cptr.ldPtro(L, $lua_State_top)
                 : cptr.ldPtr(cptr.ldPtro(ci, $CallInfo_next));
@@ -527,7 +527,7 @@ function* collectvalidlines(L, f) {
             (void L, (void 0));
         }
         ;
-        if (!cptr.eq(cptr.ldPtro(p, $Proto_lineinfo), cptr.byteView((null)))) {
+        if (!cptr.eq(cptr.ldPtro(p, $Proto_lineinfo), (null))) {
             let i;
             let v = cptr.alloc(16);
             (cptr.st1o((v), $TValue_tt_, 17));  /* boolean 'true' to be the value of all indices */
@@ -630,7 +630,7 @@ function auxgetinfo(L, what, ar, f, ci) {
                         $lua_Debug_namewhat,
                         getfuncname(L, ci, cptr.add(ar, $lua_Debug_name))
                     );
-                    if (cptr.eq(cptr.ldPtro(ar, $lua_Debug_namewhat), cptr.byteView((null)))) {
+                    if (cptr.eq(cptr.ldPtro(ar, $lua_Debug_namewhat), (null))) {
                         cptr.stPtro(ar, $lua_Debug_namewhat, __s_empty);  /* not found */
                         cptr.stPtro(ar, $lua_Debug_name, null);
                     }
@@ -749,22 +749,21 @@ function findsetreg(p, lastpc, reg) {
     let jmptarget = 0;  /* any code before this address is conditional */
     if ((cptr.ld1uo(
         cptr.decay(luaP_opmodes),
-        ((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), lastpc, 4) >>> 0) >>> 0) &
-            (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>>
+        ((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), lastpc, 4)) >>> 0) &
+            (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>>
             0))),
         1
     ) & 128))
         lastpc--;  /* previous instruction was not actually executed */
     for (pc = 0; pc < lastpc; pc++) {
-        let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4) >>> 0;
-        let op = ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)));
-        let a = (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0));
+        let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4);
+        let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
+        let a = (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));
         let change;  /* true if current instruction changed 'reg' */
         switch (op) {
             case NHC.OP_LOADNIL:
                 {
-                    let b = ((((((((i) >>> 16) &
-                        (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    let b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
                             0)) | 0)));
                     change = (a <= reg && reg <= ((a + b) | 0) ? 1 : 0);
                     break;
@@ -782,9 +781,7 @@ function findsetreg(p, lastpc, reg) {
                 }
             case NHC.OP_JMP:
                 {
-                    let b = (((((((((i) >>> 7) &
-                        (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
-                        0)) |
+                    let b = (((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) |
                         0)) -
                             16777215) | 0);
                     let dest = (pc + 1 + b) | 0;
@@ -841,18 +838,14 @@ function basicgetobjname(p, ppc, reg, name) {
     /* else try symbolic execution */
     cptr.stI32(ppc, pc = findsetreg(p, pc, reg));
     if (pc != -1) {
-        let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4) >>> 0;
-        let op = ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)));
+        let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4);
+        let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
         switch (op) {
             case NHC.OP_MOVE:
                 {
-                    let b = ((((((((i) >>> 16) &
-                        (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    let b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
                             0)) | 0)));  /* move from 'b' to 'a' */
-                    if (b <
-                            (((((((i) >>> 7) &
-                                (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
-                                0)) | 0)))
+                    if (b < (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))
                         return basicgetobjname(p, ppc, b, name);  /* get name for 'b' */
                     break;
                 }
@@ -862,8 +855,7 @@ function basicgetobjname(p, ppc, reg, name) {
                         name,
                         upvalname(
                             p,
-                            ((((((((i) >>> 16) &
-                                (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
                                 0)) | 0)))
                         )
                     );
@@ -872,17 +864,14 @@ function basicgetobjname(p, ppc, reg, name) {
             case NHC.OP_LOADK:
                 return kname(
                     p,
-                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>>
-                        0)) |
-                        0))),
+                    ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
                     name
                 );
             case NHC.OP_LOADKX:
                 return kname(
                     p,
-                    ((((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), (pc + 1) | 0, 4) >>> 0) >>>
-                        7) &
-                        (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    ((((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), (pc + 1) | 0, 4)) >>> 7) &
+                        (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>>
                         0)) |
                         0))),
                     name
@@ -922,8 +911,8 @@ function rname(p, pc, c, name) {
  * @param {CPtr<char *>} name
  */
 function rkname(p, pc, i, name) {
-    let c = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)));  /* key index */
-    if (((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0))))
+    let c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* key index */
+    if (((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
         kname(p, c, name);
     else
         rname(p, pc, c, name);
@@ -946,7 +935,7 @@ function rkname(p, pc, i, name) {
  */
 function isEnv(p, pc, i, isup) {
     pc = cptr.box(pc);
-    let t = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)));  /* table index */
+    let t = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* table index */
     let name = cptr.box(0);  /* name of indexed variable */
     if (isup)
         name.v = upvalname(p, t);
@@ -972,24 +961,22 @@ function isEnv(p, pc, i, isup) {
 function getobjname(p, lastpc, reg, name) {
     lastpc = cptr.box(lastpc);
     let kind = basicgetobjname(p, lastpc, reg, name);
-    if (!cptr.eq(kind, cptr.byteView((null))))
+    if (!cptr.eq(kind, (null)))
         return kind;
     else if (lastpc.v != -1) {
-        let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), lastpc.v, 4) >>> 0;
-        let op = ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)));
+        let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), lastpc.v, 4);
+        let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
         switch (op) {
             case NHC.OP_GETTABUP:
                 {
-                    let k = ((((((((i) >>> 24) &
-                        (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
                             0)) | 0)));  /* key index */
                     kname(p, k, name);
                     return isEnv(p, lastpc.v, i, 1);
                 }
             case NHC.OP_GETTABLE:
                 {
-                    let k = ((((((((i) >>> 24) &
-                        (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
                             0)) | 0)));  /* key index */
                     rname(p, lastpc.v, k, name);
                     return isEnv(p, lastpc.v, i, 0);
@@ -1001,8 +988,7 @@ function getobjname(p, lastpc, reg, name) {
                 }
             case NHC.OP_GETFIELD:
                 {
-                    let k = ((((((((i) >>> 24) &
-                        (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
                             0)) | 0)));  /* key index */
                     kname(p, k, name);
                     return isEnv(p, lastpc.v, i, 0);
@@ -1035,14 +1021,14 @@ function getobjname(p, lastpc, reg, name) {
  */
 function funcnamefromcode(L, p, pc, name) {
     let tm = 0;  /* (initial value avoids warnings) */
-    let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4) >>> 0;  /* calling instruction */
-    switch (((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)))) {
+    let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4);  /* calling instruction */
+    switch (((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)))) {
         case NHC.OP_CALL:
         case NHC.OP_TAILCALL:
             return getobjname(
                 p,
                 pc,
-                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
                 name
             );  /* get function name */
         case NHC.OP_TFORCALL:
@@ -1067,8 +1053,7 @@ function funcnamefromcode(L, p, pc, name) {
         case NHC.OP_MMBINI:
         case NHC.OP_MMBINK:
             {
-                tm = ((((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
-                        0)) | 0)))));
+                tm = ((((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))));
                 break;
             }
         case NHC.OP_UNM:
@@ -1196,7 +1181,7 @@ function getupvalname(ci, o, name) {
  * @returns {CPtr<char>}
  */
 function* formatvarinfo(L, kind, name) {
-    if (cptr.eq(kind, cptr.byteView((null))))
+    if (cptr.eq(kind, (null)))
         return __s_empty;  /* no information */
     else
         return (yield* luaO_pushfstring(L, __s_s_s, kind, name));
@@ -1321,7 +1306,7 @@ export function* luaG_opinterror(L, p1, p2, msg) {
  * @param {CPtr<TValue>} p2
  */
 export function* luaG_tointerror(L, p1, p2) {
-    let temp = cptr.box(0n, "i64");
+    let temp = cptr.box(0n);
     if (!luaV_tointegerns(p1, temp, NHC.F2Ieq))
         p2 = p1;
     (yield* luaG_runerror(L, __s_number_s_has_no_integer_representation, (yield* varinfo(L, p2))));
@@ -1466,7 +1451,7 @@ export function* luaG_runerror(L, fmt, ...__va) {
  * @returns {CInt}
  */
 function changedline(p, oldpc, newpc) {
-    if (cptr.eq(cptr.ldPtro(p, $Proto_lineinfo), cptr.byteView((null))))
+    if (cptr.eq(cptr.ldPtro(p, $Proto_lineinfo), (null)))
         return 0;
     if (((newpc - oldpc) | 0) < 64) {
         let delta = 0;  /* line difference */
@@ -1550,14 +1535,14 @@ export function* luaG_traceexec(L, pc) {
     }
     if (!((cptr.ld1uo(
         cptr.decay(luaP_opmodes),
-        ((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4))) >>> 0) >>> 0) &
-            (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>>
+        ((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)))) >>> 0) &
+            (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>>
             0))),
         1
     ) &
         32) &&
-            ((((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4))) >>> 0) >>> 16) &
-                (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            ((((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)))) >>> 16) &
+                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
                 0)) |
                 0))) == 0))
         cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* correct top */
