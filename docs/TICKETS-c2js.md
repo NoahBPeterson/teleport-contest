@@ -338,6 +338,27 @@ No implementation: `popen`, `pclose`, `execl`, `execv`, `execve`, `waitpid`, `se
 (4242). The game's recorded paths through these match. A standalone program using them gets
 wrong behavior, with no error.
 
+### C2JS-062: fixes from b768f36 to d54cbab are not in the judged `js/`. OPEN
+`abf5717` put `js/` back to the Nov 4 build (`ed2c66e`), because the Nov 6 build scored 124
+held-out points lower and the cause wasn't found. Everything marked DONE (b768f36),
+DONE (5b37c5f), C2JS-047 to 057 and C2JS-060 is therefore missing from `js/` on main, though
+the tickets say DONE. Since then two parts have gone back on main: the rc file and screen bytes
+as UTF-8 (`455aa9a`, from C2JS-048) and the `nethack -u <name>` launch (`8b7b5ac`). Neither
+changed the held-out score. Next, the whole runtime from `d54cbab` (`js/libc/`, `js/cptr.js`,
+`js/cjmp.js`, both boot harnesses) went on top of the Nov 4 generated code. On 3,899 local
+recordings it turns 8 failures into passes (multi-byte keys and the saved-game menu) and breaks
+none. If the held-out score holds, what is left is the regenerated `js/generated*/`.
+
+One that shows up in recordings: the struct sizes printed by `#stats` and wizard mode's memory
+screen. Main prints 216 for `struct obj` and 320 for `struct monst`, the port's own sizes,
+because bitfields are separate fields (`tools/c2js/build.mjs` `collectBitfieldWidths`). C
+prints 112 and 192 on both macOS arm64 and Linux. `d54cbab` prints C's values. Repros: the
+`wizcmds.c-wizard-memory-*` sessions, which fail on main and pass on `d54cbab`. Main also prints
+`%p` literally where C prints an address; that screen can't match either way (WONTFIX `%p`).
+
+Closes when each remaining part is back on main and the held-out score holds, or the part
+that costs points is found and fixed.
+
 ## Where C itself depends on the platform
 
 ### C2JS-036: arm64 and x86-64 C disagree. Documented; no effect on NetHack
@@ -405,6 +426,23 @@ platforms apart, and a normal game can't.
 
 So C has no single answer here. NetHack's C calls none of these except through Lua's math
 library, and no shipped script uses them, so the port leaves JS `Math` as it is.
+
+### C2JS-063: a Linux recorder and the macOS recorder disagree. OPEN (documented)
+Another team's public recordings (3,447 sessions, made on Linux) were scored against the port.
+3,434 pass, 13 fail, and every one of the 13 has the same RNG as the recording. Re-recording the
+failing inputs on the macOS recorder gives screens the port matches, except where C prints
+memory addresses. So these differences are C on Linux versus C on macOS:
+
+| Input | Linux recorder | macOS recorder and the port |
+|---|---|---|
+| `AUTOPICKUP_EXCEPTION` with a bad regex | glibc `regerror`: `Unmatched ( or \(`, `Invalid preceding regular expression` | Darwin: `parentheses not balanced`, `repetition-operator operand invalid` |
+| `!` (shell escape) | `Unavailable command '!'.` | blank screen (the shell runs) |
+| sorted loot list with equal keys (`sortloot-blind-wishes-classify-order`) | combat boots before ornamental cope | cope before boots; likely `qsort` tie order, glibc merge sort vs Darwin's |
+| `posixregex` trials | first screen blank | normal welcome screen |
+| `#timeout`, `#lightsources` | `<ptr>`: that recorder was patched | real addresses (see WONTFIX `%p`) |
+
+The port follows macOS, as do the public sessions. Which one the held-out sessions follow isn't
+known. Of the other ports read, one uses the glibc regex text and four use Darwin's.
 
 ## Test infrastructure
 
