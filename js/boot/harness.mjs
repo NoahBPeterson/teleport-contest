@@ -79,6 +79,19 @@ function bytesToB64(u) {
   return btoa(s);
 }
 
+function recorderPlayerName(rc) {
+  if (!rc) return '';
+  for (const rawLine of rc.split('\n')) {
+    const line = rawLine.trim();
+    const upper = line.toUpperCase();
+    if (!(upper.startsWith('OPTIONS=') || upper.startsWith('OPTIONS ='))) continue;
+    for (const opt of line.slice(line.indexOf('=') + 1).split(',')) {
+      const t = opt.trim();
+      if (t.toLowerCase().startsWith('name:')) return t.slice('name:'.length).trim();
+    }
+  }
+  return '';
+}
 /**
  * Boot one segment of the transpiled game. NOTE: the generated modules this
  * pulls in are per-module-graph state — calling runBootGame twice on the same
@@ -1008,10 +1021,12 @@ export async function runBootGame(opts) {
       if (reg.active()) luaPort = reg;
     } catch (e) { __trace('lua-port: registry unavailable', String(e)); }
     __trace('boot: calling main()');
-    const argvBuf = new Uint8Array(16);
+    const argvBuf = new Uint8Array(32);
     const argv = cptr.decay(argvBuf);
     cptr.stPtr(argv, cptr.lit('nethack'));
-    um.main(1, argv);
+    cptr.stPtr(cptr.add(argv, 8), cptr.lit('-u'));
+    cptr.stPtr(cptr.add(argv, 16), cptr.lit(String.fromCharCode(...new TextEncoder().encode(recorderPlayerName(opts.nethackrc)))));
+    um.main(3, argv);
   } catch (e) {
     if (e && e.__bootExit !== undefined) exitCode = e.__bootExit;
     else if (e && /input exhausted/.test(String(e.message || e))) exitCode = null; // moves consumed mid-wait: normal segment end
