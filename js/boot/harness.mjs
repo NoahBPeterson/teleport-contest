@@ -160,7 +160,7 @@ export async function runBootGame(opts) {
   const VFS_DIRS = new Set(['/', '/tmp', HACKDIR, VHOME, ...VENDORED_DIRS.map((d) => HACKDIR_PREFIX + d)]);
 
   const bootFiles = new Map();
-  if (opts.nethackrc) bootFiles.set(VHOME + '/.nethackrc', bytesOfString(opts.nethackrc));
+  if (opts.nethackrc) bootFiles.set(VHOME + '/.nethackrc', new TextEncoder().encode(opts.nethackrc)); // written as UTF-8 by the recorder
 
   // Lua->JS script ports (roadmap 1.10). Bound below, after the transpiled
   // module graph has been imported — js/lua-js/bridge.mjs pulls in lapi/sp_lev/
@@ -1038,6 +1038,16 @@ export async function runBootGame(opts) {
   // mismatch the recording. Applying the recorder's own collapse rule puts
   // both sides in the same canonical form.
   const canonicalizeScreen = (s) => s.replace(/ {5,}/g, (m) => `\x1b[${m.length}C`);
+  // The recorder decodes each marker's payload bytes as UTF-8 (Buffer#toString),
+  // so a name like "Zoë" written by C as two bytes is one character there. Our
+  // stdout holds one character per byte; decode runs of such bytes the same way.
+  // Characters above U+00FF were never bytes and are left alone.
+  const utf8Payload = new TextDecoder('utf-8');
+  const decodeByteRuns = (s) => s.replace(/[\x80-\xff]+/g, (run) => {
+    const b = new Uint8Array(run.length);
+    for (let k = 0; k < run.length; k++) b[k] = run.charCodeAt(k);
+    return utf8Payload.decode(b);
+  });
   const stdout = stdoutChunks.join('');
   const frames = [];
   {
@@ -1052,7 +1062,7 @@ export async function runBootGame(opts) {
       frames.push({
         kind: kv.KIND, seq: Number(kv.SEQ), anim: Number(kv.ANIM),
         cx: Number(kv.CX), cy: Number(kv.CY),
-        screen: canonicalizeScreen(stdout.slice(end + 1, end + 1 + len)),
+        screen: canonicalizeScreen(decodeByteRuns(stdout.slice(end + 1, end + 1 + len))),
       });
       i = end + 1 + len;
     }
