@@ -36,154 +36,14 @@
 // protocol. cptr.ld*/st* are box-aware.
 
 /** one-element cell for an address-taken scalar. @param {*} v @returns {{isBox: true, v: *}} */
-export function box(v, k) { return k ? { isBox: true, v, k } : { isBox: true, v }; }
+export function box(v) { return { isBox: true, v }; }
 
 /** box view of an object property / array element. @returns {{isBox: true, v: *}} */
 export function boxProp(obj, key) {
   return { isBox: true, get v() { return obj[key]; }, set v(x) { obj[key] = x; } };
 }
 
-/**
- * A char* onto an address-taken scalar. Boxes hold a JS value, not bytes, so this
- * presents the value's little-endian bytes as an indexable buffer.
- */
-export function byteView(p) {
-  if (!p || !p.isBox) return p;
-  if (p.__view) return p.__view;
-  const dv = new DataView(new ArrayBuffer(8));
-  const fill = () => __boxToBytes(p, dv);
-  const buf = new Proxy([], {
-    get(t, k) {
-      if (k === 'length') return 8;
-      if (typeof k === 'string' && /^\d+$/.test(k)) { fill(); return dv.getUint8(Number(k)); }
-      return Reflect.get(t, k);
-    },
-    set(t, k, v) {
-      fill();
-      dv.setUint8(Number(k), v & 0xFF);
-      __bytesToBox(p, dv);
-      return true;
-    },
-  });
-  return (p.__view = { buf, off: 0 });
-}
-
-/**
- * Pointer cast to a pointee of kind `to` (a box kind, see `box`). A cell whose
- * C type has a different representation is presented as bytes; a same-kind cast
- * keeps the box, so a round trip through void* is still the same object.
- */
-export function castView(p, to) {
-  if (!p || !p.isBox || __boxClass(p.k) === __boxClass(to)) return p;
-  return byteView(p);
-}
-function __boxClass(k) { return k === 'f32' || k === 'f64' ? k : !k || k === 'i32' || k === 'u32' ? 'w' : k; }
-
-/** a cell's value as its C bytes. */
-function __boxToBytes(p, dv) {
-  const v = p.v;
-  switch (p.k) {
-    case 'f32': dv.setFloat32(0, v ?? 0, true); return;
-    case 'f64': dv.setFloat64(0, v ?? 0, true); return;
-    case 'i64': case 'u64': dv.setBigInt64(0, BigInt.asIntN(64, BigInt(v ?? 0)), true); return;
-    case 'i8': case 'u8': case 'i16': case 'u16': case 'u32': dv.setInt32(0, Number(v ?? 0) | 0, true); return;
-    case 'i32': dv.setInt32(0, (v ?? 0) | 0, true); return;
-  }
-  if (v && typeof v === 'object') { const b = new Uint8Array(8); stPtr({ buf: b, off: 0 }, v); for (let i = 0; i < 8; i++) dv.setUint8(i, b[i]); }
-  else if (typeof v === 'bigint') dv.setBigInt64(0, BigInt.asIntN(64, v), true);
-  else if (Number.isInteger(v ?? 0)) { dv.setInt32(0, (v ?? 0) | 0, true); dv.setInt32(4, (v ?? 0) < 0 ? -1 : 0, true); }
-  else dv.setFloat64(0, v, true);
-}
-/** C bytes back into a cell, keeping the value's representation. */
-function __bytesToBox(p, dv) {
-  switch (p.k) {
-    case 'f32': p.v = dv.getFloat32(0, true); return;
-    case 'f64': p.v = dv.getFloat64(0, true); return;
-    case 'i64': p.v = dv.getBigInt64(0, true); return;
-    case 'u64': p.v = dv.getBigUint64(0, true); return;
-    case 'i8': p.v = dv.getInt8(0); return;
-    case 'u8': p.v = dv.getUint8(0); return;
-    case 'i16': p.v = dv.getInt16(0, true); return;
-    case 'u16': p.v = dv.getUint16(0, true); return;
-    case 'u32': p.v = dv.getUint32(0, true); return;
-    case 'i32': p.v = dv.getInt32(0, true); return;
-  }
-  const like = p.v;
-  if (like && typeof like === 'object') { const b = new Uint8Array(8); for (let i = 0; i < 8; i++) b[i] = dv.getUint8(i); p.v = ldPtr({ buf: b, off: 0 }); return; }
-  if (typeof like === 'bigint') p.v = dv.getBigInt64(0, true);
-  else if (Number.isInteger(like ?? 0)) p.v = dv.getInt32(0, true);
-  else p.v = dv.getFloat64(0, true);
-}
-
 // ------------------------------------------------------------------ core ----
-
-// a*b+c with one rounding, as arm64's fmadd and clang's contraction of `a*b+c` do.
-const __fdv = new DataView(new ArrayBuffer(8));
-function __fparts(x) { // x = m * 2^e, finite and nonzero
-  __fdv.setFloat64(0, x);
-  const bits = __fdv.getBigUint64(0);
-  const raw = Number((bits >> 52n) & 0x7FFn);
-  const frac = bits & 0xFFFFFFFFFFFFFn;
-  const m = raw ? frac | (1n << 52n) : frac;
-  return [x < 0 ? -m : m, (raw || 1) - 1075];
-}
-function __fmaTo(a, b, c, prec, emin) {
-  if (!Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(c) || a === 0 || b === 0) return a * b + c;
-  const [ma, ea] = __fparts(a), [mb, eb] = __fparts(b);
-  let S = ma * mb, E = ea + eb;
-  if (c !== 0) {
-    const [mc, ec] = __fparts(c);
-    const low = Math.min(E, ec);
-    S = (S << BigInt(E - low)) + (mc << BigInt(ec - low));
-    E = low;
-  }
-  if (S === 0n) return 0;
-  const neg = S < 0n;
-  let A = neg ? -S : S;
-  const drop = Math.max(A.toString(2).length - prec, emin - E);
-  if (drop > 0) {
-    const d = BigInt(drop), rem = A & ((1n << d) - 1n), half = 1n << (d - 1n);
-    A >>= d;
-    if (rem > half || (rem === half && (A & 1n))) A += 1n;
-    E += drop;
-    if (A === 0n) return neg ? -0 : 0;
-  }
-  const r = Number(A) * 2 ** E;
-  return neg ? -r : r;
-}
-export function fma(a, b, c) { return __fmaTo(a, b, c, 53, -1074); }
-export function fmaf(a, b, c) { return Math.fround(__fmaTo(a, b, c, 24, -149)); }
-// the addend first, for `c + a*b`, so the operands run in C's order
-export function fmaR(c, a, b) { return fma(a, b, c); }
-export function fmafR(c, a, b) { return fmaf(a, b, c); }
-
-// Floating to integer as arm64 does it (fcvtzs, fcvtzu): out of range saturates, NaN is 0.
-export function ftoi32(x) { return x !== x ? 0 : x >= 2147483647 ? 2147483647 : x <= -2147483648 ? -2147483648 : x | 0; }
-export function ftou32(x) { return x !== x || x <= 0 ? 0 : x >= 4294967295 ? 4294967295 : x >>> 0; }
-export function ftoi64(x) { return x !== x ? 0n : x >= 9223372036854775807 ? 9223372036854775807n : x <= -9223372036854775808 ? -9223372036854775808n : BigInt(Math.trunc(x)); }
-export function ftou64(x) { return x !== x || x <= 0 ? 0n : x >= 18446744073709551615 ? 18446744073709551615n : BigInt(Math.trunc(x)); }
-
-/**
- * strcmp family over bytes: the difference at the first mismatch, as Darwin's
- * libc returns it. `fold` lowers ASCII only, which is the C locale's tolower.
- */
-export function bytesCmp(a, b, n, fold) {
-  const x = a.buf, y = b.buf;
-  for (let i = 0, ao = a.off, bo = b.off; i < n; i++) {
-    let c = x[ao + i] ?? 0, d = y[bo + i] ?? 0;
-    if (fold) { if (c >= 65 && c <= 90) c += 32; if (d >= 65 && d <= 90) d += 32; }
-    if (c !== d) return c - d;
-    if (c === 0) return 0;
-  }
-  return 0;
-}
-
-/** A wide string literal: its units, NUL-terminated, each `size` bytes. */
-export function wlit(units, size) {
-  const b = new Uint8Array((units.length + 1) * size);
-  units.forEach((u, i) => { for (let k = 0; k < size; k++) b[i * size + k] = (u >>> (8 * k)) & 0xFF; });
-  return { buf: b, off: 0 };
-}
 
 /** Encode a JS string as NUL-terminated bytes and return a pointer to them. @param {string} s @returns {CPtr} */
 export function lit(s) {
@@ -195,8 +55,6 @@ export function lit(s) {
 
 /** Encode a JS string as NUL-terminated bytes (char[] initializer). @param {string} s @returns {Uint8Array} */
 export function bytes(s) { return lit(s).buf; }
-/** A char array of a declared size, holding as much of the string as fits (zero-filled). */
-export function bytesN(s, n) { const b = new Uint8Array(n); b.set(lit(s).buf.subarray(0, n)); return b; }
 
 /**
  * Decode a C string to a JS string. Accepts CPtr | Uint8Array | string | null.
@@ -265,30 +123,21 @@ export function add(p, n, sz) {
   // `typeof n === 'number'` keeps the common case off the generic ToNumber
   // path. Semantics are unchanged; the NaN tripwire that used to live here was
   // a temporary debugging aid (roadmap 1.12) and is gone.
-  if (p.buf === undefined) return __offBox(p, Number(n) * (sz === undefined ? 1 : sz));
   if (typeof n === 'number') return { buf: p.buf, off: sz === undefined ? p.off + n : p.off + n * sz };
   return { buf: p.buf, off: p.off + Number(n) * (sz === undefined ? 1 : sz) };
 }
 
-// A pointer moved off a box (`&x + 1`, valid to hold and compare, and back again)
-// sits on the box's byte view, which reads and writes through to the cell.
-function __offBox(p, d) {
-  if (!p.isBox) return { buf: p.buf, off: p.off + d };
-  return d === 0 ? p : { buf: byteView(p).buf, off: d };
-}
-
 /** Pointer subtraction: p - n elements of size sz. @param {CPtr} p @param {number|bigint} n @param {number} [sz] @returns {CPtr} */
 export function sub(p, n, sz) {
-  if (p.buf === undefined) return __offBox(p, -Number(n) * (sz === undefined ? 1 : sz));
   if (typeof n === 'number') return { buf: p.buf, off: sz === undefined ? p.off - n : p.off - n * sz };
   return { buf: p.buf, off: p.off - Number(n) * (sz === undefined ? 1 : sz) };
 }
 
 /** p1 - p2 in elements (sz=1: bytes). C ptrdiff_t is long -> BigInt. @returns {bigint} */
-export function diff(a, b) { return BigInt((a.off || 0) - (b.off || 0)); }
+export function diff(a, b) { return BigInt(a.off - b.off); }
 
 /** Relational comparison of pointers into the same buffer. @returns {number} negative/zero/positive */
-export function cmp(a, b) { return (a.off || 0) - (b.off || 0); }
+export function cmp(a, b) { return a.off - b.off; }
 
 /** Pointer equality (null-safe): same buffer identity and same offset. @returns {boolean} */
 export function eq(a, b) {
@@ -300,13 +149,6 @@ export function eq(a, b) {
   // rejected the second melt_ice_away timer of an ice room with "Attempted to
   // start duplicate melt_ice_away timer, aborted." Compare the bits.
   if (a.intBits !== undefined || b.intBits !== undefined) return a.intBits === b.intBits;
-  // Boxes have no buf or off, so every two would look equal. A box is equal to
-  // itself and to its own byte view.
-  if (a.isBox || b.isBox) {
-    if (a === b) return true;
-    const x = a.isBox ? a.__view : a, y = b.isBox ? b.__view : b;
-    return !!x && !!y && x.buf === y.buf && x.off === y.off;
-  }
   return a.buf === b.buf && a.off === b.off;
 }
 
@@ -331,21 +173,6 @@ let __nextBufId = 1;
 // parity bug rather than a loud one.
 let __bufIdLog = [];
 /** @param {CPtr|null} p @returns {bigint} */
-const __bufById = new Map();
-/** Inverse of addr(): an integer that came from a pointer goes back to it. */
-export function fromAddr(u) {
-  const n = Number(u);
-  const base = n - (n % (1 << 26));
-  const key = __bufById.get(base);
-  if (key === undefined) {
-    // a pointer's bytes read as an integer (`union { int *p; long l; }`)
-    const r = n >= 2 ** 40 ? __ptrRegistry[n - 2 ** 40] : undefined;
-    return r !== undefined ? r : u;
-  }
-  if (typeof key === 'function' || key.isBox) return key;
-  return { buf: key, off: n - base };
-}
-
 export function addr(p) {
   if (p === null || p === undefined) return 0n;
   if (typeof p !== 'object' && typeof p !== 'function') return BigInt(p) || 0n;
@@ -361,7 +188,6 @@ export function addr(p) {
 function __newBufId(key) {
   const id = __nextBufId++ * (1 << 26);
   __bufIds.set(key, id);
-  __bufById.set(id, key);
   if (__bufIdLog !== null) __bufIdLog.push(key);
   return id;
 }
@@ -377,7 +203,7 @@ export function ld1u(p) { if (p.isBox) return p.v & 0xFF; return p.buf[p.off]; }
 /** *p = v for 1-byte pointees; store truncates mod 256 like C. @param {CPtr} p @param {number|bigint} v */
 export function st1(p, v) {
   const x = (typeof v === 'number' ? v : Number(v)) & 0xFF;
-  if (p.isBox) { p.v = p.k === 'i8' ? (x << 24) >> 24 : x; return v; } // canonical for its C type: .v is read directly
+  if (p.isBox) { p.v = x; return v; }
   p.buf[p.off] = x;
   return v;
 }
@@ -390,139 +216,11 @@ export function ldI32(p) {
 }
 
 /** 32-bit int store, little-endian. @param {CPtr} p @param {number} v */
-const __f32Scratch = new DataView(new ArrayBuffer(4));
-/** 4-byte little-endian IEEE float. @param {CPtr} p @returns {number} */
-export function ldF32(p) {
-  if (p.isBox) return p.v;
-  const b = p.buf, o = p.off;
-  for (let i = 0; i < 4; i++) __f32Scratch.setUint8(i, b[o + i]);
-  return __f32Scratch.getFloat32(0, true);
-}
-/** @param {CPtr} p @param {number} v */
-export function stF32(p, v) {
-  if (p.isBox) { p.v = Math.fround(v); return v; }
-  const b = p.buf, o = p.off;
-  __f32Scratch.setFloat32(0, v, true);
-  for (let i = 0; i < 4; i++) b[o + i] = __f32Scratch.getUint8(i);
-  return v;
-}
-
-/**
- * Bit-field access at bit `shift` of byte p, `width` bits. Values up to 32 bits
- * are numbers (5 bytes at most, within a double's exact range).
- * @param {CPtr} p @param {number} shift @param {number} width @param {number} signed
- */
-export function ldBits(p, shift, width, signed) {
-  const b = p.buf, o = p.off;
-  if (shift + width <= 8) {
-    const v = (b[o] >> shift) & ((1 << width) - 1);
-    return signed && v >> (width - 1) ? v - (1 << width) : v;
-  }
-  const n = (shift + width + 7) >> 3;
-  let raw = 0;
-  for (let i = n - 1; i >= 0; i--) raw = raw * 256 + b[o + i];
-  const v = Math.floor(raw / 2 ** shift) % 2 ** width;
-  return signed && v >= 2 ** (width - 1) ? v - 2 ** width : v;
-}
-/** Stores the low `width` bits of v; returns the value the field now holds. */
-export function stBits(p, shift, width, signed, v) {
-  const b = p.buf, o = p.off;
-  const val = Number(v);
-  const u = ((val % 2 ** width) + 2 ** width) % 2 ** width;
-  if (shift + width <= 8) {
-    const m = ((1 << width) - 1) << shift;
-    b[o] = (b[o] & ~m) | ((u << shift) & m);
-  } else {
-    const n = (shift + width + 7) >> 3;
-    let raw = 0;
-    for (let i = n - 1; i >= 0; i--) raw = raw * 256 + b[o + i];
-    const lo = raw % 2 ** shift;
-    const hi = Math.floor(raw / 2 ** (shift + width));
-    raw = hi * 2 ** (shift + width) + u * 2 ** shift + lo;
-    for (let i = 0; i < n; i++) { b[o + i] = raw % 256; raw = Math.floor(raw / 256); }
-  }
-  return signed && u >= 2 ** (width - 1) ? u - 2 ** width : u;
-}
-/** 64-bit declared type: widths up to 64 in BigInt. */
-export function ldBitsB(p, shift, width, signed) {
-  const b = p.buf, o = p.off;
-  const n = (shift + width + 7) >> 3;
-  let raw = 0n;
-  for (let i = n - 1; i >= 0; i--) raw = (raw << 8n) | BigInt(b[o + i]);
-  const v = BigInt.asUintN(width, raw >> BigInt(shift));
-  return signed ? BigInt.asIntN(width, v) : v;
-}
-export function stBitsB(p, shift, width, signed, v) {
-  const b = p.buf, o = p.off;
-  const n = (shift + width + 7) >> 3;
-  let raw = 0n;
-  for (let i = n - 1; i >= 0; i--) raw = (raw << 8n) | BigInt(b[o + i]);
-  const u = BigInt.asUintN(width, BigInt(v));
-  const mask = ((1n << BigInt(width)) - 1n) << BigInt(shift);
-  raw = (raw & ~mask) | (u << BigInt(shift));
-  for (let i = 0; i < n; i++) { b[o + i] = Number(raw & 255n); raw >>= 8n; }
-  return signed ? BigInt.asIntN(width, u) : u;
-}
-
-// _Complex values are { re, im } objects; in memory, two floats or doubles.
-export const cadd = (a, b) => ({ re: a.re + b.re, im: a.im + b.im });
-export const csub = (a, b) => ({ re: a.re - b.re, im: a.im - b.im });
-export const cmul = (a, b) => ({ re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re });
-export const cdiv = (a, b) => { const d = b.re * b.re + b.im * b.im; return { re: (a.re * b.re + a.im * b.im) / d, im: (a.im * b.re - a.re * b.im) / d }; };
-export const ceq = (a, b) => a.re === b.re && a.im === b.im;
-export const cne = (a, b) => !ceq(a, b);
-export const cneg = (a) => ({ re: -a.re, im: -a.im });
-export const cconj = (a) => ({ re: a.re, im: -a.im });
-export const cround = (a) => ({ re: Math.fround(a.re), im: Math.fround(a.im) });
-export function ldC(p) { return { re: ldF64(p), im: ldF64(add(p, 8)) }; }
-export function stC(p, v) { stF64(p, v.re); stF64(add(p, 8), v.im); return v; }
-export function ldCF(p) { return { re: ldF32(p), im: ldF32(add(p, 4)) }; }
-export function stCF(p, v) { stF32(p, v.re); stF32(add(p, 4), v.im); return v; }
-
 export function stI32(p, v) {
-  if (p.isBox) { p.v = p.k === 'u32' ? v >>> 0 : v | 0; return v; }
+  if (p.isBox) { p.v = v | 0; return v; }
   const b = p.buf, o = p.off, x = v | 0;
   b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF; b[o + 2] = (x >> 16) & 0xFF; b[o + 3] = (x >> 24) & 0xFF;
   return v;
-}
-
-/** __int128: two little-endian 64-bit halves. Boxes keep the value. */
-export function ldU128(p) {
-  if (p.isBox) return BigInt.asUintN(128, BigInt(p.v));
-  return ldU64(p) | (ldU64(add(p, 8)) << 64n);
-}
-export function ldI128(p) { return BigInt.asIntN(128, ldU128(p)); }
-export function st128(p, v) {
-  if (p.isBox) { p.v = p.k === 'u128' ? BigInt.asUintN(128, BigInt(v)) : BigInt.asIntN(128, BigInt(v)); return v; }
-  stU64(p, BigInt.asUintN(64, v));
-  stU64(add(p, 8), BigInt.asUintN(64, v >> 64n));
-  return v;
-}
-
-/** _BitInt: `size` little-endian bytes holding a `bits`-wide value. */
-export function ldBitInt(p, size, bits, signed) {
-  if (p.isBox) return BigInt(p.v);
-  let v = 0n;
-  for (let i = size - 1; i >= 0; i--) v = (v << 8n) | BigInt(p.buf[p.off + i] ?? 0);
-  return signed ? BigInt.asIntN(bits, v) : BigInt.asUintN(bits, v);
-}
-export function stBitInt(p, size, bits, signed, v) {
-  const x = signed ? BigInt.asIntN(bits, BigInt(v)) : BigInt.asUintN(bits, BigInt(v));
-  if (p.isBox) { p.v = x; return x; }
-  let u = BigInt.asUintN(size * 8, x);
-  for (let i = 0; i < size; i++) { p.buf[p.off + i] = Number(u & 0xFFn); u >>= 8n; }
-  return x;
-}
-/** __fp16 and _Float16. */
-export function ldF16(p) {
-  if (p.isBox) return p.v;
-  return new DataView(p.buf.buffer, p.buf.byteOffset + p.off, 2).getFloat16(0, true);
-}
-export function stF16(p, v) {
-  const x = Math.f16round(v);
-  if (p.isBox) { p.v = x; return x; }
-  new DataView(p.buf.buffer, p.buf.byteOffset + p.off, 2).setFloat16(0, x, true);
-  return x;
 }
 
 /** 16-bit signed load (C short/int16_t), little-endian. @param {CPtr} p @returns {number} */
@@ -541,7 +239,7 @@ export function ldU16(p) {
 
 /** 16-bit store, little-endian (truncate mod 2^16 like C). @param {CPtr} p @param {number} v @returns {number} v */
 export function stI16(p, v) {
-  if (p.isBox) { p.v = p.k === 'u16' ? v & 0xFFFF : (v << 16) >> 16; return v; } // signed canonical, like stI32's v|0 — raw .v reads must see C's int16 value
+  if (p.isBox) { p.v = (v << 16) >> 16; return v; } // signed canonical, like stI32's v|0 — raw .v reads must see C's int16 value
   const b = p.buf, o = p.off, x = v & 0xFFFF;
   b[o] = x & 0xFF; b[o + 1] = (x >> 8) & 0xFF;
   return v;
@@ -1350,40 +1048,13 @@ export function span(p, n) {
   return p;
 }
 
-/** C strncpy: stops at src's NUL and zero-fills the rest of n. */
-export function strncpy(dst, src, n) {
-  n = Number(n);
-  let i = 0;
-  for (; i < n; i++) { const c = src.buf[src.off + i]; if (c === 0 || c === undefined) break; dst.buf[dst.off + i] = c; }
-  for (; i < n; i++) dst.buf[dst.off + i] = 0;
-  return dst;
-}
-
 export function memcpy(dst, src, n) {
   n = Number(n);
-  // a cell that knows its C type presents its real bytes
-  if (src && src.isBox && src.k) {
-    const tmp = new DataView(new ArrayBuffer(8));
-    __boxToBytes(src, tmp);
-    const out = new Uint8Array(n);
-    for (let i = 0; i < Math.min(n, 8); i++) out[i] = tmp.getUint8(i);
-    src = { buf: out, off: 0 };
-  }
-  if (dst && dst.isBox && dst.k) {
-    const tmp = new DataView(new ArrayBuffer(8));
-    __boxToBytes(dst, tmp);
-    const bytes = new Uint8Array(n);
-    const r = memcpy({ buf: bytes, off: 0 }, src, n);
-    for (let i = 0; i < Math.min(n, 8); i++) tmp.setUint8(i, bytes[i]);
-    __bytesToBox(dst, tmp);
-    return dst;
-  }
   // boxed scalars (tier-2 &x): stage through a little-endian byte buffer
   if (src && src.isBox) {
     const tmp = new Uint8Array(n);
     const v = src.v;
-    if (v === null || (v && typeof v === 'object')) stPtr({ buf: tmp, off: 0 }, v);
-    else if (v && v.buf !== undefined) { const id = __ptrRegistry.indexOf(v) + 1; let x = BigInt(id); for (let i = 0; i < n; i++) { tmp[i] = Number(x & 0xFFn); x >>= 8n; } }
+    if (v && v.buf !== undefined) { const id = __ptrRegistry.indexOf(v) + 1; let x = BigInt(id); for (let i = 0; i < n; i++) { tmp[i] = Number(x & 0xFFn); x >>= 8n; } }
     else if (typeof v === 'bigint') { let x = v; for (let i = 0; i < n; i++) { tmp[i] = Number(x & 0xFFn); x >>= 8n; } }
     else { let x = Number(v) >>> 0; for (let i = 0; i < n; i++) { tmp[i] = x & 0xFF; x >>>= 8; } }
     src = { buf: tmp, off: 0 };
@@ -1391,8 +1062,7 @@ export function memcpy(dst, src, n) {
   if (dst && dst.isBox) {
     const tmp = alloc(n);
     const r = memcpy(tmp, src, n);
-    if (n === 8) dst.v = ldPtr(tmp); // an int box is 4 bytes and a long has a kind, so this is a pointer
-    else if (n <= 4) { let x = 0; for (let i = n - 1; i >= 0; i--) x = (x << 8) | tmp.buf[i]; dst.v = x; }
+    if (n <= 4) { let x = 0; for (let i = n - 1; i >= 0; i--) x = (x << 8) | tmp.buf[i]; dst.v = x; }
     else { let x = 0n; for (let i = Math.min(n, 8) - 1; i >= 0; i--) x = (x << 8n) | BigInt(tmp.buf[i]); dst.v = x; }
     return r;
   }
@@ -1442,7 +1112,7 @@ export function tolower(c) { return c >= 65 && c <= 90 ? c + 32 : c; }
 // Same pattern the old f.replace() used; compileFormat drives it with exec so
 // the match set is identical (a '%' that starts no valid conversion is left in
 // the literal text, exactly as replace() left it).
-const __FMT_RE = /%(?:(\d+)\$)?([-+ #0]*)(\*|\d*)(?:\.(\*|\d*))?(hh|h|ll|l|z|t|j|L)?([\s\S])/g;
+const __FMT_RE = /%([+0-]*)(\*|\d*)(?:\.(\*|\d*))?(ll|l|z)?([diouxXscf%])/g;
 const __PREC_NONE = -1;   // no '.' at all, or a bare '.' ("%.d")
 const __PREC_STAR = -2;   // '.*' — read from an int argument at call time
 const __fmtCache = new Map();
@@ -1455,165 +1125,25 @@ function compileFormat(f) {
   while ((m = __FMT_RE.exec(f)) !== null) {
     if (m.index > last) parts.push(f.slice(last, m.index));
     last = m.index + m[0].length;
-    // BSD spellings of %ld %lu %lo; any other letter prints itself, taking no argument
-    const rawSpec = m[6], spec0 = { D: 'd', U: 'u', O: 'o' }[rawSpec] ?? rawSpec;
-    const known = 'diouxXscfFeEgGp%aAn'.indexOf(spec0) >= 0;
-    const spec = known ? spec0 : '%';
-    if (spec === '%' && known && !m[3]) { parts.push('%'); continue; }
-    const flags = m[2], width = m[3], prec = m[4];
+    const spec = m[5];
+    if (spec === '%') { parts.push('%'); continue; }
+    const flags = m[1], width = m[2], prec = m[3];
     parts.push({
       spec,
-      literal: known ? '%' : rawSpec,
-      argPos: m[1] ? Number(m[1]) : 0,
-      isLong: spec0 !== rawSpec || m[5] === 'll' || m[5] === 'l' || m[5] === 'z' || m[5] === 't' || m[5] === 'j',
-      narrow: m[5] === 'hh' ? 8 : m[5] === 'h' ? 16 : 0,
+      isLong: m[4] === 'll' || m[4] === 'l' || m[4] === 'z',
       widthStar: width === '*',
       width: width === '*' ? 0 : Number(width || 0),
-      prec: prec === undefined ? __PREC_NONE
-          : prec === '' ? 0 // "%.f": a bare dot is precision 0
+      prec: prec === undefined || prec === '' ? __PREC_NONE
           : prec === '*' ? __PREC_STAR : Number(prec),
       plus: flags.indexOf('+') >= 0,
       minus: flags.indexOf('-') >= 0,
       zero: flags.indexOf('0') >= 0,
-      space: flags.indexOf(' ') >= 0,
-      alt: flags.indexOf('#') >= 0,
       intSpec: 'diouxX'.indexOf(spec) >= 0,
       diSpec: spec === 'd' || spec === 'i',
-      floatSpec: 'fFeEgGaA'.indexOf(spec) >= 0,
-      wide: m[5] === 'l',
     });
   }
   if (last < f.length) parts.push(f.slice(last));
   return parts;
-}
-
-/** Value of an unsigned conversion after an h/hh length modifier. */
-function __narrowU(v, narrow) {
-  return narrow === 8 ? v & 0xFF : narrow === 16 ? v & 0xFFFF : v >>> 0;
-}
-
-/** Exact decimal digits of a finite double, for what toFixed can't do: it writes
- *  values from 1e21 up in exponent form and refuses precisions over 100. Exact ties
- *  round to even, as C does. */
-function __fixedExact(x, prec) {
-  const dv = new DataView(new ArrayBuffer(8));
-  dv.setFloat64(0, Math.abs(x));
-  const bits = dv.getBigUint64(0);
-  const be = Number(bits >> 52n), fr = bits & 0xFFFFFFFFFFFFFn;
-  const m = be === 0 ? fr : fr | (1n << 52n), e = (be === 0 ? 1 : be) - 1075;
-  const num = (e > 0 ? m << BigInt(e) : m) * 10n ** BigInt(prec), den = e < 0 ? 1n << BigInt(-e) : 1n;
-  let q = num / den;
-  const r2 = (num % den) * 2n;
-  if (r2 > den || (r2 === den && (q & 1n))) q += 1n;
-  const d = q.toString().padStart(prec + 1, '0');
-  const neg = x < 0 || Object.is(x, -0) ? '-' : '';
-  return neg + (prec ? `${d.slice(0, -prec)}.${d.slice(-prec)}` : d);
-}
-
-/** toFixed rounds exact ties up; C rounds them to even. A double has few enough
- *  fractional digits to show a tie within toFixed's 100. */
-function __toFixedC(x, prec) {
-  if (Math.abs(x) >= 1e21 || prec > 99) return __fixedExact(x, prec);
-  if (Object.is(x, -0)) return `-${(0).toFixed(prec)}`;
-  const s = x.toFixed(prec);
-  const full = x.toFixed(100), dot = full.indexOf('.');
-  const tail = full.slice(dot + 1 + prec);
-  if (tail[0] !== '5' || /[1-9]/.test(tail.slice(1))) return s;
-  const cut = prec === 0 ? full.slice(0, dot) : full.slice(0, dot + 1 + prec);
-  return (cut.charCodeAt(cut.length - 1) - 48) % 2 === 0 ? cut : s;
-}
-
-/** %e digits past toExponential's limit of 100, from the exact expansion. */
-function __expExact(x, prec) {
-  const neg = x < 0 || Object.is(x, -0) ? '-' : '';
-  if (x === 0) return `${neg}0${prec ? `.${'0'.repeat(prec)}` : ''}e+00`;
-  const full = __fixedExact(Math.abs(x), 1100), dot = full.indexOf('.');
-  const all = full.slice(0, dot) + full.slice(dot + 1);
-  const first = all.search(/[1-9]/), exp = dot - 1 - first;
-  const sig = all.slice(first), keep = BigInt(sig.slice(0, prec + 1).padEnd(prec + 1, '0'));
-  const rest = sig.slice(prec + 1);
-  const up = rest[0] > '5' || (rest[0] === '5' && (/[1-9]/.test(rest.slice(1)) || (keep & 1n)));
-  let d = (up ? keep + 1n : keep).toString(), ex = exp;
-  if (d.length > prec + 1) { d = d.slice(0, prec + 1); ex++; }
-  const a = Math.abs(ex);
-  return `${neg}${d[0]}${prec ? `.${d.slice(1)}` : ''}e${ex < 0 ? '-' : '+'}${a < 10 ? '0' : ''}${a}`;
-}
-
-function __fmtExp(x, prec) {
-  if (prec > 99) return __expExact(x, prec);
-  let t = x.toExponential(prec);
-  if (Object.is(x, -0)) t = `-${t}`;
-  if (x !== 0 && Number.isFinite(x) && prec < 99) {
-    // same tie rule as __toFixedC, on the mantissa digits
-    const full = x.toExponential(100), e = full.indexOf('e');
-    const digits = full.slice(0, e), start = digits.indexOf('.') + 1 + prec;
-    const tail = digits.slice(start);
-    if (tail[0] === '5' && !/[1-9]/.test(tail.slice(1))) {
-      const cut = prec === 0 ? digits.slice(0, digits.indexOf('.')) : digits.slice(0, start);
-      if ((cut.charCodeAt(cut.length - 1) - 48) % 2 === 0) t = cut + full.slice(e);
-    }
-  }
-  return t.replace(/e([+-])(\d)$/, 'e$10$2');
-}
-
-/** %f %e %g and uppercase forms for a finite or non-finite double. */
-function __fmtHexFloat(x, prec, alt, upper) {
-  let r;
-  if (x !== x) r = 'nan';
-  else if (Math.abs(x) === Infinity) r = x < 0 ? '-inf' : 'inf';
-  else {
-    const sign = x < 0 || Object.is(x, -0) ? '-' : '';
-    const dv = new DataView(new ArrayBuffer(8));
-    dv.setFloat64(0, Math.abs(x));
-    const bits = dv.getBigUint64(0);
-    let e = Number(bits >> 52n), frac = bits & 0xFFFFFFFFFFFFFn, lead = 1n;
-    if (e === 0 && frac === 0n) { lead = 0n; e = 0; } else if (e === 0) {
-      // Darwin normalizes a subnormal
-      e = -1022;
-      while (!(frac & (1n << 52n))) { frac <<= 1n; e--; }
-      frac &= 0xFFFFFFFFFFFFFn;
-    } else e -= 1023;
-    let digits = frac.toString(16).padStart(13, '0');
-    if (prec !== __PREC_NONE && prec < 13) {
-      // Darwin's rule (hdtoa's dorounding): up if the next hex digit is over 8, or is
-      // 8 with an odd digit after it. It's not round-to-even.
-      const shift = BigInt((13 - prec) * 4), all0 = (lead << 52n) | frac;
-      const next = Number((all0 >> (shift - 4n)) & 0xFn), after = shift >= 8n ? Number((all0 >> (shift - 8n)) & 0xFn) : 0;
-      let all = all0 >> shift;
-      if (next > 8 || (next === 8 && (after & 1))) all += 1n;
-      lead = all >> BigInt(prec * 4);
-      digits = prec ? (all & ((1n << BigInt(prec * 4)) - 1n)).toString(16).padStart(prec, '0') : '';
-    } else if (prec !== __PREC_NONE) digits = digits.padEnd(prec, '0');
-    else digits = digits.replace(/0+$/, '');
-    r = `${sign}0x${lead}${digits || alt ? '.' : ''}${digits}p${e < 0 ? '-' : '+'}${Math.abs(e)}`;
-  }
-  return upper ? r.toUpperCase() : r;
-}
-
-function __fmtFloat(spec, x, prec, alt) {
-  if (spec === 'a' || spec === 'A') return __fmtHexFloat(x, prec, alt, spec === 'A');
-  const upper = spec === 'E' || spec === 'G' || spec === 'F';
-  // '#' keeps the point that precision 0 drops, and %g's trailing zeros
-  const point = (t) => (!alt || t.includes('.') ? t : t.includes('e') ? t.replace('e', '.e') : `${t}.`);
-  let s;
-  if (!Number.isFinite(x)) s = Number.isNaN(x) ? 'nan' : x < 0 ? '-inf' : 'inf';
-  else {
-    const p = prec === __PREC_NONE ? 6 : prec;
-    if (spec === 'f' || spec === 'F') s = point(__toFixedC(x, p));
-    else if (spec === 'e' || spec === 'E') s = point(__fmtExp(x, p));
-    else {
-      const P = p === 0 ? 1 : p;
-      const exp = x === 0 ? 0 : Number(__fmtExp(x, P - 1).split('e')[1]);
-      if (exp < -4 || exp >= P) {
-        s = point(__fmtExp(x, P - 1));
-        if (!alt) s = s.replace(/\.?0+e/, 'e');
-      } else {
-        s = point(__toFixedC(x, P - 1 - exp));
-        if (!alt && s.indexOf('.') >= 0) s = s.replace(/\.?0+$/, '');
-      }
-    }
-  }
-  return upper ? s.toUpperCase() : s;
 }
 
 export function sprintfCore(fmt, args) {
@@ -1642,55 +1172,22 @@ export function sprintfCore(fmt, args) {
       const p = Number(args[ai++]) | 0;
       prec = p < 0 ? __PREC_NONE : p;      // negative precision == omitted
     }
-    const a = spec === '%' ? undefined : it.argPos ? args[it.argPos - 1] : args[ai++];
+    const a = args[ai++];
     let s;
-    if (spec === 'n') { stI32(a, out.length); continue; }
-    if (spec === '%') s = it.literal;
-    else if (spec === 's' && it.wide) { // %ls: a wide string
-      s = '';
-      for (let i = 0; ; i += 4) { const c = ldI32(add(a, i)); if (c === 0 || (prec !== __PREC_NONE && s.length >= prec)) break; s += String.fromCharCode(c & 0xFF); }
-    }
-    else if (spec === 's') { s = cstr(a); if (prec !== __PREC_NONE) s = s.slice(0, prec); }
-    else if (spec === 'p') s = a == null ? '0x0' : `0x${(typeof a === 'bigint' || typeof a === 'number' ? BigInt(a) : addr(a)).toString(16)}`;
+    if (spec === 's') { s = cstr(a); if (prec !== __PREC_NONE) s = s.slice(0, prec); }
     else if (spec === 'c') s = String.fromCharCode(Number(a) & 0xFF);
-    else if (it.floatSpec) s = __fmtFloat(spec, Number(a), prec, it.alt);
-    else if (spec === 'x' || spec === 'X') {
-      const v = isLong ? BigInt.asUintN(64, BigInt(a)) : BigInt(__narrowU(Number(a), it.narrow));
-      s = v.toString(16);
-      if (spec === 'X') s = s.toUpperCase();
-    }
-    else if (spec === 'o') s = isLong ? BigInt.asUintN(64, BigInt(a)).toString(8) : __narrowU(Number(a), it.narrow).toString(8);
-    else if (spec === 'u') s = isLong ? String(BigInt.asUintN(64, BigInt(a))) : String(__narrowU(Number(a), it.narrow));
+    else if (spec === 'f') s = prec !== __PREC_NONE ? Number(a).toFixed(prec) : Number(a).toFixed(6);
+    else if (spec === 'x' || spec === 'X') { s = isLong ? BigInt.asUintN(64, BigInt(a)).toString(16) : (Number(a) >>> 0).toString(16); if (spec === 'X') s = s.toUpperCase(); }
+    else if (spec === 'o') s = isLong ? BigInt.asUintN(64, BigInt(a)).toString(8) : (Number(a) >>> 0).toString(8);
+    else if (spec === 'u') s = isLong ? String(BigInt.asUintN(64, BigInt(a))) : String(Number(a) >>> 0);
     else if (isLong) s = String(BigInt.asIntN(64, BigInt(a))); // %lld/%ld/%zd
-    else if (it.narrow === 8) s = String((Number(a) << 24) >> 24);
-    else if (it.narrow === 16) s = String((Number(a) << 16) >> 16);
-    else s = String(Number(a) | 0); // %d %i
-    let sign = '', prefix = '';
-    if (it.diSpec || it.floatSpec) {
-      if (s.charCodeAt(0) === 45) { sign = '-'; s = s.slice(1); }
-      else if (s === 'nan' || s === 'NAN') sign = ''; // Darwin gives NaN no '+' or ' '
-      else if (it.plus) sign = '+';
-      else if (it.space) sign = ' ';
+    else s = String(Number(a)); // %d %i
+    if (prec !== __PREC_NONE && it.intSpec && s.charCodeAt(0) !== 45) s = s.padStart(prec, '0');
+    if (it.plus && s.charCodeAt(0) !== 45 && it.diSpec) s = '+' + s;
+    if (s.length < w) {
+      if (minus) s = s + ' '.repeat(w - s.length); // left-justify
+      else s = (it.zero && s.charCodeAt(0) !== 45 ? '0' : ' ').repeat(w - s.length) + s;
     }
-    if (it.intSpec) {
-      const isZero = s === '0';
-      if (prec !== __PREC_NONE) {
-        if (prec === 0 && s === '0') s = it.alt && spec === 'o' ? '0' : ''; // "%#.o" of 0 still prints the 0
-        else s = s.padStart(prec, '0');
-      }
-      if (it.alt && !isZero) {
-        if (spec === 'x') prefix = '0x';
-        else if (spec === 'X') prefix = '0X';
-        else if (spec === 'o' && s[0] !== '0') prefix = '0';
-      }
-    }
-    const len = sign.length + prefix.length + s.length;
-    if (len < w) {
-      if (minus) s = sign + prefix + s + ' '.repeat(w - len);
-      // '0' pads between the sign and the digits; a precision turns it off for integers.
-      else if (it.zero && !(it.intSpec && prec !== __PREC_NONE) && !(it.floatSpec && !Number.isFinite(Number(a)))) s = sign + prefix + '0'.repeat(w - len) + s;
-      else s = ' '.repeat(w - len) + sign + prefix + s;
-    } else s = sign + prefix + s;
     out += s;
   }
   return out;
@@ -1699,7 +1196,7 @@ export function sprintfCore(fmt, args) {
 /** printf to stdout. @param {CPtr|string} fmt @returns {number} */
 export function printf(fmt, ...args) {
   const s = sprintfCore(fmt, args);
-  process.stdout.write(Buffer.from(s, 'latin1')); // C strings are bytes, not UTF-8
+  process.stdout.write(s);
   return s.length;
 }
 
@@ -1717,7 +1214,7 @@ export function sprintf(str, fmt, ...args) { return writeStr(str, sprintfCore(fm
 export function snprintf(str, n, fmt, ...args) {
   n = Number(n);
   const s = sprintfCore(fmt, args);
-  if (n > 0) writeStr(str, s.length >= n ? s.slice(0, n - 1) : s); // size 0 writes nothing, not even the NUL
+  writeStr(str, s.length >= n ? s.slice(0, n - 1) : s);
   return s.length;
 }
 
@@ -1726,7 +1223,7 @@ export function vsnprintf(str, n, fmt, ap) {
   n = Number(n);
   if (ap && Array.isArray(ap.args)) ap = ap.args.slice(ap.i); // va_list cursor
   const s = sprintfCore(fmt, ap);
-  if (n > 0) writeStr(str, s.length >= n ? s.slice(0, n - 1) : s);
+  writeStr(str, s.length >= n ? s.slice(0, n - 1) : s);
   return s.length;
 }
 
@@ -1791,8 +1288,8 @@ export function darwinQsort(v, cmp) {
       }
     }
     while (nmemb > 1) {
-      const k = v[B(nmemb)];
-      v[B(nmemb)] = v[B(1)];
+      const k = v[B(1)];
+      v[B(1)] = v[B(nmemb)];
       --nmemb;
       let pi = 1, ci;
       for (; (ci = pi * 2) <= nmemb; pi = ci) {

@@ -45,9 +45,3 @@ export function jbval(e) {
 export function longjmp(jb, v) {
   throw new Longjmp(idOf(jb), Number(v));
 }
-
-/** State-machine functions: the state to resume at for this longjmp, if any. */
-export function resumeState(e, table) {
-  for (const [id, state] of table) if (matches(e, id)) return state;
-  return undefined;
-}

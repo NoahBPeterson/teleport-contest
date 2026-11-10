@@ -36,10 +36,8 @@ import * as Y from '../yield-rt.js';
 // The vendored playground. Relative specifier so this resolves the same way
 // from Node and from a browser module graph; it lives outside js/ on purpose
 // (baked game data is not hand-written port code — see tools/vendor-data.mjs).
-import { DIRS as VENDORED_DIRS, FILE_NAMES as VENDORED_FILE_NAMES, readVendored, statVendored } from '../data-nethackdir/index.mjs';
+import { DIRS as VENDORED_DIRS, readVendored, statVendored } from '../data-nethackdir/index.mjs';
 import { ereCompile, regErrorText, REG_BADPAT, REG_NOMATCH } from './posix-ere.mjs';
-import { scanfCore, strtoCore, strtodCore } from '../libc/scanf.js';
-import { installExtraLibc } from '../libc/extra.js';
 
 // Mount point of the playground inside the VFS. nh_getenv() rejects values
 // longer than 128 chars, and the C code copies this into fixed-size buffers,
@@ -66,14 +64,6 @@ const HACKDIR = '/tmp/c2js-nethackdir';
 // project attribution policy.
 const VHOME = '/Users/davidbau/git/mazesofmenace/teleport/maud/test/comparison/c-harness/results';
 
-// Sessions recorded by our own scripts/record-session.mjs ran under a temp
-// $HOME and say so in a trailing rc comment; show that path on those. Official
-// sessions have no such line and keep VHOME.
-function recorderHomeOf(nethackrc) {
-  const m = /^# recorder-home: (\/.*)$/m.exec(nethackrc || '');
-  return m ? m[1] : VHOME;
-}
-
 let __segCounter = 0;
 
 // Byte<->string helpers. atob/btoa rather than node:Buffer: the whole point of
@@ -84,23 +74,6 @@ const traceOut = (typeof process !== 'undefined' && process.stderr)
   ? (s) => process.stderr.write(s)
   : (s) => console.error(s);
 
-// The recorder runs `nethack -u <name>`, with the name it reads from the rc itself:
-// the first name: in an OPTIONS line, or empty. That -u overrides whatever the game's
-// own parse of the rc left in plname (a later name:, NAME=, a trailing role suffix).
-// Same rules as parseNethackrcName() in scripts/record-session.mjs.
-function recorderPlayerName(rc) {
-  if (!rc) return '';
-  for (const rawLine of rc.split('\n')) {
-    const line = rawLine.trim();
-    const upper = line.toUpperCase();
-    if (!(upper.startsWith('OPTIONS=') || upper.startsWith('OPTIONS ='))) continue;
-    for (const opt of line.slice(line.indexOf('=') + 1).split(',')) {
-      const t = opt.trim();
-      if (t.toLowerCase().startsWith('name:')) return t.slice('name:'.length).trim();
-    }
-  }
-  return '';
-}
 function bytesOfString(s) {
   const u = new Uint8Array(s.length);
   for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i) & 0xFF;
@@ -119,6 +92,19 @@ function bytesToB64(u) {
   return btoa(s);
 }
 
+function recorderPlayerName(rc) {
+  if (!rc) return '';
+  for (const rawLine of rc.split('\n')) {
+    const line = rawLine.trim();
+    const upper = line.toUpperCase();
+    if (!(upper.startsWith('OPTIONS=') || upper.startsWith('OPTIONS ='))) continue;
+    for (const opt of line.slice(line.indexOf('=') + 1).split(',')) {
+      const t = opt.trim();
+      if (t.toLowerCase().startsWith('name:')) return t.slice('name:'.length).trim();
+    }
+  }
+  return '';
+}
 /**
  * Boot one segment of the transpiled game. NOTE: the generated modules this
  * pulls in are per-module-graph state — calling runBootGame twice on the same
@@ -133,8 +119,8 @@ function bytesToB64(u) {
  *          rngLog: string[], stdout: string, exitCode: number|null, error: Error|null}>}
  */
 export async function runBootGame(opts) {
-  const seed = String(opts.seed ?? 0);
-  const datetime = String(opts.datetime || '20000110090000');
+  const seed = String(opts.seed ?? '8000');
+  const datetime = String(opts.datetime || '20260401090000');
   const moves = opts.moves || '';
   const storage = opts.storage || null;
   const trace = !!opts.trace;
@@ -143,7 +129,7 @@ export async function runBootGame(opts) {
   const waitForKey = typeof opts.waitForKey === 'function' ? opts.waitForKey : null;
   const segId = ++__segCounter;
 
-  const tmpHome = recorderHomeOf(opts.nethackrc);
+  const tmpHome = VHOME;
   const ENV = {
     // The recorder ran under TERM=xterm-256color (upstream
     // docs/recording-environment.md). Nothing downstream reads the string
@@ -197,10 +183,10 @@ export async function runBootGame(opts) {
 
   const HACKDIR_PREFIX = HACKDIR + '/';
   const vendoredName = (p) => (p.startsWith(HACKDIR_PREFIX) ? p.slice(HACKDIR_PREFIX.length) : null);
-  const VFS_DIRS = new Set(['/', '/tmp', HACKDIR, tmpHome, ...VENDORED_DIRS.map((d) => HACKDIR_PREFIX + d)]);
+  const VFS_DIRS = new Set(['/', '/tmp', HACKDIR, VHOME, ...VENDORED_DIRS.map((d) => HACKDIR_PREFIX + d)]);
 
   const bootFiles = new Map();
-  if (opts.nethackrc) bootFiles.set(tmpHome + '/.nethackrc', new TextEncoder().encode(opts.nethackrc)); // written as UTF-8 by the recorder
+  if (opts.nethackrc) bootFiles.set(VHOME + '/.nethackrc', new TextEncoder().encode(opts.nethackrc)); // written as UTF-8 by the recorder
 
   // Lua->JS script ports (roadmap 1.10). Bound below, after the transpiled
   // module graph has been imported — js/lua-js/bridge.mjs pulls in lapi/sp_lev/
@@ -258,43 +244,36 @@ export async function runBootGame(opts) {
     g.__errnoBuf[2] = (n >> 16) & 255; g.__errnoBuf[3] = (n >> 24) & 255;
   };
   function openFd(p, mode) {
-    // One buffer per open file: reads and writes share `data` (capacity) and `len`.
-    const m = mode.replace('b', '');
-    const creating = m[0] === 'w' || m[0] === 'a';
-    if (creating) {
-      const rp = resolveP(p), dir = rp.slice(0, Math.max(rp.lastIndexOf('/'), 1));
-      if (!VFS_DIRS.has(dir)) { setErrno(2); return -1; }
-    }
-    const old = m[0] === 'w' ? null : realRead(p);
-    if (!old && m[0] === 'r') { setErrno(2); return -1; }
     const fd = nextFd++;
-    const data = old || new Uint8Array(0);
-    const f = { path: p, data, len: data.length, pos: m[0] === 'a' ? data.length : 0, readable: m[0] === 'r' || m.includes('+'), write: m[0] !== 'r' || m.includes('+'), append: m[0] === 'a', dirty: m[0] === 'w' };
-    fds.set(fd, f);
-    if (m[0] === 'w') realWrite(p, new Uint8Array(0));
-    return fd;
-  }
-  /** Make room to write n bytes at the file position (past the end leaves zeros); returns the offset. */
-  function fdRoom(f, n) {
-    const at = f.append ? f.len : f.pos, end = at + n;
-    if (end > f.data.length) {
-      const grown = new Uint8Array(Math.max(end, f.data.length * 2, 64));
-      grown.set(f.data.subarray(0, f.len));
-      f.data = grown;
+    if (mode === 'w' || mode === 'w+') {
+      // truncating open: the file becomes exactly what this fd writes
+      fds.set(fd, { path: p, pos: 0, written: [], write: true, trunc: true, base: null, wbase: 0 });
+      realWrite(p, new Uint8Array(0));
+    } else {
+      const append = mode === 'a' || mode === 'a+';
+      const data = realRead(p) || (append ? new Uint8Array(0) : null);
+      if (!data) { setErrno(2); return -1; }
+      const wbase = append ? data.length : 0;
+      fds.set(fd, { path: p, pos: wbase, data, written: [], write: mode !== 'r', trunc: false, base: data, wbase });
     }
-    if (at > f.len) f.data.fill(0, f.len, at);
-    if (end > f.len) f.len = end;
-    f.pos = end;
-    f.dirty = true;
-    return at;
+    return fd;
   }
   function fdFlush(fd) {
     const f = fds.get(fd);
-    // Only a stream that changed the file rewrites it: files.c check_recordfile()
-    // opens `record` O_RDWR just to prove it exists, and that must leave it alone.
-    if (!f || !f.write || !f.dirty) return;
-    realWrite(f.path, f.data.slice(0, f.len));
-    f.dirty = false;
+    if (!f || !f.write) return;
+    if (f.trunc) { realWrite(f.path, new Uint8Array(f.written)); return; }
+    // Non-truncating open (O_RDWR / "r+" / "a"): the file keeps its existing
+    // bytes and this fd's writes overlay them from the position it opened at.
+    // Flushing `written` wholesale truncated the file instead — files.c
+    // check_recordfile() opens `record` O_RDWR purely to prove it exists and
+    // closes it without writing, which wiped the high-score list at the end
+    // of every segment, so seed0030 showed only the current game's death.
+    if (!f.written.length) return;
+    const base = f.base || new Uint8Array(0);
+    const outb = new Uint8Array(Math.max(base.length, f.wbase + f.written.length));
+    outb.set(base, 0);
+    outb.set(Uint8Array.from(f.written), f.wbase);
+    realWrite(f.path, outb);
   }
 
   // ---------------- output collection + shims ----------------
@@ -310,14 +289,7 @@ export async function runBootGame(opts) {
   // The canonical sessions were captured under tmux, whose pty line discipline
   // maps incoming CR to LF (ICRNL) before the game reads it. The recorder's
   // pipe feed replicates that (record-session.mjs); so must we.
-  // The recorder writes each UTF-16 unit of `moves` as UTF-8 (a lone surrogate
-  // becoming U+FFFD) and stops taking steps at moves.length+1 reads. A multi-byte
-  // key therefore leaves bytes unread at that point, but they are already in the
-  // pipe, and C keeps running them until it is killed: their RNG and file writes
-  // land in the recording while their screens do not. So read every byte here,
-  // and drop the extra screens below.
-  const utf8 = new TextEncoder();
-  for (let i = 0; i < moves.length; i++) inputQueue.push(...utf8.encode(moves[i] === '\r' ? '\n' : moves[i]));
+  for (const ch of moves) inputQueue.push(ch === '\r' ? 10 : ch.charCodeAt(0));
 
   const g = globalThis;
   const cptr = await import('../cptr.js');
@@ -338,12 +310,7 @@ export async function runBootGame(opts) {
   g.__builtin_object_size = (p, t) => -1n;
   g.__builtin_huge_val = () => Infinity;
   function memsetAny(dst, val, n) {
-    if (dst && dst.isBox) {
-      if (val === 0) { dst.v = typeof dst.v === 'bigint' ? 0n : 0; return dst; }
-      const view = cptr.byteView(dst);
-      for (let i = 0; i < n; i++) view.buf[i] = val & 0xFF;
-      return dst;
-    }
+    if (dst && dst.isBox) { dst.v = 0; return dst; }
     if (dst && Array.isArray(dst.buf)) {
       const B = dst.buf;
       const nested = B.length === 0 || Array.isArray(B[0]) || B[0] instanceof Uint8Array;
@@ -430,11 +397,12 @@ export async function runBootGame(opts) {
   g.regfree = (preg) => { __regexps.delete(preg.buf); };
   g.__errnoBuf = new Uint8Array(4);
   g.__error = () => cptr.decay(g.__errnoBuf);
+  g.strerror = (e) => cptr.lit(`error ${Number(e)}`);
   g.perror = (s) => {
     const e = g.__errnoBuf[0] | (g.__errnoBuf[1] << 8) | (g.__errnoBuf[2] << 16) | (g.__errnoBuf[3] << 24);
     err(`${s ? cptr.cstr(s) : ''}: error ${e}\n`);
   };
-  g.atoi = (p) => Number(BigInt.asIntN(32, strtoCore(cptr.cstr(p), 10, true).value));
+  g.atoi = (p) => { const v = parseInt(cptr.cstr(p), 10); return Number.isNaN(v) ? 0 : v | 0; };
   g.realloc = (p, n) => {
     n = Number(n);
     if (p === null) return cptr.malloc(n);
@@ -449,11 +417,11 @@ export async function runBootGame(opts) {
   g.islower = (c) => (c >= 97 && c <= 122) ? 1 : 0;
   g.isprint = (c) => (c >= 32 && c <= 126) ? 1 : 0;
   g.ispunct = (c) => (g.isprint(c) && !g.isalnum(c) && c !== 32) ? 1 : 0;
-  g.iscntrl = (c) => (c >= 0 && (c < 32 || c === 127)) ? 1 : 0;
+  g.iscntrl = (c) => (c < 32 || c === 127) ? 1 : 0;
   g.toupper = (c) => (c >= 97 && c <= 122) ? c - 32 : c;
-  g.strcmp = (a, b) => cptr.bytesCmp(a, b, Infinity, false);
-  g.strcasecmp = (a, b) => cptr.bytesCmp(a, b, Infinity, true);
-  g.strncasecmp = (a, b, n) => cptr.bytesCmp(a, b, Number(n), true);
+  g.strcmp = (a, b) => { const s = cptr.cstr(a), t = cptr.cstr(b); return s < t ? -1 : s > t ? 1 : 0; };
+  g.strcasecmp = (a, b) => { const s = cptr.cstr(a).toLowerCase(), t = cptr.cstr(b).toLowerCase(); return s < t ? -1 : s > t ? 1 : 0; };
+  g.strncasecmp = (a, b, n) => { const s = cptr.cstr(a).toLowerCase().slice(0, Number(n)), t = cptr.cstr(b).toLowerCase().slice(0, Number(n)); return s < t ? -1 : s > t ? 1 : 0; };
   g.memchr = (p, c, n) => { c = Number(c) & 0xFF; for (let i = 0; i < Number(n); i++) { if (p.buf[p.off + i] === c) return cptr.add(p, i); } return null; };
   g.memcmp = (a, b, n) => { n = Number(n); for (let i = 0; i < n; i++) { const d = (a.buf[a.off + i] ?? 0) - (b.buf[b.off + i] ?? 0); if (d) return d; } return 0; };
   g.memmove = (dst, src, n) => cptr.memcpy(dst, src, n);
@@ -461,34 +429,104 @@ export async function runBootGame(opts) {
   g.strcspn = (s, reject) => { const r = cptr.cstr(reject); const t = cptr.cstr(s); let i = 0; while (i < t.length && !r.includes(t[i])) i++; return BigInt(i); };
   g.strpbrk = (s, accept) => { const a = cptr.cstr(accept); const t = cptr.cstr(s); for (let i = 0; i < t.length; i++) if (a.includes(t[i])) return cptr.add(s, i); return null; };
   g.memset = (dst, val, n) => memsetAny(dst, val, Number(n));
-  g.atol = (p) => strtoCore(cptr.cstr(p), 10, true).value;
-  const strto = (p, endptr, base, signed) => {
-    const { value, end, errno } = strtoCore(cptr.cstr(p), Number(base), signed);
-    if (errno) setErrno(errno);
-    if (endptr && endptr !== null) cptr.stPtr(endptr, cptr.add(p, end));
-    return value;
+  g.atol = (p) => BigInt(g.atoi(p));
+  g.strtoul = (p, endptr, base) => {
+    base = Number(base) || 10;
+    const s = cptr.cstr(p).replace(/^\s+/, '');
+    const m = s.match(base === 16 ? /^[+-]?(0x)?[0-9a-fA-F]+/ : /^[+-]?\d+/);
+    if (!m) { if (endptr && endptr.buf !== undefined) cptr.stPtr(endptr, p); return 0n; }
+    const v = BigInt(base === 16 && !m[0].toLowerCase().startsWith('0x') && !/^[+-]?0x/i.test(m[0]) ? '0x' + m[0] : m[0]);
+    if (endptr && endptr.buf !== undefined) cptr.stPtr(endptr, cptr.add(p, cptr.cstr(p).indexOf(m[0]) + m[0].length));
+    return BigInt.asUintN(64, v);
   };
-  g.strtoul = (p, endptr, base) => strto(p, endptr, base, false);
-  g.strtol = (p, endptr, base) => strto(p, endptr, base, true);
-  installExtraLibc(g);
+  g.strtol = (p, endptr, base) => BigInt.asIntN(64, g.strtoul(p, endptr, base));
+  // Shared scanf engine (sscanf/fscanf). Returns {assigned, consumed} so
+  // fscanf can advance the stream position by the characters it ate.
+  const scanfCore = (s, f, args) => {
+    let si = 0, fi = 0, assigned = 0, argi = 0;
+    const done = () => ({ assigned, consumed: si });
+    const skipWs = () => { while (si < s.length && /\s/.test(s[si])) si++; };
+    while (fi < f.length) {
+      const c = f[fi];
+      if (/\s/.test(c)) { skipWs(); fi++; continue; }
+      if (c !== '%') { if (s[si] !== c) return done(); si++; fi++; continue; }
+      fi++;
+      if (f[fi] === '%') { if (s[si] !== '%') return done(); si++; fi++; continue; }
+      let suppress = false;
+      if (f[fi] === '*') { suppress = true; fi++; }
+      let width = 0;
+      while (fi < f.length && f[fi] >= '0' && f[fi] <= '9') width = width * 10 + (f[fi++] | 0);
+      let lng = 0;
+      while (f[fi] === 'l') { lng++; fi++; }
+      const spec = f[fi++];
+      const arg = suppress ? null : args[argi];
+      if (spec === 'c') {
+        const n = width || 1;
+        if (si + n > s.length) return done();
+        // A boxed scalar (address-taken `char` local, e.g. done_in_by()'s
+        // reasondummy) has no buffer to offset into: store element 0 into
+        // the box itself.
+        for (let i = 0; i < n; i++) { if (!suppress) cptr.st1(i === 0 ? arg : cptr.add(arg, i), s.charCodeAt(si)); si++; }
+        if (!suppress) { assigned++; argi++; }
+        continue;
+      }
+      if (spec === 's') {
+        skipWs();
+        let out = '';
+        while (si < s.length && !/\s/.test(s[si]) && (!width || out.length < width)) out += s[si++];
+        if (!out) return done();
+        if (!suppress) { cptr.writeStr(arg, out); assigned++; argi++; }
+        continue;
+      }
+      if (spec === '[') {
+        let negate = false;
+        if (f[fi] === '^') { negate = true; fi++; }
+        let set = '';
+        if (f[fi] === ']') { set += ']'; fi++; }
+        while (fi < f.length && f[fi] !== ']') set += f[fi++];
+        fi++;
+        let out = '';
+        while (si < s.length && (set.includes(s[si]) !== negate) && (!width || out.length < width)) out += s[si++];
+        if (!out) return done();
+        if (!suppress) { cptr.writeStr(arg, out); assigned++; argi++; }
+        continue;
+      }
+      if (!'diux'.includes(spec)) return done();
+      skipWs();
+      const m = s.slice(si).match(spec === 'x' ? /^[+-]?(?:0[xX])?[0-9a-fA-F]+/ : /^[+-]?\d+/);
+      if (!m) return done();
+      si += m[0].length;
+      let t = m[0], neg = false;
+      if (t.startsWith('-')) { neg = true; t = t.slice(1); } else if (t.startsWith('+')) t = t.slice(1);
+      let v;
+      try { v = spec === 'x' ? BigInt('0x' + t.replace(/^0[xX]/, '')) : BigInt(t); } catch { return done(); }
+      if (neg) v = -v;
+      if (!suppress) {
+        if (lng >= 1) cptr.stU64(arg, BigInt.asUintN(64, v));
+        else cptr.stI32(arg, Number(BigInt.asIntN(32, v)));
+        assigned++; argi++;
+      }
+      continue;
+    }
+    return done();
+  };
   g.sscanf = (str, fmt, ...args) => scanfCore(cptr.cstr(str), cptr.cstr(fmt), args).assigned;
   g.fscanf = (f, fmt, ...args) => {
     const fd = fds.get(f.__fd);
-    if (!fd || !fd.readable || fd.pos >= fd.len) return -1; // EOF before any conversion
+    if (!fd || !fd.data || fd.pos >= fd.data.length) return -1; // EOF before any conversion
     let s = '';
-    for (let i = fd.pos; i < fd.len; i++) s += String.fromCharCode(fd.data[i]);
+    for (let i = fd.pos; i < fd.data.length; i++) s += String.fromCharCode(fd.data[i]);
     const { assigned, consumed } = scanfCore(s, cptr.cstr(fmt), args);
     fd.pos += consumed;
     return assigned;
   };
-  g.atof = (p) => strtodCore(cptr.cstr(p)).value;
+  g.atof = (p) => { const v = parseFloat(cptr.cstr(p)); return Number.isNaN(v) ? 0 : v; };
   // libm (Lua VM float paths): IEEE-double ops map 1:1 onto JS Math
   g.floor = Math.floor;
   g.ceil = Math.ceil;
   g.fabs = Math.abs;
   g.sqrt = Math.sqrt;
-  // C99: 1 to anything, and -1 to an infinity, are 1. JS says NaN.
-  g.pow = (x, y) => (x === 1 || (x === -1 && Math.abs(y) === Infinity) ? 1 : Math.pow(x, y));
+  g.pow = Math.pow;
   g.fmod = (a, b) => a % b;
   g.abs = (x) => Math.abs(Number(x)) | 0;
   g.labs = (x) => BigInt(Math.abs(Number(x)));
@@ -541,11 +579,7 @@ export async function runBootGame(opts) {
   g.open = (p, flags, mode) => { __trace('open', cptr.cstr(p), flags);
     const acc = Number(flags) & 3;
     const creat = (Number(flags) & 0x200) !== 0;
-    if (creat && !realRead(cptr.cstr(p))) {
-      const fd0 = openFd(cptr.cstr(p), 'w');
-      if (fd0 < 0) return fd0;
-      fds.delete(fd0);
-    }
+    if (creat && !realRead(cptr.cstr(p))) realWrite(cptr.cstr(p), new Uint8Array(0));
     const m = acc === 0 ? 'r' : acc === 2 ? 'r+' : 'w';
     return openFd(cptr.cstr(p), m);
   };
@@ -566,8 +600,8 @@ export async function runBootGame(opts) {
       return 1;
     }
     const f = fds.get(fd);
-    if (!f || !f.readable) { setErrno(9); return -1; }
-    const avail = Math.min(Number(n), f.len - f.pos);
+    if (!f || !f.data) return -1;
+    const avail = Math.min(Number(n), f.data.length - f.pos);
     if (avail <= 0) return 0;
     for (let i = 0; i < avail; i++) cptr.st1(cptr.add(buf, i), f.data[f.pos + i]);
     f.pos += avail;
@@ -588,35 +622,24 @@ export async function runBootGame(opts) {
       return n;
     }
     const f = fds.get(fd);
-    if (!f || !f.write) { setErrno(9); return -1; }
-    const at = fdRoom(f, n);
-    for (let i = 0; i < n; i++) f.data[at + i] = cptr.ld1u(cptr.add(buf, i));
+    if (!f) return -1;
+    if (!f.write) f.write = true;
+    for (let i = 0; i < n; i++) f.written.push(cptr.ld1u(cptr.add(buf, i)));
     return n;
   };
   g.close = (fd) => { fdFlush(fd); fds.delete(fd); return 0; };
-  // the template's XXXXXX become a name no open file has
-  g.mkstemp = (t) => {
-    const name = cptr.cstr(t), base = name.slice(0, -6);
-    for (let i = 0; ; i++) {
-      const p = `${base}${String(i).padStart(6, '0')}`;
-      if (realRead(p)) continue;
-      cptr.writeStr(t, p);
-      return openFd(p, 'w');
-    }
-  };
   g.lseek = (fd, off, whence) => {
     const f = fds.get(fd);
     if (!f) return -1;
-    const to = (whence === 0 ? 0 : whence === 1 ? f.pos : f.len) + Number(off);
-    if (to < 0) { setErrno(22); return -1n; }
-    f.pos = to;
-    return BigInt(to);
+    const len = (f.data || f.written || []).length;
+    f.pos = whence === 0 ? Number(off) : whence === 1 ? f.pos + Number(off) : len + Number(off);
+    return BigInt(f.pos);
   };
   g.getcwd = (buf, size) => { if (buf && buf.buf !== undefined) { cptr.writeStr(buf, HACKDIR); return buf; } return cptr.lit(HACKDIR); };
-  g.access = (p, mode) => { if (realStat(cptr.cstr(p)).exists) return 0; setErrno(2); return -1; };
+  g.access = (p, mode) => realStat(cptr.cstr(p)).exists ? 0 : -1;
   g.stat = (p, sb) => {
     const st = realStat(cptr.cstr(p));
-    if (!st.exists) { setErrno(2); return -1; }
+    if (!st.exists) return -1;
     if (sb && sb.buf !== undefined) {
       cptr.stU64(cptr.add(sb, 96), BigInt(st.mtime));
       cptr.stU64(cptr.add(sb, 40), BigInt(st.size));
@@ -625,7 +648,7 @@ export async function runBootGame(opts) {
     return 0;
   };
   g.lstat = g.stat;
-  g.fstat = (fd, sb) => { const f = fds.get(fd); if (!f) return -1; cptr.stU64(cptr.add(sb, 40), BigInt(f.len)); cptr.stI32(cptr.add(sb, 4), 0o100644); return 0; };
+  g.fstat = (fd, sb) => { const f = fds.get(fd); if (!f) return -1; cptr.stU64(cptr.add(sb, 40), BigInt((f.data || f.written).length)); cptr.stI32(cptr.add(sb, 4), 0o100644); return 0; };
   g.chmod = (p, mode) => 0;
   // fork/exec save-file compression (files.c docompress_file): the recorder's
   // C forks /usr/bin/compress with stdio redirected onto the files; success is
@@ -647,65 +670,17 @@ export async function runBootGame(opts) {
         overlay.set(dst, data);
       }
     }
-    // vendored and boot files stay visible after an unlink (see the VFS note above)
-    const known = overlay.delete(path) || overlay.delete(cptr.cstr(p)) || realStat(cptr.cstr(p)).exists; // legacy unresolved-key writes
-    if (!known) { setErrno(2); return -1; }
+    overlay.delete(path);
+    overlay.delete(cptr.cstr(p)); // legacy unresolved-key writes
     return 0;
   };
-  g.mkdir = (p, mode) => { VFS_DIRS.add(resolveP(cptr.cstr(p))); return 0; };
+  g.mkdir = (p, mode) => 0;
   g.link = (a, b) => 0;
-  g.remove = (p) => g.unlink(p);
-  g.rename = (a, b) => { const d = realRead(cptr.cstr(a)); if (!d) { setErrno(2); return -1; } realWrite(cptr.cstr(b), d); overlay.delete(resolveP(cptr.cstr(a))); return 0; };
+  g.rename = (a, b) => { const d = realRead(cptr.cstr(a)); if (d) { realWrite(cptr.cstr(b), d); overlay.delete(cptr.cstr(a)); } return 0; };
   g.rmdir = (p) => 0;
-  // Directories over the VFS. files.c get_saved_games() lists save/ for the
-  // restore menu, reached whenever a saved game exists and no name is set.
-  // Entries are a snapshot taken at opendir, sorted; struct dirent is Darwin's
-  // 64-bit-inode layout (d_ino 0, d_seekoff 8, d_reclen 16, d_namlen 18,
-  // d_type 20, d_name 21; 1048 bytes), reused by each readdir as in C.
-  const DIRENT_SIZE = 1048, DT_DIR = 4, DT_REG = 8;
-  function dirEntries(p) {
-    const parts = [];
-    for (const s of resolveP(p).split('/')) {
-      if (s === '..') parts.pop(); else if (s && s !== '.') parts.push(s);
-    }
-    const base = '/' + parts.join('/');
-    if (!VFS_DIRS.has(base)) { setErrno(realStat(base).exists ? 20 : 2); return null; }
-    const pre = base === '/' ? '/' : base + '/';
-    const names = new Set(['.', '..']);
-    const add = (k) => {
-      if (!k.startsWith(pre)) return;
-      const r = k.slice(pre.length);
-      if (r && !r.includes('/')) names.add(r);
-    };
-    for (const k of overlay.keys()) add(k);
-    for (const k of bootFiles.keys()) add(k);
-    for (const k of VFS_DIRS) add(k);
-    for (const k of VENDORED_FILE_NAMES) add(HACKDIR_PREFIX + k);
-    return [...names].sort().map((name) => ({
-      name, type: name === '.' || name === '..' || VFS_DIRS.has(pre + name) ? DT_DIR : DT_REG,
-    }));
-  }
-  g.opendir = (p) => {
-    const entries = dirEntries(cptr.cstr(p));
-    return entries && { entries, at: 0, ent: { buf: new Uint8Array(DIRENT_SIZE), off: 0 } };
-  };
-  g.readdir = (d) => {
-    if (d.at >= d.entries.length) return null;
-    const { name, type } = d.entries[d.at++], b = d.ent.buf;
-    const bytes = bytesOfString(name);
-    b.fill(0);
-    new DataView(b.buffer).setBigUint64(0, BigInt(d.at + 1), true);
-    new DataView(b.buffer).setBigUint64(8, BigInt(d.at), true);
-    new DataView(b.buffer).setUint16(16, DIRENT_SIZE, true);
-    new DataView(b.buffer).setUint16(18, bytes.length, true);
-    b[20] = type;
-    b.set(bytes.subarray(0, DIRENT_SIZE - 22), 21);
-    return d.ent;
-  };
+  g.opendir = (p) => null;
+  g.readdir = (d) => null;
   g.closedir = (d) => 0;
-  g.rewinddir = (d) => { d.at = 0; };
-  g.telldir = (d) => BigInt(d.at);
-  g.seekdir = (d, at) => { d.at = Number(at); };
   g.flock = (fd, op) => 0;
   g.fcntl = (fd, cmd, arg) => 0;
   g.ioctl = (fd, req, argp) => {
@@ -817,45 +792,38 @@ export async function runBootGame(opts) {
     __ltG.cache.set(sec, f);
     return f;
   }
-  g.localtime = (tp) => makeTm(ltFields(Number(cptr.ldI64(tp))), __tmStatic);
-  g.localtime_r = (tp, out) => makeTm(ltFields(Number(cptr.ldI64(tp))), out);
-  const __tmStatic = { buf: new Uint8Array(56), off: 0 }; // sizeof(struct tm); one shared buffer, as in C
-  const __zoneEST = cptr.lit('EST'), __zoneEDT = cptr.lit('EDT'), __zoneUTC = cptr.lit('UTC');
-  function makeTm(t, p) {
+  g.localtime = (tp) => makeTm(ltFields(Number(cptr.ldU64(tp))));
+  function makeTm(t) {
+    const b = new Uint8Array(9 * 4 + 8 + 8);
+    const p = { buf: b, off: 0 };
     const ints = [t.sec, t.min, t.hour, t.mday, t.mon, t.year, t.wday, t.yday, t.isdst];
     ints.forEach((v, i) => cptr.stI32(cptr.add(p, i * 4), v));
-    cptr.stI64(cptr.add(p, 40), BigInt(t.gmtoff ?? (t.isdst ? -4 * 3600 : -5 * 3600)));
-    cptr.stPtr(cptr.add(p, 48), t.zone ?? (t.isdst ? __zoneEDT : __zoneEST));
     return p;
   }
-  const utcFields = (sec) => {
-    const d = new Date(sec * 1000), y = d.getUTCFullYear();
-    return { sec: d.getUTCSeconds(), min: d.getUTCMinutes(), hour: d.getUTCHours(), mday: d.getUTCDate(), mon: d.getUTCMonth(), year: y - 1900, wday: d.getUTCDay(), yday: Math.floor((Date.UTC(y, d.getUTCMonth(), d.getUTCDate()) - Date.UTC(y, 0, 1)) / 86400000), isdst: 0, gmtoff: 0, zone: __zoneUTC };
-  };
-  g.gmtime_r = (tp, out) => makeTm(utcFields(Number(cptr.ldI64(tp))), out);
-  g.gmtime = (tp) => makeTm(utcFields(Number(cptr.ldI64(tp))), __tmStatic);
   g.mktime = (tm) => {
     const rd = (o) => cptr.ldI32(cptr.add(tm, o));
     const ms = Date.UTC(rd(20) + 1900, rd(16), rd(12), rd(8), rd(4), rd(0));
     return BigInt(Math.floor(ms / 1000) - REC_UTC_OFFSET_SEC);
   };
   g.difftime = (a, b) => Number(a) - Number(b);
+  g.strftime = (buf, max, fmt, tm) => { cptr.writeStr(buf, cptr.cstr(fmt)); return 0; };
   g.clock = () => 0;
   g.sleep = (s) => 0;
   g.usleep = (us) => 0;
 
   g.fopen = (p, mode) => {
     p = cptr.cstr(p); mode = cptr.cstr(mode); __trace('fopen', p, mode);
-    if (mode[0] !== 'r') { const fd = openFd(p, mode); return fd < 0 ? null : { __fd: fd }; }
-    const fd = openFd(p, mode);
-    if (fd < 0) return null;
+    if (mode.startsWith('w')) { const fd = openFd(p, 'w'); return fd < 0 ? null : { __fd: fd }; }
+    const data = realRead(p);
+    if (!data) return null;
+    const fd = openFd(p, 'r');
     // A ported .lua script: hand nhl_loadlua a same-length comment stub (so its
     // alloc(buflen+2) is unchanged) and remember to run the port at fclose.
     const ported = luaPort && luaPort.scriptFor(vendoredName(resolveP(p)));
     if (ported) {
       const f = fds.get(fd);
       const stub = luaPort.onOpen(ported, f.data);
-      if (stub) { f.data = stub; f.len = stub.length; f.pos = 0; }
+      if (stub) { f.data = stub; f.base = stub; f.pos = 0; }
       f.luaPort = ported;
     }
     return { __fd: fd };
@@ -875,9 +843,9 @@ export async function runBootGame(opts) {
   };
   g.fread = (ptr, size, nmemb, f) => {
     const fd = fds.get(f.__fd);
-    if (!fd || !fd.readable) return 0n;
+    if (!fd || !fd.data) return 0n;
     const want = Number(size) * Number(nmemb);
-    const avail = Math.min(want, fd.len - fd.pos);
+    const avail = Math.min(want, fd.data.length - fd.pos);
     if (avail <= 0) return 0n;
     if (ptr.isBox) {
       const tmp = cptr.alloc(avail);
@@ -906,42 +874,37 @@ export async function runBootGame(opts) {
       return BigInt(nmemb);
     }
     const fd = fds.get(f.__fd);
-    if (!fd || !fd.write) return 0n;
-    const at = fdRoom(fd, n);
+    if (!fd) return 0n;
+    if (!fd.write) fd.write = true;
     if (ptr.isBox) {
-      if (typeof ptr.v === 'bigint') { let x = ptr.v; for (let i = 0; i < n; i++) { fd.data[at + i] = Number(x & 0xFFn); x >>= 8n; } }
-      else { let x = Number(ptr.v); for (let i = 0; i < n; i++) { fd.data[at + i] = x & 0xFF; x >>>= 8; } }
+      if (typeof ptr.v === 'bigint') { let x = ptr.v; for (let i = 0; i < n; i++) { fd.written.push(Number(x & 0xFFn)); x >>= 8n; } }
+      else { let x = Number(ptr.v); for (let i = 0; i < n; i++) { fd.written.push(x & 0xFF); x >>>= 8; } }
       return BigInt(nmemb);
     }
-    for (let i = 0; i < n; i++) fd.data[at + i] = ptr.buf[ptr.off + i];
+    for (let i = 0; i < n; i++) fd.written.push(ptr.buf[ptr.off + i]);
     return BigInt(nmemb);
   };
-  g.fseek = (f, off, whence) => { const fd = fds.get(f.__fd); if (!fd) return -1; const to = (whence === 0 ? 0 : whence === 1 ? fd.pos : fd.len) + Number(off); if (to < 0) { setErrno(22); return -1; } fd.pos = to; return 0; };
+  g.fseek = (f, off, whence) => { const fd = fds.get(f.__fd); if (!fd) return -1; off = Number(off); fd.pos = whence === 0 ? off : whence === 1 ? fd.pos + off : (fd.data || fd.written).length + off; return 0; };
   g.ftell = (f) => { const fd = fds.get(f.__fd); return fd ? BigInt(fd.pos) : -1n; };
   g.rewind = (f) => { const fd = fds.get(f.__fd); if (fd) fd.pos = 0; };
   g.fgets = (buf, n, f) => {
     const fd = fds.get(f.__fd);
-    if (!fd || !fd.readable || fd.pos >= fd.len) return null;
-    let line = '', nl = false;
-    while (fd.pos < fd.len && line.length < Number(n) - 1) {
+    if (!fd || !fd.data || fd.pos >= fd.data.length) return null;
+    let line = '';
+    while (fd.pos < fd.data.length && line.length < Number(n) - 1) {
       const ch = fd.data[fd.pos++];
       line += String.fromCharCode(ch);
-      if (ch === 10) { nl = true; break; }
+      if (ch === 10) break;
     }
-    // stopped by the end of the file, not by a newline or a full buffer
-    if (!nl && line.length < Number(n) - 1) fd.eof = true;
     cptr.writeStr(buf, line);
     return buf;
   };
-  g.fputs = (s, f) => { const str = cptr.cstr(s); for (const ch of str) g.fputc(ch.charCodeAt(0), f); return str.length; };
+  g.fputs = (s, f) => { const str = cptr.cstr(s); for (const ch of str) g.fputc(ch.charCodeAt(0), f); return 0; };
   g.fputc = (c, f) => {
-    c &= 0xFF;
     if (f === g.stdout || f === g.__stdout) { out(String.fromCharCode(c)); return c; }
     if (f === g.stderr || f === g.__stderrp) { err(String.fromCharCode(c)); return c; }
     const fd = fds.get(f.__fd);
-    if (!fd || !fd.write) return -1;
-    const at = fdRoom(fd, 1); // first: it can replace fd.data
-    fd.data[at] = c;
+    if (fd) { if (!fd.write) fd.write = true; fd.written.push(c & 0xFF); }
     return c;
   };
   g.putchar = (c) => g.fputc(c, g.__stdout);
@@ -952,19 +915,8 @@ export async function runBootGame(opts) {
   // gettty/settty/setftty now come transpiled from sys/share/unixtty.c
   // (patched: seeds erase_char/kill_char/intr_char and computes
   // iflags.cbreak/echo from the zeroed no-tty termios, like the recorder)
-  g.fgetc = (f) => { const fd = fds.get(f.__fd); if (!fd || !fd.readable || fd.pos >= fd.len) return -1; return fd.data[fd.pos++]; };
+  g.fgetc = (f) => { const fd = fds.get(f.__fd); if (!fd || !fd.data || fd.pos >= fd.data.length) return -1; return fd.data[fd.pos++]; };
   g.getc = g.fgetc;
-  g.putc = (c, f) => g.fputc(c, f);
-  // a read that hits the end sets the stream's EOF flag, and a seek clears it
-  const noteEof = (name, hit) => { const f0 = g[name]; g[name] = (...a) => { const r = f0(...a); const f = a[a.length - 1]; if (hit(r, a)) { const fd = fds.get(f && f.__fd); if (fd) fd.eof = true; } return r; }; };
-  noteEof('fgets', (r) => r === null);
-  noteEof('fgetc', (r) => r === -1);
-  noteEof('getc', (r) => r === -1);
-  noteEof('fread', (r, a) => Number(r) < Number(a[2]));
-  for (const name of ['fseek', 'rewind']) { const f0 = g[name]; g[name] = (f, ...a) => { const fd = fds.get(f && f.__fd); if (fd) fd.eof = false; return f0(f, ...a); }; }
-  g.feof = (f) => (fds.get(f && f.__fd)?.eof ? 1 : 0);
-  g.ferror = () => 0;
-  g.clearerr = (f) => { const fd = fds.get(f && f.__fd); if (fd) fd.eof = false; };
   g.ungetc = (c, f) => { const fd = fds.get(f.__fd); if (fd && fd.pos > 0) { fd.pos--; fd.data[fd.pos] = c & 0xFF; } return c; };
   Error.stackTraceLimit = 50;
   g.getchar = function* () {
@@ -1143,11 +1095,7 @@ export async function runBootGame(opts) {
       i = end + 1 + len;
     }
   }
-  // A replay reports at most the recorder's moves.length+1 steps (see inputQueue).
-  // The scorer joins segments end to end, so an extra screen here would shift
-  // every screen of the next segment. Interactive play has no such limit.
-  const maxSteps = waitForKey ? Infinity : moves.length + 1;
-  const inputFrames = frames.filter((f) => f.kind === 'input').slice(0, maxSteps);
+  const inputFrames = frames.filter((f) => f.kind === 'input');
   const screens = inputFrames.map((f) => f.screen);
   const cursors = inputFrames.map((f) => [f.cx, f.cy, 1]);
   // animation frames grouped per step (frames between input boundaries)
@@ -1159,8 +1107,6 @@ export async function runBootGame(opts) {
       else { animFramesByStep.push(pending); pending = []; }
     }
   }
-
-  animFramesByStep.length = Math.min(animFramesByStep.length, maxSteps);
 
   const luaLoads = luaPort ? luaPort.closeTrace() : [];
   // What still reached the Lua parser with its real bytes. See
