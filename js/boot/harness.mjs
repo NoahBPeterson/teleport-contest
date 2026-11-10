@@ -23,7 +23,7 @@
 // The vendored playground. Relative specifier so this resolves the same way
 // from Node and from a browser module graph; it lives outside js/ on purpose
 // (baked game data is not hand-written port code — see tools/vendor-data.mjs).
-import { DIRS as VENDORED_DIRS, readVendored, statVendored } from '../data-nethackdir/index.mjs';
+import { DIRS as VENDORED_DIRS, FILE_NAMES as VENDORED_FILE_NAMES, readVendored, statVendored } from '../data-nethackdir/index.mjs';
 import { ereCompile, regErrorText, REG_BADPAT, REG_NOMATCH } from './posix-ere.mjs';
 
 // Mount point of the playground inside the VFS. nh_getenv() rejects values
@@ -665,8 +665,50 @@ export async function runBootGame(opts) {
   g.link = (a, b) => 0;
   g.rename = (a, b) => { const d = realRead(cptr.cstr(a)); if (d) { realWrite(cptr.cstr(b), d); overlay.delete(cptr.cstr(a)); } return 0; };
   g.rmdir = (p) => 0;
-  g.opendir = (p) => null;
-  g.readdir = (d) => null;
+  const DIRENT_SIZE = 1048, DT_DIR = 4, DT_REG = 8;
+  function dirEntries(p) {
+    const parts = [];
+    for (const s of resolveP(p).split('/')) {
+      if (s === '..') parts.pop(); else if (s && s !== '.') parts.push(s);
+    }
+    const base = '/' + parts.join('/');
+    if (!VFS_DIRS.has(base)) { setErrno(realStat(base).exists ? 20 : 2); return null; }
+    const pre = base === '/' ? '/' : base + '/';
+    const names = new Set(['.', '..']);
+    const add = (k) => {
+      if (!k.startsWith(pre)) return;
+      const r = k.slice(pre.length);
+      if (r && !r.includes('/')) names.add(r);
+    };
+    for (const k of overlay.keys()) add(k);
+    for (const k of bootFiles.keys()) add(k);
+    for (const k of VFS_DIRS) add(k);
+    for (const k of VENDORED_FILE_NAMES) add(HACKDIR_PREFIX + k);
+    return [...names].sort().map((name) => ({
+      name, type: name === '.' || name === '..' || VFS_DIRS.has(pre + name) ? DT_DIR : DT_REG,
+    }));
+  }
+  g.opendir = (p) => {
+    const entries = dirEntries(cptr.cstr(p));
+    return entries && { entries, at: 0, ent: { buf: new Uint8Array(DIRENT_SIZE), off: 0 } };
+  };
+  g.readdir = (d) => {
+    if (d.at >= d.entries.length) return null;
+    const { name, type } = d.entries[d.at++], b = d.ent.buf;
+    const bytes = bytesOfString(name);
+    b.fill(0);
+    new DataView(b.buffer).setBigUint64(0, BigInt(d.at + 1), true);
+    new DataView(b.buffer).setBigUint64(8, BigInt(d.at), true);
+    new DataView(b.buffer).setUint16(16, DIRENT_SIZE, true);
+    new DataView(b.buffer).setUint16(18, bytes.length, true);
+    b[20] = type;
+    b.set(bytes.subarray(0, DIRENT_SIZE - 22), 21);
+    return d.ent;
+  };
+  g.closedir = (d) => 0;
+  g.rewinddir = (d) => { d.at = 0; };
+  g.telldir = (d) => BigInt(d.at);
+  g.seekdir = (d, at) => { d.at = Number(at); };
   g.closedir = (d) => 0;
   g.flock = (fd, op) => 0;
   g.fcntl = (fd, cmd, arg) => 0;
