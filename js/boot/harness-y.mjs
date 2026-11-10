@@ -244,36 +244,43 @@ export async function runBootGame(opts) {
     g.__errnoBuf[2] = (n >> 16) & 255; g.__errnoBuf[3] = (n >> 24) & 255;
   };
   function openFd(p, mode) {
-    const fd = nextFd++;
-    if (mode === 'w' || mode === 'w+') {
-      // truncating open: the file becomes exactly what this fd writes
-      fds.set(fd, { path: p, pos: 0, written: [], write: true, trunc: true, base: null, wbase: 0 });
-      realWrite(p, new Uint8Array(0));
-    } else {
-      const append = mode === 'a' || mode === 'a+';
-      const data = realRead(p) || (append ? new Uint8Array(0) : null);
-      if (!data) { setErrno(2); return -1; }
-      const wbase = append ? data.length : 0;
-      fds.set(fd, { path: p, pos: wbase, data, written: [], write: mode !== 'r', trunc: false, base: data, wbase });
+    // One buffer per open file: reads and writes share `data` (capacity) and `len`.
+    const m = mode.replace('b', '');
+    const creating = m[0] === 'w' || m[0] === 'a';
+    if (creating) {
+      const rp = resolveP(p), dir = rp.slice(0, Math.max(rp.lastIndexOf('/'), 1));
+      if (!VFS_DIRS.has(dir)) { setErrno(2); return -1; }
     }
+    const old = m[0] === 'w' ? null : realRead(p);
+    if (!old && m[0] === 'r') { setErrno(2); return -1; }
+    const fd = nextFd++;
+    const data = old || new Uint8Array(0);
+    const f = { path: p, data, len: data.length, pos: m[0] === 'a' ? data.length : 0, readable: m[0] === 'r' || m.includes('+'), write: m[0] !== 'r' || m.includes('+'), append: m[0] === 'a', dirty: m[0] === 'w' };
+    fds.set(fd, f);
+    if (m[0] === 'w') realWrite(p, new Uint8Array(0));
     return fd;
+  }
+  /** Make room to write n bytes at the file position (past the end leaves zeros); returns the offset. */
+  function fdRoom(f, n) {
+    const at = f.append ? f.len : f.pos, end = at + n;
+    if (end > f.data.length) {
+      const grown = new Uint8Array(Math.max(end, f.data.length * 2, 64));
+      grown.set(f.data.subarray(0, f.len));
+      f.data = grown;
+    }
+    if (at > f.len) f.data.fill(0, f.len, at);
+    if (end > f.len) f.len = end;
+    f.pos = end;
+    f.dirty = true;
+    return at;
   }
   function fdFlush(fd) {
     const f = fds.get(fd);
-    if (!f || !f.write) return;
-    if (f.trunc) { realWrite(f.path, new Uint8Array(f.written)); return; }
-    // Non-truncating open (O_RDWR / "r+" / "a"): the file keeps its existing
-    // bytes and this fd's writes overlay them from the position it opened at.
-    // Flushing `written` wholesale truncated the file instead — files.c
-    // check_recordfile() opens `record` O_RDWR purely to prove it exists and
-    // closes it without writing, which wiped the high-score list at the end
-    // of every segment, so seed0030 showed only the current game's death.
-    if (!f.written.length) return;
-    const base = f.base || new Uint8Array(0);
-    const outb = new Uint8Array(Math.max(base.length, f.wbase + f.written.length));
-    outb.set(base, 0);
-    outb.set(Uint8Array.from(f.written), f.wbase);
-    realWrite(f.path, outb);
+    // Only a stream that changed the file rewrites it: files.c check_recordfile()
+    // opens `record` O_RDWR just to prove it exists, and that must leave it alone.
+    if (!f || !f.write || !f.dirty) return;
+    realWrite(f.path, f.data.slice(0, f.len));
+    f.dirty = false;
   }
 
   // ---------------- output collection + shims ----------------
@@ -513,9 +520,9 @@ export async function runBootGame(opts) {
   g.sscanf = (str, fmt, ...args) => scanfCore(cptr.cstr(str), cptr.cstr(fmt), args).assigned;
   g.fscanf = (f, fmt, ...args) => {
     const fd = fds.get(f.__fd);
-    if (!fd || !fd.data || fd.pos >= fd.data.length) return -1; // EOF before any conversion
+    if (!fd || !fd.readable || fd.pos >= fd.len) return -1; // EOF before any conversion
     let s = '';
-    for (let i = fd.pos; i < fd.data.length; i++) s += String.fromCharCode(fd.data[i]);
+    for (let i = fd.pos; i < fd.len; i++) s += String.fromCharCode(fd.data[i]);
     const { assigned, consumed } = scanfCore(s, cptr.cstr(fmt), args);
     fd.pos += consumed;
     return assigned;
@@ -579,7 +586,11 @@ export async function runBootGame(opts) {
   g.open = (p, flags, mode) => { __trace('open', cptr.cstr(p), flags);
     const acc = Number(flags) & 3;
     const creat = (Number(flags) & 0x200) !== 0;
-    if (creat && !realRead(cptr.cstr(p))) realWrite(cptr.cstr(p), new Uint8Array(0));
+    if (creat && !realRead(cptr.cstr(p))) {
+      const fd0 = openFd(cptr.cstr(p), 'w');
+      if (fd0 < 0) return fd0;
+      fds.delete(fd0);
+    }
     const m = acc === 0 ? 'r' : acc === 2 ? 'r+' : 'w';
     return openFd(cptr.cstr(p), m);
   };
@@ -600,8 +611,8 @@ export async function runBootGame(opts) {
       return 1;
     }
     const f = fds.get(fd);
-    if (!f || !f.data) return -1;
-    const avail = Math.min(Number(n), f.data.length - f.pos);
+    if (!f || !f.readable) { setErrno(9); return -1; }
+    const avail = Math.min(Number(n), f.len - f.pos);
     if (avail <= 0) return 0;
     for (let i = 0; i < avail; i++) cptr.st1(cptr.add(buf, i), f.data[f.pos + i]);
     f.pos += avail;
@@ -622,24 +633,35 @@ export async function runBootGame(opts) {
       return n;
     }
     const f = fds.get(fd);
-    if (!f) return -1;
-    if (!f.write) f.write = true;
-    for (let i = 0; i < n; i++) f.written.push(cptr.ld1u(cptr.add(buf, i)));
+    if (!f || !f.write) { setErrno(9); return -1; }
+    const at = fdRoom(f, n);
+    for (let i = 0; i < n; i++) f.data[at + i] = cptr.ld1u(cptr.add(buf, i));
     return n;
   };
   g.close = (fd) => { fdFlush(fd); fds.delete(fd); return 0; };
+  // the template's XXXXXX become a name no open file has
+  g.mkstemp = (t) => {
+    const name = cptr.cstr(t), base = name.slice(0, -6);
+    for (let i = 0; ; i++) {
+      const p = `${base}${String(i).padStart(6, '0')}`;
+      if (realRead(p)) continue;
+      cptr.writeStr(t, p);
+      return openFd(p, 'w');
+    }
+  };
   g.lseek = (fd, off, whence) => {
     const f = fds.get(fd);
     if (!f) return -1;
-    const len = (f.data || f.written || []).length;
-    f.pos = whence === 0 ? Number(off) : whence === 1 ? f.pos + Number(off) : len + Number(off);
-    return BigInt(f.pos);
+    const to = (whence === 0 ? 0 : whence === 1 ? f.pos : f.len) + Number(off);
+    if (to < 0) { setErrno(22); return -1n; }
+    f.pos = to;
+    return BigInt(to);
   };
   g.getcwd = (buf, size) => { if (buf && buf.buf !== undefined) { cptr.writeStr(buf, HACKDIR); return buf; } return cptr.lit(HACKDIR); };
-  g.access = (p, mode) => realStat(cptr.cstr(p)).exists ? 0 : -1;
+  g.access = (p, mode) => { if (realStat(cptr.cstr(p)).exists) return 0; setErrno(2); return -1; };
   g.stat = (p, sb) => {
     const st = realStat(cptr.cstr(p));
-    if (!st.exists) return -1;
+    if (!st.exists) { setErrno(2); return -1; }
     if (sb && sb.buf !== undefined) {
       cptr.stU64(cptr.add(sb, 96), BigInt(st.mtime));
       cptr.stU64(cptr.add(sb, 40), BigInt(st.size));
@@ -648,7 +670,7 @@ export async function runBootGame(opts) {
     return 0;
   };
   g.lstat = g.stat;
-  g.fstat = (fd, sb) => { const f = fds.get(fd); if (!f) return -1; cptr.stU64(cptr.add(sb, 40), BigInt((f.data || f.written).length)); cptr.stI32(cptr.add(sb, 4), 0o100644); return 0; };
+  g.fstat = (fd, sb) => { const f = fds.get(fd); if (!f) return -1; cptr.stU64(cptr.add(sb, 40), BigInt(f.len)); cptr.stI32(cptr.add(sb, 4), 0o100644); return 0; };
   g.chmod = (p, mode) => 0;
   // fork/exec save-file compression (files.c docompress_file): the recorder's
   // C forks /usr/bin/compress with stdio redirected onto the files; success is
@@ -670,14 +692,21 @@ export async function runBootGame(opts) {
         overlay.set(dst, data);
       }
     }
-    overlay.delete(path);
-    overlay.delete(cptr.cstr(p)); // legacy unresolved-key writes
+    // vendored and boot files stay visible after an unlink (see the VFS note above)
+    const known = overlay.delete(path) || overlay.delete(cptr.cstr(p)) || realStat(cptr.cstr(p)).exists; // legacy unresolved-key writes
+    if (!known) { setErrno(2); return -1; }
     return 0;
   };
-  g.mkdir = (p, mode) => 0;
+  g.mkdir = (p, mode) => { VFS_DIRS.add(resolveP(cptr.cstr(p))); return 0; };
   g.link = (a, b) => 0;
-  g.rename = (a, b) => { const d = realRead(cptr.cstr(a)); if (d) { realWrite(cptr.cstr(b), d); overlay.delete(cptr.cstr(a)); } return 0; };
+  g.remove = (p) => g.unlink(p);
+  g.rename = (a, b) => { const d = realRead(cptr.cstr(a)); if (!d) { setErrno(2); return -1; } realWrite(cptr.cstr(b), d); overlay.delete(resolveP(cptr.cstr(a))); return 0; };
   g.rmdir = (p) => 0;
+  // Directories over the VFS. files.c get_saved_games() lists save/ for the
+  // restore menu, reached whenever a saved game exists and no name is set.
+  // Entries are a snapshot taken at opendir, sorted; struct dirent is Darwin's
+  // 64-bit-inode layout (d_ino 0, d_seekoff 8, d_reclen 16, d_namlen 18,
+  // d_type 20, d_name 21; 1048 bytes), reused by each readdir as in C.
   const DIRENT_SIZE = 1048, DT_DIR = 4, DT_REG = 8;
   function dirEntries(p) {
     const parts = [];
@@ -722,7 +751,6 @@ export async function runBootGame(opts) {
   g.rewinddir = (d) => { d.at = 0; };
   g.telldir = (d) => BigInt(d.at);
   g.seekdir = (d, at) => { d.at = Number(at); };
-  g.closedir = (d) => 0;
   g.flock = (fd, op) => 0;
   g.fcntl = (fd, cmd, arg) => 0;
   g.ioctl = (fd, req, argp) => {
@@ -855,17 +883,16 @@ export async function runBootGame(opts) {
 
   g.fopen = (p, mode) => {
     p = cptr.cstr(p); mode = cptr.cstr(mode); __trace('fopen', p, mode);
-    if (mode.startsWith('w')) { const fd = openFd(p, 'w'); return fd < 0 ? null : { __fd: fd }; }
-    const data = realRead(p);
-    if (!data) return null;
-    const fd = openFd(p, 'r');
+    if (mode[0] !== 'r') { const fd = openFd(p, mode); return fd < 0 ? null : { __fd: fd }; }
+    const fd = openFd(p, mode);
+    if (fd < 0) return null;
     // A ported .lua script: hand nhl_loadlua a same-length comment stub (so its
     // alloc(buflen+2) is unchanged) and remember to run the port at fclose.
     const ported = luaPort && luaPort.scriptFor(vendoredName(resolveP(p)));
     if (ported) {
       const f = fds.get(fd);
       const stub = luaPort.onOpen(ported, f.data);
-      if (stub) { f.data = stub; f.base = stub; f.pos = 0; }
+      if (stub) { f.data = stub; f.len = stub.length; f.pos = 0; }
       f.luaPort = ported;
     }
     return { __fd: fd };
@@ -885,9 +912,9 @@ export async function runBootGame(opts) {
   };
   g.fread = (ptr, size, nmemb, f) => {
     const fd = fds.get(f.__fd);
-    if (!fd || !fd.data) return 0n;
+    if (!fd || !fd.readable) return 0n;
     const want = Number(size) * Number(nmemb);
-    const avail = Math.min(want, fd.data.length - fd.pos);
+    const avail = Math.min(want, fd.len - fd.pos);
     if (avail <= 0) return 0n;
     if (ptr.isBox) {
       const tmp = cptr.alloc(avail);
@@ -916,37 +943,41 @@ export async function runBootGame(opts) {
       return BigInt(nmemb);
     }
     const fd = fds.get(f.__fd);
-    if (!fd) return 0n;
-    if (!fd.write) fd.write = true;
+    if (!fd || !fd.write) return 0n;
+    const at = fdRoom(fd, n);
     if (ptr.isBox) {
-      if (typeof ptr.v === 'bigint') { let x = ptr.v; for (let i = 0; i < n; i++) { fd.written.push(Number(x & 0xFFn)); x >>= 8n; } }
-      else { let x = Number(ptr.v); for (let i = 0; i < n; i++) { fd.written.push(x & 0xFF); x >>>= 8; } }
+      if (typeof ptr.v === 'bigint') { let x = ptr.v; for (let i = 0; i < n; i++) { fd.data[at + i] = Number(x & 0xFFn); x >>= 8n; } }
+      else { let x = Number(ptr.v); for (let i = 0; i < n; i++) { fd.data[at + i] = x & 0xFF; x >>>= 8; } }
       return BigInt(nmemb);
     }
-    for (let i = 0; i < n; i++) fd.written.push(ptr.buf[ptr.off + i]);
+    for (let i = 0; i < n; i++) fd.data[at + i] = ptr.buf[ptr.off + i];
     return BigInt(nmemb);
   };
-  g.fseek = (f, off, whence) => { const fd = fds.get(f.__fd); if (!fd) return -1; off = Number(off); fd.pos = whence === 0 ? off : whence === 1 ? fd.pos + off : (fd.data || fd.written).length + off; return 0; };
+  g.fseek = (f, off, whence) => { const fd = fds.get(f.__fd); if (!fd) return -1; const to = (whence === 0 ? 0 : whence === 1 ? fd.pos : fd.len) + Number(off); if (to < 0) { setErrno(22); return -1; } fd.pos = to; return 0; };
   g.ftell = (f) => { const fd = fds.get(f.__fd); return fd ? BigInt(fd.pos) : -1n; };
   g.rewind = (f) => { const fd = fds.get(f.__fd); if (fd) fd.pos = 0; };
   g.fgets = (buf, n, f) => {
     const fd = fds.get(f.__fd);
-    if (!fd || !fd.data || fd.pos >= fd.data.length) return null;
-    let line = '';
-    while (fd.pos < fd.data.length && line.length < Number(n) - 1) {
+    if (!fd || !fd.readable || fd.pos >= fd.len) return null;
+    let line = '', nl = false;
+    while (fd.pos < fd.len && line.length < Number(n) - 1) {
       const ch = fd.data[fd.pos++];
       line += String.fromCharCode(ch);
-      if (ch === 10) break;
+      if (ch === 10) { nl = true; break; }
     }
+    // stopped by the end of the file, not by a newline or a full buffer
+    if (!nl && line.length < Number(n) - 1) fd.eof = true;
     cptr.writeStr(buf, line);
     return buf;
   };
-  g.fputs = (s, f) => { const str = cptr.cstr(s); for (const ch of str) g.fputc(ch.charCodeAt(0), f); return 0; };
+  g.fputs = (s, f) => { const str = cptr.cstr(s); for (const ch of str) g.fputc(ch.charCodeAt(0), f); return str.length; };
   g.fputc = (c, f) => {
     if (f === g.stdout || f === g.__stdout) { out(String.fromCharCode(c)); return c; }
     if (f === g.stderr || f === g.__stderrp) { err(String.fromCharCode(c)); return c; }
     const fd = fds.get(f.__fd);
-    if (fd) { if (!fd.write) fd.write = true; fd.written.push(c & 0xFF); }
+    if (!fd || !fd.write) return -1;
+    const at = fdRoom(fd, 1); // first: it can replace fd.data
+    fd.data[at] = c;
     return c;
   };
   g.putchar = (c) => g.fputc(c, g.__stdout);
@@ -957,8 +988,19 @@ export async function runBootGame(opts) {
   // gettty/settty/setftty now come transpiled from sys/share/unixtty.c
   // (patched: seeds erase_char/kill_char/intr_char and computes
   // iflags.cbreak/echo from the zeroed no-tty termios, like the recorder)
-  g.fgetc = (f) => { const fd = fds.get(f.__fd); if (!fd || !fd.data || fd.pos >= fd.data.length) return -1; return fd.data[fd.pos++]; };
+  g.fgetc = (f) => { const fd = fds.get(f.__fd); if (!fd || !fd.readable || fd.pos >= fd.len) return -1; return fd.data[fd.pos++]; };
   g.getc = g.fgetc;
+  g.putc = (c, f) => g.fputc(c, f);
+  // a read that hits the end sets the stream's EOF flag, and a seek clears it
+  const noteEof = (name, hit) => { const f0 = g[name]; g[name] = (...a) => { const r = f0(...a); const f = a[a.length - 1]; if (hit(r, a)) { const fd = fds.get(f && f.__fd); if (fd) fd.eof = true; } return r; }; };
+  noteEof('fgets', (r) => r === null);
+  noteEof('fgetc', (r) => r === -1);
+  noteEof('getc', (r) => r === -1);
+  noteEof('fread', (r, a) => Number(r) < Number(a[2]));
+  for (const name of ['fseek', 'rewind']) { const f0 = g[name]; g[name] = (f, ...a) => { const fd = fds.get(f && f.__fd); if (fd) fd.eof = false; return f0(f, ...a); }; }
+  g.feof = (f) => (fds.get(f && f.__fd)?.eof ? 1 : 0);
+  g.ferror = () => 0;
+  g.clearerr = (f) => { const fd = fds.get(f && f.__fd); if (fd) fd.eof = false; };
   g.ungetc = (c, f) => { const fd = fds.get(f.__fd); if (fd && fd.pos > 0) { fd.pos--; fd.data[fd.pos] = c & 0xFF; } return c; };
   Error.stackTraceLimit = 50;
   g.getchar = function* () {
