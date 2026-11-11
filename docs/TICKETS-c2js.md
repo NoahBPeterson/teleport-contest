@@ -356,6 +356,24 @@ prints 112 and 192 on both macOS arm64 and Linux. `d54cbab` prints C's values. R
 `wizcmds.c-wizard-memory-*` sessions, which fail on main and pass on `d54cbab`. Main also prints
 `%p` literally where C prints an address; that screen can't match either way (WONTFIX `%p`).
 
+**The runtime, bisected on the judge (Nov 10–11).** The whole `d54cbab` runtime on the Nov 4
+generated code (`fc2183c`) scored 13065 held-out points, 53 passing, against 13105, with the
+same RNG and 2998/3006 animation frames. Split up:
+
+| Build on main | Held-out | Passing | Animation frames |
+|---|---|---|---|
+| `1761f05`: + `cptr.js`, `cjmp.js` | 13105 | 53 | 3006/3006 |
+| `9033d52`: + `opendir`/`readdir` | 13120 | 54 | 3006/3006 |
+| `a4e5082`: + the file layer | 13120 | 54 | 3006/3006 |
+| `8354f3c`: + keys as UTF-8, steps cut at `moves.length+1` | 13065 | 53 | 2998/3006 |
+
+So the directory listing is worth +15 and one session, and the key-input change alone costs 55
+screens and one session, exactly `fc2183c`'s loss. The four `env-key-*` recordings need that
+change (they were recorded by `scripts/record-session.mjs`, which writes each key's UTF-8 bytes
+and counts one step per read), but at least one held-out session was evidently recorded with
+one byte per key and every step kept. Main keeps the Nov 4 input (`2b2d682`). Open question:
+which recorder the held-out sessions came from, and what it sends for a key above U+007F.
+
 Closes when each remaining part is back on main and the held-out score holds, or the part
 that costs points is found and fixed.
 
