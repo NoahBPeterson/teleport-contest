@@ -42,7 +42,8 @@
 // deliberately not reachable from this file's module graph — the judge must
 // never be able to take it.
 //
-// The original hand-written skeleton engine lives on under js/legacy/.
+// The original hand-written skeleton engine is in git history (removed from
+// js/; see `git log -- js/legacy`).
 
 import { enableSegmentIsolation, segmentSpecifier } from './boot/isolation.mjs';
 import { installBrowserGlobals } from './boot/browser-env.mjs';

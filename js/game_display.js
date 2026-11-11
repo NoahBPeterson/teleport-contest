@@ -1,6 +1,6 @@
 // game_display.js — NetHack-specific display wrapper around the frozen Terminal.
 //
-// Restored from the original skeleton (now js/legacy/game_display.js) and
+// Restored from the original skeleton's game_display.js (see git history) and
 // adapted to how this port actually draws: the engine is the transpiled C
 // corpus running on its own thread, and what comes back from it is not a
 // sequence of setCell() calls but the *rendered terminal frame* — the same
