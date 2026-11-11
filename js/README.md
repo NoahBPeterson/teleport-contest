@@ -13,7 +13,7 @@ a rule works, read the same function you would read in the C.
 | The monster table (`mons[]`, from `monst.c`) | `generated/monst.js`, one block per monster, in `mons[]` order, starting at the line `cptr.stPtro(mons_init, <offset>, __s_<name>)`. Search for the monster's name. |
 | The object table (`objects[]`, from `objects.c`) | `generated/objects.js`, one block per object, the same way. |
 | An enum value or `#define` constant (`PM_TITAN`, `SCR_SCARE_MONSTER`, `AD_FIRE`, `MZ_HUGE`) | `generated/nhconst.js` (enums, as `NHC.<name>`) and `generated/nhmacro.js` (object-like macros, as `NHM.<name>`). |
-| A function-like macro (`is_rider(ptr)`, `Blind`, `Levitation`) | `generated/nhmacrofn.js` and `generated/nhprop.js`. Most macros are called by name; some are expanded in place (see below). |
+| A function-like macro (`is_rider(ptr)`, `Blind`, `Levitation`) | `generated/nhmacrofn.js` and `generated/nhprop.js`. Most macros are called by name; some are expanded in place, as in the field-access table below. |
 | Global game state (`u`, `flags`, `svl`, `gm`, ...) | `generated/decl.js`. The names are NetHack 5.0's own (`u` is the hero; `svl` holds the current level, whose `levl[x][y]` is `svl.level.locations[x][y]`). |
 | Text files the game reads (rumors, oracles, epitaphs, engravings) | `data-nethackdir/` (packed copies of NetHack's `dat/` files). |
 | Level, dungeon and quest descriptions (the `dat/*.lua` scripts) | `lua-js/scripts/` (`dungeon.mjs`, `quest.mjs`, `oracle.mjs`, ...): each `.lua` file ported to JS by hand, with its C callers named in the comments. |
@@ -24,9 +24,10 @@ The rest is not the game:
   `setjmp`/`longjmp` and the C library.
 - `boot/`: starts the game, provides files, the terminal and the keyboard.
   `boot/harness.mjs` is the replay harness the judge runs.
-- `generated-y/`: the same game rewritten so that it can pause for a key in a
-  browser (every function that can reach `getchar()` is a generator). It is a
-  mechanical copy of `generated/`; read `generated/` instead.
+- `generated-y/__bundle.js`: the same game rewritten, as one file, so that it
+  can pause for a key in a browser (every function that can reach `getchar()`
+  is a generator). It is a mechanical copy of `generated/`; read `generated/`
+  instead.
 
 ## How C reads in JS
 

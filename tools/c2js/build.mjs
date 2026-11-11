@@ -1384,10 +1384,41 @@ async function assertPreloadPaths() {
   console.log(`preload paths: all ${PRELOAD_PATHS.length} exist`);
 }
 
+/**
+ * Move the per-module yieldable tree out of js/ once the bundle is built.
+ *
+ * At runtime the yield build is js/generated-y/__bundle.js and the few modules
+ * it imports relatively (nhconst/nhfield/nhmacro); nothing loads the other
+ * ~180 per-module files. Left in js/, they are a second full copy of the game
+ * next to js/generated/, wrapped in generators, and every search of the port
+ * finds each function twice. So, last of all, they move to
+ * .cache/c2js/generated-y-tree/, where the diff and census tools can still
+ * read them (`--dir .cache/c2js/generated-y-tree`). C2JS_KEEP_YIELD_TREE=1
+ * leaves them in place.
+ */
+async function maybePruneYieldTree() {
+  if (!process.env.C2JS_YIELD || process.env.C2JS_BUNDLE === '0') return;
+  if (process.env.C2JS_KEEP_YIELD_TREE === '1') return;
+  const dir = path.join(repoRoot, 'js/generated-y');
+  const bundle = path.join(dir, '__bundle.js');
+  if (!fs.existsSync(bundle)) throw new Error('js/generated-y/__bundle.js missing: not pruning the yield tree');
+  const keep = new Set(['__bundle.js']);
+  for (const m of fs.readFileSync(bundle, 'utf8').matchAll(/^import [^'\n]* from '\.\/([^'/]+\.js)';$/gm)) keep.add(m[1]);
+  const dest = path.join(repoRoot, '.cache/c2js/generated-y-tree');
+  fs.rmSync(dest, { recursive: true, force: true });
+  fs.mkdirSync(dest, { recursive: true });
+  let moved = 0;
+  for (const f of fs.readdirSync(dir)) {
+    fs.copyFileSync(path.join(dir, f), path.join(dest, f));
+    if (!keep.has(f)) { fs.rmSync(path.join(dir, f)); moved++; }
+  }
+  console.log(`yield tree: kept ${[...keep].join(', ')} in js/generated-y/; moved ${moved} modules to .cache/c2js/generated-y-tree/`);
+}
+
 const TOOLS_DIR_SELF = path.dirname(fileURLToPath(import.meta.url));
 
 // buildAll/buildSingle may or may not return a promise depending on the path
 // taken; normalise before chaining so the hook can never mask a build failure
 // or, worse, invent one after a build that succeeded.
-if (process.argv[2] === '--all') Promise.resolve(buildAll()).then(maybeYield).then(maybeReset).then(assertTreesHygienic).then(maybeBundle).then(assertPreloadPaths);
+if (process.argv[2] === '--all') Promise.resolve(buildAll()).then(maybeYield).then(maybeReset).then(assertTreesHygienic).then(maybeBundle).then(maybePruneYieldTree).then(assertPreloadPaths);
 else Promise.resolve(buildSingle(process.argv[2])).then(maybeYield);
