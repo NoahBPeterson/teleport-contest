@@ -111,10 +111,10 @@ export function getmailstatus() {
         let pw_name = cptr.ldPtr(getpwuid(getuid()));
 
         /* note: 'sizeof "LITERAL"' includes +1 for terminating '\0' */
-        mailbox = alloc(Number(BigInt.asUintN(
+        mailbox = cptr.byteView(alloc(Number(BigInt.asUintN(
             32,
             (BigInt.asUintN(64, cptr.strlen(pw_name) + 11n))
-        )));
+        ))));
         void cptr.strcpy(mailbox, __s_usr_mail);
         void cptr.strcat(mailbox, pw_name);
     }
@@ -317,11 +317,11 @@ function md_stop(stopp, startp) {
     let distance;
     let min_distance = -1;
 
-    for (x = i16(((cptr.ldI16(u) - 1) | 0)); x <= ((cptr.ldI16(u) + 1) | 0); x++)
+    for (x = i16(((cptr.ldI16(u) - 1) | 0)); x <= ((cptr.ldI16(u) + 1) | 0); x = i16(x + 1))
         for (
             y = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0));
             y <= ((cptr.ldI16o(u, $you_uy) + 1) | 0);
-            y++
+            y = i16(y + 1)
         ) {
             if (!isok(x, y) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                 continue;
@@ -650,7 +650,7 @@ export function ckmailstatus() {
     ck_server_admin_msg();
 
     if (!mailbox ||
-            (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
             !cptr.ld1so(flags, $flag_biff) ||
             cptr.ldI64o(svm, $instance_globals_saved_m_moves) <
                 BigInt.asIntN(64, laststattime + 50n))

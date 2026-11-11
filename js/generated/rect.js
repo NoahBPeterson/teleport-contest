@@ -38,6 +38,7 @@ let rect_cnt = 0;
 
 /** C ref: rect.c:29 */
 export function init_rect() {
+    let __r1;
     if (!rect) {
         n_rects = 56;
         rect = alloc(Number(BigInt.asUintN(
@@ -49,7 +50,10 @@ export function init_rect() {
     }
 
     rect_cnt = 1;
-    cptr.stI16o(rect, 0, cptr.stI16o2(rect, 0, $sizeof_NhRect, $nhrect_ly, 0), $sizeof_NhRect);
+    (
+        __r1 = cptr.stI16o2(rect, 0, $sizeof_NhRect, $nhrect_ly, 0),
+        cptr.stI16o(rect, 0, __r1, $sizeof_NhRect)
+    );
     cptr.stI16o2(rect, 0, $sizeof_NhRect, $nhrect_hx, 79);
     cptr.stI16o2(rect, 0, $sizeof_NhRect, $nhrect_hy, 20);
 }

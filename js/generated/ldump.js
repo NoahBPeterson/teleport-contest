@@ -57,7 +57,7 @@ function dumpBlock(D, b, size) {
 
 /** C ref: ldump.c:53 — @param {CPtr<DumpState>} D @param {CInt} y */
 function dumpByte(D, y) {
-    let x = cptr.box(uchar(y));
+    let x = cptr.box(uchar(y), "u8");
     dumpBlock(D, x, 1n);
 }
 
@@ -72,7 +72,7 @@ function dumpSize(D, x) {
             Number(BigInt.asUintN(8, (x & 127n))),
             1
         );  /* fill buffer in reverse order */
-        x >>= 7n;
+        x = x >> 7n;
     } while (x != 0n);
     cptr.st1o(cptr.decay(buff), 9n, cptr.ld1uo(cptr.decay(buff), 9n, 1) | 128, 1);  /* mark last byte */
     dumpBlock(
@@ -89,13 +89,13 @@ function dumpInt(D, x) {
 
 /** C ref: ldump.c:82 — @param {CPtr<DumpState>} D @param {CDouble} x */
 function dumpNumber(D, x) {
-    x = cptr.box(x);
+    x = cptr.box(x, "f64");
     dumpBlock(D, x, 8n);
 }
 
 /** C ref: ldump.c:87 — @param {CPtr<DumpState>} D @param {CLongLong} x */
 function dumpInteger(D, x) {
-    x = cptr.box(x);
+    x = cptr.box(x, "i64");
     dumpBlock(D, x, 8n);
 }
 

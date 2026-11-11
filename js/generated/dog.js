@@ -144,13 +144,13 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum, $Role_petnum = F
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
       $sizeof_skills = FLD.sizeof_skills, $stairway_sy = FLD.stairway_sy,
       $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
-      $u_conduct_pets = FLD.u_conduct_pets, $u_event_qexpelled = FLD.u_event_qexpelled,
-      $u_roleplay_pauper = FLD.u_roleplay_pauper, $you_uconduct = FLD.you_uconduct,
-      $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave, $you_umonnum = FLD.you_umonnum,
-      $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops,
-      $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed,
-      $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy,
-      $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0, $you_weapon_skills = FLD.you_weapon_skills;
+      $u_conduct_pets = FLD.u_conduct_pets, $u_roleplay_pauper = FLD.u_roleplay_pauper,
+      $you_uconduct = FLD.you_uconduct, $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave,
+      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+      $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
+      $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0,
+      $you_weapon_skills = FLD.you_weapon_skills;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_obtained_s_first_pet_s = cptr.lit("obtained %s first pet (%s)");
@@ -208,10 +208,11 @@ export const Wiz_arrive = -1;
 
 /** C ref: dog.c:23 — @param {CPtr<struct monst>} mtmp */
 export function newedog(mtmp) {
+    let __r1;
     if (!cptr.ldPtro(mtmp, $monst_mextra))
         cptr.stPtro(mtmp, $monst_mextra, newmextra());
     if (!(cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog))) {
-        cptr.stPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog, alloc(64));
+        (__r1 = alloc(64), cptr.stPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog, __r1));
         void __builtin___memset_chk(
             (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
             0,
@@ -223,7 +224,7 @@ export function newedog(mtmp) {
         );
         cptr.stI32(
             (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
-            cptr.ldI32o(mtmp, $monst_m_id)
+            cptr.ldI32o(mtmp, $monst_m_id) >>> 0
         );
     }
 }
@@ -248,11 +249,11 @@ export function initedog(mtmp, everything) {
             : 5));
 
     cptr.st1o(mtmp, $monst_mtame, schar(max(minimumtame, cptr.ld1so(mtmp, $monst_mtame))));
-    cptr.stI32o(mtmp, $monst_mpeaceful, 1);
-    cptr.stI32o(mtmp, $monst_mavenge, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
+    cptr.stBits(cptr.add(mtmp, $monst_mavenge), 6, 1, 0, 0);
     set_malign(mtmp);  /* recalc alignment now that it's tamed */
     if (everything) {
-        cptr.stI32o(mtmp, $monst_mleashed, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0, 0);
         cptr.stI32o(mtmp, $monst_meating, 0);
         cptr.stI64o(edogp, $edog_droptime, 0n);
         cptr.stI32o(edogp, $edog_dropdist, 10000);
@@ -264,7 +265,7 @@ export function initedog(mtmp, everything) {
         cptr.stI32o(edogp, $edog_abuse, 0);
         cptr.stI32o(edogp, $edog_revivals, 0);
         cptr.stI32o(edogp, $edog_mhpmax_penalty, 0);
-        cptr.stI32o(edogp, $edog_killed_by_u, 0);
+        cptr.stBits(cptr.add(edogp, $edog_killed_by_u), 0, 1, 0, 0);
     } else {
         if (cptr.ldI32o(edogp, $edog_apport) <= 0)
             cptr.stI32o(edogp, $edog_apport, 1);
@@ -397,12 +398,12 @@ export function make_familiar(otmp, x, y, quietly) {
                 if (!quietly)
                     pline_The(__s_figurine_writhes_and_then_shatters_into);
                 break;
-            } else if ((cptr.ldI32o(mtmp, $monst_isminion) & 1)) {
+            } else if (cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0)) {
                 /* Fixup for figurine of an Angel:  makemon() is willing to
                    create a random Angel as either an ordinary monster or as
                    a minion of random allegiance.  We don't want the latter
                    here in case it successfully becomes a pet. */
-                cptr.stI32o(mtmp, $monst_isminion, 0);
+                cptr.stBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0, 0);
                 free_emin(mtmp);
                 /* [This could and possibly should be redone as a new
                    MM_flag passed to makemon() to suppress making a minion
@@ -420,16 +421,16 @@ export function make_familiar(otmp, x, y, quietly) {
     if (otmp) {
         chance = rn2(10);  /* 0==tame, 1==peaceful, 2==hostile */
         if (chance > 2)
-            chance = (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0
+            chance = cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0
                     ? 0
-                    : (!(cptr.ldI32o(otmp, $obj_cursed) & 1) ? 1 : 2);
+                    : (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) ? 1 : 2);
         /* 0,1,2:  b=80%,10,10; nc=10%,80,10; c=10%,10,80 */
         if (chance > 0) {
             reallytame = 0;  /* not tame after all */
             if (chance == 2) {
                 if (!quietly)
                     You(__s_get_a_bad_feeling_about_this);
-                cptr.stI32o(mtmp, $monst_mpeaceful, 0);
+                cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
                 set_malign(mtmp);
             }
         }
@@ -439,7 +440,7 @@ export function make_familiar(otmp, x, y, quietly) {
     }
     if (reallytame)
         initedog(mtmp, 1);
-    cptr.stI32o(mtmp, $monst_msleeping, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
     set_malign(mtmp);  /* more alignment changes */
     newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
 
@@ -501,8 +502,8 @@ export function makedog() {
     if (!mtmp)
         return (null);  /* pets were genocided [how?] */
 
-    if (!cptr.ldI32o(svc, $context_info_startingpet_mid)) {
-        cptr.stI32o(svc, $context_info_startingpet_mid, cptr.ldI32o(mtmp, $monst_m_id));
+    if (!(cptr.ldI32o(svc, $context_info_startingpet_mid) >>> 0)) {
+        cptr.stI32o(svc, $context_info_startingpet_mid, cptr.ldI32o(mtmp, $monst_m_id) >>> 0);
         if (!cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper)) {
             /* initial horses start wearing a saddle (pauper hero excluded) */
             if (pettype == NHC.PM_PONY) {
@@ -586,7 +587,7 @@ export function losedogs() {
         if (cptr.ldI16o(mtmp, $monst_mux) != cptr.ldI16o(u, $you_uz) ||
                 cptr.ldI16o(mtmp, $monst_muy) != cptr.ldI16o(u, $you_uz + $d_level_dlevel))
             continue;
-        if ((cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
+        if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0)) {
             if (cptr.ld1so(
                 (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
                 $eshk_dismiss_kops
@@ -598,7 +599,7 @@ export function losedogs() {
                     $eshk_dismiss_kops,
                     0
                 );  /* reset */
-            } else if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+            } else if (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0)) {
                 /* an unpacified shk is returning; don't dismiss kops
                    even if another pacified one is willing to do so */
                 dismissKops = -1;
@@ -612,10 +613,10 @@ export function losedogs() {
         mtmp && dismissKops >= 0;
         mtmp = cptr.ldPtr(mtmp)
     ) {
-        if ((cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
+        if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0)) {
             /* hostile shk might accompany hero [ESHK(mtmp)->dismiss_kops
                can't be set here; it's only used for gm.migrating_mons] */
-            if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
+            if (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
                 dismissKops = -1;
         }
     }
@@ -711,20 +712,20 @@ export function mon_arrive(mtmp, when) {
     cptr.stI64o(mtmp, $monst_mstate, cptr.ldI64o(mtmp, $monst_mstate) | 256n);
     cptr.stPtr(mtmp, cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist));
     cptr.stPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist, mtmp);
-    if ((cptr.ldI32o(mtmp, $monst_isshk) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0))
         set_residency(mtmp, 0);
 
-    num_segs = (cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0;
+    num_segs = cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0) | 0;
     /* baby long worms have no tail so don't use is_longworm() */
     if (cptr.eq(
         cptr.ldPtro(mtmp, $monst_data),
         cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)
     )) {
-        cptr.stI32o(mtmp, $monst_wormno, get_wormno() >>> 0);
-        if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
+        cptr.stBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0, get_wormno() >>> 0);
+        if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0))
             initworm(mtmp, num_segs);
     } else
-        cptr.stI32o(mtmp, $monst_wormno, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0, 0);
 
     /* some monsters might need to do something special upon arrival
        _after_ the current level has been fully set up; see dochug() */
@@ -771,7 +772,7 @@ export function mon_arrive(mtmp, when) {
             null) &&
                 !rn2(cptr.ld1so(mtmp, $monst_mtame)
                     ? 10
-                    : ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? 5 : 2)))
+                    : (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 ? 5 : 2)))
             rloc_to(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         else
             mnexto(mtmp, NHM.RLOC_NOMSG);
@@ -865,7 +866,7 @@ export function mon_arrive(mtmp, when) {
             }
             /* find the arrival portal */
             for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
-                if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
+                if ((cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.MAGIC_PORTAL)
                     break;
             if (t) {
                 xlocale = cptr.ldI16o(t, $trap_tx), ylocale = cptr.ldI16o(t, $trap_ty);
@@ -876,7 +877,7 @@ export function mon_arrive(mtmp, when) {
                 /* debugfuzzer returns from or enters another branch */
                 xlocale = cptr.ldI16(stway), ylocale = cptr.ldI16o(stway, $stairway_sy);
                 break;
-            } else if (!((cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 &&
+            } else if (!(cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0 &&
                     ((((cptr.ldI16o(
                         (cptr.add(
                             svd,
@@ -997,32 +998,50 @@ export function mon_catchup_elapsed_time(mtmp, nmv) {
 
     /* might stop being afraid, blind or frozen */
     /* set to 1 and allow final decrement in movemon() */
-    if ((cptr.ldI32o(mtmp, $monst_mblinded) & 127)) {
-        if (imv >= ((cptr.ldI32o(mtmp, $monst_mblinded) & 127) | 0))
-            cptr.stI32o(mtmp, $monst_mblinded, 1);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0)) {
+        if (imv >= (cptr.ldBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0) | 0))
+            cptr.stBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0, 1);
         else
-            cptr.stI32o(mtmp, $monst_mblinded, (cptr.ldI32o(mtmp, $monst_mblinded) - imv) | 0);
+            cptr.stBits(
+                cptr.add(mtmp, $monst_mblinded),
+                0,
+                7,
+                0,
+                (cptr.ldBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0) - (imv >>> 0)) >>> 0
+            );
     }
-    if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127)) {
-        if (imv >= ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0))
-            cptr.stI32o(mtmp, $monst_mfrozen, 1);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0)) {
+        if (imv >= (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) | 0))
+            cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 1);
         else
-            cptr.stI32o(mtmp, $monst_mfrozen, (cptr.ldI32o(mtmp, $monst_mfrozen) - imv) | 0);
+            cptr.stBits(
+                cptr.add(mtmp, $monst_mfrozen),
+                0,
+                7,
+                0,
+                (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) - (imv >>> 0)) >>> 0
+            );
     }
-    if ((cptr.ldI32o(mtmp, $monst_mfleetim) & 127)) {
-        if (imv >= ((cptr.ldI32o(mtmp, $monst_mfleetim) & 127) | 0))
-            cptr.stI32o(mtmp, $monst_mfleetim, 1);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mfleetim), 0, 7, 0)) {
+        if (imv >= (cptr.ldBits(cptr.add(mtmp, $monst_mfleetim), 0, 7, 0) | 0))
+            cptr.stBits(cptr.add(mtmp, $monst_mfleetim), 0, 7, 0, 1);
         else
-            cptr.stI32o(mtmp, $monst_mfleetim, (cptr.ldI32o(mtmp, $monst_mfleetim) - imv) | 0);
+            cptr.stBits(
+                cptr.add(mtmp, $monst_mfleetim),
+                0,
+                7,
+                0,
+                (cptr.ldBits(cptr.add(mtmp, $monst_mfleetim), 0, 7, 0) - (imv >>> 0)) >>> 0
+            );
     }
 
     /* might recover from temporary trouble */
-    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 && rn2((imv + 1) | 0) > 20)
-        cptr.stI32o(mtmp, $monst_mtrapped, 0);
-    if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 && rn2((imv + 1) | 0) > 25)
-        cptr.stI32o(mtmp, $monst_mconf, 0);
-    if ((cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0 && rn2((imv + 1) | 0) > 5)
-        cptr.stI32o(mtmp, $monst_mstun, 0);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0 && rn2((imv + 1) | 0) > 20)
+        cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0) | 0 && rn2((imv + 1) | 0) > 25)
+        cptr.stBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0, 0);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0) | 0 && rn2((imv + 1) | 0) > 5)
+        cptr.stBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0, 0);
 
     /* might finish eating or be able to use special ability again */
     if (cptr.ldI32o(mtmp, $monst_meating)) {
@@ -1044,13 +1063,17 @@ export function mon_catchup_elapsed_time(mtmp, nmv) {
         else if (cptr.ld1so(mtmp, $monst_mtame) > rn2(wilder))
             cptr.st1o(mtmp, $monst_mtame, 0);  /* untame */
         else
-            cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0)));  /* hostile! */
+            cptr.st1o(
+                mtmp,
+                $monst_mtame,
+                schar(cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0))
+            );  /* hostile! */
     }
     /* check to see if it would have died as a pet; if so, go wild instead
      * of dying the next time we call dog_move()
      */
     if (cptr.ld1so(mtmp, $monst_mtame) &&
-            !(cptr.ldI32o(mtmp, $monst_isminion) & 1) &&
+            !cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0) &&
             (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 536870912n) !=
                 0n) ||
                 ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1073741824n) !=
@@ -1062,10 +1085,15 @@ export function mon_catchup_elapsed_time(mtmp, nmv) {
             cptr.ldI32o(mtmp, $monst_mhp) < 3) ||
                 (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
                     BigInt.asIntN(64, cptr.ldI64o(edog, $edog_hungrytime) + 750n)))
-            cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0)));
+            cptr.st1o(
+                mtmp,
+                $monst_mtame,
+                schar(cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0))
+            );
     }
 
-    if (!cptr.ld1so(mtmp, $monst_mtame) && (cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0) {
+    if (!cptr.ld1so(mtmp, $monst_mtame) &&
+            cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0) | 0) {
         /* leashed monsters should always be with hero, consequently
            never losing any time to be accounted for later */
         impossible(__s_catching_up_for_leashed_monster);
@@ -1091,17 +1119,17 @@ function mon_leave(mtmp) {
     for (obj = cptr.ldPtro(mtmp, $monst_minvent); obj; obj = cptr.ldPtr(obj)) {
         if ((cptr.ldPtro((obj), $obj_cobj) !== null))
             picked_container(obj);  /* does the right thing */
-        cptr.stI32o(obj, $obj_no_charge, 0);
+        cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 0);
     }
 
     /* if this is a shopkeeper, clear the 'resident' field of her shop;
        if/when she returns, it will be set back by mon_arrive()  */
-    if ((cptr.ldI32o(mtmp, $monst_isshk) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0))
         set_residency(mtmp, 1);
 
     /* if this is a long worm, handle its tail segments before mtmp itself;
        we pass possibly truncated segment count to caller via return value  */
-    if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0)) {
         let cnt = count_wsegs(mtmp);
         let mx = cptr.ldI16o(mtmp, $monst_mx);
         let my = cptr.ldI16o(mtmp, $monst_my);
@@ -1127,12 +1155,12 @@ function keep_mon_accessible(mon) {
     /* the Wizard is kept accessible so that his harassment can fetch
        him instead of creating a new instance but also so that he can
        be put back at his current location if hero returns to his level */
-    if ((cptr.ldI32o(mon, $monst_iswiz) & 1))
+    if (cptr.ldBits(cptr.add(mon, $monst_iswiz), 0, 1, 0))
         return 1;
     /* monsters with special attachment to a particular level only need
        to be kept accessible when on some other level */
     if (cptr.ldPtro(mon, $monst_mextra) &&
-            (((cptr.ldI32o(mon, $monst_isshk) & 1) | 0 &&
+            ((cptr.ldBits(cptr.add(mon, $monst_isshk), 4, 1, 0) | 0 &&
                 !on_level(
                     cptr.add(u, $you_uz),
                     cptr.add(
@@ -1140,7 +1168,7 @@ function keep_mon_accessible(mon) {
                         $eshk_shoplevel
                     )
                 )) ||
-                ((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 &&
+                (cptr.ldBits(cptr.add(mon, $monst_ispriest), 7, 1, 0) | 0 &&
                     !on_level(
                         cptr.add(u, $you_uz),
                         cptr.add(
@@ -1148,7 +1176,7 @@ function keep_mon_accessible(mon) {
                             $epri_shrlevel
                         )
                     )) ||
-                ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 &&
+                (cptr.ldBits(cptr.add(mon, $monst_isgd), 6, 1, 0) | 0 &&
                     !on_level(
                         cptr.add(u, $you_uz),
                         cptr.add(
@@ -1183,28 +1211,29 @@ export function keepdogs(pets_only) {
                escape or ascension simply due to mundane trifles;
                unlike level change for steed, don't bother trying
                to achieve a normal trap escape first */
-            cptr.stI32o(mtmp, $monst_mtrapped, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
             finish_meating(mtmp);
-            cptr.stI32o(mtmp, $monst_msleeping, 0);
-            cptr.stI32o(mtmp, $monst_mfrozen, 0);
-            cptr.stI32o(mtmp, $monst_mcanmove, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
         }
         if (((monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && levl_follower(mtmp)) ||
-            ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0)) &&
+            (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 &&
+                cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0)) &&
                 (!helpless(mtmp) || (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))) &&
                 !(cptr.ldU64o(mtmp, $monst_mstrategy) & 536870912n)) {
             let num_segs;
             let stay_behind = 0;
 
-            if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1))
+            if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0))
                 void mintrap(mtmp, NHM.NO_TRAP_FLAGS);  /* try to escape */
             if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))) {
                 /* make sure steed is eligible to accompany hero */
-                cptr.stI32o(mtmp, $monst_mtrapped, 0);  /* escape trap */
+                cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);  /* escape trap */
                 cptr.stI32o(mtmp, $monst_meating, 0);  /* terminate eating */
                 mdrop_special_objs(mtmp);  /* drop Amulet */
             } else if (cptr.ldI32o(mtmp, $monst_meating) ||
-                    (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0) {
+                    cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0) {
                 if (canseemon(mtmp))
                     pline_mon(
                         mtmp,
@@ -1219,12 +1248,14 @@ export function keepdogs(pets_only) {
                 stay_behind = 1;
             }
             if (stay_behind) {
-                if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
+                if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0)) {
                     pline(
                         __s_s_leash_suddenly_comes_loose,
                         ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
                             131072n) != 0n)
-                            ? ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0 ? __s_her : __s_his)
+                            ? (cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0) | 0
+                                ? __s_her
+                                : __s_his)
                             : __s_its
                     );
                     m_unleash(mtmp, 0);
@@ -1243,7 +1274,7 @@ export function keepdogs(pets_only) {
             /* take off map and move mtmp from fmon list to mydogs */
             relmon(mtmp, cptr.add(gm, $instance_globals_m_mydogs));  /* mtmp->mx,my retain current value */
             cptr.stI16o(mtmp, $monst_mx, cptr.stI16o(mtmp, $monst_my, 0));  /* mx==0 implies migrating */
-            cptr.stI32o(mtmp, $monst_wormno, num_segs >>> 0);
+            cptr.stBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0, num_segs >>> 0);
             cptr.stI64o(mtmp, $monst_mlstmv, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
         } else if (keep_mon_accessible(mtmp)) {
             /* we want to be able to find the Wizard when his next
@@ -1254,7 +1285,7 @@ export function keepdogs(pets_only) {
                in case #wizmakemap is used to replace their home level
                while they're away from it */
             migrate_to_level(mtmp, ledger_no(cptr.add(u, $you_uz)), NHM.MIGR_EXACT_XY, null);
-        } else if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
+        } else if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0)) {
             /* this can happen if your quest leader ejects you from the
                "home" level while a leashed pet isn't next to you */
             pline(__s_s_leash_goes_slack, s_suffix(Monnam(mtmp)));
@@ -1277,7 +1308,7 @@ export function migrate_to_level(mtmp, tolev, xyloc, cc) {
     let my = cptr.ldI16o(mtmp, $monst_my);  /* <mx,my> needed below */
     let num_segs;  /* count of worm segments */
 
-    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0)) {
         (cptr.st1o(mtmp, $monst_mtame, cptr.ld1so(mtmp, $monst_mtame) + -1)) - (-1);
         m_unleash(mtmp, 1);
     }
@@ -1295,7 +1326,7 @@ export function migrate_to_level(mtmp, tolev, xyloc, cc) {
     xyflags = i16((depth(new_lev) < depth(cptr.add(u, $you_uz))));  /* 1 => up */
     if (In_W_tower(mx, my, cptr.add(u, $you_uz)))
         xyflags = i16(xyflags | 2);
-    cptr.stI32o(mtmp, $monst_wormno, num_segs >>> 0);
+    cptr.stBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0, num_segs >>> 0);
     cptr.stI64o(mtmp, $monst_mlstmv, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
     cptr.stI16o2(mtmp, 2, $sizeof_coord, $monst_mtrack, cptr.ldI16o(u, $you_uz));  /* migrating from this dungeon */
     cptr.stI16o2(
@@ -1345,7 +1376,7 @@ export function discard_migrations() {
         /* the Wizard is kept regardless of location so that he is
            ready to be brought back; nothing should be scheduled to
            migrate to the endgame but if we find such, we'll keep it */
-        if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 ||
+        if (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 ||
                 (cptr.ldI16((dest)) ==
                     cptr.ldI16((cptr.add(
                         svd,
@@ -1415,10 +1446,11 @@ export function dogfood(mon, obj) {
     let mblind;
     let fx;
 
-    if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && !Resists_Elem(mon, NHC.POISON_RES))
+    if (cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0) | 0 &&
+            !Resists_Elem(mon, NHC.POISON_RES))
         return NHC.POISON;
     if (is_quest_artifact(obj) || obj_resists(obj, 0, 95))
-        return (cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? NHC.TABU : NHC.APPORT;
+        return cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 ? NHC.TABU : NHC.APPORT;
 
     switch (cptr.ld1so(obj, $obj_oclass)) {
         case NHC.FOOD_CLASS:
@@ -1450,11 +1482,13 @@ export function dogfood(mon, obj) {
                 return !mtmp ? NHC.DOGFOOD : NHC.TABU;
             }
             if (!carni && !herbi)
-                return (cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? NHC.UNDEF : NHC.APPORT;
+                return cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0
+                        ? NHC.UNDEF
+                        : NHC.APPORT;
 
             /* a starving pet will eat almost anything */
             starving = schar((cptr.ld1so(mon, $monst_mtame) &&
-                !(cptr.ldI32o(mon, $monst_isminion) & 1) &&
+                !cptr.ldBits(cptr.add(mon, $monst_isminion), 5, 1, 0) &&
                 cptr.ldI32o(
                     (cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_edog)),
                     $edog_mhpmax_penalty
@@ -1462,7 +1496,7 @@ export function dogfood(mon, obj) {
                     ? 1
                     : 0));
             /* even carnivores will eat carrots if they're temporarily blind */
-            mblind = schar((!(cptr.ldI32o(mon, $monst_mcansee) & 1) &&
+            mblind = schar((!cptr.ldBits(cptr.add(mon, $monst_mcansee), 7, 1, 0) &&
                 ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 4096n) == 0n)
                     ? 1
                     : 0));
@@ -1570,54 +1604,62 @@ export function dogfood(mon, obj) {
                     cptr.ldI16o(obj, $obj_otyp) == NHC.RIN_SLOW_DIGESTION)
                 return NHC.TABU;
             if (mon_hates_silver(mon) &&
-                    ((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                    (cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) ==
                         NHC.SILVER)
                 return NHC.TABU;
             if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)) &&
-                    (((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                    ((cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) <=
                         NHC.WOOD))
                 return NHC.ACCFOOD;
             if (((cptr.ldU64o((mptr), $permonst_mflags1) & 2147483648n) != 0n) &&
                     is_metallic(obj) &&
-                    ((((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                    (((cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) ==
                         NHC.IRON) ||
                         !cptr.eq(mptr, cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)))) {
                 /* Non-rustproofed ferrous-based metals are preferred. */
-                return ((((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_material
-                ) &
-                    31) |
+                return (((cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_material
+                    ),
+                    3,
+                    5,
+                    0
+                ) |
                     0) ==
                     NHC.IRON) &&
-                    !(cptr.ldI32o(obj, $obj_oerodeproof) & 1))
+                    !cptr.ldBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0))
                         ? NHC.DOGFOOD
                         : NHC.ACCFOOD;
             }
-            if (!(cptr.ldI32o(obj, $obj_cursed) & 1) &&
+            if (!cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) &&
                     cptr.ld1so(obj, $obj_oclass) != NHC.BALL_CLASS &&
                     cptr.ld1so(obj, $obj_oclass) != NHC.CHAIN_CLASS)
                 return NHC.APPORT;
@@ -1647,24 +1689,26 @@ export function tamedog(mtmp, obj, givemsg) {
     if (obj &&
             (cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS ||
                 cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS)) {
-        blessed_scroll = schar(((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 1 : 0));
+        blessed_scroll = schar((cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 ? 1 : 0));
         /* the rest of this routine assumes 'obj' represents food */
         obj = (null);
     }
     /* reduce timed sleep or paralysis, leaving mtmp->mcanmove as-is
        (note: if mtmp is donning armor, this will reduce its busy time) */
-    if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127))
-        cptr.stI32o(
-            mtmp,
-            $monst_mfrozen,
-            ((((((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0) + 1) | 0) / 2) | 0) >>> 0
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0))
+        cptr.stBits(
+            cptr.add(mtmp, $monst_mfrozen),
+            0,
+            7,
+            0,
+            (((((cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) | 0) + 1) | 0) / 2) | 0) >>> 0
         );
     /* end indefinite sleep; using distance==1 limits the waking to mtmp */
-    if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0))
         wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 1);  /* [different from wakeup()] */
 
     /* The Wiz, Medusa and the quest nemeses aren't even made peaceful. */
-    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 ||
             cptr.eq(
                 cptr.ldPtro(mtmp, $monst_data),
                 cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)
@@ -1673,7 +1717,7 @@ export function tamedog(mtmp, obj, givemsg) {
         return 0;
 
     /* worst case, at least it'll be peaceful. */
-    if (givemsg && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && canspotmon(mtmp)) {
+    if (givemsg && !cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) && canspotmon(mtmp)) {
         pline_mon(
             mtmp,
             __s_s_seems_s,
@@ -1682,9 +1726,9 @@ export function tamedog(mtmp, obj, givemsg) {
         );
         givemsg = 0;  /* don't give another message below */
     }
-    cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+    cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
     set_malign(mtmp);
-    if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON &&
+    if (cptr.ldI32o(flags, $flag_moonphase) >>> 0 == NHM.FULL_MOON &&
             night() &&
             rn2(6) &&
             obj &&
@@ -1692,12 +1736,12 @@ export function tamedog(mtmp, obj, givemsg) {
         return 0;
 
     /* If we cannot tame it, at least it's no longer afraid. */
-    cptr.stI32o(mtmp, $monst_mflee, 0);
-    cptr.stI32o(mtmp, $monst_mfleetim, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_mfleetim), 0, 7, 0, 0);
 
     /* make grabber let go now, whether it becomes tame or not */
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
-        if ((cptr.ldI32o(u, $you_uswallow) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
             expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 1);
         else if (!(Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
             unstuck(mtmp);
@@ -1707,8 +1751,8 @@ export function tamedog(mtmp, obj, givemsg) {
     if (cptr.ld1so(mtmp, $monst_mtame) && obj) {
         let tasty;
 
-        if ((cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0 &&
-                !(cptr.ldI32o(mtmp, $monst_mconf) & 1) &&
+        if (cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0) | 0 &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0) &&
                 !cptr.ldI32o(mtmp, $monst_meating) &&
                 ((tasty = dogfood(mtmp, obj)) == NHC.DOGFOOD ||
                     (tasty <= NHC.ACCFOOD &&
@@ -1772,16 +1816,16 @@ export function tamedog(mtmp, obj, givemsg) {
         return 0;  /* didn't just get tamed */
     }
     /* pacify angry shopkeeper but don't tame him/her/it/them */
-    if ((cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0)) {
         make_happy_shk(mtmp, 0);
         return 0;
     }
 
-    if (!(cptr.ldI32o(mtmp, $monst_mcanmove) & 1) ||
-            (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 ||
-            (cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 ||
-            (cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 ||
-            (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 ||
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0) ||
+            cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 ||
+            cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0) | 0 ||
+            cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 ||
+            cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0) | 0 ||
             ((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags3) &
                 NHM.M3_COVETOUS)) ||
             ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 8n) != 0n) ||
@@ -1795,7 +1839,7 @@ export function tamedog(mtmp, obj, givemsg) {
             (obj && dogfood(mtmp, obj) >= NHC.MANFOOD))
         return 0;
 
-    if (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(svq, $q_score_leader_m_id))
+    if (cptr.ldI32o(mtmp, $monst_m_id) >>> 0 == cptr.ldI32o(svq, $q_score_leader_m_id) >>> 0)
         return 0;
 
     /* add the pet extension */
@@ -1824,7 +1868,7 @@ export function tamedog(mtmp, obj, givemsg) {
         );
 
     newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-    if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0))
         redraw_worm(mtmp);
     if (attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_WEAP)) {
         cptr.stI16o(mtmp, $monst_weapon_check, NHC.NEED_HTH_WEAPON);
@@ -1849,7 +1893,7 @@ export function wary_dog(mtmp, was_dead) {
 
     if (!cptr.ld1so(mtmp, $monst_mtame))
         return;
-    edog = !(cptr.ldI32o(mtmp, $monst_isminion) & 1)
+    edog = !cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0)
             ? (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog))
             : null;
 
@@ -1869,12 +1913,18 @@ export function wary_dog(mtmp, was_dead) {
     }
 
     if (edog &&
-            (((cptr.ldI32o(edog, $edog_killed_by_u) & 1) | 0) == 1 ||
+            ((cptr.ldBits(cptr.add(edog, $edog_killed_by_u), 0, 1, 0) | 0) == 1 ||
                 cptr.ldI32o(edog, $edog_abuse) > 2)) {
-        cptr.stI32o(mtmp, $monst_mpeaceful, cptr.st1o(mtmp, $monst_mtame, 0));
+        cptr.stBits(
+            cptr.add(mtmp, $monst_mpeaceful),
+            1,
+            1,
+            0,
+            cptr.st1o(mtmp, $monst_mtame, 0) >>> 0
+        );
         if (cptr.ldI32o(edog, $edog_abuse) >= 0 && cptr.ldI32o(edog, $edog_abuse) < 10)
             if (!rn2((cptr.ldI32o(edog, $edog_abuse) + 1) | 0))
-                cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+                cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
         if (!quietly &&
                 ((cptr.ld1uo(
                     cptr.ldPtro(
@@ -1898,7 +1948,7 @@ export function wary_dog(mtmp, was_dead) {
                         mtmp,
                         __s_s_s_to_look_you_in_the_s,
                         Monnam(mtmp),
-                        (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0
+                        cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0
                             ? __s_seems_unable
                             : __s_refuses,
                         body_part(NHC.EYE)
@@ -1911,7 +1961,7 @@ export function wary_dog(mtmp, was_dead) {
         /* chance it goes wild anyway - Pet Sematary */
         cptr.st1o(mtmp, $monst_mtame, schar(rn2((cptr.ld1so(mtmp, $monst_mtame) + 1) | 0)));
         if (!cptr.ld1so(mtmp, $monst_mtame))
-            cptr.stI32o(mtmp, $monst_mpeaceful, rn2(2) >>> 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, rn2(2) >>> 0);
     }
 
     if (!cptr.ld1so(mtmp, $monst_mtame)) {
@@ -1920,21 +1970,21 @@ export function wary_dog(mtmp, was_dead) {
                 mtmp,
                 __s_s_s,
                 Monnam(mtmp),
-                (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0
+                cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0
                     ? __s_is_no_longer_tame
                     : __s_has_become_feral
             );
         newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         /* a life-saved monster might be leashed;
            don't leave it that way if it's no longer tame */
-        if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1))
+        if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0))
             m_unleash(mtmp, 1);
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
             dismount_steed(NHC.DISMOUNT_THROWN);
     } else if (edog) {
         /* it's still a pet; start a clean pet-slate now */
         (cptr.stI32o(edog, $edog_revivals, cptr.ldI32o(edog, $edog_revivals) + 1)) - (1);
-        cptr.stI32o(edog, $edog_killed_by_u, 0);
+        cptr.stBits(cptr.add(edog, $edog_killed_by_u), 0, 1, 0, 0);
         cptr.stI32o(edog, $edog_abuse, 0);
         cptr.stI16o(edog, $edog_ogoal, cptr.stI16o(edog, $edog_ogoal + $nhcoord_y, -1));
         if (was_dead ||
@@ -1960,11 +2010,11 @@ export function abuse_dog(mtmp) {
         return;
 
     if (Aggravate_monster() || Conflict())
-        cptr.st1o(mtmp, $monst_mtame, cptr.ld1so(mtmp, $monst_mtame) / 2);
+        cptr.st1o(mtmp, $monst_mtame, (cptr.ld1so(mtmp, $monst_mtame) / 2) | 0);
     else
         (cptr.st1o(mtmp, $monst_mtame, cptr.ld1so(mtmp, $monst_mtame) + -1)) - (-1);
 
-    if (cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(mtmp, $monst_isminion) & 1))
+    if (cptr.ld1so(mtmp, $monst_mtame) && !cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0))
         (cptr.stI32o(
             (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
             $edog_abuse,
@@ -1974,7 +2024,8 @@ export function abuse_dog(mtmp) {
             ) + 1
         )) - (1);
 
-    if (!cptr.ld1so(mtmp, $monst_mtame) && (cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0)
+    if (!cptr.ld1so(mtmp, $monst_mtame) &&
+            cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0) | 0)
         m_unleash(mtmp, 1);
 
     /* don't make a sound if pet is in the middle of leaving the level */
@@ -1987,7 +2038,7 @@ export function abuse_dog(mtmp) {
 
         if (!cptr.ld1so(mtmp, $monst_mtame)) {
             newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-            if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
+            if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0)) {
                 redraw_worm(mtmp);
             }
         }

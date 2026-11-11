@@ -147,7 +147,10 @@ export function main(argc, argv) {
                 BigInt.asUintN(64, cptr.strlen(mac_exe) * 2n + cptr.strlen(__s_app_contents_macos))
             ));
             if (mac_tmp_len <= arg0_len) {
-                mac_tmp = cptr.malloc(BigInt.asUintN(64, BigInt(((mac_tmp_len + 1) | 0))));
+                mac_tmp = cptr.byteView(cptr.malloc(BigInt.asUintN(
+                    64,
+                    BigInt(((mac_tmp_len + 1) | 0))
+                )));
                 cptr.sprintf(mac_tmp, __s_s_s_s, mac_exe, __s_app_contents_macos, mac_exe);
                 if (!strcmp(
                     cptr.add(cptr.ldPtro(argv.v, 0, 8), ((arg0_len - mac_tmp_len) | 0)),
@@ -162,7 +165,10 @@ export function main(argc, argv) {
                         )
                     ));
                     if (mac_lhs_len > ((mac_tmp_len - 1) | 0))
-                        mac_tmp = realloc(mac_tmp, BigInt.asUintN(64, BigInt(mac_lhs_len)));
+                        mac_tmp = cptr.byteView(realloc(
+                            mac_tmp,
+                            BigInt.asUintN(64, BigInt(mac_lhs_len))
+                        ));
                     __builtin___strncpy_chk(
                         mac_tmp,
                         cptr.ldPtro(argv.v, 0, 8),
@@ -701,7 +707,7 @@ function get_unix_pw() {
     if (user) {
         __static_get_unix_pw_pw = getpwnam(user);
         if (__static_get_unix_pw_pw &&
-                (cptr.ldI32o(__static_get_unix_pw_pw, $passwd_pw_uid) != uid))
+                (cptr.ldI32o(__static_get_unix_pw_pw, $passwd_pw_uid) >>> 0 != uid))
             __static_get_unix_pw_pw = null;
     }
     if (__static_get_unix_pw_pw === null) {
@@ -709,7 +715,7 @@ function get_unix_pw() {
         if (user) {
             __static_get_unix_pw_pw = getpwnam(user);
             if (__static_get_unix_pw_pw &&
-                    (cptr.ldI32o(__static_get_unix_pw_pw, $passwd_pw_uid) != uid))
+                    (cptr.ldI32o(__static_get_unix_pw_pw, $passwd_pw_uid) >>> 0 != uid))
                 __static_get_unix_pw_pw = null;
         }
         if (__static_get_unix_pw_pw === null) {
@@ -748,7 +754,7 @@ export function port_insert_pastebuf(buf) {
         len = cptr.strlen(buf);
         /* Remove the trailing \n, carefully. */
         if (len > 0n && cptr.ld1so(buf, BigInt.asUintN(64, len - 1n)) == 10)
-            len--;
+            len = BigInt.asUintN(64, len + -1n);
 
         /* XXX Sorry, I'm too lazy to write a loop for output this short. */
         if (len != fwrite(buf, 1n, len, PB)) {
@@ -771,12 +777,12 @@ export function sys_random_seed() {
     {
         let env_seed = getenv(__s_nethack_seed);
         if (env_seed) {
-            let seed = cptr.box(strtoul(env_seed, null, 10));
+            let seed = cptr.box(strtoul(env_seed, null, 10), "u64");
             return seed.v;
         }
     }
 
-    let seed = cptr.box(0n);
+    let seed = cptr.box(0n, "u64");
     let pid = BigInt.asUintN(64, BigInt(getpid()));
     let no_seed = 1;
     let fptr;
@@ -796,8 +802,8 @@ export function sys_random_seed() {
         /* Quick dirty band-aid to prevent PRNG prediction */
         if (pid) {
             if (!(pid & 3n))
-                pid -= 1n;
-            seed.v *= pid;
+                pid = BigInt.asUintN(64, pid - 1n);
+            seed.v = BigInt.asUintN(64, seed.v * pid);
         }
     }
     return seed.v;

@@ -131,13 +131,12 @@ const $Gender_he = FLD.Gender_he, $NHFILE_ftype = FLD.NHFILE_ftype, $NHFILE_mode
       $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
       $permonst_mlevel = FLD.permonst_mlevel, $permonst_msound = FLD.permonst_msound,
       $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
-      $propname_prop_name = FLD.propname_prop_name,
-      $q_score_killed_leader = FLD.q_score_killed_leader, $rm_flags = FLD.rm_flags,
-      $rm_typ = FLD.rm_typ, $sizeof_Gender = FLD.sizeof_Gender,
-      $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_permonst = FLD.sizeof_permonst,
-      $sizeof_prop = FLD.sizeof_prop, $sizeof_propname = FLD.sizeof_propname,
-      $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-      $sizeof_ttable = FLD.sizeof_ttable, $timer_element_arg = FLD.timer_element_arg,
+      $propname_prop_name = FLD.propname_prop_name, $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ,
+      $sizeof_Gender = FLD.sizeof_Gender, $sizeof_mvitals = FLD.sizeof_mvitals,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
+      $sizeof_propname = FLD.sizeof_propname, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_ttable = FLD.sizeof_ttable,
+      $timer_element_arg = FLD.timer_element_arg,
       $timer_element_func_index = FLD.timer_element_func_index,
       $timer_element_kind = FLD.timer_element_kind,
       $timer_element_needs_fixup = FLD.timer_element_needs_fixup,
@@ -781,7 +780,7 @@ function* vomiting_dialogue() {
                    have more specific point at which hero became unable to move
                    [vomit() issues its own message for the cantvomit() case
                    and for the FAINTING-or-worse case where stomach is empty] */
-                if (cptr.ldI32o(u, $you_uhs) < NHC.FAINTING)
+                if (cptr.ldI32o(u, $you_uhs) >>> 0 < NHC.FAINTING)
                     (yield* You(__s_pct_s_bang, !Hallucination() ? __s_vomit : __s_hurl_chunks));
             }
             (yield* vomit());
@@ -861,7 +860,7 @@ function* sickness_dialogue() {
             cptr.ldPtro(sickness_texts, BigInt.asIntN(64, BigInt(3) - i), 8)
         );
         /* change the message slightly for food poisoning */
-        if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) == 0)
+        if (((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_NONVOMITABLE) == 0)
             void strsubst(cptr.decay(buf), __s_illness, __s_sickness);
         if (Hallucination() && (yield* strstri(cptr.decay(buf), __s_death_s_door))) {
             /* youmonst: for Hallucination, mhe()'s mon argument isn't used */
@@ -1234,12 +1233,12 @@ export function* nh_timeout() {
     let was_flying;
     let sleeptime;
     let m_idx;
-    let baseluck = (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON) ? 1 : 0;
+    let baseluck = (cptr.ldI32o(flags, $flag_moonphase) >>> 0 == NHM.FULL_MOON) ? 1 : 0;
 
     if (cptr.ld1so(flags, $flag_friday13))
         baseluck = (baseluck - 1) | 0;
 
-    if ((cptr.ldI32o(svq, $q_score_killed_leader) & 1))
+    if (cptr.ldBits(svq, 7, 1, 0))
         baseluck = (baseluck - 4) | 0;
 
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) &&
@@ -1249,7 +1248,8 @@ export function* nh_timeout() {
 
     if (cptr.ld1so(u, $you_uluck) != baseluck &&
             cptr.ldI64o(svm, $instance_globals_saved_m_moves) %
-                BigInt((((cptr.ldI32o(u, $you_uhave) & 1) | 0 || cptr.ldI32o(u, $you_ugangr))
+                BigInt(((cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 ||
+                    cptr.ldI32o(u, $you_ugangr))
                     ? 300
                     : 600)) ==
                 0n) {
@@ -1266,7 +1266,7 @@ export function* nh_timeout() {
         else if (cptr.ld1so(u, $you_uluck) < baseluck && (nostone || time_luck > 0))
             cptr.postinc1(cptr.add(u, $you_uluck));
     }
-    if ((cptr.ldI32o(u, $you_uinvulnerable) & 1))
+    if (cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0))
         return;  /* things past this point could kill you */
     if (Stoned())
         (yield* stoned_dialogue());
@@ -1309,12 +1309,12 @@ export function* nh_timeout() {
         else
             (yield* rehumanize());
     }
-    if (cptr.ldI32o(u, $you_ucreamed))
-        (cptr.stI32o(u, $you_ucreamed, cptr.ldI32o(u, $you_ucreamed) + -1)) - (-1);
+    if (cptr.ldI32o(u, $you_ucreamed) >>> 0)
+        (cptr.stI32o(u, $you_ucreamed, (cptr.ldI32o(u, $you_ucreamed) >>> 0) + -1)) - (-1);
 
     /* Dissipate spell-based protection. */
     if (cptr.ld1uo(u, $you_usptime)) {
-        if (cptr.st1o(u, $you_usptime, cptr.ld1uo(u, $you_usptime) + -1) == 0 &&
+        if (uchar(cptr.st1o(u, $you_usptime, cptr.ld1uo(u, $you_usptime) + -1)) == 0 &&
                 cptr.ld1uo(u, $you_uspellprot)) {
             cptr.st1o(u, $you_usptime, cptr.ld1uo(u, $you_uspmtime));
             (cptr.st1o(u, $you_uspellprot, cptr.ld1uo(u, $you_uspellprot) + -1)) - (-1);
@@ -1383,7 +1383,8 @@ export function* nh_timeout() {
                 case 17n:
                     /* hero might be able to bounce back from food poisoning,
                        but not other forms of illness */
-                    if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) ==
+                    if (((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) &
+                        NHM.SICK_NONVOMITABLE) ==
                         0 &&
                             rn2(100) < (acurr(NHC.A_CON))) {
                         (yield* You(__s_have_recovered_from_your_illness));
@@ -1420,7 +1421,7 @@ export function* nh_timeout() {
                         }
                     }
                     (yield* done_timeout(NHC.POISONING, NHC.SICK));
-                    cptr.stI32o(u, $you_usick_type, 0);
+                    cptr.stBits(cptr.add(u, $you_usick_type), 0, 2, 0, 0);
                     break;
                 case 64n:
                     if (!Very_fast())
@@ -1523,7 +1524,7 @@ export function* nh_timeout() {
                     } else if (Sleepy()) {
                         (yield* You(__s_fall_asleep));
                         sleeptime = rnd(20);
-                        (yield* fall_asleep(-sleeptime, 1));
+                        (yield* fall_asleep(-sleeptime | 0, 1));
                         incr_itimeout(
                             cptr.add(
                                 cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop),
@@ -1690,7 +1691,7 @@ export function* nh_timeout() {
                     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
                     void cptr.strcpy(
                         cptr.add(svk, $kinfo_name),
-                        ((cptr.ldI32o(u, $you_uburied) & 1)) | 0
+                        (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0)) | 0
                             ? __s_suffocation
                             : __s_strangulation
                     );
@@ -1714,7 +1715,7 @@ export function* nh_timeout() {
                          * are to make noise when you fumble.  Adjustments
                          * to this number must be thoroughly play tested.
                          */
-                        if ((inv_weight() > (Math.imul(NHC.WT_NOISY_INV, -1)))) {
+                        if ((inv_weight() > (Math.imul(NHC.WT_NOISY_INV, -1 | 0)))) {
                             if (!Deaf())
                                 (yield* You(__s_make_a_lot_of_noise));
                             (yield* wake_nearby(0));
@@ -1823,8 +1824,8 @@ export function* hatch_egg(arg, timeout) {
     let mon;
     let mon2;
     let cc = cptr.alloc(4);
-    let x = cptr.box(0);
-    let y = cptr.box(0);
+    let x = cptr.box(0, "i16");
+    let y = cptr.box(0, "i16");
     let yours;
     let silent;
     let knows_egg = 0;
@@ -1978,7 +1979,7 @@ export function* hatch_egg(arg, timeout) {
                     /* egg carrying monster might be invisible */
                     mon2 = cptr.ldPtro(egg, $obj_v);
                     if (canseemon(mon2) &&
-                            (!(cptr.ldI32o(mon2, $monst_wormno) & 31) ||
+                            (!cptr.ldBits(cptr.add(mon2, $monst_wormno), 1, 5, 0) ||
                                 ((cptr.ld1uo(
                                     cptr.ldPtro(
                                         cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -2109,7 +2110,7 @@ function* slip_or_trip() {
 
     if (otmp &&
             on_foot &&
-            !(cptr.ldI32o(u, $you_uinwater) & 1) &&
+            !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) &&
             is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         otmp = null;
 
@@ -2125,7 +2126,7 @@ function* slip_or_trip() {
                 ? ((cptr.ldI64o(otmp, $obj_quan) == 1n)
                     ? __s_it
                     : (Hallucination() ? __s_they : __s_them))
-                : (((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 || !Blind())
+                : ((cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0) | 0 || !Blind())
                     ? (yield* doname(otmp))
                     : ((otmp2 = sobj_at(NHC.ROCK, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) === null
                         ? cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
@@ -2192,7 +2193,7 @@ function* slip_or_trip() {
            unconditionally dismount if fumbling is from a non-ice source */
         if (!on_foot &&
                 ((saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) === null ||
-                    !(cptr.ldI32o(saddle, $obj_cursed) & 1)) &&
+                    !cptr.ldBits(cptr.add(saddle, $obj_cursed), 0, 1, 0)) &&
                 (!ice_only || !rn2(3))) {
             (yield* You(__s_lose_your_balance));
             (yield* dismount_steed(NHC.DISMOUNT_FELL));
@@ -2234,7 +2235,7 @@ function* slip_or_trip() {
             /* mounted; saddle should never end up being Null here;
                don't fall off when it happens to be cursed */
         } else if ((saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) === null ||
-                !(cptr.ldI32o(saddle, $obj_cursed) & 1)) {
+                !cptr.ldBits(cptr.add(saddle, $obj_cursed), 0, 1, 0)) {
             switch (rn2(4)) {
                 case 1:
                     (yield* Your(__s_s_slip_out_of_the_stirrups, (yield* makeplural((yield* body_part(NHC.FOOT))))));
@@ -2300,8 +2301,8 @@ export function* burn_object(arg, timeout) {
     let need_newsym;
     let need_invupdate;
     let bytouch;
-    let x = cptr.box(0);
-    let y = cptr.box(0);
+    let x = cptr.box(0, "i16");
+    let y = cptr.box(0, "i16");
     let whose = new Uint8Array(256);
 
     menorah = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION));
@@ -2671,12 +2672,12 @@ export function* begin_burn(obj, already_lit) {
 
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.MAGIC_LAMP:
-            cptr.stI32o(obj, $obj_lamplit, 1);
+            cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 1);
             do_timer = 0;
             break;
         case NHC.POT_OIL:
             turns = cptr.ldI64o(obj, $obj_age);
-            if ((cptr.ldI32o(obj, $obj_oeroded) & 3))
+            if (cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0))
                 turns = (BigInt.asIntN(64, 3n * turns + 2n)) / 4n;
             radius = 1;  /* very dim light */
             break;
@@ -2709,7 +2710,7 @@ export function* begin_burn(obj, already_lit) {
         default:
             /* [ALI] Support artifact light sources */
             if (artifact_light(obj)) {
-                cptr.stI32o(obj, $obj_lamplit, 1);
+                cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 1);
                 do_timer = 0;
                 radius = arti_light_radius(obj);
             } else {
@@ -2721,21 +2722,21 @@ export function* begin_burn(obj, already_lit) {
 
     if (do_timer) {
         if ((yield* start_timer(turns, NHC.TIMER_OBJECT, NHC.BURN_OBJECT, obj_to_any(obj)))) {
-            cptr.stI32o(obj, $obj_lamplit, 1);
+            cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 1);
             cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) - turns);
             if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && !already_lit)
                 (yield* update_inventory());
         } else {
-            cptr.stI32o(obj, $obj_lamplit, 0);
+            cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 0);
         }
     } else {
         if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && !already_lit)
             (yield* update_inventory());
     }
 
-    if ((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && !already_lit) {
-        let x = cptr.box(0);
-        let y = cptr.box(0);
+    if (cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0 && !already_lit) {
+        let x = cptr.box(0, "i16");
+        let y = cptr.box(0, "i16");
 
         if (get_obj_location(obj, x, y, 3))
             (yield* new_light_source(x.v, y.v, radius, NHC.LS_OBJECT, obj_to_any(obj)));
@@ -2750,7 +2751,7 @@ export function* begin_burn(obj, already_lit) {
  */
 /** C ref: timeout.c:1804 — @param {CPtr<struct obj>} obj @param {CInt} timer_attached */
 export function* end_burn(obj, timer_attached) {
-    if (!(cptr.ldI32o(obj, $obj_lamplit) & 1)) {
+    if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0)) {
         (yield* impossible(__s_end_burn_obj_s_not_lit, (yield* xname(obj))));
         return;
     }
@@ -2761,7 +2762,7 @@ export function* end_burn(obj, timer_attached) {
     if (!timer_attached) {
         /* [DS] Cleanup explicitly, since timer cleanup won't happen */
         (yield* del_light_source(NHC.LS_OBJECT, obj_to_any(obj)));
-        cptr.stI32o(obj, $obj_lamplit, 0);
+        cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 0);
         if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_INVENT)
             (yield* update_inventory());
     } else if (!(yield* stop_timer(NHC.BURN_OBJECT, obj_to_any(obj))))
@@ -2775,7 +2776,7 @@ export function* end_burn(obj, timer_attached) {
 function* cleanup_burn(arg, expire_time) {
     let obj = cptr.ldPtr(arg);
 
-    if (!(cptr.ldI32o(obj, $obj_lamplit) & 1)) {
+    if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0)) {
         (yield* impossible(__s_cleanup_burn_obj_s_not_lit, (yield* xname(obj))));
         return;
     }
@@ -2788,7 +2789,7 @@ function* cleanup_burn(arg, expire_time) {
         cptr.ldI64o(obj, $obj_age) +
             BigInt.asIntN(64, expire_time - cptr.ldI64o(svm, $instance_globals_saved_m_moves))
     );
-    cptr.stI32o(obj, $obj_lamplit, 0);
+    cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 0);
 
     if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_INVENT)
         (yield* update_inventory());
@@ -2804,8 +2805,12 @@ export function* do_storms() {
     let count;
 
     /* no lightning if not stormy level or too often, even then */
-    if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy) &
-            1) || rn2(8))
+    if (!cptr.ldBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy),
+        2,
+        1,
+        0
+    ) || rn2(8))
         return;
 
     /* the number of strikes is 8-log2(nstrike) */
@@ -2854,7 +2859,7 @@ export function* do_storms() {
             ((rn2(20) + 30) | 0)
         );
         cptr.st1(disp, 1);
-        if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+        if (!cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
             (yield* stop_occupation());
             nomul(-3);
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_hiding_from_thunderstorm);
@@ -3027,7 +3032,7 @@ export function* wiz_timeout_queue() {
                 void cptr.sprintf(
                     cptr.decay(buf),
                     __s_s_4ld,
-                    -longestlen,
+                    -longestlen | 0,
                     propname,
                     (intrinsic & 16777215n)
                 );
@@ -3035,14 +3040,14 @@ export function* wiz_timeout_queue() {
             }
         }
     }
-    if (cptr.ldI32o(u, $you_uswldtim)) {
+    if (cptr.ldI32o(u, $you_uswldtim) >>> 0) {
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
         /* decremented when engulfer makes a move, so can last longer than
            the number of turns reported if engulfer is slow */
         void cptr.sprintf(
             cptr.decay(buf),
             __s_swallow_countdown_is_u,
-            cptr.ldI32o(u, $you_uswldtim)
+            cptr.ldI32o(u, $you_uswldtim) >>> 0
         );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     }
@@ -3094,8 +3099,8 @@ export function* wiz_timeout_queue() {
 export function* timer_sanity_check() {
     let curr;
     let t_id;
-    let x = cptr.box(0);
-    let y = cptr.box(0);
+    let x = cptr.box(0, "i16");
+    let y = cptr.box(0, "i16");
 
     for (curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = cptr.ldPtr(curr)) {
         t_id = cptr.ldU64o(curr, $timer_element_tid);
@@ -3189,15 +3194,23 @@ export function* timer_sanity_check() {
                                     $instance_globals_saved_l_level + $rm_typ
                                 ) ==
                                     NHC.DRAWBRIDGE_DOWN &&
-                                    (((cptr.ldI32o3(
-                                        svl,
-                                        x.v,
-                                        $sizeof_rm_x21,
-                                        y.v,
-                                        $sizeof_rm,
-                                        $instance_globals_saved_l_level + $rm_flags
-                                    ) &
-                                        31) |
+                                    ((cptr.ldBits(
+                                        cptr.add(
+                                            cptr.add(
+                                                cptr.add(
+                                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                                    x.v,
+                                                    $sizeof_rm_x21
+                                                ),
+                                                y.v,
+                                                $sizeof_rm
+                                            ),
+                                            $rm_flags
+                                        ),
+                                        0,
+                                        5,
+                                        0
+                                    ) |
                                         0) &
                                         NHM.DB_UNDER) ==
                                         NHM.DB_ICE))
@@ -3513,7 +3526,7 @@ export function* spot_stop_timers(x, y, func_index) {
     let curr;
     let prev;
     let next_timer = null;
-    let where = ((BigInt(x) << 16n) | (BigInt(y)));
+    let where = ((BigInt.asIntN(64, BigInt(x) << 16n)) | (BigInt(y)));
 
     for (
         prev = null,
@@ -3560,7 +3573,7 @@ export function* spot_stop_timers(x, y, func_index) {
  */
 export function spot_time_expires(x, y, func_index) {
     let curr;
-    let where = ((BigInt(x) << 16n) | (BigInt(y)));
+    let where = ((BigInt.asIntN(64, BigInt(x) << 16n)) | (BigInt(y)));
 
     for (curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = cptr.ldPtr(curr)) {
         if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_LEVEL &&
@@ -3646,7 +3659,7 @@ function* write_timer(nhfp, timer) {
             (yield* sfo_fe(nhfp, timer, __s_timer));
             break;
         case NHC.TIMER_OBJECT:
-            if (cptr.ldI32o(timer, $timer_element_needs_fixup)) {
+            if (cptr.ldI32o(timer, $timer_element_needs_fixup) >>> 0) {
                 (yield* sfo_fe(nhfp, timer, __s_timer));
             } else {
                 /* replace object pointer with id */
@@ -3659,7 +3672,7 @@ function* write_timer(nhfp, timer) {
                 cptr.stI32o(
                     timer,
                     $timer_element_arg,
-                    cptr.ldI32o((cptr.ldPtr(arg_save)), $obj_o_id)
+                    cptr.ldI32o((cptr.ldPtr(arg_save)), $obj_o_id) >>> 0
                 );
                 cptr.stI32o(timer, $timer_element_needs_fixup, 1);
                 (yield* sfo_fe(nhfp, timer, __s_timer));
@@ -3668,7 +3681,7 @@ function* write_timer(nhfp, timer) {
             }
             break;
         case NHC.TIMER_MONSTER:
-            if (cptr.ldI32o(timer, $timer_element_needs_fixup)) {
+            if (cptr.ldI32o(timer, $timer_element_needs_fixup) >>> 0) {
                 (yield* sfo_fe(nhfp, timer, __s_timer));
             } else {
                 /* replace monster pointer with id */
@@ -3681,7 +3694,7 @@ function* write_timer(nhfp, timer) {
                 cptr.stI32o(
                     timer,
                     $timer_element_arg,
-                    cptr.ldI32o((cptr.ldPtr(arg_save)), $monst_m_id)
+                    cptr.ldI32o((cptr.ldPtr(arg_save)), $monst_m_id) >>> 0
                 );
                 cptr.stI32o(timer, $timer_element_needs_fixup, 1);
                 (yield* sfo_fe(nhfp, timer, __s_timer));
@@ -3908,16 +3921,16 @@ export function timer_stats(hdrfmt, hdrbuf, count, size) {
 /** C ref: timeout.c:2751 — @param {CInt} ghostly */
 export function* relink_timers(ghostly) {
     let curr;
-    let nid = cptr.box(0);
+    let nid = cptr.box(0, "u32");
 
     for (curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = cptr.ldPtr(curr)) {
-        if (cptr.ldI32o(curr, $timer_element_needs_fixup)) {
+        if (cptr.ldI32o(curr, $timer_element_needs_fixup) >>> 0) {
             if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_OBJECT) {
                 if (ghostly) {
-                    if (!lookup_id_mapping(cptr.ldI32o(curr, $timer_element_arg), nid))
+                    if (!lookup_id_mapping(cptr.ldI32o(curr, $timer_element_arg) >>> 0, nid))
                         (yield* panic(__s_relink_timers_1));
                 } else
-                    nid.v = cptr.ldI32o(curr, $timer_element_arg);
+                    nid.v = cptr.ldI32o(curr, $timer_element_arg) >>> 0;
                 cptr.stPtro(curr, $timer_element_arg, find_oid(nid.v));
                 if (!cptr.ldPtro(curr, $timer_element_arg))
                     (yield* panic(__s_can_t_find_o_id_d, nid.v));

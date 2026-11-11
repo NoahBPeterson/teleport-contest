@@ -306,6 +306,7 @@ export function* show_topl(str) {
 /* used by update_topl(); also by tty_putstr() */
 /** C ref: topl.c:170 */
 export function* remember_topl() {
+    let __r1;
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     let idx = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxrow)));
     let len = Number(BigInt.asUintN(
@@ -316,11 +317,14 @@ export function* remember_topl() {
     if ((cptr.ldI32(cw) & NHM.WIN_LOCKHISTORY) || !cptr.ld1so(gt, $instance_globals_t_toplines))
         return;
 
-    if (len > cptr.ldI16o(cptr.ldPtro(cw, $WinDesc_datlen), idx, 2)) {
+    if (len > cptr.ldI16o(cptr.ldPtro(cw, $WinDesc_datlen), idx, 2) >>> 0) {
         if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), idx, 8))
             cptr.free(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), idx, 8));
-        len = (len + (8 - ((len & 7) >>> 0))) | 0;  /* pad up to next multiple of 8 */
-        cptr.stPtro(cptr.ldPtro(cw, $WinDesc_data), idx, (yield* alloc(len)), 8);
+        len = (len + ((8 - ((len & 7) >>> 0)) >>> 0)) >>> 0;  /* pad up to next multiple of 8 */
+        (
+            __r1 = cptr.byteView((yield* alloc(len))),
+            cptr.stPtro(cptr.ldPtro(cw, $WinDesc_data), idx, __r1, 8)
+        );
         cptr.stI16o(cptr.ldPtro(cw, $WinDesc_datlen), idx, i16(len), 2);
     }
     void cptr.strcpy(

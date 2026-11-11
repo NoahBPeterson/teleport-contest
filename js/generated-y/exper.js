@@ -72,9 +72,9 @@ export function newuexp(lev) {
     if (lev < 1)
         return 0n;
     if (lev < 10)
-        return (BigInt.asIntN(64, 10n * (1n << BigInt(lev))));
+        return (BigInt.asIntN(64, 10n * (BigInt.asIntN(64, 1n << BigInt(lev)))));
     if (lev < 20)
-        return (BigInt.asIntN(64, 10000n * (1n << BigInt(((lev - 10) | 0)))));
+        return (BigInt.asIntN(64, 10000n * (BigInt.asIntN(64, 1n << BigInt(((lev - 10) | 0))))));
     return (BigInt.asIntN(64, 10000000n * (BigInt(((lev - 19) | 0)))));
 }
 
@@ -227,8 +227,8 @@ export function experience(mtmp, nk) {
     ))
         tmp = 1;
 
-    if ((cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0 ||
-            (cptr.ldI32o(mtmp, $monst_mcloned) & 1) | 0) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mrevived), 4, 1, 0) | 0 ||
+            cptr.ldBits(cptr.add(mtmp, $monst_mcloned), 5, 1, 0) | 0) {
         /*
          *      Reduce experience awarded for repeated killings of
          *      "the same monster".  Kill count includes all of this

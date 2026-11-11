@@ -6209,13 +6209,7 @@ export const MAX_ROLEOPT = 4;
 const opt_set_in_config = new Uint8Array(217);
 
 /** C ref: options.c:112 — char *[4][7] */
-const roleoptvals = (function () {
-    const flat = new Uint8Array(4 * 7 * 8);
-    const a = [];
-    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 7 * 8, (r + 1) * 7 * 8));
-    a.buf = flat;
-    return a;
-})();
+const roleoptvals = cptr.alloc(4 * 56);
 
 /** C ref: options.c:114 — char *[5] */
 const OptS_type = cptr.alloc(5 * 8);
@@ -6360,64 +6354,46 @@ cptr.stI32o(paranoia, 672 + $paranoia_opts_synMinLen, 0);
 cptr.stPtro(paranoia, 672 + $paranoia_opts_explain, null);
 
 /** C ref: options.c:184 — char *[4][3] */
-const menutype = (function () {
-    const flat = new Uint8Array(4 * 3 * 8);
-    const a = [];
-    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8));
-    a.buf = flat;
-    return a;
-})();
-cptr.stPtro(cptr.decay(menutype[0]), 0, __s_traditional);
-cptr.stPtro(cptr.decay(menutype[0]), 8, __s_prompt_for_object_class_es_then);
-cptr.stPtro(cptr.decay(menutype[0]), 16, __s_ask_y_n_for_each_item_in_those_classes);
-cptr.stPtro(cptr.decay(menutype[1]), 0, __s_combination);
-cptr.stPtro(cptr.decay(menutype[1]), 8, __s_prompt_for_object_class_es_then);
-cptr.stPtro(cptr.decay(menutype[1]), 16, __s_use_menu_for_items_in_those_classes);
-cptr.stPtro(cptr.decay(menutype[2]), 0, __s_full);
-cptr.stPtro(cptr.decay(menutype[2]), 8, __s_use_menu_to_choose_class_es_then);
-cptr.stPtro(cptr.decay(menutype[2]), 16, __s_use_another_menu_for_items_in_those);
-cptr.stPtro(cptr.decay(menutype[3]), 0, __s_partial);
-cptr.stPtro(cptr.decay(menutype[3]), 8, __s_skip_class_filtering_always);
-cptr.stPtro(cptr.decay(menutype[3]), 16, __s_use_menu_of_all_available_items);
+const menutype = cptr.alloc(4 * 24);
+cptr.stPtr(menutype, __s_traditional);
+cptr.stPtro(menutype, 8, __s_prompt_for_object_class_es_then);
+cptr.stPtro(menutype, 16, __s_ask_y_n_for_each_item_in_those_classes);
+cptr.stPtro(menutype, 24, __s_combination);
+cptr.stPtro(menutype, 32, __s_prompt_for_object_class_es_then);
+cptr.stPtro(menutype, 40, __s_use_menu_for_items_in_those_classes);
+cptr.stPtro(menutype, 48, __s_full);
+cptr.stPtro(menutype, 56, __s_use_menu_to_choose_class_es_then);
+cptr.stPtro(menutype, 64, __s_use_another_menu_for_items_in_those);
+cptr.stPtro(menutype, 72, __s_partial);
+cptr.stPtro(menutype, 80, __s_skip_class_filtering_always);
+cptr.stPtro(menutype, 88, __s_use_menu_of_all_available_items);
 
 /** C ref: options.c:195 — char *[4][3] */
-const msgwind = (function () {
-    const flat = new Uint8Array(4 * 3 * 8);
-    const a = [];
-    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8));
-    a.buf = flat;
-    return a;
-})();
-cptr.stPtro(cptr.decay(msgwind[0]), 0, __s_single);
-cptr.stPtro(cptr.decay(msgwind[0]), 8, __s_show_one_old_message_at_a_time);
-cptr.stPtro(cptr.decay(msgwind[0]), 16, __s_most_recent_first);
-cptr.stPtro(cptr.decay(msgwind[1]), 0, __s_combination);
-cptr.stPtro(cptr.decay(msgwind[1]), 8, __s_for_consecutive_p_requests_use);
-cptr.stPtro(cptr.decay(msgwind[1]), 16, __s_single_for_first_two_then_full);
-cptr.stPtro(cptr.decay(msgwind[2]), 0, __s_full);
-cptr.stPtro(cptr.decay(msgwind[2]), 8, __s_show_all_available_messages);
-cptr.stPtro(cptr.decay(msgwind[2]), 16, __s_oldest_first_and_most_recent_last);
-cptr.stPtro(cptr.decay(msgwind[3]), 0, __s_reversed);
-cptr.stPtro(cptr.decay(msgwind[3]), 8, __s_show_all_available_messages);
-cptr.stPtro(cptr.decay(msgwind[3]), 16, __s_most_recent_first);
+const msgwind = cptr.alloc(4 * 24);
+cptr.stPtr(msgwind, __s_single);
+cptr.stPtro(msgwind, 8, __s_show_one_old_message_at_a_time);
+cptr.stPtro(msgwind, 16, __s_most_recent_first);
+cptr.stPtro(msgwind, 24, __s_combination);
+cptr.stPtro(msgwind, 32, __s_for_consecutive_p_requests_use);
+cptr.stPtro(msgwind, 40, __s_single_for_first_two_then_full);
+cptr.stPtro(msgwind, 48, __s_full);
+cptr.stPtro(msgwind, 56, __s_show_all_available_messages);
+cptr.stPtro(msgwind, 64, __s_oldest_first_and_most_recent_last);
+cptr.stPtro(msgwind, 72, __s_reversed);
+cptr.stPtro(msgwind, 80, __s_show_all_available_messages);
+cptr.stPtro(msgwind, 88, __s_most_recent_first);
 
 /* autounlock settings */
 /** C ref: options.c:207 — char *[4][2] */
-const unlocktypes = (function () {
-    const flat = new Uint8Array(4 * 2 * 8);
-    const a = [];
-    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8));
-    a.buf = flat;
-    return a;
-})();
-cptr.stPtro(cptr.decay(unlocktypes[0]), 0, __s_untrap);
-cptr.stPtro(cptr.decay(unlocktypes[0]), 8, __s_might_fail);
-cptr.stPtro(cptr.decay(unlocktypes[1]), 0, __s_apply_key);
-cptr.stPtro(cptr.decay(unlocktypes[1]), 8, __s_empty);
-cptr.stPtro(cptr.decay(unlocktypes[2]), 0, __s_kick);
-cptr.stPtro(cptr.decay(unlocktypes[2]), 8, __s_doors_only);
-cptr.stPtro(cptr.decay(unlocktypes[3]), 0, __s_force);
-cptr.stPtro(cptr.decay(unlocktypes[3]), 8, __s_chests_boxes_only);
+const unlocktypes = cptr.alloc(4 * 16);
+cptr.stPtr(unlocktypes, __s_untrap);
+cptr.stPtro(unlocktypes, 8, __s_might_fail);
+cptr.stPtro(unlocktypes, 16, __s_apply_key);
+cptr.stPtro(unlocktypes, 24, __s_empty);
+cptr.stPtro(unlocktypes, 32, __s_kick);
+cptr.stPtro(unlocktypes, 40, __s_doors_only);
+cptr.stPtro(unlocktypes, 48, __s_force);
+cptr.stPtro(unlocktypes, 56, __s_chests_boxes_only);
 
 /** C ref: options.c:213 — char *[6] */
 const burdentype = cptr.alloc(6 * 8);
@@ -6444,40 +6420,34 @@ cptr.stPtro(sortltype, 16, __s_full);
 /* second column is an alias for the first; third is brief explanation;
    entries 5 and 6 are 1|4 and 2|4 (tty only) */
 /** C ref: options.c:225 — char *[9][3] */
-const perminv_modes = (function () {
-    const flat = new Uint8Array(9 * 3 * 8);
-    const a = [];
-    for (let r = 0; r < 9; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8));
-    a.buf = flat;
-    return a;
-})();
-cptr.stPtro(cptr.decay(perminv_modes[0]), 0, __s_none);
-cptr.stPtro(cptr.decay(perminv_modes[0]), 8, __s_off);
-cptr.stPtro(cptr.decay(perminv_modes[0]), 16, __s_no_permanent_inventory_window);
-cptr.stPtro(cptr.decay(perminv_modes[1]), 0, __s_all);
-cptr.stPtro(cptr.decay(perminv_modes[1]), 8, __s_on);
-cptr.stPtro(cptr.decay(perminv_modes[1]), 16, __s_all_inventory_except_for_gold);
-cptr.stPtro(cptr.decay(perminv_modes[2]), 0, __s_full);
-cptr.stPtro(cptr.decay(perminv_modes[2]), 8, __s_gold);
-cptr.stPtro(cptr.decay(perminv_modes[2]), 16, __s_full_inventory_including_gold);
-cptr.stPtro(cptr.decay(perminv_modes[3]), 0, null);
-cptr.stPtro(cptr.decay(perminv_modes[3]), 8, null);
-cptr.stPtro(cptr.decay(perminv_modes[3]), 16, null);
-cptr.stPtro(cptr.decay(perminv_modes[4]), 0, null);
-cptr.stPtro(cptr.decay(perminv_modes[4]), 8, null);
-cptr.stPtro(cptr.decay(perminv_modes[4]), 16, null);
-cptr.stPtro(cptr.decay(perminv_modes[5]), 0, null);
-cptr.stPtro(cptr.decay(perminv_modes[5]), 8, null);
-cptr.stPtro(cptr.decay(perminv_modes[5]), 16, null);
-cptr.stPtro(cptr.decay(perminv_modes[6]), 0, null);
-cptr.stPtro(cptr.decay(perminv_modes[6]), 8, null);
-cptr.stPtro(cptr.decay(perminv_modes[6]), 16, null);
-cptr.stPtro(cptr.decay(perminv_modes[7]), 0, null);
-cptr.stPtro(cptr.decay(perminv_modes[7]), 8, null);
-cptr.stPtro(cptr.decay(perminv_modes[7]), 16, null);
-cptr.stPtro(cptr.decay(perminv_modes[8]), 0, __s_in_use);
-cptr.stPtro(cptr.decay(perminv_modes[8]), 8, __s_inuse_only);
-cptr.stPtro(cptr.decay(perminv_modes[8]), 16, __s_subset_items_currently_in_use);
+const perminv_modes = cptr.alloc(9 * 24);
+cptr.stPtr(perminv_modes, __s_none);
+cptr.stPtro(perminv_modes, 8, __s_off);
+cptr.stPtro(perminv_modes, 16, __s_no_permanent_inventory_window);
+cptr.stPtro(perminv_modes, 24, __s_all);
+cptr.stPtro(perminv_modes, 32, __s_on);
+cptr.stPtro(perminv_modes, 40, __s_all_inventory_except_for_gold);
+cptr.stPtro(perminv_modes, 48, __s_full);
+cptr.stPtro(perminv_modes, 56, __s_gold);
+cptr.stPtro(perminv_modes, 64, __s_full_inventory_including_gold);
+cptr.stPtro(perminv_modes, 72, null);
+cptr.stPtro(perminv_modes, 80, null);
+cptr.stPtro(perminv_modes, 88, null);
+cptr.stPtro(perminv_modes, 96, null);
+cptr.stPtro(perminv_modes, 104, null);
+cptr.stPtro(perminv_modes, 112, null);
+cptr.stPtro(perminv_modes, 120, null);
+cptr.stPtro(perminv_modes, 128, null);
+cptr.stPtro(perminv_modes, 136, null);
+cptr.stPtro(perminv_modes, 144, null);
+cptr.stPtro(perminv_modes, 152, null);
+cptr.stPtro(perminv_modes, 160, null);
+cptr.stPtro(perminv_modes, 168, null);
+cptr.stPtro(perminv_modes, 176, null);
+cptr.stPtro(perminv_modes, 184, null);
+cptr.stPtro(perminv_modes, 192, __s_in_use);
+cptr.stPtro(perminv_modes, 200, __s_inuse_only);
+cptr.stPtro(perminv_modes, 208, __s_subset_items_currently_in_use);
 
 /** C ref: options.c:242 — struct objsymopt { num, nam, descr } (memory model v0.5) */
 
@@ -6966,7 +6936,7 @@ function getoptstr(optidx, ophase) {
         /* find non-Null, in order optvals[][play_opt], [cmdline_opt],
            [environ_opt], [rc_file_opt], [syscf_opt], [builtin_opt] */
         for (phase = ((NHC.num_opt_phases - 1) | 0); phase >= 0; --phase)
-            if (cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), phase, 8)) {
+            if (cptr.ldPtro3(roleoptvals, roleoptindx, 56, phase, 8, 0)) {
                 ophase = phase;
                 break;
             }
@@ -6975,7 +6945,7 @@ function getoptstr(optidx, ophase) {
             roleoptindx < NHC.MAX_ROLEOPT &&
             ophase >= 0 &&
             ophase < NHC.num_opt_phases))
-        return cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8);
+        return cptr.ldPtro3(roleoptvals, roleoptindx, 56, ophase, 8, 0);
     panic(__s_bad_index_roleoptvals_d_d, roleoptindx, ophase);
     /*NOTREACHED*/
 }
@@ -6983,6 +6953,7 @@ function getoptstr(optidx, ophase) {
 /* to track some unparsed option settings in case #saveoptions needs them */
 /** C ref: options.c:758 — @param {CInt} optidx @param {CPtr<char>} optstr */
 function saveoptstr(optidx, optstr) {
+    let __r1;
     let phase = cptr.ldI32o(go, $instance_globals_o_opt_phase);
     let roleoptindx = opt2roleopt(optidx);
     let p = cptr.strchr(optstr, 58);
@@ -6994,9 +6965,9 @@ function saveoptstr(optidx, optstr) {
     if (p)
         optstr = cptr.add(p, 1);
 
-    if (cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), phase, 8))
-        cptr.free(cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), phase, 8));
-    cptr.stPtro(cptr.decay(roleoptvals[roleoptindx]), phase, dupstr(optstr), 8);
+    if (cptr.ldPtro3(roleoptvals, roleoptindx, 56, phase, 8, 0))
+        cptr.free(cptr.ldPtro3(roleoptvals, roleoptindx, 56, phase, 8, 0));
+    (__r1 = dupstr(optstr), cptr.stPtro3(roleoptvals, roleoptindx, 56, phase, 8, 0, __r1));
 }
 
 /* discard specific saved option string */
@@ -7004,9 +6975,9 @@ function saveoptstr(optidx, optstr) {
 function unsaveoptstr(optidx, ophase) {
     let roleoptindx = opt2roleopt(optidx);
 
-    if (cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8))
-        cptr.free(cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8)),
-                cptr.stPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, null, 8);
+    if (cptr.ldPtro3(roleoptvals, roleoptindx, 56, ophase, 8, 0))
+        cptr.free(cptr.ldPtro3(roleoptvals, roleoptindx, 56, ophase, 8, 0)),
+                cptr.stPtro3(roleoptvals, roleoptindx, 56, ophase, 8, 0, null);
 }
 
 /* discard all saved option strings */
@@ -7335,27 +7306,27 @@ function optfn_autounlock(optidx, req, negated, opts, op) {
             }
             if (str_start_is(__s_none, op, 1))
                 negated = 1, matched = 1;
-            for (i = 0; i < unlocktypes.length && !matched; ++i) {
-                if (str_start_is(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), op, 1) ||
+            for (i = 0; i < 4 && !matched; ++i) {
+                if (str_start_is(cptr.ldPtro3(unlocktypes, i, 16, 0, 8, 0), op, 1) ||
                         fuzzymatch(
                             op,
-                            cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8),
+                            cptr.ldPtro3(unlocktypes, i, 16, 0, 8, 0),
                             __s_sp_dash_us,
                             1
                         )) {
                     matched = 1;
                     switch (cptr.ld1s(op)) {
                         case 117:
-                            newflags |= NHM.AUTOUNLOCK_UNTRAP;
+                            newflags = (newflags | NHM.AUTOUNLOCK_UNTRAP) >>> 0;
                             break;
                         case 97:
-                            newflags |= NHM.AUTOUNLOCK_APPLY_KEY;
+                            newflags = (newflags | NHM.AUTOUNLOCK_APPLY_KEY) >>> 0;
                             break;
                         case 107:
-                            newflags |= NHM.AUTOUNLOCK_KICK;
+                            newflags = (newflags | NHM.AUTOUNLOCK_KICK) >>> 0;
                             break;
                         case 102:
-                            newflags |= NHM.AUTOUNLOCK_FORCE;
+                            newflags = (newflags | NHM.AUTOUNLOCK_FORCE) >>> 0;
                             break;
                         default:
                             matched = 0;
@@ -7384,43 +7355,23 @@ function optfn_autounlock(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (!cptr.ldI32o(flags, $flag_autounlock)) {
+        if (!(cptr.ldI32o(flags, $flag_autounlock) >>> 0)) {
             void cptr.strcpy(opts, __s_none);
         } else {
             let p = __s_empty;
 
             cptr.st1(opts, 0);
-            if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0)
-                void cptr.sprintf(
-                    eos(opts),
-                    __s_s_s,
-                    p,
-                    cptr.ldPtro(cptr.decay(unlocktypes[0]), 0, 8)
-                ),
+            if ((cptr.ldI32o(flags, $flag_autounlock) >>> 0 & NHM.AUTOUNLOCK_UNTRAP) >>> 0)
+                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro3(unlocktypes, 0, 16, 0, 8, 0)),
                         p = cptr.decay(__static_optfn_autounlock_plus);
-            if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_APPLY_KEY) >>> 0)
-                void cptr.sprintf(
-                    eos(opts),
-                    __s_s_s,
-                    p,
-                    cptr.ldPtro(cptr.decay(unlocktypes[1]), 0, 8)
-                ),
+            if ((cptr.ldI32o(flags, $flag_autounlock) >>> 0 & NHM.AUTOUNLOCK_APPLY_KEY) >>> 0)
+                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro3(unlocktypes, 1, 16, 0, 8, 0)),
                         p = cptr.decay(__static_optfn_autounlock_plus);
-            if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_KICK) >>> 0)
-                void cptr.sprintf(
-                    eos(opts),
-                    __s_s_s,
-                    p,
-                    cptr.ldPtro(cptr.decay(unlocktypes[2]), 0, 8)
-                ),
+            if ((cptr.ldI32o(flags, $flag_autounlock) >>> 0 & NHM.AUTOUNLOCK_KICK) >>> 0)
+                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro3(unlocktypes, 2, 16, 0, 8, 0)),
                         p = cptr.decay(__static_optfn_autounlock_plus);
-            if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_FORCE) >>> 0)
-                void cptr.sprintf(
-                    eos(opts),
-                    __s_s_s,
-                    p,
-                    cptr.ldPtro(cptr.decay(unlocktypes[3]), 0, 8)
-                );  /*no more p*/
+            if ((cptr.ldI32o(flags, $flag_autounlock) >>> 0 & NHM.AUTOUNLOCK_FORCE) >>> 0)
+                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro3(unlocktypes, 3, 16, 0, 8, 0));  /*no more p*/
         }
         return NHC.optn_ok;
     }
@@ -7688,6 +7639,7 @@ function optfn_crash_urlmax(optidx, req, negated, opts, op) {
  * @returns {CInt}
  */
 function optfn_DECgraphics(optidx, req, negated, opts, op) {
+    let __r2;
     let badflag = 0;
 
     if (req == NHC.do_init) {
@@ -7704,12 +7656,15 @@ function optfn_DECgraphics(optidx, req, negated, opts, op) {
             )) {
                 badflag = 1;
             } else {
-                cptr.stPtro2(
-                    gs,
-                    NHC.PRIMARYSET,
-                    $sizeof_symsetentry,
-                    $instance_globals_s_symset + $symsetentry_name,
-                    dupstr(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t))
+                (
+                    __r2 = dupstr(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)),
+                    cptr.stPtro2(
+                        gs,
+                        NHC.PRIMARYSET,
+                        $sizeof_symsetentry,
+                        $instance_globals_s_symset + $symsetentry_name,
+                        __r2
+                    )
                 );
                 if (!read_sym_file(NHC.PRIMARYSET)) {
                     badflag = 1;
@@ -7793,7 +7748,7 @@ function optfn_disclose(optidx, req, negated, opts, op) {
                 !strncmpi((op), (__s_none), -1)) {
             if (!cptr.eq(op, cptr.decay(empty_optstr)) && !strncmpi((op), (__s_none), -1))
                 negated = 1;
-            for (num = 0; num < NHM.NUM_DISCLOSURE_OPTIONS; num++)
+            for (num = 0; num < NHM.NUM_DISCLOSURE_OPTIONS; num = ((num + 1) >>> 0))
                 cptr.st1o2(flags, num, 1, $flag_end_disclose, schar((negated ? 45 : 121)));
             return NHC.optn_ok;
         }
@@ -8318,6 +8273,7 @@ function optfn_horsename(optidx, req, negated, opts, op) {
  * @returns {CInt}
  */
 function optfn_IBMgraphics(optidx, req, negated, opts, op) {
+    let __r3;
     let sym_name = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
     let badflag = 0;
     let i;
@@ -8339,12 +8295,15 @@ function optfn_IBMgraphics(optidx, req, negated, opts, op) {
                 } else {
                     if (i == NHC.ROGUESET)
                         sym_name = __s_rogueibm;
-                    cptr.stPtro2(
-                        gs,
-                        i,
-                        $sizeof_symsetentry,
-                        $instance_globals_s_symset + $symsetentry_name,
-                        dupstr(sym_name)
+                    (
+                        __r3 = dupstr(sym_name),
+                        cptr.stPtro2(
+                            gs,
+                            i,
+                            $sizeof_symsetentry,
+                            $instance_globals_s_symset + $symsetentry_name,
+                            __r3
+                        )
                     );
                     if (!read_sym_file(i)) {
                         badflag = 1;
@@ -8940,7 +8899,7 @@ function optfn_menustyle(optidx, req, negated, opts, op) {
         void cptr.sprintf(
             opts,
             __s_pct_s,
-            cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, $flag_menu_style)]), 0, 8)
+            cptr.ldPtro3(menutype, cptr.ld1so(flags, $flag_menu_style), 24, 0, 8, 0)
         );
         return NHC.optn_ok;
     }
@@ -8973,19 +8932,13 @@ function optfn_monsters(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-const __static_optfn_mouse_support_mousemodes = (function () {
-    const flat = new Uint8Array(3 * 2 * 8);
-    const a = [];
-    for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8));
-    a.buf = flat;
-    return a;
-})();
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[0]), 0, __s_0_off);
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[0]), 8, __s_empty);
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[1]), 0, __s_1_on);
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[1]), 8, __s_o_s_adjusted);
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 0, __s_2_on);
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 8, __s_o_s_unchanged); /** C ref: options.c:2435 — char *[3][2] (function-static) */
+const __static_optfn_mouse_support_mousemodes = cptr.alloc(3 * 16);
+cptr.stPtr(__static_optfn_mouse_support_mousemodes, __s_0_off);
+cptr.stPtro(__static_optfn_mouse_support_mousemodes, 8, __s_empty);
+cptr.stPtro(__static_optfn_mouse_support_mousemodes, 16, __s_1_on);
+cptr.stPtro(__static_optfn_mouse_support_mousemodes, 24, __s_o_s_adjusted);
+cptr.stPtro(__static_optfn_mouse_support_mousemodes, 32, __s_2_on);
+cptr.stPtro(__static_optfn_mouse_support_mousemodes, 40, __s_o_s_unchanged); /** C ref: options.c:2435 — char *[3][2] (function-static) */
 
 /**
  * C ref: options.c:2396
@@ -9037,8 +8990,8 @@ function optfn_mouse_support(optidx, req, negated, opts, op) {
             void cptr.sprintf(
                 opts,
                 __s_s_s,
-                cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 0, 8),
-                cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 1, 8)
+                cptr.ldPtro3(__static_optfn_mouse_support_mousemodes, ms, 16, 0, 8, 0),
+                cptr.ldPtro3(__static_optfn_mouse_support_mousemodes, ms, 16, 1, 8, 0)
             );
         return NHC.optn_ok;
     }
@@ -9139,7 +9092,7 @@ function optfn_msghistory(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_u, cptr.ldI32o(iflags, $instance_flags_msg_history));
+        void cptr.sprintf(opts, __s_pct_u, cptr.ldI32o(iflags, $instance_flags_msg_history) >>> 0);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -9546,15 +9499,15 @@ function optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                         cptr.stI32o(
                             flags,
                             $flag_paranoia_bits,
-                            cptr.ldI32o(flags, $flag_paranoia_bits) &
-                                ((~cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts)) >>> 0)
+                            (cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 &
+                                (~cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts)) >>> 0) >>> 0
                         );
                     } else {
                         cptr.stI32o(
                             flags,
                             $flag_paranoia_bits,
-                            cptr.ldI32o(flags, $flag_paranoia_bits) |
-                                (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0)
+                            (cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 |
+                                cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>> 0
                         );
                     }
                     break;
@@ -9583,7 +9536,7 @@ function optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
 
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
         for (i = 0; cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != 0; ++i) {
-            if (((cptr.ldI32o(flags, $flag_paranoia_bits) &
+            if (((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 &
                 cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>>
                 0) !=
                 0 &&
@@ -9642,10 +9595,10 @@ function optfn_perminv_mode(optidx, req, negated, opts, op) {
             let i;
             let ln = Number(BigInt.asUintN(32, cptr.strlen(op)));  /* guaranteed > 0 */
 
-            for (i = 0; i < perminv_modes.length; ++i) {
-                if (!(pi0 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)))
+            for (i = 0; i < 9; ++i) {
+                if (!(pi0 = cptr.ldPtro3(perminv_modes, i, 24, 0, 8, 0)))
                     continue;
-                pi1 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 1, 8);
+                pi1 = cptr.ldPtro3(perminv_modes, i, 24, 1, 8, 0);
                 if (!strncmpi(op, pi0, ln | 0) ||
                         !strncmpi(op, pi1, ln | 0) ||
                         cptr.ld1so(op, 0) == ((i + 48) | 0)) {
@@ -9656,7 +9609,7 @@ function optfn_perminv_mode(optidx, req, negated, opts, op) {
                             __s_s_unavailable_perm_invent_mode_s_using_s,
                             cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
                             pi0,
-                            cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)
+                            cptr.ldPtro3(perminv_modes, i, 24, 0, 8, 0)
                         );
                     }
                     cptr.st1o(iflags, $instance_flags_perminv_mode, uchar(i));
@@ -9664,7 +9617,7 @@ function optfn_perminv_mode(optidx, req, negated, opts, op) {
                     break;
                 }
             }
-            if (i == perminv_modes.length) {
+            if (i == 9) {
                 config_error_add(
                     __s_unknown_s_parameter_s,
                     cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
@@ -9692,10 +9645,13 @@ function optfn_perminv_mode(optidx, req, negated, opts, op) {
         void cptr.sprintf(
             opts,
             __s_pct_s,
-            cptr.ldPtro(
-                cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]),
+            cptr.ldPtro3(
+                perminv_modes,
+                cptr.ld1uo(iflags, $instance_flags_perminv_mode),
+                24,
                 2,
-                8
+                8,
+                0
             )
         );
         if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) != NHC.InvOptNone &&
@@ -9718,10 +9674,13 @@ function optfn_perminv_mode(optidx, req, negated, opts, op) {
         void cptr.sprintf(
             opts,
             __s_pct_s,
-            cptr.ldPtro(
-                cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]),
+            cptr.ldPtro3(
+                perminv_modes,
+                cptr.ld1uo(iflags, $instance_flags_perminv_mode),
+                24,
                 0,
-                8
+                8,
+                0
             )
         );
     }
@@ -10027,7 +9986,7 @@ function optfn_pickup_types(optidx, req, negated, opts, op) {
                 if (oc_sym != NHC.MAXOCLASSES &&
                         !cptr.strchr(cptr.add(flags, $flag_pickup_types), oc_sym)) {
                     cptr.st1o2(flags, num, 1, $flag_pickup_types, schar(oc_sym));
-                    cptr.st1o2(flags, ++num, 1, $flag_pickup_types, 0);
+                    cptr.st1o2(flags, num = ((num + 1) >>> 0), 1, $flag_pickup_types, 0);
                 } else
                     badopt = 1;
                 op = cptr.add(op, 1);
@@ -10260,6 +10219,7 @@ function optfn_race(optidx, req, negated, opts, op) {
  * @returns {CInt}
  */
 function optfn_roguesymset(optidx, req, negated, opts, op) {
+    let __r4;
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
@@ -10284,12 +10244,15 @@ function optfn_roguesymset(optidx, req, negated, opts, op) {
                             $instance_globals_s_symset + $symsetentry_name,
                             null
                         );
-            cptr.stPtro2(
-                gs,
-                NHC.ROGUESET,
-                $sizeof_symsetentry,
-                $instance_globals_s_symset + $symsetentry_name,
-                dupstr(op)
+            (
+                __r4 = dupstr(op),
+                cptr.stPtro2(
+                    gs,
+                    NHC.ROGUESET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name,
+                    __r4
+                )
             );
             if (!read_sym_file(NHC.ROGUESET)) {
                 clear_symsetentry(NHC.ROGUESET, 1);
@@ -10885,13 +10848,13 @@ function optfn_sortvanquished(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         void cptr.strcpy(
             opts,
-            cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 0, 8)
+            cptr.ldPtro3(vanqorders, cptr.ld1uo(flags, $flag_vanq_sortmode), 24, 0, 8, 0)
         );
         if (req == NHC.get_val)
             void cptr.sprintf(
                 eos(opts),
                 __s_colon_sp_pct_s,
-                cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8)
+                cptr.ldPtro3(vanqorders, cptr.ld1uo(flags, $flag_vanq_sortmode), 24, 1, 8, 0)
             );
         return NHC.optn_ok;
     }
@@ -10906,8 +10869,8 @@ function optfn_sortvanquished(optidx, req, negated, opts, op) {
             (cptr.ld1uo(flags, $flag_vanq_sortmode) == prev_sortmode)
                 ? __s_not_changed_still
                 : __s_changed_to,
-            cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 0, 8),
-            cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8)
+            cptr.ldPtro3(vanqorders, cptr.ld1uo(flags, $flag_vanq_sortmode), 24, 0, 8, 0),
+            cptr.ldPtro3(vanqorders, cptr.ld1uo(flags, $flag_vanq_sortmode), 24, 1, 8, 0)
         );
     }
     return NHC.optn_ok;
@@ -11065,6 +11028,7 @@ function optfn_suppress_alert(optidx, req, negated, opts, op) {
  * @returns {CInt}
  */
 function optfn_symset(optidx, req, negated, opts, op) {
+    let __r5;
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
@@ -11089,12 +11053,15 @@ function optfn_symset(optidx, req, negated, opts, op) {
                             $instance_globals_s_symset + $symsetentry_name,
                             null
                         );
-            cptr.stPtro2(
-                gs,
-                NHC.PRIMARYSET,
-                $sizeof_symsetentry,
-                $instance_globals_s_symset + $symsetentry_name,
-                dupstr(op)
+            (
+                __r5 = dupstr(op),
+                cptr.stPtro2(
+                    gs,
+                    NHC.PRIMARYSET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name,
+                    __r5
+                )
             );
             if (!read_sym_file(NHC.PRIMARYSET)) {
                 clear_symsetentry(NHC.PRIMARYSET, 1);
@@ -11503,7 +11470,7 @@ function optfn_vary_msgcount(optidx, req, negated, opts, op) {
  */
 function optfn_versinfo(optidx, req, negated, opts, op) {
     let optname = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
-    let vi = cptr.ldI32o(flags, $flag_versinfo);
+    let vi = cptr.ldI32o(flags, $flag_versinfo) >>> 0;
 
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -11543,8 +11510,10 @@ function optfn_versinfo(optidx, req, negated, opts, op) {
         pline(
             __s_s_s_u,
             optname,
-            (cptr.ldI32o(flags, $flag_versinfo) == vi) ? __s_not_changed_still : __s_changed_to,
-            cptr.ldI32o(flags, $flag_versinfo)
+            (cptr.ldI32o(flags, $flag_versinfo) >>> 0 == vi)
+                ? __s_not_changed_still
+                : __s_changed_to,
+            cptr.ldI32o(flags, $flag_versinfo) >>> 0
         );
     } else if (req == NHC.get_val) {
         let vbuf = new Uint8Array(128);
@@ -11555,7 +11524,7 @@ function optfn_versinfo(optidx, req, negated, opts, op) {
         void cptr.sprintf(
             opts,
             __s_u_s_s_s_s_s_99s,
-            cptr.ldI32o(flags, $flag_versinfo),
+            cptr.ldI32o(flags, $flag_versinfo) >>> 0,
             g ? __s_name : __s_empty,
             (b && g) ? __s_plus : __s_empty,
             b ? __s_branch : __s_empty,
@@ -11564,9 +11533,9 @@ function optfn_versinfo(optidx, req, negated, opts, op) {
             status_version(cptr.decay(vbuf), 128n, 0)
         );
     } else if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_u, cptr.ldI32o(flags, $flag_versinfo));
+        void cptr.sprintf(opts, __s_pct_u, cptr.ldI32o(flags, $flag_versinfo) >>> 0);
     }
-    if (cptr.ldI32o(flags, $flag_versinfo) != vi &&
+    if (cptr.ldI32o(flags, $flag_versinfo) >>> 0 != vi &&
             !cptr.ld1so(go, $instance_globals_o_opt_initial))
         cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
     return NHC.optn_ok;
@@ -12532,13 +12501,13 @@ function handler_menustyle() {
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-    for (i = 0; i < menutype.length; i++) {
+    for (i = 0; i < 4; i++) {
         void cptr.sprintf(
             cptr.decay(buf),
             __s_12_12s_c_60s,
-            cptr.ldPtro(cptr.decay(menutype[i]), 0, 8),
+            cptr.ldPtro3(menutype, i, 24, 0, 8, 0),
             sep,
-            cptr.ldPtro(cptr.decay(menutype[i]), 1, 8)
+            cptr.ldPtro3(menutype, i, 24, 1, 8, 0)
         );
         cptr.stI32(any, (i + 1) | 0);
         add_menu(
@@ -12561,7 +12530,7 @@ function handler_menustyle() {
             __s_empty,
             __s_empty,
             sep,
-            cptr.ldPtro(cptr.decay(menutype[i]), 2, 8)
+            cptr.ldPtro3(menutype, i, 24, 2, 8, 0)
         );
         add_menu_str(tmpwin, cptr.decay(buf));
     }
@@ -12581,7 +12550,7 @@ function handler_menustyle() {
         pline(
             __s_menustyle_s_s,
             chngd ? __s_changed_to : __s_is_still,
-            cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, $flag_menu_style)]), 0, 8)
+            cptr.ldPtro3(menutype, cptr.ld1so(flags, $flag_menu_style), 24, 0, 8, 0)
         );
     return NHC.optn_ok;
 }
@@ -12667,7 +12636,7 @@ function handler_autounlock(optidx) {
     let tmpwin;
     let any = cptr.alloc(8);
     let chngd;
-    let oldflags = cptr.ldI32o(flags, $flag_autounlock);
+    let oldflags = cptr.ldI32o(flags, $flag_autounlock) >>> 0;
     let optname = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
     let buf = new Uint8Array(256);
     let sep = schar((cptr.ld1so(iflags, $instance_flags_menu_tab_sep) ? 9 : 32));
@@ -12681,21 +12650,21 @@ function handler_autounlock(optidx) {
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-    for (i = 0; i < unlocktypes.length; ++i) {
+    for (i = 0; i < 4; ++i) {
         void cptr.sprintf(
             cptr.decay(buf),
             __s_10_10s_c_40s,
-            cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8),
+            cptr.ldPtro3(unlocktypes, i, 16, 0, 8, 0),
             sep,
-            cptr.ldPtro(cptr.decay(unlocktypes[i]), 1, 8)
+            cptr.ldPtro3(unlocktypes, i, 16, 1, 8, 0)
         );
-        presel = ((cptr.ldI32o(flags, $flag_autounlock) & (1 << i) >>> 0) >>> 0) | 0;
+        presel = ((cptr.ldI32o(flags, $flag_autounlock) >>> 0 & (1 << i) >>> 0) >>> 0) | 0;
         cptr.stI32(any, (i + 1) | 0);
         add_menu(
             tmpwin,
             nul_glyphinfo.v,
             any,
-            cptr.ld1s(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8)),
+            cptr.ld1s(cptr.ldPtro3(unlocktypes, i, 16, 0, 8, 0)),
             0,
             NHM.ATR_NONE,
             clr,
@@ -12710,7 +12679,8 @@ function handler_autounlock(optidx) {
         let newflags = 0;
 
         for (i = 0; i < n; ++i)
-            newflags |= (1 << (cptr.ldI32o(window_pick.v, i, $sizeof_menu_item) - 1)) >>> 0;
+            newflags = (newflags |
+                    (1 << (cptr.ldI32o(window_pick.v, i, $sizeof_menu_item) - 1)) >>> 0) >>> 0;
         cptr.stI32o(flags, $flag_autounlock, newflags);
         cptr.free(window_pick.v);
     } else if (n == 0) {
@@ -12720,9 +12690,9 @@ function handler_autounlock(optidx) {
         cptr.stI32o(flags, $flag_autounlock, 0);
     }
     destroy_nhwindow()(tmpwin);
-    chngd = schar((cptr.ldI32o(flags, $flag_autounlock) != oldflags));
+    chngd = schar((cptr.ldI32o(flags, $flag_autounlock) >>> 0 != oldflags));
     if ((chngd || cptr.ld1so(flags, $flag_verbose)) && give_opt_msg) {
-        optfn_autounlock(optidx, NHC.get_val, 0, cptr.decay(buf), (null));
+        optfn_autounlock(optidx, NHC.get_val, 0, cptr.decay(buf), cptr.byteView((null)));
         pline(__s_s_s_s, optname, chngd ? __s_changed_to : __s_is_still, cptr.decay(buf));
     }
     return res;
@@ -13001,17 +12971,17 @@ function handler_msg_window() {
         start_menu()(tmpwin, 0n);
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
 
-        for (i = 0; i < menutype.length; i++) {
+        for (i = 0; i < 4; i++) {
             if (i < 2 && is_curses)
                 continue;
             void cptr.sprintf(
                 cptr.decay(buf),
                 __s_12_12s_c_60s,
-                cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8),
+                cptr.ldPtro3(msgwind, i, 24, 0, 8, 0),
                 sep,
-                cptr.ldPtro(cptr.decay(msgwind[i]), 1, 8)
+                cptr.ldPtro3(msgwind, i, 24, 1, 8, 0)
             );
-            cptr.st1(any, c = cptr.ld1s(cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8)));
+            cptr.st1(any, c = cptr.ld1s(cptr.ldPtro3(msgwind, i, 24, 0, 8, 0)));
             add_menu(
                 tmpwin,
                 nul_glyphinfo.v,
@@ -13032,7 +13002,7 @@ function handler_msg_window() {
                 __s_empty,
                 __s_empty,
                 sep,
-                cptr.ldPtro(cptr.decay(msgwind[i]), 2, 8)
+                cptr.ldPtro3(msgwind, i, 24, 2, 8, 0)
             );
             add_menu_str(tmpwin, cptr.decay(buf));
         }
@@ -13194,7 +13164,7 @@ function handler_paranoid_confirmation() {
             NHM.ATR_NONE,
             clr,
             explain,
-            ((cptr.ldI32o(flags, $flag_paranoia_bits) &
+            ((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 &
                 cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>> 0)
                 ? NHM.MENU_ITEMFLAGS_SELECTED
                 : NHM.MENU_ITEMFLAGS_NONE
@@ -13213,8 +13183,8 @@ function handler_paranoid_confirmation() {
                 cptr.stI32o(
                     flags,
                     $flag_paranoia_bits,
-                    cptr.ldI32o(flags, $flag_paranoia_bits) |
-                        (cptr.ldI32o(paranoia_picks.v, i, $sizeof_menu_item) >>> 0)
+                    (cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 |
+                        cptr.ldI32o(paranoia_picks.v, i, $sizeof_menu_item) >>> 0) >>> 0
                 );
             cptr.free(paranoia_picks.v);
         }
@@ -13243,10 +13213,10 @@ function handler_perminv_mode() {
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-    for (i = 0; i < perminv_modes.length; ++i) {
-        if (!(pi0 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)))
+    for (i = 0; i < 9; ++i) {
+        if (!(pi0 = cptr.ldPtro3(perminv_modes, i, 24, 0, 8, 0)))
             continue;
-        pi1 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 1, 8);
+        pi1 = cptr.ldPtro3(perminv_modes, i, 24, 1, 8, 0);
         if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) {
             let numspaces = (widest - Number(BigInt.asIntN(32, cptr.strlen(pi0)))) | 0;
 
@@ -13264,7 +13234,7 @@ function handler_perminv_mode() {
             __s_s_s_s__2,
             pi0,
             cptr.decay(sepbuf),
-            cptr.ldPtro(cptr.decay(perminv_modes[i]), 2, 8)
+            cptr.ldPtro3(perminv_modes, i, 24, 2, 8, 0)
         );
         let$ = schar((((i & NHC.InvSparse) != 0) ? highc(cptr.ld1so(pi1, 0)) : cptr.ld1so(pi0, 0)));
         cptr.stI32(any, (i + 1) | 0);
@@ -13296,7 +13266,7 @@ function handler_perminv_mode() {
         pline(
             __s_perminv_mode_s_s_s,
             (new_pi != old_pi) ? __s_changed_to : __s_is_still,
-            cptr.ldPtro(cptr.decay(perminv_modes[new_pi]), 0, 8),
+            cptr.ldPtro3(perminv_modes, new_pi, 24, 0, 8, 0),
             cptr.decay(buf)
         );
         if (new_pi != NHC.InvOptNone && !old_perm_invent)
@@ -14014,7 +13984,7 @@ function handler_versinfo() {
             ? 1
             : 0));
     let n;
-    let vi = cptr.ldI32o(flags, $flag_versinfo) | 0;
+    let vi = (cptr.ldI32o(flags, $flag_versinfo) >>> 0) | 0;
 
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(tmpwin, 0n);
@@ -14557,7 +14527,7 @@ export function txt2key(txt) {
             txt = cptr.add(txt, 1);
         /* and accept ^?, which gets used despite not being a control char */
         if (cptr.ld1s(txt) == 63)
-            return uchar((makemeta ? 4294967295 : 127));  /* rubout/delete */
+            return uchar((makemeta ? -1 : 127));  /* rubout/delete */
         uc = uchar((31 & (uchar(cptr.ld1s(txt)))));
         return uchar((makemeta ? (((uc) - 128) | 0) : uc));
     }
@@ -14744,19 +14714,33 @@ export function initoptions_init() {
      */
     /* this detects the IBM-compatible console on most 386 boxes */
     if ((opts = nh_getenv(__s_term)) && !cptr.strncmp(opts, __s_at, 2n)) {
-        if (!(cptr.ldI32o2(
-            gs,
-            NHC.PRIMARYSET,
-            $sizeof_symsetentry,
-            $instance_globals_s_symset + $symsetentry_explicitly
-        ) & 1))
+        if (!cptr.ldBits(
+            cptr.add(
+                cptr.add(
+                    cptr.add(gs, $instance_globals_s_symset),
+                    NHC.PRIMARYSET,
+                    $sizeof_symsetentry
+                ),
+                $symsetentry_explicitly
+            ),
+            3,
+            1,
+            0
+        ))
             load_symset(__s_ibmgraphics__2, NHC.PRIMARYSET);
-        if (!(cptr.ldI32o2(
-            gs,
-            NHC.ROGUESET,
-            $sizeof_symsetentry,
-            $instance_globals_s_symset + $symsetentry_explicitly
-        ) & 1))
+        if (!cptr.ldBits(
+            cptr.add(
+                cptr.add(
+                    cptr.add(gs, $instance_globals_s_symset),
+                    NHC.ROGUESET,
+                    $sizeof_symsetentry
+                ),
+                $symsetentry_explicitly
+            ),
+            3,
+            1,
+            0
+        ))
             load_symset(__s_rogueibm, NHC.ROGUESET);
         switch_symbols(1);
         cptr.st1o(iflags, $instance_flags_wc_color, 1);
@@ -14771,12 +14755,19 @@ export function initoptions_init() {
                 cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE),
                 15
             )) {
-        if (!(cptr.ldI32o2(
-            gs,
-            NHC.PRIMARYSET,
-            $sizeof_symsetentry,
-            $instance_globals_s_symset + $symsetentry_explicitly
-        ) & 1))
+        if (!cptr.ldBits(
+            cptr.add(
+                cptr.add(
+                    cptr.add(gs, $instance_globals_s_symset),
+                    NHC.PRIMARYSET,
+                    $sizeof_symsetentry
+                ),
+                $symsetentry_explicitly
+            ),
+            3,
+            1,
+            0
+        ))
             load_symset(__s_decgraphics__2, NHC.PRIMARYSET);
         switch_symbols(1);
     }
@@ -15384,9 +15375,9 @@ export function hide_unhide_msgtypes(hide, hide_mask) {
     ) {
         mt = cptr.ldI16(tmp);
         if (!hide)
-            mt = -mt;  /* unhide: negate negative, yielding positive */
+            mt = -mt | 0;  /* unhide: negate negative, yielding positive */
         if (mt > 0 && ((1 << mt) & hide_mask))
-            cptr.stI16(tmp, i16((-cptr.ldI16(tmp))));
+            cptr.stI16(tmp, i16((-cptr.ldI16(tmp) | 0)));
     }
 }
 
@@ -16585,21 +16576,15 @@ export function doset_simple() {
     return NHM.ECMD_OK;
 }
 
-const __static_term_for_boolean_booleanterms = (function () {
-    const flat = new Uint8Array(2 * 4 * 8);
-    const a = [];
-    for (let r = 0; r < 2; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8));
-    a.buf = flat;
-    return a;
-})();
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 0, __s_false);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 8, __s_off);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 16, __s_disabled);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 24, __s_excluded_from_build);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 0, __s_true);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 8, __s_on);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 16, __s_enabled);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 24, __s_included); /** C ref: options.c:8742 — char *[2][4] (function-static) */
+const __static_term_for_boolean_booleanterms = cptr.alloc(2 * 32);
+cptr.stPtr(__static_term_for_boolean_booleanterms, __s_false);
+cptr.stPtro(__static_term_for_boolean_booleanterms, 8, __s_off);
+cptr.stPtro(__static_term_for_boolean_booleanterms, 16, __s_disabled);
+cptr.stPtro(__static_term_for_boolean_booleanterms, 24, __s_excluded_from_build);
+cptr.stPtro(__static_term_for_boolean_booleanterms, 32, __s_true);
+cptr.stPtro(__static_term_for_boolean_booleanterms, 40, __s_on);
+cptr.stPtro(__static_term_for_boolean_booleanterms, 48, __s_enabled);
+cptr.stPtro(__static_term_for_boolean_booleanterms, 56, __s_included); /** C ref: options.c:8742 — char *[2][4] (function-static) */
 
 /** C ref: options.c:8738 — @param {CInt} idx @param {CPtr<boolean>} b @returns {CPtr<char>} */
 function term_for_boolean(idx, b) {
@@ -16607,10 +16592,10 @@ function term_for_boolean(idx, b) {
     let f_t = (cptr.ld1s(b)) ? 1 : 0;
     let boolean_term;
 
-    boolean_term = cptr.ldPtro(cptr.decay(__static_term_for_boolean_booleanterms[f_t]), 0, 8);
+    boolean_term = cptr.ldPtro3(__static_term_for_boolean_booleanterms, f_t, 32, 0, 8, 0);
     i = cptr.ldI32o2(allopt, idx, $sizeof_allopt_t, $allopt_t_termpref);
     if (i > NHC.Term_False && i < NHC.num_terms && i < Number(BigInt.asIntN(32, (32n / 8n))))
-        boolean_term = cptr.ldPtro(cptr.decay(__static_term_for_boolean_booleanterms[f_t]), i, 8);
+        boolean_term = cptr.ldPtro3(__static_term_for_boolean_booleanterms, f_t, 32, i, 8, 0);
     return boolean_term;
 }
 
@@ -17351,7 +17336,7 @@ export function add_autopickup_exception(mapping) {
 
     let ape;
     let text = new Uint8Array(256);
-    let end = cptr.box(0);
+    let end = cptr.box(0, "i8");
     let n;
     let grab = 0;
 
@@ -17837,7 +17822,7 @@ export function next_opt(datawin, str) {
     let s;
 
     if (!__static_next_opt_buf)
-        cptr.st1((__static_next_opt_buf = alloc(NHM.BUFSZ)), 0);
+        cptr.st1((__static_next_opt_buf = cptr.byteView(alloc(NHM.BUFSZ))), 0);
 
     if (!cptr.ld1s(str)) {
         s = eos(__static_next_opt_buf);
@@ -18230,6 +18215,7 @@ export let options_set_window_colors_flag = 0;
 
 /** C ref: options.c:10023 — @param {CPtr<char>} op @returns {CInt} */
 function wc_set_window_colors(op) {
+    let __r6, __r7;
     /* syntax:
      *  menu white/black message green/yellow status white/blue text
      * white/black
@@ -18298,18 +18284,18 @@ function wc_set_window_colors(op) {
                     if (cptr.ldPtr(cptr.ldPtro(fgp, j, 8)))
                         cptr.free(cptr.ldPtr(cptr.ldPtro(fgp, j, 8)));
                     clr = check_enhanced_colors(tfg);
-                    cptr.stPtr(
-                        cptr.ldPtro(fgp, j, 8),
-                        dupstr((clr >= 0) ? wc_color_name(clr) : tfg)
+                    (
+                        __r6 = dupstr((clr >= 0) ? wc_color_name(clr) : tfg),
+                        cptr.stPtr(cptr.ldPtro(fgp, j, 8), __r6)
                     );
                 }
                 if (!strstri(tbg, __s_sp)) {
                     if (cptr.ldPtr(cptr.ldPtro(bgp, j, 8)))
                         cptr.free(cptr.ldPtr(cptr.ldPtro(bgp, j, 8)));
                     clr = check_enhanced_colors(tbg);
-                    cptr.stPtr(
-                        cptr.ldPtro(bgp, j, 8),
-                        dupstr((clr >= 0) ? wc_color_name(clr) : tbg)
+                    (
+                        __r7 = dupstr((clr >= 0) ? wc_color_name(clr) : tbg),
+                        cptr.stPtr(cptr.ldPtro(bgp, j, 8), __r7)
                     );
                 }
                 if (cptr.ldI32o(wcolors_opt, j, 4) != 0) {

@@ -616,7 +616,12 @@ export function wearslot(obj) {
             break;
         case NHC.WEAPON_CLASS:
             res = 1280n;
-            if ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_merge) & 1))
+            if (cptr.ldBits(
+                cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_merge),
+                1,
+                1,
+                0
+            ))
                 res |= 512n;
             break;
         case NHC.TOOL_CLASS:
@@ -718,11 +723,17 @@ export function* check_wornmask_slots() {
 
 /** C ref: worn.c:474 — @param {CPtr<struct monst>} mon @param {CInt} cursed_potion */
 export function* mon_set_minvis(mon, cursed_potion) {
-    cptr.stI32o(mon, $monst_perminvis, (!cursed_potion ? 1 : 0) >>> 0);
-    if (!(cptr.ldI32o(mon, $monst_invis_blkd) & 1)) {
-        cptr.stI32o(mon, $monst_minvis, (cptr.ldI32o(mon, $monst_perminvis) & 1));
+    cptr.stBits(cptr.add(mon, $monst_perminvis), 3, 1, 0, (!cursed_potion ? 1 : 0) >>> 0);
+    if (!cptr.ldBits(cptr.add(mon, $monst_invis_blkd), 2, 1, 0)) {
+        cptr.stBits(
+            cptr.add(mon, $monst_minvis),
+            1,
+            1,
+            0,
+            cptr.ldBits(cptr.add(mon, $monst_perminvis), 3, 1, 0)
+        );
         (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));  /* make it disappear */
-        if ((cptr.ldI32o(mon, $monst_wormno) & 31))
+        if (cptr.ldBits(cptr.add(mon, $monst_wormno), 1, 5, 0))
             (yield* see_wsegs(mon));  /* and any tail too */
     }
 }
@@ -737,40 +748,40 @@ export function* mon_adjust_speed(mon, adjust, obj) {
     let otmp;
     let give_msg = schar((!cptr.ld1so(gi, $instance_globals_i_in_mklev)));
     let petrify = 0;
-    let oldspeed = (cptr.ldI32o(mon, $monst_mspeed) & 3);
+    let oldspeed = cptr.ldBits(cptr.add(mon, $monst_mspeed), 0, 2, 0);
 
     switch (adjust) {
         case 2:
-            cptr.stI32o(mon, $monst_permspeed, NHM.MFAST);
+            cptr.stBits(cptr.add(mon, $monst_permspeed), 2, 2, 0, NHM.MFAST);
             give_msg = 0;  /* special-case monster creation */
             break;
         case 1:
-            if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MSLOW)
-                cptr.stI32o(mon, $monst_permspeed, 0);
+            if ((cptr.ldBits(cptr.add(mon, $monst_permspeed), 2, 2, 0) | 0) == NHM.MSLOW)
+                cptr.stBits(cptr.add(mon, $monst_permspeed), 2, 2, 0, 0);
             else
-                cptr.stI32o(mon, $monst_permspeed, NHM.MFAST);
+                cptr.stBits(cptr.add(mon, $monst_permspeed), 2, 2, 0, NHM.MFAST);
             break;
         case 0:
             break;
         case -1:
-            if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MFAST)
-                cptr.stI32o(mon, $monst_permspeed, 0);
+            if ((cptr.ldBits(cptr.add(mon, $monst_permspeed), 2, 2, 0) | 0) == NHM.MFAST)
+                cptr.stBits(cptr.add(mon, $monst_permspeed), 2, 2, 0, 0);
             else
-                cptr.stI32o(mon, $monst_permspeed, NHM.MSLOW);
+                cptr.stBits(cptr.add(mon, $monst_permspeed), 2, 2, 0, NHM.MSLOW);
             break;
         case -2:
-            cptr.stI32o(mon, $monst_permspeed, NHM.MSLOW);
+            cptr.stBits(cptr.add(mon, $monst_permspeed), 2, 2, 0, NHM.MSLOW);
             give_msg = 0;  /* (not currently used) */
             break;
         case -3:
             /* take away intrinsic speed but don't reduce normal speed */
-            if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MFAST)
-                cptr.stI32o(mon, $monst_permspeed, 0);
+            if ((cptr.ldBits(cptr.add(mon, $monst_permspeed), 2, 2, 0) | 0) == NHM.MFAST)
+                cptr.stBits(cptr.add(mon, $monst_permspeed), 2, 2, 0, 0);
             petrify = 1;
             break;
         case -4:
-            if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MFAST)
-                cptr.stI32o(mon, $monst_permspeed, 0);
+            if ((cptr.ldBits(cptr.add(mon, $monst_permspeed), 2, 2, 0) | 0) == NHM.MFAST)
+                cptr.stBits(cptr.add(mon, $monst_permspeed), 2, 2, 0, 0);
             give_msg = 0;
             break;
     }
@@ -786,19 +797,25 @@ export function* mon_adjust_speed(mon, adjust, obj) {
                     NHC.FAST)
             break;
     if (otmp)
-        cptr.stI32o(mon, $monst_mspeed, NHM.MFAST);
+        cptr.stBits(cptr.add(mon, $monst_mspeed), 0, 2, 0, NHM.MFAST);
     else
-        cptr.stI32o(mon, $monst_mspeed, (cptr.ldI32o(mon, $monst_permspeed) & 3));
+        cptr.stBits(
+            cptr.add(mon, $monst_mspeed),
+            0,
+            2,
+            0,
+            cptr.ldBits(cptr.add(mon, $monst_permspeed), 2, 2, 0)
+        );
 
     /* no message if monster is immobile (temp or perm) or unseen */
     if (give_msg &&
-            ((cptr.ldI32o(mon, $monst_mspeed) & 3) != oldspeed || petrify) &&
+            (cptr.ldBits(cptr.add(mon, $monst_mspeed), 0, 2, 0) != oldspeed || petrify) &&
             cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove) &&
-            !((cptr.ldI32o(mon, $monst_mfrozen) & 127) | 0 ||
-                (cptr.ldI32o(mon, $monst_msleeping) & 1) | 0) &&
+            !(cptr.ldBits(cptr.add(mon, $monst_mfrozen), 0, 7, 0) | 0 ||
+                cptr.ldBits(cptr.add(mon, $monst_msleeping), 7, 1, 0) | 0) &&
             canseemon(mon)) {
         /* fast to slow (skipping intermediate state) or vice versa */
-        let howmuch = (((cptr.ldI32o(mon, $monst_mspeed) & 3) + oldspeed) >>> 0 == 3)
+        let howmuch = ((cptr.ldBits(cptr.add(mon, $monst_mspeed), 0, 2, 0) + oldspeed) >>> 0 == 3)
                 ? __s_much
                 : __s_empty;
 
@@ -807,7 +824,8 @@ export function* mon_adjust_speed(mon, adjust, obj) {
                even if fast movement rate retained via worn speed boots */
             if (cptr.ld1so(flags, $flag_verbose))
                 (yield* pline_mon(mon, __s_s_is_slowing_down, (yield* Monnam(mon))));
-        } else if (adjust > 0 || ((cptr.ldI32o(mon, $monst_mspeed) & 3) | 0) == NHM.MFAST)
+        } else if (adjust > 0 ||
+                (cptr.ldBits(cptr.add(mon, $monst_mspeed), 0, 2, 0) | 0) == NHM.MFAST)
             (yield* pline_mon(mon, __s_s_is_suddenly_moving_sfaster, (yield* Monnam(mon)), howmuch));
         else
             (yield* pline_mon(mon, __s_s_seems_to_be_moving_sslower, (yield* Monnam(mon)), howmuch));
@@ -863,10 +881,12 @@ export function* update_mon_extrinsics(mon, obj, on, silently) {
             if (on) {
                 switch (which) {
                     case NHC.INVIS:
-                        cptr.stI32o(
-                            mon,
-                            $monst_minvis,
-                            (!(cptr.ldI32o(mon, $monst_invis_blkd) & 1)) >>> 0
+                        cptr.stBits(
+                            cptr.add(mon, $monst_minvis),
+                            1,
+                            1,
+                            0,
+                            (!cptr.ldBits(cptr.add(mon, $monst_invis_blkd), 2, 1, 0)) >>> 0
                         );
                         break;
                     case NHC.FAST:
@@ -908,7 +928,13 @@ export function* update_mon_extrinsics(mon, obj, on, silently) {
             } else {
                 switch (which) {
                     case NHC.INVIS:
-                        cptr.stI32o(mon, $monst_minvis, (cptr.ldI32o(mon, $monst_perminvis) & 1));
+                        cptr.stBits(
+                            cptr.add(mon, $monst_minvis),
+                            1,
+                            1,
+                            0,
+                            cptr.ldBits(cptr.add(mon, $monst_perminvis), 3, 1, 0)
+                        );
                         break;
                     case NHC.FAST:
                         {
@@ -1004,11 +1030,13 @@ export function* update_mon_extrinsics(mon, obj, on, silently) {
                         ? NHC.CLAIRVOYANT
                         : ((is_art(obj, NHC.ART_EYES_OF_THE_OVERWORLD) && 1) ? NHC.BLINDED : 0)))) {
                 case NHC.INVIS:
-                    cptr.stI32o(mon, $monst_invis_blkd, (on ? 1 : 0) >>> 0);
-                    cptr.stI32o(
-                        mon,
-                        $monst_minvis,
-                        (on ? 0 : (cptr.ldI32o(mon, $monst_perminvis) & 1) | 0) >>> 0
+                    cptr.stBits(cptr.add(mon, $monst_invis_blkd), 2, 1, 0, (on ? 1 : 0) >>> 0);
+                    cptr.stBits(
+                        cptr.add(mon, $monst_minvis),
+                        1,
+                        1,
+                        0,
+                        (on ? 0 : cptr.ldBits(cptr.add(mon, $monst_perminvis), 3, 1, 0) | 0) >>> 0
                     );
                     break;
                 default:
@@ -1107,13 +1135,19 @@ export function* m_dowear(mon, creation) {
     if (!(cptr.ldPtro((mon), $monst_mw)) ||
             !((cptr.ld1so((cptr.ldPtro((mon), $monst_mw)), $obj_oclass) == NHC.WEAPON_CLASS ||
                 cptr.ld1so((cptr.ldPtro((mon), $monst_mw)), $obj_oclass) == NHC.TOOL_CLASS) &&
-                (cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o((cptr.ldPtro((mon), $monst_mw)), $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_big
-                ) &
-                    1) | 0))
+                cptr.ldBits(
+                    cptr.add(
+                        cptr.add(
+                            objects,
+                            cptr.ldI16o((cptr.ldPtro((mon), $monst_mw)), $obj_otyp),
+                            $sizeof_objclass
+                        ),
+                        $objclass_oc_big
+                    ),
+                    0,
+                    1,
+                    0
+                ) | 0))
         (yield* m_dowear_type(mon, 8n, creation, 0));
     (yield* m_dowear_type(mon, 16n, creation, 0));
     if (!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 524288n) != 0n) &&
@@ -1148,14 +1182,14 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
     let nambuf = new Uint8Array(256);
     __lbl_outer_break: {
 
-        if ((cptr.ldI32o(mon, $monst_mfrozen) & 127))
+        if (cptr.ldBits(cptr.add(mon, $monst_mfrozen), 0, 7, 0))
             return;  /* probably putting previous item on */
 
         /* Get a copy of monster's name before altering its visibility */
         void cptr.strcpy(cptr.decay(nambuf), See_invisible() ? (yield* Monnam(mon)) : (yield* mon_nam(mon)));
 
         old = (yield* which_armor(mon, flag));
-        if (old && (cptr.ldI32o(old, $obj_cursed) & 1) | 0)
+        if (old && cptr.ldBits(cptr.add(old, $obj_cursed), 0, 1, 0) | 0)
             return;
         if (old && flag == 65536n && cptr.ldI16o(old, $obj_otyp) != NHC.AMULET_OF_GUARDING)
             return;  /* no amulet better than life-saving or reflection */
@@ -1192,7 +1226,7 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
                         continue;
                     /* avoid mummy wrapping if it will allow hero to see mon (unless
                        this is a new mummy; an invisible one is feasible via ^G) */
-                    if ((cptr.ldI32o(mon, $monst_minvis) & 1) | 0 &&
+                    if (cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) | 0 &&
                             ((cptr.ldI16o(obj, $obj_otyp) == NHC.MUMMY_WRAPPING && 1)
                                 ? NHC.INVIS
                                 : ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORNUTHAUM &&
@@ -1215,8 +1249,8 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
                        priests and minions could change alignment but wouldn't
                        want to, so they reject helms of opposite alignment */
                     if (cptr.ldI16o(obj, $obj_otyp) == NHC.HELM_OF_OPPOSITE_ALIGNMENT &&
-                            ((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 ||
-                                (cptr.ldI32o(mon, $monst_isminion) & 1) | 0))
+                            (cptr.ldBits(cptr.add(mon, $monst_ispriest), 7, 1, 0) | 0 ||
+                                cptr.ldBits(cptr.add(mon, $monst_isminion), 5, 1, 0) | 0))
                         continue;
                     /* (flimsy exception matches polyself handling) */
                     if ((num_horns(cptr.ldPtro(mon, $monst_data)) > 0) && !is_flimsy(obj))
@@ -1262,7 +1296,7 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
     /* same auto-cursing behavior as for hero */
     autocurse = schar(((cptr.ldI16o(best, $obj_otyp) == NHC.HELM_OF_OPPOSITE_ALIGNMENT ||
         cptr.ldI16o(best, $obj_otyp) == NHC.DUNCE_CAP) &&
-        !(cptr.ldI32o(best, $obj_cursed) & 1)
+        !cptr.ldBits(cptr.add(best, $obj_cursed), 0, 1, 0)
             ? 1
             : 0));
     /* if wearing a cloak, account for the time spent removing
@@ -1336,16 +1370,16 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
                     $sizeof_objclass,
                     $objclass_oc_delay
                 )) | 0;
-        cptr.stI32o(mon, $monst_mfrozen, m_delay >>> 0);
-        if ((cptr.ldI32o(mon, $monst_mfrozen) & 127))
-            cptr.stI32o(mon, $monst_mcanmove, 0);
+        cptr.stBits(cptr.add(mon, $monst_mfrozen), 0, 7, 0, m_delay >>> 0);
+        if (cptr.ldBits(cptr.add(mon, $monst_mfrozen), 0, 7, 0))
+            cptr.stBits(cptr.add(mon, $monst_mcanmove), 7, 1, 0, 0);
     }
     if (old) {
         (yield* update_mon_extrinsics(mon, old, 0, creation));
 
         /* owornmask was cleared above but artifact_light() expects it */
         cptr.stI64o(old, $obj_owornmask, oldmask);
-        if ((cptr.ldI32o(old, $obj_lamplit) & 1) | 0 && artifact_light(old))
+        if (cptr.ldBits(cptr.add(old, $obj_lamplit), 7, 1, 0) | 0 && artifact_light(old))
             (yield* end_burn(old, 0));
         cptr.stI64o(old, $obj_owornmask, 0n);
     }
@@ -1353,11 +1387,11 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
     cptr.stI64o(best, $obj_owornmask, cptr.ldI64o(best, $obj_owornmask) | flag);
     if (autocurse)
         (yield* curse(best));
-    if (artifact_light(best) && !(cptr.ldI32o(best, $obj_lamplit) & 1)) {
+    if (artifact_light(best) && !cptr.ldBits(cptr.add(best, $obj_lamplit), 7, 1, 0)) {
         (yield* begin_burn(best, 0));
         (yield* vision_recalc(1));
         if (!creation &&
-                (cptr.ldI32o(best, $obj_lamplit) & 1) | 0 &&
+                cptr.ldBits(cptr.add(best, $obj_lamplit), 7, 1, 0) | 0 &&
                 ((cptr.ld1uo(
                     cptr.ldPtro(
                         cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -1391,7 +1425,7 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
     (yield* update_mon_extrinsics(mon, best, 1, creation));
     /* if couldn't see it but now can, or vice versa */
     if (!creation && (sawmon ^ canseemon(mon))) {
-        if ((cptr.ldI32o(mon, $monst_minvis) & 1) | 0 && !See_invisible()) {
+        if (cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) | 0 && !See_invisible()) {
             (yield* pline(__s_suddenly_you_cannot_see_s, cptr.decay(nambuf)));
             (yield* discover_object((cptr.ldI16o(best, $obj_otyp)), 1, 1, 1));
             /* } else if (!mon->minvis) {
@@ -1459,7 +1493,7 @@ function clear_bypass(objchn) {
     let o;
 
     for (o = objchn; o; o = cptr.ldPtr(o)) {
-        cptr.stI32o(o, $obj_bypass, 0);
+        cptr.stBits(cptr.add(o, $obj_bypass), 3, 1, 0, 0);
         if ((cptr.ldPtro((o), $obj_cobj) !== null))
             clear_bypass(cptr.ldPtro(o, $obj_cobj));
     }
@@ -1521,16 +1555,16 @@ export function clear_bypasses() {
     /* ball and chain can be "floating", not on any object chain (when
        hero is swallowed by an engulfing monster, for instance) */
     if (uball.v)
-        cptr.stI32o(uball.v, $obj_bypass, 0);
+        cptr.stBits(cptr.add(uball.v, $obj_bypass), 3, 1, 0, 0);
     if (uchain.v)
-        cptr.stI32o(uchain.v, $obj_bypass, 0);
+        cptr.stBits(cptr.add(uchain.v, $obj_bypass), 3, 1, 0, 0);
 
     cptr.st1o(svc, $context_info_bypasses, 0);
 }
 
 /** C ref: worn.c:1119 — @param {CPtr<struct obj>} obj */
 export function bypass_obj(obj) {
-    cptr.stI32o(obj, $obj_bypass, 1);
+    cptr.stBits(cptr.add(obj, $obj_bypass), 3, 1, 0, 1);
     cptr.st1o(svc, $context_info_bypasses, 1);
 }
 
@@ -1540,7 +1574,7 @@ export function bypass_objlist(objchain, on) {
     if (on && objchain)
         cptr.st1o(svc, $context_info_bypasses, 1);
     while (objchain) {
-        cptr.stI32o(objchain, $obj_bypass, (on ? 1 : 0) >>> 0);
+        cptr.stBits(cptr.add(objchain, $obj_bypass), 3, 1, 0, (on ? 1 : 0) >>> 0);
         objchain = cptr.ldPtr(objchain);
     }
 }
@@ -1550,7 +1584,7 @@ export function bypass_objlist(objchain, on) {
 /** C ref: worn.c:1142 — @param {CPtr<struct obj>} objchain @returns {CPtr<struct obj>} */
 export function nxt_unbypassed_obj(objchain) {
     while (objchain) {
-        if (!(cptr.ldI32o(objchain, $obj_bypass) & 1)) {
+        if (!cptr.ldBits(cptr.add(objchain, $obj_bypass), 3, 1, 0)) {
             bypass_obj(objchain);
             break;
         }
@@ -1577,7 +1611,7 @@ export function nxt_unbypassed_loot(lootarray, listhead) {
         for (o = listhead; o; o = cptr.ldPtr(o))
             if (cptr.eq(o, obj))
                 break;
-        if (o && !(cptr.ldI32o(obj, $obj_bypass) & 1)) {
+        if (o && !cptr.ldBits(cptr.add(obj, $obj_bypass), 3, 1, 0)) {
             bypass_obj(obj);
             break;
         }
@@ -1826,7 +1860,7 @@ function extra_pref(mon, obj) {
      */
     if (obj) {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPEED_BOOTS &&
-                ((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) != NHM.MFAST)
+                (cptr.ldBits(cptr.add(mon, $monst_permspeed), 2, 2, 0) | 0) != NHM.MFAST)
             return 20;
     }
     return 0;
@@ -1884,7 +1918,9 @@ export function* extract_from_minvent(mon, obj, do_extrinsics, silently) {
     }
     /* handle gold dragon scales/scale-mail (lit when worn) before clearing
        obj->owornmask because artifact_light() expects that to be W_ARM */
-    if ((unwornmask & 1n) != 0n && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && artifact_light(obj))
+    if ((unwornmask & 1n) != 0n &&
+            cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0 &&
+            artifact_light(obj))
         (yield* end_burn(obj, 0));
 
     (yield* obj_extract_self(obj));

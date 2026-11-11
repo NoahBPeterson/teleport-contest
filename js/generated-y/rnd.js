@@ -267,9 +267,9 @@ export function init_isaac64(seed, fn) {
     if (rngindx < 0)
         panic(__s_bad_rng_function_passed_to_init_isaac64);
 
-    for (i = 0; BigInt(i >>> 0) < 8n; i++) {
+    for (i = 0; BigInt(i >>> 0) < 8n; i = ((i + 1) >>> 0)) {
         cptr.st1o(cptr.decay(new_rng_state), i, Number(BigInt.asUintN(8, (seed & 255n))), 1);
-        seed >>= 8n;
+        seed = seed >> 8n;
     }
     cptr.stPtro2(
         rnglist,

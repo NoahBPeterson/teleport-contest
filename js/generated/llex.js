@@ -146,12 +146,12 @@ function save(ls, c) {
         (
             cptr.stPtr(
                 (b),
-                (((luaM_saferealloc_(
+                (cptr.byteView(((luaM_saferealloc_(
                     cptr.ldPtro(ls, $LexState_L),
                     (cptr.ldPtr((b))),
                     BigInt.asUintN(64, (cptr.ldU64o((b), $Mbuffer_buffsize)) * 1n),
                     BigInt.asUintN(64, (newsize) * 1n)
-                ))))
+                )))))
             ),
             cptr.stU64o((b), $Mbuffer_buffsize, newsize)
         );
@@ -338,6 +338,7 @@ function inclinenumber(ls) {
  * @param {CInt} firstchar
  */
 export function luaX_setinput(L, ls, z, source, firstchar) {
+    let __r1;
     cptr.stI32o(ls, $LexState_t, 0);
     cptr.stPtro(ls, $LexState_L, L);
     cptr.stI32(ls, firstchar);
@@ -349,9 +350,8 @@ export function luaX_setinput(L, ls, z, source, firstchar) {
     cptr.stPtro(ls, $LexState_source, source);
     cptr.stPtro(ls, $LexState_envn, (luaS_newlstr(L, __s_env, BigInt.asUintN(64, (5n / 1n) - 1n))));  /* get env name */
     (
-        cptr.stPtr(
-            (cptr.ldPtro(ls, $LexState_buff)),
-            (((luaM_saferealloc_(
+        (
+            __r1 = (cptr.byteView(((luaM_saferealloc_(
                 cptr.ldPtro(ls, $LexState_L),
                 (cptr.ldPtr((cptr.ldPtro(ls, $LexState_buff)))),
                 BigInt.asUintN(
@@ -359,7 +359,8 @@ export function luaX_setinput(L, ls, z, source, firstchar) {
                     (cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_buffsize)) * 1n
                 ),
                 32n
-            ))))
+            ))))),
+            cptr.stPtr((cptr.ldPtro(ls, $LexState_buff)), __r1)
         ),
         cptr.stU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_buffsize, 32n)
     );  /* initialize buffer */
@@ -556,7 +557,7 @@ function skip_sep(ls) {
                     : luaZ_fill(cptr.ldPtro(ls, $LexState_z)))
             ))
         );
-        count++;
+        count = BigInt.asUintN(64, count + 1n);
     }
     return (cptr.ldI32(ls) == s)
             ? BigInt.asUintN(64, count + 2n)
@@ -764,7 +765,7 @@ function readhexaesc(ls) {
     (cptr.stU64o(
         (cptr.ldPtro(ls, $LexState_buff)),
         $Mbuffer_n,
-        cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) - 2n
+        BigInt.asUintN(64, cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) - 2n)
     ));  /* remove saved chars from buffer */
     return r;
 }
@@ -814,7 +815,8 @@ function readutf8esc(ls) {
         esccheck(ls, r <= 134217727n, __s_utf_8_value_too_large);
         r = BigInt.asUintN(
             64,
-            (r << 4n) + BigInt.asUintN(64, BigInt(luaO_hexavalue(cptr.ldI32(ls))))
+            (BigInt.asUintN(64, r << 4n)) +
+                BigInt.asUintN(64, BigInt(luaO_hexavalue(cptr.ldI32(ls))))
         );
     }
     esccheck(ls, cptr.ldI32(ls) == 125, __s_missing__2);
@@ -834,7 +836,11 @@ function readutf8esc(ls) {
     (cptr.stU64o(
         (cptr.ldPtro(ls, $LexState_buff)),
         $Mbuffer_n,
-        cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) - BigInt.asUintN(64, BigInt((i)))
+        BigInt.asUintN(
+            64,
+            cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) -
+                BigInt.asUintN(64, BigInt((i)))
+        )
     ));  /* remove saved chars from buffer */
     return r;
 }
@@ -878,7 +884,11 @@ function readdecesc(ls) {
     (cptr.stU64o(
         (cptr.ldPtro(ls, $LexState_buff)),
         $Mbuffer_n,
-        cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) - BigInt.asUintN(64, BigInt((i)))
+        BigInt.asUintN(
+            64,
+            cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) -
+                BigInt.asUintN(64, BigInt((i)))
+        )
     ));  /* remove read digits from buffer */
     return r;
 }
@@ -984,10 +994,13 @@ function read_string(ls, del, seminfo) {
                                     (cptr.stU64o(
                                         (cptr.ldPtro(ls, $LexState_buff)),
                                         $Mbuffer_n,
-                                        cptr.ldU64o(
-                                            (cptr.ldPtro(ls, $LexState_buff)),
-                                            $Mbuffer_n
-                                        ) - 1n
+                                        BigInt.asUintN(
+                                            64,
+                                            cptr.ldU64o(
+                                                (cptr.ldPtro(ls, $LexState_buff)),
+                                                $Mbuffer_n
+                                            ) - 1n
+                                        )
                                     ));  /* remove '\\' */
                                     (cptr.stI32(
                                         ls,
@@ -1081,7 +1094,10 @@ function read_string(ls, del, seminfo) {
                         (cptr.stU64o(
                             (cptr.ldPtro(ls, $LexState_buff)),
                             $Mbuffer_n,
-                            cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) - 1n
+                            BigInt.asUintN(
+                                64,
+                                cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) - 1n
+                            )
                         ));  /* remove '\\' */
                         save(ls, c);
                     }

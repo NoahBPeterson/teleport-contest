@@ -256,12 +256,12 @@ export function* create_region(rects, nrect) {
     (cptr.stI32o(
         (reg),
         $NhRegion_player_flags,
-        cptr.ldI32o((reg), $NhRegion_player_flags) & 4294967294
+        (cptr.ldI32o((reg), $NhRegion_player_flags) >>> 0 & 4294967294) >>> 0
     ));
     (cptr.stI32o(
         (reg),
         $NhRegion_player_flags,
-        cptr.ldI32o((reg), $NhRegion_player_flags) | NHM.REG_NOT_HEROS
+        (cptr.ldI32o((reg), $NhRegion_player_flags) >>> 0 | NHM.REG_NOT_HEROS) >>> 0
     ));
     cptr.stI16o(reg, $NhRegion_n_monst, 0);
     cptr.stI16o(reg, $NhRegion_max_monst, 0);
@@ -311,6 +311,7 @@ export function* add_rect_to_reg(reg, rect) {
  */
 /** C ref: region.c:161 — @param {CPtr<NhRegion>} reg @param {CPtr<struct monst>} mon */
 export function* add_mon_to_reg(reg, mon) {
+    let __r1;
     let i;
     let tmp_m;
 
@@ -324,25 +325,33 @@ export function* add_mon_to_reg(reg, mon) {
             (yield* impossible(
                 __s_add_mon_to_reg_s_u_already_in_region,
                 (yield* m_monnam(mon)),
-                cptr.ldI32o(mon, $monst_m_id)
+                cptr.ldI32o(mon, $monst_m_id) >>> 0
             ));
         return;
     }
     if (cptr.ldI16o(reg, $NhRegion_max_monst) <= cptr.ldI16o(reg, $NhRegion_n_monst)) {
-        tmp_m = (yield* alloc(Number(BigInt.asUintN(
-            32,
-            BigInt.asUintN(
-                64,
-                4n *
-                    BigInt.asUintN(
-                        64,
-                        BigInt(((cptr.ldI16o(reg, $NhRegion_max_monst) + NHM.MONST_INC) | 0))
-                    )
-            )
-        ))));
+        tmp_m = cptr.castView(
+            (yield* alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(
+                    64,
+                    4n *
+                        BigInt.asUintN(
+                            64,
+                            BigInt(((cptr.ldI16o(reg, $NhRegion_max_monst) + NHM.MONST_INC) | 0))
+                        )
+                )
+            )))),
+            "u32"
+        );
         if (cptr.ldI16o(reg, $NhRegion_max_monst) > 0) {
             for (i = 0; i < cptr.ldI16o(reg, $NhRegion_max_monst); i++)
-                cptr.stI32o(tmp_m, i, cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4), 4);
+                cptr.stI32o(
+                    tmp_m,
+                    i,
+                    cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4) >>> 0,
+                    4
+                );
             cptr.free(cptr.ldPtro(reg, $NhRegion_monsters));
         }
         cptr.stPtro(reg, $NhRegion_monsters, tmp_m);
@@ -352,11 +361,14 @@ export function* add_mon_to_reg(reg, mon) {
             cptr.ldI16o(reg, $NhRegion_max_monst) + NHM.MONST_INC
         );
     }
-    cptr.stI32o(
-        cptr.ldPtro(reg, $NhRegion_monsters),
-        (cptr.stI16o(reg, $NhRegion_n_monst, cptr.ldI16o(reg, $NhRegion_n_monst) + 1)) - (1),
-        cptr.ldI32o(mon, $monst_m_id),
-        4
+    (
+        __r1 = cptr.ldI32o(mon, $monst_m_id) >>> 0,
+        cptr.stI32o(
+            cptr.ldPtro(reg, $NhRegion_monsters),
+            (cptr.stI16o(reg, $NhRegion_n_monst, cptr.ldI16o(reg, $NhRegion_n_monst) + 1)) - (1),
+            __r1,
+            4
+        )
     );
 }
 
@@ -368,8 +380,8 @@ export function remove_mon_from_reg(reg, mon) {
     let i;
 
     for (i = 0; i < cptr.ldI16o(reg, $NhRegion_n_monst); i++)
-        if (cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4) ==
-                cptr.ldI32o(mon, $monst_m_id)) {
+        if (cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4) >>> 0 ==
+                cptr.ldI32o(mon, $monst_m_id) >>> 0) {
             (cptr.stI16o(reg, $NhRegion_n_monst, cptr.ldI16o(reg, $NhRegion_n_monst) + -1)) - (-1);
             cptr.stI32o(
                 cptr.ldPtro(reg, $NhRegion_monsters),
@@ -378,7 +390,8 @@ export function remove_mon_from_reg(reg, mon) {
                     cptr.ldPtro(reg, $NhRegion_monsters),
                     cptr.ldI16o(reg, $NhRegion_n_monst),
                     4
-                ),
+                ) >>>
+                    0,
                 4
             );
             return;
@@ -400,8 +413,8 @@ export function mon_in_region(reg, mon) {
     let i;
 
     for (i = 0; i < cptr.ldI16o(reg, $NhRegion_n_monst); i++)
-        if (cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4) ==
-                cptr.ldI32o(mon, $monst_m_id))
+        if (cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4) >>> 0 ==
+                cptr.ldI32o(mon, $monst_m_id) >>> 0)
             return 1;
     return 0;
 }
@@ -522,13 +535,13 @@ export function* add_region(reg) {
         (cptr.stI32o(
             (reg),
             $NhRegion_player_flags,
-            cptr.ldI32o((reg), $NhRegion_player_flags) | NHM.REG_HERO_INSIDE
+            (cptr.ldI32o((reg), $NhRegion_player_flags) >>> 0 | NHM.REG_HERO_INSIDE) >>> 0
         ));
     else
         (cptr.stI32o(
             (reg),
             $NhRegion_player_flags,
-            cptr.ldI32o((reg), $NhRegion_player_flags) & 4294967294
+            (cptr.ldI32o((reg), $NhRegion_player_flags) >>> 0 & 4294967294) >>> 0
         ));
 }
 
@@ -574,13 +587,19 @@ export function* remove_region(reg) {
     cptr.stI64o(reg, $NhRegion_ttl, -2n);  /* for visible_region_at */
     if (cptr.ld1so(reg, $NhRegion_visible)) {
         let pass;
-        let tmp_uinwater = schar((cptr.ldI32o(u, $you_uinwater) & 1));
+        let tmp_uinwater = schar(cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0));
 
         /* need to process the region's spots twice, first unblocking all
            locations which no longer block line-of-sight, then redrawing
            spots within revised line-of-sight; skip second pass if blind */
         for (pass = 1; pass <= (Blind() ? 1 : 2); ++pass) {
-            cptr.stI32o(u, $you_uinwater, ((pass == 1) ? 0 : tmp_uinwater) >>> 0);
+            cptr.stBits(
+                cptr.add(u, $you_uinwater),
+                1,
+                1,
+                0,
+                ((pass == 1) ? 0 : tmp_uinwater) >>> 0
+            );
 
             for (x = cptr.ldI16(reg); x <= cptr.ldI16o(reg, $nhrect_hx); x++)
                 for (y = cptr.ldI16o(reg, $nhrect_ly); y <= cptr.ldI16o(reg, $nhrect_hy); y++)
@@ -610,7 +629,7 @@ export function* remove_region(reg) {
                         }
                     }
         }
-        cptr.stI32o(u, $you_uinwater, tmp_uinwater);
+        cptr.stBits(cptr.add(u, $you_uinwater), 1, 1, 0, tmp_uinwater >>> 0);
     }
     free_region(reg);
 }
@@ -693,7 +712,8 @@ export function* run_regions() {
                 ((cptr.ldI32o(
                     (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                     $NhRegion_player_flags
-                ) &
+                ) >>>
+                    0 &
                     NHM.REG_HERO_INSIDE) >>> 0))
             void (yield* Y.icall((callbacks[f_indx])(
                 cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
@@ -718,7 +738,8 @@ export function* run_regions() {
                         ),
                         j,
                         4
-                    ),
+                    ) >>>
+                        0,
                     NHM.FM_FMON
                 );
 
@@ -732,10 +753,10 @@ export function* run_regions() {
                     k = (cptr.stI16o(
                         cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                         $NhRegion_n_monst,
-                        cptr.ldI16o(
+                        i16((cptr.ldI16o(
                             cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                             $NhRegion_n_monst
-                        ) - 1
+                        ) - 1))
                     ));
                     cptr.stI32o(
                         cptr.ldPtro(
@@ -750,7 +771,8 @@ export function* run_regions() {
                             ),
                             k,
                             4
-                        ),
+                        ) >>>
+                            0,
                         4
                     );
                     cptr.stI32o(
@@ -805,7 +827,8 @@ export function* in_out_region(x, y) {
                 ? (!((cptr.ldI32o(
                     (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                     $NhRegion_player_flags
-                ) &
+                ) >>>
+                    0 &
                     NHM.REG_HERO_INSIDE) >>>
                     0) &&
                     (f_indx = cptr.ldI16o(
@@ -817,7 +840,8 @@ export function* in_out_region(x, y) {
                 : (((cptr.ldI32o(
                     (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                     $NhRegion_player_flags
-                ) &
+                ) >>>
+                    0 &
                     NHM.REG_HERO_INSIDE) >>>
                     0) &&
                     (f_indx = cptr.ldI16o(
@@ -844,7 +868,8 @@ export function* in_out_region(x, y) {
         if (((cptr.ldI32o(
             (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
             $NhRegion_player_flags
-        ) &
+        ) >>>
+            0 &
             NHM.REG_HERO_INSIDE) >>>
             0) &&
                 !inside_region(
@@ -855,11 +880,12 @@ export function* in_out_region(x, y) {
             (cptr.stI32o(
                 (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                 $NhRegion_player_flags,
-                cptr.ldI32o(
+                (cptr.ldI32o(
                     (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                     $NhRegion_player_flags
-                ) &
-                    4294967294
+                ) >>>
+                    0 &
+                    4294967294) >>> 0
             ));
             if (cptr.ldPtro(
                 cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
@@ -893,7 +919,8 @@ export function* in_out_region(x, y) {
         if (!((cptr.ldI32o(
             (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
             $NhRegion_player_flags
-        ) &
+        ) >>>
+            0 &
             NHM.REG_HERO_INSIDE) >>>
             0) &&
                 inside_region(
@@ -904,11 +931,12 @@ export function* in_out_region(x, y) {
             (cptr.stI32o(
                 (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                 $NhRegion_player_flags,
-                cptr.ldI32o(
+                (cptr.ldI32o(
                     (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                     $NhRegion_player_flags
-                ) |
-                    NHM.REG_HERO_INSIDE
+                ) >>>
+                    0 |
+                    NHM.REG_HERO_INSIDE) >>> 0
             ));
             if (cptr.ldPtro(
                 cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
@@ -954,8 +982,9 @@ export function* m_in_out_region(mon, x, y) {
         if (cptr.ldI32o(
             cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
             $NhRegion_attach_2_m
-        ) ==
-                cptr.ldI32o(mon, $monst_m_id))
+        ) >>>
+            0 ==
+                cptr.ldI32o(mon, $monst_m_id) >>> 0)
             continue;
         if (inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y)
                 ? (!mon_in_region(
@@ -991,8 +1020,9 @@ export function* m_in_out_region(mon, x, y) {
         if (cptr.ldI32o(
             cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
             $NhRegion_attach_2_m
-        ) ==
-                cptr.ldI32o(mon, $monst_m_id))
+        ) >>>
+            0 ==
+                cptr.ldI32o(mon, $monst_m_id) >>> 0)
             continue;
         if (mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon) &&
                 !inside_region(
@@ -1020,8 +1050,9 @@ export function* m_in_out_region(mon, x, y) {
         if (cptr.ldI32o(
             cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
             $NhRegion_attach_2_m
-        ) ==
-                cptr.ldI32o(mon, $monst_m_id))
+        ) >>>
+            0 ==
+                cptr.ldI32o(mon, $monst_m_id) >>> 0)
             continue;
         if (!mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon) &&
                 inside_region(
@@ -1064,21 +1095,23 @@ export function update_player_regions() {
             (cptr.stI32o(
                 (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                 $NhRegion_player_flags,
-                cptr.ldI32o(
+                (cptr.ldI32o(
                     (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                     $NhRegion_player_flags
-                ) |
-                    NHM.REG_HERO_INSIDE
+                ) >>>
+                    0 |
+                    NHM.REG_HERO_INSIDE) >>> 0
             ));
         else
             (cptr.stI32o(
                 (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                 $NhRegion_player_flags,
-                cptr.ldI32o(
+                (cptr.ldI32o(
                     (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                     $NhRegion_player_flags
-                ) &
-                    4294967294
+                ) >>>
+                    0 &
+                    4294967294) >>> 0
             ));
 }
 
@@ -1233,7 +1266,7 @@ export function* save_regions(nhfp) {
     let r;
     let i;
     let j;
-    let n = cptr.box(0);
+    let n = cptr.box(0, "u32");
     __lbl_skip_lots: {
 
         if (!(cptr.ldI32o((nhfp), $NHFILE_mode) & 3))
@@ -1300,11 +1333,12 @@ export function* save_regions(nhfp) {
 
 /** C ref: region.c:799 — @param {CPtr<NHFILE>} nhfp */
 export function* rest_regions(nhfp) {
+    let __r2;
     let r;
     let i;
     let j;
-    let n = cptr.box(0);
-    let tmstamp = cptr.box(0n);
+    let n = cptr.box(0, "u32");
+    let tmstamp = cptr.box(0n, "i64");
     let msg_buf;
     let ghostly = schar((cptr.ldI32o(nhfp, $NHFILE_ftype) == NHM.NHF_BONESFILE));
 
@@ -1341,7 +1375,10 @@ export function* rest_regions(nhfp) {
             ))))
         );
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
-        r = cptr.stPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, (yield* alloc(96)), 8);
+        r = (
+            __r2 = (yield* alloc(96)),
+            cptr.stPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, __r2, 8)
+        );
         (yield* sfi_nhrect(nhfp, r, __s_region_bounding_box__2));
         (yield* sfi_short(nhfp, cptr.add(r, $NhRegion_nrects), __s_region_nrects));
         if (cptr.ldI16o(r, $NhRegion_nrects) > 0)
@@ -1372,7 +1409,7 @@ export function* rest_regions(nhfp) {
         (yield* sfi_unsigned(nhfp, n, __s_region_enter_msg_length));
         ;
         if (n.v > 0) {
-            msg_buf = (yield* alloc((n.v + 1) >>> 0));
+            msg_buf = cptr.byteView((yield* alloc((n.v + 1) >>> 0)));
             (yield* sfi_char(nhfp, msg_buf, __s_region_enter_msg, n.v | 0));
             cptr.st1o(msg_buf, n.v, 0);
         } else {
@@ -1383,7 +1420,7 @@ export function* rest_regions(nhfp) {
         (yield* sfi_unsigned(nhfp, n, __s_region_leave_msg_length));
         ;
         if (n.v > 0) {
-            msg_buf = (yield* alloc((n.v + 1) >>> 0));
+            msg_buf = cptr.byteView((yield* alloc((n.v + 1) >>> 0)));
             (yield* sfi_char(nhfp, msg_buf, __s_region_leave_msg, n.v | 0));
             cptr.st1o(msg_buf, n.v, 0);
             cptr.stPtro(r, $NhRegion_leave_msg, msg_buf);
@@ -1415,12 +1452,12 @@ export function* rest_regions(nhfp) {
             (cptr.stI32o(
                 (r),
                 $NhRegion_player_flags,
-                cptr.ldI32o((r), $NhRegion_player_flags) & 4294967294
+                (cptr.ldI32o((r), $NhRegion_player_flags) >>> 0 & 4294967294) >>> 0
             ));
             (cptr.stI32o(
                 (r),
                 $NhRegion_player_flags,
-                cptr.ldI32o((r), $NhRegion_player_flags) | NHM.REG_NOT_HEROS
+                (cptr.ldI32o((r), $NhRegion_player_flags) >>> 0 | NHM.REG_NOT_HEROS) >>> 0
             ));
         }
         (yield* sfi_short(nhfp, cptr.add(r, $NhRegion_n_monst), __s_region_monster_count));
@@ -1428,13 +1465,16 @@ export function* rest_regions(nhfp) {
             cptr.stPtro(
                 r,
                 $NhRegion_monsters,
-                (yield* alloc(Number(BigInt.asUintN(
-                    32,
-                    BigInt.asUintN(
-                        64,
-                        BigInt.asUintN(64, BigInt(cptr.ldI16o(r, $NhRegion_n_monst))) * 4n
-                    )
-                ))))
+                cptr.castView(
+                    (yield* alloc(Number(BigInt.asUintN(
+                        32,
+                        BigInt.asUintN(
+                            64,
+                            BigInt.asUintN(64, BigInt(cptr.ldI16o(r, $NhRegion_n_monst))) * 4n
+                        )
+                    )))),
+                    "u32"
+                )
             );
         else
             cptr.stPtro(r, $NhRegion_monsters, null);
@@ -1472,6 +1512,7 @@ export function* rest_regions(nhfp) {
  * @param {CPtr<long>} size
  */
 export function region_stats(hdrfmt, hdrbuf, count, size) {
+    let __r3, __r4;
     let rg;
     let i;
 
@@ -1489,16 +1530,14 @@ export function region_stats(hdrfmt, hdrbuf, count, size) {
             cptr.ldI64(size) + BigInt.asIntN(64, BigInt(cptr.ldI16o(rg, $NhRegion_nrects)) * 8n)
         );
         if (cptr.ldPtro(rg, $NhRegion_enter_msg))
-            cptr.stI64(
-                size,
-                cptr.ldI64(size) +
-                    BigInt.asIntN(64, (cptr.strlen(cptr.ldPtro(rg, $NhRegion_enter_msg)) + 1n))
+            (
+                __r3 = BigInt.asIntN(64, (cptr.strlen(cptr.ldPtro(rg, $NhRegion_enter_msg)) + 1n)),
+                cptr.stI64(size, cptr.ldI64(size) + __r3)
             );
         if (cptr.ldPtro(rg, $NhRegion_leave_msg))
-            cptr.stI64(
-                size,
-                cptr.ldI64(size) +
-                    BigInt.asIntN(64, (cptr.strlen(cptr.ldPtro(rg, $NhRegion_leave_msg)) + 1n))
+            (
+                __r4 = BigInt.asIntN(64, (cptr.strlen(cptr.ldPtro(rg, $NhRegion_leave_msg)) + 1n)),
+                cptr.stI64(size, cptr.ldI64(size) + __r4)
             );
         cptr.stI64(
             size,
@@ -1516,9 +1555,9 @@ function reset_region_mids(reg) {
     let mid_list = cptr.ldPtro(reg, $NhRegion_monsters);
 
     while (i < n)
-        if (!lookup_id_mapping(cptr.ldI32o(mid_list, i, 4), cptr.add(mid_list, i, 4))) {
+        if (!lookup_id_mapping(cptr.ldI32o(mid_list, i, 4) >>> 0, cptr.add(mid_list, i, 4))) {
             /* shrink list to remove missing monster; order doesn't matter */
-            cptr.stI32o(mid_list, i, cptr.ldI32o(mid_list, --n, 4), 4);
+            cptr.stI32o(mid_list, i, cptr.ldI32o(mid_list, --n, 4) >>> 0, 4);
         } else {
             /* move on to next monster */
             ++i;
@@ -1561,8 +1600,12 @@ export function* expire_gas_cloud(p1, p2) {
     /* The cloud no longer blocks vision.  cansee() checks shouldn't be made
        until all blocked spots have been unblocked, so we need two passes */
     for (pass = 1; pass <= (Blind() ? 1 : 2); ++pass) {
-        for (x = cptr.ldI16(reg); x <= cptr.ldI16o(reg, $nhrect_hx); x++) {
-            for (y = cptr.ldI16o(reg, $nhrect_ly); y <= cptr.ldI16o(reg, $nhrect_hy); y++) {
+        for (x = cptr.ldI16(reg); x <= cptr.ldI16o(reg, $nhrect_hx); x = i16(x + 1)) {
+            for (
+                y = cptr.ldI16o(reg, $nhrect_ly);
+                y <= cptr.ldI16o(reg, $nhrect_hy);
+                y = i16(y + 1)
+            ) {
                 if (inside_region(reg, x, y)) {
                     if (pass == 1) {
                         if (!(yield* does_block(
@@ -1580,7 +1623,7 @@ export function* expire_gas_cloud(p1, p2) {
                         )))
                             unblock_point(x, y);
                     } else {
-                        if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
+                        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
                             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                                 cptr.st1o(gg, $instance_globals_g_gas_cloud_diss_within, 1);
                             else if (((cptr.ld1uo(
@@ -1606,6 +1649,7 @@ export function* expire_gas_cloud(p1, p2) {
 /* returns True if p2 is killed by region p1, False otherwise */
 /** C ref: region.c:1091 — @param {CPtr} p1 @param {CPtr} p2 @returns {CInt} */
 export function* inside_gas_cloud(p1, p2) {
+    let __r5;
     let reg = p1;
     let mtmp = p2;
     let umon = mtmp ? mtmp : cptr.add(gy, $instance_globals_y_youmonst);
@@ -1682,19 +1726,23 @@ export function* inside_gas_cloud(p1, p2) {
                     (yield* pline(__s_s_coughs, (yield* Monnam(mtmp))));
                 (yield* wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 2));
             }
-            if ((!((cptr.ldI32o((reg), $NhRegion_player_flags) & NHM.REG_NOT_HEROS) >>> 0)))
+            if ((!((cptr.ldI32o((reg), $NhRegion_player_flags) >>> 0 & NHM.REG_NOT_HEROS) >>> 0)))
                 (yield* setmangry(mtmp, 1));
             if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) ==
                 0n) &&
-                    (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0) {
-                cptr.stI32o(mtmp, $monst_mblinded, 1);
-                cptr.stI32o(mtmp, $monst_mcansee, 0);
+                    cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0) | 0) {
+                cptr.stBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0, 1);
+                cptr.stBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0, 0);
             }
             if ((yield* Resists_Elem(mtmp, NHC.POISON_RES)))
                 return 0;
-            cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - (rnd(dam) + 5)) | 0);
+            (
+                __r5 = (rnd(dam) + 5) | 0,
+                cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - __r5) | 0)
+            );
             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
-                if ((!((cptr.ldI32o((reg), $NhRegion_player_flags) & NHM.REG_NOT_HEROS) >>> 0)))
+                if ((!((cptr.ldI32o((reg), $NhRegion_player_flags) >>> 0 &
+                        NHM.REG_NOT_HEROS) >>> 0)))
                     (yield* killed(mtmp));
                 else
                     (yield* monkilled(mtmp, __s_gas_cloud, NHM.AD_DRST));
@@ -1715,7 +1763,8 @@ function is_hero_inside_gas_cloud() {
         if (((cptr.ldI32o(
             (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
             $NhRegion_player_flags
-        ) &
+        ) >>>
+            0 &
             NHM.REG_HERO_INSIDE) >>>
             0) &&
                 cptr.ldI16o(
@@ -1739,7 +1788,7 @@ function* make_gas_cloud(cloud, damage, inside_cloud) {
         (cptr.stI32o(
             (cloud),
             $NhRegion_player_flags,
-            cptr.ldI32o((cloud), $NhRegion_player_flags) & 4294967293
+            (cptr.ldI32o((cloud), $NhRegion_player_flags) >>> 0 & 4294967293) >>> 0
         ));  /* assume player has created it */
     cptr.stI16o(cloud, $NhRegion_inside_f, 0);
     cptr.stI16o(cloud, $NhRegion_expire_f, 1);
@@ -1958,8 +2007,8 @@ export function* create_gas_cloud_selection(sel, damage) {
     selection_getbounds(sel, r);
 
     cloud = (yield* create_region(null, 0));
-    for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, $nhrect_hx); x++)
-        for (y = cptr.ldI16o(r, $nhrect_ly); y <= cptr.ldI16o(r, $nhrect_hy); y++)
+    for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, $nhrect_hx); x = i16(x + 1))
+        for (y = cptr.ldI16o(r, $nhrect_ly); y <= cptr.ldI16o(r, $nhrect_hy); y = i16(y + 1))
             if (selection_getpoint(x, y, sel)) {
                 cptr.stI16(tmprect, cptr.stI16o(tmprect, $nhrect_hx, x));
                 cptr.stI16o(tmprect, $nhrect_ly, cptr.stI16o(tmprect, $nhrect_hy, y));
@@ -1982,7 +2031,8 @@ export function region_danger() {
         if (!((cptr.ldI32o(
             (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
             $NhRegion_player_flags
-        ) &
+        ) >>>
+            0 &
                 NHM.REG_HERO_INSIDE) >>> 0))
             continue;
         f_indx = cptr.ldI16o(
@@ -2019,7 +2069,8 @@ export function* region_safety() {
         if (!((cptr.ldI32o(
             (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
             $NhRegion_player_flags
-        ) &
+        ) >>>
+            0 &
                 NHM.REG_HERO_INSIDE) >>> 0))
             continue;
         f_indx = cptr.ldI16o(
