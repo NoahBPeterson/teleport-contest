@@ -296,7 +296,14 @@ export async function runBootGame(opts) {
   // The canonical sessions were captured under tmux, whose pty line discipline
   // maps incoming CR to LF (ICRNL) before the game reads it. The recorder's
   // pipe feed replicates that (record-session.mjs); so must we.
-  for (const ch of moves) inputQueue.push(ch === '\r' ? 10 : ch.charCodeAt(0));
+  // The recorder writes each UTF-16 unit of `moves` as UTF-8 (a lone surrogate
+  // becoming U+FFFD) and stops taking steps at moves.length+1 reads. A multi-byte
+  // key therefore leaves bytes unread at that point, but they are already in the
+  // pipe, and C keeps running them until it is killed: their RNG and file writes
+  // land in the recording while their screens do not. So read every byte here,
+  // and drop the extra screens below.
+  const utf8 = new TextEncoder();
+  for (let i = 0; i < moves.length; i++) inputQueue.push(...utf8.encode(moves[i] === '\r' ? '\n' : moves[i]));
 
   const g = globalThis;
   const cptr = await import('../cptr.js');
@@ -1179,7 +1186,11 @@ export async function runBootGame(opts) {
       i = end + 1 + len;
     }
   }
-  const inputFrames = frames.filter((f) => f.kind === 'input');
+  // A replay reports at most the recorder's moves.length+1 steps (see inputQueue).
+  // The scorer joins segments end to end, so an extra screen here would shift
+  // every screen of the next segment. Interactive play has no such limit.
+  const maxSteps = waitForKey ? Infinity : moves.length + 1;
+  const inputFrames = frames.filter((f) => f.kind === 'input').slice(0, maxSteps);
   const screens = inputFrames.map((f) => f.screen);
   const cursors = inputFrames.map((f) => [f.cx, f.cy, 1]);
   // animation frames grouped per step (frames between input boundaries)
@@ -1191,6 +1202,8 @@ export async function runBootGame(opts) {
       else { animFramesByStep.push(pending); pending = []; }
     }
   }
+
+  animFramesByStep.length = Math.min(animFramesByStep.length, maxSteps);
 
   const luaLoads = luaPort ? luaPort.closeTrace() : [];
   // What still reached the Lua parser with its real bytes. See
