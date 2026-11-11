@@ -2923,7 +2923,7 @@ function* trapmove(x, y, desttrap) {
      * Note: caller should call reset_utrap() when we set u.utrap to 0.
      */
 
-    switch (cptr.ldI32o(u, $you_utraptype) >>> 0) {
+    __sw_1: switch (cptr.ldI32o(u, $you_utraptype) >>> 0) {
         case NHC.TT_BEARTRAP:
             if (cptr.ld1so(flags, $flag_verbose)) {
                 predicament = __s_caught_in_a_bear_trap;
@@ -2947,7 +2947,7 @@ function* trapmove(x, y, desttrap) {
                         (yield* You(__s_finally_s_free, !anchored ? __s_wriggle : __s_wrench_the_ball));
                     if (anchored)
                         (yield* buried_ball_to_punishment());
-                    break;
+                    break __sw_1;
                 }
             break;
         case NHC.TT_PIT:

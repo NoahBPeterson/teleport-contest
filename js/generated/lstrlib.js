@@ -1718,6 +1718,7 @@ function str_format(L) {
             buff,
             nb,
             n,
+            n__2,
             p,
             l = cptr.box(0, "u64"),
             s;
@@ -1891,10 +1892,10 @@ function str_format(L) {
             continue;
         }
         case 26: {
-            n = luaL_checknumber(L, arg);
+            n__2 = luaL_checknumber(L, arg);
             checkformat(L, cptr.decay(form), __s_dash_plus_hash_0_sp, 1);
             addlenmod(cptr.decay(form), __s_empty);
-            nb = cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), n);
+            nb = cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), n__2);
             { __pc = 11; continue; }
         }
         case 27: {
@@ -2358,10 +2359,10 @@ function str_pack(L) {
                 }
             case NHC.Knumber:
                 {
-                    let f = cptr.box(luaL_checknumber(L, arg), "f64");  /* get argument */
+                    let f__2 = cptr.box(luaL_checknumber(L, arg), "f64");  /* get argument */
                     let buff = luaL_prepbuffsize(b, 8n);
                     /* move 'f' to final result, correcting endianness if needed */
-                    copywithendian(buff, cptr.byteView(f), 8, cptr.ldI32o(h, $Header_islittle));
+                    copywithendian(buff, cptr.byteView(f__2), 8, cptr.ldI32o(h, $Header_islittle));
                     (cptr.stU64o(
                         (b),
                         $luaL_Buffer_n,
@@ -2374,10 +2375,10 @@ function str_pack(L) {
                 }
             case NHC.Kdouble:
                 {
-                    let f = cptr.box(luaL_checknumber(L, arg), "f64");  /* get argument */
+                    let f__3 = cptr.box(luaL_checknumber(L, arg), "f64");  /* get argument */
                     let buff = luaL_prepbuffsize(b, 8n);
                     /* move 'f' to final result, correcting endianness if needed */
-                    copywithendian(buff, cptr.byteView(f), 8, cptr.ldI32o(h, $Header_islittle));
+                    copywithendian(buff, cptr.byteView(f__3), 8, cptr.ldI32o(h, $Header_islittle));
                     (cptr.stU64o(
                         (b),
                         $luaL_Buffer_n,
@@ -2564,10 +2565,11 @@ function unpackint(L, str, islittle, size, issigned) {
             res = (BigInt.asUintN(64, (res ^ mask) - mask));  /* do sign extension */
         }
     } else if (size > 8) {
-        let mask = (!issigned || BigInt.asIntN(64, res) >= 0n) ? 0 : 255;
+        let mask__2 = (!issigned || BigInt.asIntN(64, res) >= 0n) ? 0 : 255;
         for (i = limit; i < size; i++) {
             if ((__builtin_expect(
-                BigInt(((uchar(cptr.ld1so(str, islittle ? i : (size - 1 - i) | 0)) != mask) != 0)),
+                BigInt(((uchar(cptr.ld1so(str, islittle ? i : (size - 1 - i) | 0)) != mask__2) !=
+                    0)),
                 0n
             )))
                 luaL_error(L, __s_d_byte_integer_does_not_fit_into_lua, size);
@@ -2637,26 +2639,26 @@ function str_unpack(L) {
                 }
             case NHC.Knumber:
                 {
-                    let f = cptr.box(0, "f64");
+                    let f__2 = cptr.box(0, "f64");
                     copywithendian(
-                        cptr.byteView(f),
+                        cptr.byteView(f__2),
                         cptr.add(data, pos),
                         8,
                         cptr.ldI32o(h, $Header_islittle)
                     );
-                    lua_pushnumber(L, f.v);
+                    lua_pushnumber(L, f__2.v);
                     break;
                 }
             case NHC.Kdouble:
                 {
-                    let f = cptr.box(0, "f64");
+                    let f__3 = cptr.box(0, "f64");
                     copywithendian(
-                        cptr.byteView(f),
+                        cptr.byteView(f__3),
                         cptr.add(data, pos),
                         8,
                         cptr.ldI32o(h, $Header_islittle)
                     );
-                    lua_pushnumber(L, f.v);
+                    lua_pushnumber(L, f__3.v);
                     break;
                 }
             case NHC.Kchar:

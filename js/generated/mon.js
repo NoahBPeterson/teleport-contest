@@ -1235,7 +1235,7 @@ function make_corpse(mtmp, corpseflags) {
     else if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 262144n) != 0n))
         corpstatflags = (corpstatflags | NHM.CORPSTAT_MALE) >>> 0;
 
-    switch (mndx) {
+    __sw_1: switch (mndx) {
         case NHC.PM_GRAY_DRAGON:
         case NHC.PM_GOLD_DRAGON:
         case NHC.PM_SILVER_DRAGON:
@@ -1298,7 +1298,7 @@ function make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_WHITE_UNICORN:
         case NHC.PM_GRAY_UNICORN:
@@ -1352,7 +1352,7 @@ function make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_LONG_WORM:
             void mksobj_at(NHC.WORM_TOOTH, x, y, 1, 0);
@@ -1393,7 +1393,7 @@ function make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_VAMPIRE:
         case NHC.PM_VAMPIRE_LEADER:

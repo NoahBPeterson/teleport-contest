@@ -1163,14 +1163,14 @@ function* freeobj(L, o) {
             }
         case 38:
             {
-                let cl = (((((o)))));
+                let cl__2 = (((((o)))));
                 (yield* luaM_free_(
                     L,
-                    (cl),
+                    (cl__2),
                     BigInt.asUintN(
                         64,
                         BigInt(((((32) +
-                            Math.imul(16, (cptr.ld1uo(cl, $CClosure_nupvalues)))) | 0)))
+                            Math.imul(16, (cptr.ld1uo(cl__2, $CClosure_nupvalues)))) | 0)))
                     )
                 ));
                 break;

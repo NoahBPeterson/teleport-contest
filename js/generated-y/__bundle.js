@@ -2570,7 +2570,8 @@ function sgn(n) { return n < 0 ? -1 : (n !== 0 ? 1 : 0); }
 // throw when no seed is available rather than silently using a made-up one.
 function sys_random_seed() {
   const envSeed = (typeof globalThis.getenv === 'function') && globalThis.getenv('NETHACK_SEED');
-  if (envSeed) return BigInt(cptr.cstr(envSeed));
+  // strtoul, as in the recorder: a value past 2^64 saturates, and BigInt() would not.
+  if (envSeed) return globalThis.strtoul(envSeed, null, 10);
   throw new Error('sys_random_seed: NETHACK_SEED not set');
 }
 
@@ -33916,32 +33917,32 @@ function* forprep(L, ra) {
     let pstep = ((cptr.add(ra, 2, 16)));
     if (((cptr.ld1uo(((pinit)), $TValue_tt_)) == 3) &&
             ((cptr.ld1uo(((pstep)), $TValue_tt_)) == 3)) {
-        let init = cptr.box((cptr.ldI64(((pinit)))), "i64");
-        let step = cptr.box((cptr.ldI64(((pstep)))), "i64");
+        let init = (cptr.ldI64(((pinit))));
+        let step = (cptr.ldI64(((pstep))));
         let limit = cptr.box(0n, "i64");
-        if (step.v == 0n)
+        if (step == 0n)
             (yield* luaG_runerror(L, __s_for_step_is_zero));
         {
             let io = (((cptr.add(ra, 3, 16))));  /* control variable */
-            cptr.stI64(((io)), (init.v));
+            cptr.stI64(((io)), (init));
             (cptr.st1o((io), $TValue_tt_, 3));
         }
         ;
-        if ((yield* forlimit(L, init.v, plimit, limit, step.v)))
+        if ((yield* forlimit(L, init, plimit, limit, step)))
             return 1;  /* skip the loop */
         else {
             let count;
-            if (step.v > 0n) {
+            if (step > 0n) {
                 count = BigInt.asUintN(
                     64,
-                    (BigInt.asUintN(64, (limit.v))) - (BigInt.asUintN(64, (init.v)))
+                    (BigInt.asUintN(64, (limit.v))) - (BigInt.asUintN(64, (init)))
                 );
-                if (step.v != 1n)
-                    count = count / (BigInt.asUintN(64, (step.v)));
+                if (step != 1n)
+                    count = count / (BigInt.asUintN(64, (step)));
             } else {
                 count = BigInt.asUintN(
                     64,
-                    (BigInt.asUintN(64, (init.v))) - (BigInt.asUintN(64, (limit.v)))
+                    (BigInt.asUintN(64, (init))) - (BigInt.asUintN(64, (limit.v)))
                 );
                 /* 'step+1' avoids negating 'mininteger' */
                 count = count /
@@ -33949,7 +33950,7 @@ function* forprep(L, ra) {
                             64,
                             (BigInt.asUintN(
                                 64,
-                                (BigInt.asIntN(64, -(BigInt.asIntN(64, step.v + 1n))))
+                                (BigInt.asIntN(64, -(BigInt.asIntN(64, step + 1n))))
                             )) + 1n
                         );
             }
@@ -33963,60 +33964,60 @@ function* forprep(L, ra) {
             ;
         }
     } else {
-        let init = cptr.box(0, "f64");
-        let limit = cptr.box(0, "f64");
-        let step = cptr.box(0, "f64");
+        let init__2 = cptr.box(0, "f64");
+        let limit__2 = cptr.box(0, "f64");
+        let step__2 = cptr.box(0, "f64");
         if ((__builtin_expect(
             BigInt(((!(((cptr.ld1uo(((plimit)), $TValue_tt_)) == 19)
-                ? (cptr.stF64((limit), (cptr.ldF64(((plimit))))), 1)
-                : (yield* luaV_tonumber_(plimit, limit)))) !=
+                ? (cptr.stF64((limit__2), (cptr.ldF64(((plimit))))), 1)
+                : (yield* luaV_tonumber_(plimit, limit__2)))) !=
                 0)),
             0n
         )))
             (yield* luaG_forerror(L, plimit, __s_limit));
         if ((__builtin_expect(
             BigInt(((!(((cptr.ld1uo(((pstep)), $TValue_tt_)) == 19)
-                ? (cptr.stF64((step), (cptr.ldF64(((pstep))))), 1)
-                : (yield* luaV_tonumber_(pstep, step)))) !=
+                ? (cptr.stF64((step__2), (cptr.ldF64(((pstep))))), 1)
+                : (yield* luaV_tonumber_(pstep, step__2)))) !=
                 0)),
             0n
         )))
             (yield* luaG_forerror(L, pstep, __s_step));
         if ((__builtin_expect(
             BigInt(((!(((cptr.ld1uo(((pinit)), $TValue_tt_)) == 19)
-                ? (cptr.stF64((init), (cptr.ldF64(((pinit))))), 1)
-                : (yield* luaV_tonumber_(pinit, init)))) !=
+                ? (cptr.stF64((init__2), (cptr.ldF64(((pinit))))), 1)
+                : (yield* luaV_tonumber_(pinit, init__2)))) !=
                 0)),
             0n
         )))
             (yield* luaG_forerror(L, pinit, __s_initial_value));
-        if (step.v == 0)
+        if (step__2.v == 0)
             (yield* luaG_runerror(L, __s_for_step_is_zero));
-        if ((0 < (step.v)) ? ((limit.v) < (init.v)) : ((init.v) < (limit.v)))
+        if ((0 < (step__2.v)) ? ((limit__2.v) < (init__2.v)) : ((init__2.v) < (limit__2.v)))
             return 1;  /* skip the loop */
         else {
             {
                 /* make sure internal values are all floats */
                 let io = (plimit);
-                cptr.stF64(((io)), (limit.v));
+                cptr.stF64(((io)), (limit__2.v));
                 (cptr.st1o((io), $TValue_tt_, 19));
             }
             ;
             {
                 let io = (pstep);
-                cptr.stF64(((io)), (step.v));
+                cptr.stF64(((io)), (step__2.v));
                 (cptr.st1o((io), $TValue_tt_, 19));
             }
             ;
             {
                 let io = (((ra)));  /* internal index */
-                cptr.stF64(((io)), (init.v));
+                cptr.stF64(((io)), (init__2.v));
                 (cptr.st1o((io), $TValue_tt_, 19));
             }
             ;
             {
                 let io = (((cptr.add(ra, 3, 16))));  /* control variable */
-                cptr.stF64(((io)), (init.v));
+                cptr.stF64(((io)), (init__2.v));
                 (cptr.st1o((io), $TValue_tt_, 19));
             }
             ;
@@ -35286,7 +35287,10 @@ function* luaV_execute(L, ci) {
             io2,
             b,
             io,
+            b__2,
             rb,
+            b__3,
+            b__4,
             uv,
             slot,
             upval,
@@ -35294,6 +35298,9 @@ function* luaV_execute(L, ci) {
             key,
             n,
             c,
+            key__2,
+            key__3,
+            b__5,
             t,
             x_,
             v1,
@@ -35312,6 +35319,8 @@ function* luaV_execute(L, ci) {
             tm,
             result,
             flip,
+            imm__2,
+            n__2,
             cond,
             ni,
             ia,
@@ -35320,17 +35329,23 @@ function* luaV_execute(L, ci) {
             fim,
             isf,
             newci,
+            b__6,
             nresults,
+            b__7,
+            n__3,
             nparams1,
             delta,
+            n__4,
             nres,
             count,
             step,
             idx,
+            n__5,
             last,
             h,
             val,
-            p;
+            p,
+            n__6;
     const __smNums = {
         "startfunc": 1,
         "returning": 2,
@@ -35541,11 +35556,12 @@ function* luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = (((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+            b__2 = (((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
                 0)) -
                     65535) | 0);
             io = (((ra)));
-            cptr.stF64(((io)), ((((b)))));
+            cptr.stF64(((io)), ((((b__2)))));
             (cptr.st1o((io), $TValue_tt_, 19));
             ;
             if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
@@ -35731,11 +35747,11 @@ function* luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            b__3 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
             do {
                 (cptr.st1o((((cptr.postinc(() => ra, (v) => { ra = v; }, 16)))), $TValue_tt_, 0));
-            } while (b--);
+            } while (b__3--);
             if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
@@ -35761,10 +35777,10 @@ function* luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            b__4 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
             io1 = (((ra)));
-            io2 = (cptr.ldPtro(cptr.ldPtro2(cl, b, 8, $LClosure_upvals), $UpVal_v));
+            io2 = (cptr.ldPtro(cptr.ldPtro2(cl, b__4, 8, $LClosure_upvals), $UpVal_v));
             cptr.memcpy(io1, io2, 8);
             (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
             (void L, (void 0));
@@ -36024,9 +36040,9 @@ function* luaV_execute(L, ci) {
                 }
                 ;
             } else {
-                key = cptr.alloc(16);
+                key__2 = cptr.alloc(16);
                 {
-                    io = (key);
+                    io = (key__2);
                     cptr.stI64(((io)), BigInt((c)));
                     (cptr.st1o((io), $TValue_tt_, 3));
                 }
@@ -36036,7 +36052,7 @@ function* luaV_execute(L, ci) {
                         (cptr.stPtro(ci, $CallInfo_u, pc)),
                         cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
                     ),
-                    ((yield* luaV_finishget(L, rb, key, ra, slot))),
+                    ((yield* luaV_finishget(L, rb, key__2, ra, slot))),
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
             }
@@ -36371,9 +36387,9 @@ function* luaV_execute(L, ci) {
                 }
                 ;
             } else {
-                key = cptr.alloc(16);
+                key__3 = cptr.alloc(16);
                 {
-                    io = (key);
+                    io = (key__3);
                     cptr.stI64(((io)), BigInt((c)));
                     (cptr.st1o((io), $TValue_tt_, 3));
                 }
@@ -36383,7 +36399,7 @@ function* luaV_execute(L, ci) {
                         (cptr.stPtro(ci, $CallInfo_u, pc)),
                         cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
                     ),
-                    ((yield* luaV_finishset(L, ((ra)), key, rc, slot))),
+                    ((yield* luaV_finishset(L, ((ra)), key__3, rc, slot))),
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
             }
@@ -36492,12 +36508,12 @@ function* luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            b__5 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));  /* log2(hash size) + 1 */
             c = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));  /* array size */
-            if (b > 0)
-                b = 1 << (b - 1);  /* size is 2^(b - 1) */
+            if (b__5 > 0)
+                b__5 = 1 << (b__5 - 1);  /* size is 2^(b - 1) */
             (void 0);
             if (((((((((i) & 32768) >>> 0))) | 0))))
                 c = (c +
@@ -36517,8 +36533,8 @@ function* luaV_execute(L, ci) {
             (cptr.st1o((io), $TValue_tt_, 69));
             (void L, (void 0));
             ;
-            if (b != 0 || c != 0)
-                (yield* luaH_resize(L, t, c >>> 0, b >>> 0));  /* idem */
+            if (b__5 != 0 || c != 0)
+                (yield* luaH_resize(L, t, c >>> 0, b__5 >>> 0));  /* idem */
             if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
                 (
                     (cptr.stPtro(ci, $CallInfo_u, pc)),
@@ -38353,7 +38369,7 @@ function* luaV_execute(L, ci) {
                 16
             ));
             pi = cptr.ldI32((cptr.add(pc, -(2), 4))) >>> 0;  /* original arith. expression */
-            imm = (cptr.add(
+            imm__2 = (cptr.add(
                 k,
                 ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
                     0))),
@@ -38374,7 +38390,7 @@ function* luaV_execute(L, ci) {
                     (cptr.stPtro(ci, $CallInfo_u, pc)),
                     cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
                 ),
-                ((yield* luaT_trybinassocTM(L, ((ra)), imm, flip, result, tm))),
+                ((yield* luaT_trybinassocTM(L, ((ra)), imm__2, flip, result, tm))),
                 (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
             );
             if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
@@ -38595,12 +38611,12 @@ function* luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            n__2 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));  /* number of elements to concatenate */
-            cptr.stPtro(L, $lua_State_top, cptr.add(ra, n, 16));  /* mark the end of concat operands */
+            cptr.stPtro(L, $lua_State_top, cptr.add(ra, n__2, 16));  /* mark the end of concat operands */
             (
                 (cptr.stPtro(ci, $CallInfo_u, pc)),
-                ((yield* luaV_concat(L, n))),
+                ((yield* luaV_concat(L, n__2))),
                 (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
             );
             if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
@@ -39462,13 +39478,13 @@ function* luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            b__6 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
             nresults = (((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                 0)) |
                     0))) - 1) | 0;
-            if (b != 0)
-                cptr.stPtro(L, $lua_State_top, cptr.add(ra, b, 16));  /* top signals number of arguments */
+            if (b__6 != 0)
+                cptr.stPtro(L, $lua_State_top, cptr.add(ra, b__6, 16));  /* top signals number of arguments */
             /* else previous instruction set top */
             (cptr.stPtro(ci, $CallInfo_u, pc));  /* in case of errors */
             if (cptr.eq((newci = (yield* luaD_precall(L, ra, nresults))), (null))) { __pc = 94; continue; }
@@ -39509,16 +39525,16 @@ function* luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            b__7 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));  /* number of arguments + 1 (function) */
             nparams1 = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
             /* delta is virtual 'func' - real 'func' (vararg functions) */
             delta = (nparams1) ? (cptr.ldI32o(ci, $CallInfo_u + 12) + nparams1) | 0 : 0;
-            if (b != 0)
-                cptr.stPtro(L, $lua_State_top, cptr.add(ra, b, 16));
+            if (b__7 != 0)
+                cptr.stPtro(L, $lua_State_top, cptr.add(ra, b__7, 16));
             else
-                b = (Number(BigInt.asIntN(
+                b__7 = (Number(BigInt.asIntN(
                     32,
                     ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
                 )));
@@ -39528,7 +39544,7 @@ function* luaV_execute(L, ci) {
                 (void 0);  /* no pending tbc variables */
                 (void 0);
             }
-            if ((n = (yield* luaD_pretailcall(L, ci, ra, b, delta))) < 0) { __pc = 97; continue; }
+            if ((n__3 = (yield* luaD_pretailcall(L, ci, ra, b__7, delta))) < 0) { __pc = 97; continue; }
             __pc = 98; continue;
         }
         case 97: {
@@ -39536,7 +39552,7 @@ function* luaV_execute(L, ci) {
         }
         case 98: {
             cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));  /* restore 'func' (if vararg) */
-            (yield* luaD_poscall(L, ci, n));  /* finish caller */
+            (yield* luaD_poscall(L, ci, n__3));  /* finish caller */
             (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* 'luaD_poscall' can change hooks */
             { __pc = 76; continue; }
         }
@@ -39550,18 +39566,19 @@ function* luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = (((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+            n__4 = (((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
                     0))) - 1) | 0;  /* number of results */
             nparams1 = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
-            if (n < 0)
-                n = (Number(BigInt.asIntN(
+            if (n__4 < 0)
+                n__4 = (Number(BigInt.asIntN(
                     32,
                     ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
                 )));  /* get what is available */
             (cptr.stPtro(ci, $CallInfo_u, pc));
             if (((((((((i) & 32768) >>> 0))) | 0)))) {
-                cptr.stI32o(ci, $CallInfo_u2, n);  /* save number of returns */
+                cptr.stI32o(ci, $CallInfo_u2, n__4);  /* save number of returns */
                 if (cptr.cmp(cptr.ldPtro(L, $lua_State_top), cptr.ldPtro(ci, $CallInfo_top)) < 0)
                     cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));
                 (yield* luaF_close(L, base, -1, 1));
@@ -39586,8 +39603,8 @@ function* luaV_execute(L, ci) {
                     ci,
                     cptr.sub(cptr.ldPtr(ci), (cptr.ldI32o(ci, $CallInfo_u + 12) + nparams1) | 0, 16)
                 );
-            cptr.stPtro(L, $lua_State_top, cptr.add(ra, n, 16));  /* set call for 'luaD_poscall' */
-            (yield* luaD_poscall(L, ci, n));
+            cptr.stPtro(L, $lua_State_top, cptr.add(ra, n__4, 16));  /* set call for 'luaD_poscall' */
+            (yield* luaD_poscall(L, ci, n__4));
             (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* 'luaD_poscall' can change hooks */
             { __pc = 76; continue; }
         }
@@ -39915,19 +39932,19 @@ function* luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            n__5 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
             last = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
                     0))) >>> 0;
             h = ((((((cptr.ldPtr(((((ra)))))))))));
-            if (n == 0)
-                n = ((Number(BigInt.asIntN(
+            if (n__5 == 0)
+                n__5 = ((Number(BigInt.asIntN(
                     32,
                     ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
                 ))) - 1) | 0;  /* get up to the top */
             else
                 cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* correct top in case of emergency GC */
-            last = (last + (n >>> 0)) >>> 0;
+            last = (last + (n__5 >>> 0)) >>> 0;
             if (((((((((i) & 32768) >>> 0))) | 0)))) {
                 last = (last +
                         (Math.imul(
@@ -39942,8 +39959,8 @@ function* luaV_execute(L, ci) {
             }
             if (last > luaH_realasize(h))
                 (yield* luaH_resizearray(L, h, last));  /* preallocate it at once */
-            for (; n > 0; n--) {
-                val = ((cptr.add(ra, n, 16)));
+            for (; n__5 > 0; n__5--) {
+                val = ((cptr.add(ra, n__5, 16)));
                 {
                     io1 = (cptr.add(
                         cptr.ldPtro(h, $Table_array),
@@ -40043,14 +40060,15 @@ function* luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = (((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+            n__6 = (((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
                     0))) - 1) | 0;  /* required results */
             (
                 (
                     (cptr.stPtro(ci, $CallInfo_u, pc)),
                     cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
                 ),
-                ((yield* luaT_getvarargs(L, ci, ra, n))),
+                ((yield* luaT_getvarargs(L, ci, ra, n__6))),
                 (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
             );
             if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
@@ -41283,7 +41301,7 @@ function* addnum2buff(buff, num) {
  * @returns {CPtr<char>}
  */
 function* luaO_pushvfstring(L, fmt, argp) {
-    let buff, e, s, c = cptr.box(0, "i8"), num, io, sz, bf, p, len;
+    let buff, e, s, c = cptr.box(0, "i8"), num, io, sz, bf, p, len, bf__2;
     let __pc = 0;
     __dispatch: while (true) {
         switch (__pc) {
@@ -41392,11 +41410,11 @@ function* luaO_pushvfstring(L, fmt, argp) {
             { __pc = 10; continue; }
         }
         case 7 /* duff_1_case_6: */: {
-            bf = new Uint8Array(8);
-            len = luaO_utf8esc(cptr.decay(bf), BigInt.asUintN(64, cptr.vaArg(argp, 'i64')));
+            bf__2 = new Uint8Array(8);
+            len = luaO_utf8esc(cptr.decay(bf__2), BigInt.asUintN(64, cptr.vaArg(argp, 'i64')));
             (yield* addstr2buff(
                 buff,
-                cptr.add(cptr.add(cptr.decay(bf), 8), -(len)),
+                cptr.add(cptr.add(cptr.decay(bf__2), 8), -(len)),
                 BigInt.asUintN(64, BigInt(len))
             ));
             { __pc = 10; continue; }
@@ -42401,8 +42419,8 @@ function* luaH_newkey(L, t, key, value) {
     if (!(((((cptr.ld1uo(((((mp)))), $TValue_tt_))) & 15)) == 0) ||
             (cptr.eq(cptr.ldPtro((t), $Table_lastfree), (null)))) {
         let othern;
-        let f = (yield* getfreepos(t));  /* get a free place */
-        if (cptr.eq(f, (null))) {
+        let f__2 = (yield* getfreepos(t));  /* get a free place */
+        if (cptr.eq(f__2, (null))) {
             (yield* rehash(L, t, key));  /* grow table */
             /* whatever called 'newkey' takes care of TM cache */
             (yield* luaH_set(L, t, key, value));  /* insert key into grown table */
@@ -42417,15 +42435,15 @@ function* luaH_newkey(L, t, key, value) {
             cptr.stI32o(
                 (othern),
                 $NodeKey_next,
-                (Number(BigInt.asIntN(32, ((cptr.diff(f, othern) / 24n)))))
+                (Number(BigInt.asIntN(32, ((cptr.diff(f__2, othern) / 24n)))))
             );  /* rechain to point to 'f' */
-            cptr.memcpy(f, mp, 24);  /* copy colliding node into free pos. (mp->next also goes) */
+            cptr.memcpy(f__2, mp, 24);  /* copy colliding node into free pos. (mp->next also goes) */
             if ((cptr.ldI32o((mp), $NodeKey_next)) != 0) {
                 cptr.stI32o(
-                    (f),
+                    (f__2),
                     $NodeKey_next,
-                    (cptr.ldI32o((f), $NodeKey_next) +
-                        (Number(BigInt.asIntN(32, ((cptr.diff(mp, f) / 24n)))))) | 0
+                    (cptr.ldI32o((f__2), $NodeKey_next) +
+                        (Number(BigInt.asIntN(32, ((cptr.diff(mp, f__2) / 24n)))))) | 0
                 );  /* correct 'next' */
                 cptr.stI32o((mp), $NodeKey_next, 0);  /* now 'mp' is free */
             }
@@ -42434,13 +42452,13 @@ function* luaH_newkey(L, t, key, value) {
             /* new node will go into free position */
             if ((cptr.ldI32o((mp), $NodeKey_next)) != 0)
                 cptr.stI32o(
-                    (f),
+                    (f__2),
                     $NodeKey_next,
                     (Number(BigInt.asIntN(
                         32,
                         ((cptr.diff(
                             (cptr.add(mp, (cptr.ldI32o((mp), $NodeKey_next)), 24)),
-                            f
+                            f__2
                         ) / 24n))
                     )))
                 );  /* chain new position */
@@ -42449,9 +42467,9 @@ function* luaH_newkey(L, t, key, value) {
             cptr.stI32o(
                 (mp),
                 $NodeKey_next,
-                (Number(BigInt.asIntN(32, ((cptr.diff(f, mp) / 24n)))))
+                (Number(BigInt.asIntN(32, ((cptr.diff(f__2, mp) / 24n)))))
             );
-            mp = f;
+            mp = f__2;
         }
     }
     {
@@ -43978,14 +43996,14 @@ function* freeobj(L, o) {
             }
         case 38:
             {
-                let cl = (((((o)))));
+                let cl__2 = (((((o)))));
                 (yield* luaM_free_(
                     L,
-                    (cl),
+                    (cl__2),
                     BigInt.asUintN(
                         64,
                         BigInt(((((32) +
-                            Math.imul(16, (cptr.ld1uo(cl, $CClosure_nupvalues)))) | 0)))
+                            Math.imul(16, (cptr.ld1uo(cl__2, $CClosure_nupvalues)))) | 0)))
                     )
                 ));
                 break;
@@ -49961,8 +49979,8 @@ function* init_registry(L, g) {
     {
         /* registry[LUA_RIDX_MAINTHREAD] = L */
         let io = (cptr.add(cptr.ldPtro(registry, $Table_array), 0, $sizeof_TValue));
-        let x_ = (L);
-        cptr.stPtr(((io)), ((((x_)))));
+        let x___2 = (L);
+        cptr.stPtr(((io)), ((((x___2)))));
         (cptr.st1o((io), $TValue_tt_, 72));
         (void L, (void 0));
     }
@@ -56369,8 +56387,8 @@ function* luaY_parser(L, z, buff, dyd, name, firstchar) {
     cptr.stPtro(lexstate, $LexState_h, (yield* luaH_new(L)));  /* create table for scanner */
     {
         let io = (((cptr.ldPtro(L, $lua_State_top))));  /* anchor it */
-        let x_ = (cptr.ldPtro(lexstate, $LexState_h));
-        cptr.stPtr(((io)), ((((x_)))));
+        let x___2 = (cptr.ldPtro(lexstate, $LexState_h));
+        cptr.stPtr(((io)), ((((x___2)))));
         (cptr.st1o((io), $TValue_tt_, 69));
         (void L, (void 0));
     }
@@ -62147,17 +62165,17 @@ function aux_upvalue(fi, n, val, owner) {
             }
         case 6:
             {
-                let f = ((((((cptr.ldPtr(((fi)))))))));
+                let f__2 = ((((((cptr.ldPtr(((fi)))))))));
                 let name;
-                let p = cptr.ldPtro(f, $LClosure_p);
+                let p = cptr.ldPtro(f__2, $LClosure_p);
                 if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ldI32o(p, $Proto_sizeupvalues))) >>> 0)))
                     return null;  /* 'n' not in [1, p->sizeupvalues] */
                 cptr.stPtr(
                     val,
-                    cptr.ldPtro(cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals), $UpVal_v)
+                    cptr.ldPtro(cptr.ldPtro2(f__2, (n - 1) | 0, 8, $LClosure_upvals), $UpVal_v)
                 );
                 if (owner)
-                    cptr.stPtr(owner, ((((cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals))))));
+                    cptr.stPtr(owner, ((((cptr.ldPtro2(f__2, (n - 1) | 0, 8, $LClosure_upvals))))));
                 name = cptr.ldPtro(cptr.ldPtro(p, $Proto_upvalues), (n - 1) | 0, $sizeof_Upvaldesc);
                 return (cptr.eq(name, (null)))
                         ? __s_no_name
@@ -165742,7 +165760,7 @@ function* fixup_special() {
         x++,
         r = cptr.add(r, 1, 32)
     ) {
-        switch (cptr.ldI16o(r, $lev_region_rtype)) {
+        __sw_1: switch (cptr.ldI16o(r, $lev_region_rtype)) {
             case NHC.LR_BRANCH:
                 added_branch = 1;
                 {
@@ -165758,7 +165776,7 @@ function* fixup_special() {
                         cptr.ldI16o(r, $lev_region_rtype),
                         lev
                     ));
-                    break;
+                    break __sw_1;
                 }
             case NHC.LR_PORTAL:
                 if (cptr.ld1s(cptr.ldPtro(r, $lev_region_rname)) >= 48 &&
@@ -175393,7 +175411,7 @@ function* fill_zoo(sroom) {
     /* Note: This doesn't check needfill; it assumes the caller has already
        done that. */
     sh = cptr.ldI32o(sroom, $mkroom_fdoor);
-    switch (type) {
+    __sw_1: switch (type) {
         case NHC.COURT:
             if (cptr.ldBits(
                 cptr.add(
@@ -175421,7 +175439,7 @@ function* fill_zoo(sroom) {
                                 NHC.THRONE))
                             {
                                 (yield* mk_zoo_thronemon(tx, ty));
-                                break;
+                                break __sw_1;
                             }
             }
             i = 100;
@@ -191262,7 +191280,7 @@ function* wiz_intrinsic() {
                     break;
             }
 
-            switch (p.v) {
+            __sw_1: switch (p.v) {
                 case NHC.BLINDED:
                     (yield* make_blinded(newtimeout, 1));
                     break;
@@ -191348,7 +191366,7 @@ function* wiz_intrinsic() {
                             oldtimeout ? __s_increased_by : __s_set_to,
                             amt
                         ));
-                        break;
+                        break __sw_1;
                     }
                 case NHC.GLIB:
                     /* slippery fingers might need a persistent inventory update
@@ -244378,10 +244396,10 @@ function* pickup(what) {
 
                     lcount = -1n;
                     if (!all_of_a_type.v) {
-                        let qbuf = new Uint8Array(256);
+                        let qbuf__2 = new Uint8Array(256);
 
                         void (yield* safe_qbuf(
-                            cptr.decay(qbuf),
+                            cptr.decay(qbuf__2),
                             __s_pick_up__2,
                             __s_query$pickup,
                             obj,
@@ -244390,8 +244408,13 @@ function* pickup(what) {
                             cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
                         ));
                         switch ((cptr.ldI64o(obj, $obj_quan) < 2n)
-                                ? (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynaqchars), 121, 1))
-                                : (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynNaqchars), 121, 1))) {
+                                ? (yield* yn_function(cptr.decay(qbuf__2), cptr.decay(ynaqchars), 121, 1))
+                                : (yield* yn_function(
+                                    cptr.decay(qbuf__2),
+                                    cptr.decay(ynNaqchars),
+                                    121,
+                                    1
+                                ))) {
                             case 113:
                                 break __lbl_end_query;  /* out 2 levels */
                             case 110:
@@ -252675,7 +252698,7 @@ function* garlic_breath(mtmp) {
  */
 /** C ref: eat.c:2099 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function* fprefx(otmp) {
-    switch (cptr.ldI16o(otmp, $obj_otyp)) {
+    __sw_1: switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.EGG:
             if (cptr.ldI32o(otmp, $obj_corpsenm) == NHC.PM_PYROLISK) {
                 if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
@@ -252707,7 +252730,7 @@ function* fprefx(otmp) {
                                 ? __s_bland
                                 : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                     ));
-                    break;  /* default */
+                    break __sw_1;  /* default */
                 }
             break;
         case NHC.FOOD_RATION:
@@ -252799,7 +252822,7 @@ function* fprefx(otmp) {
                             ? __s_bland
                             : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                 ));
-                break;
+                break __sw_1;
             }
         case NHC.MEATBALL:
         case NHC.MEAT_STICK:
@@ -252817,7 +252840,7 @@ function* fprefx(otmp) {
                             ? __s_bland
                             : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                 ));
-                break;
+                break __sw_1;
             }
         case NHC.CLOVE_OF_GARLIC:
             if (((cptr.ldU64o(
@@ -305283,7 +305306,7 @@ function* trapmove(x, y, desttrap) {
      * Note: caller should call reset_utrap() when we set u.utrap to 0.
      */
 
-    switch (cptr.ldI32o(u, $you_utraptype) >>> 0) {
+    __sw_1: switch (cptr.ldI32o(u, $you_utraptype) >>> 0) {
         case NHC.TT_BEARTRAP:
             if (cptr.ld1so(flags, $flag_verbose)) {
                 predicament = __s_caught_in_a_bear_trap;
@@ -305307,7 +305330,7 @@ function* trapmove(x, y, desttrap) {
                         (yield* You(__s_finally_s_free, !anchored ? __s_wriggle : __s_wrench_the_ball));
                     if (anchored)
                         (yield* buried_ball_to_punishment());
-                    break;
+                    break __sw_1;
                 }
             break;
         case NHC.TT_PIT:
@@ -341502,7 +341525,7 @@ function* make_corpse(mtmp, corpseflags) {
     else if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 262144n) != 0n))
         corpstatflags = (corpstatflags | NHM.CORPSTAT_MALE) >>> 0;
 
-    switch (mndx) {
+    __sw_1: switch (mndx) {
         case NHC.PM_GRAY_DRAGON:
         case NHC.PM_GOLD_DRAGON:
         case NHC.PM_SILVER_DRAGON:
@@ -341565,7 +341588,7 @@ function* make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_WHITE_UNICORN:
         case NHC.PM_GRAY_UNICORN:
@@ -341619,7 +341642,7 @@ function* make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_LONG_WORM:
             void (yield* mksobj_at(NHC.WORM_TOOTH, x, y, 1, 0));
@@ -341660,7 +341683,7 @@ function* make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_VAMPIRE:
         case NHC.PM_VAMPIRE_LEADER:
@@ -393196,6 +393219,7 @@ function* str_format(L) {
             buff,
             nb,
             n,
+            n__2,
             p,
             l = cptr.box(0, "u64"),
             s;
@@ -393369,10 +393393,10 @@ function* str_format(L) {
             continue;
         }
         case 26: {
-            n = (yield* luaL_checknumber(L, arg));
+            n__2 = (yield* luaL_checknumber(L, arg));
             (yield* checkformat(L, cptr.decay(form), __s_dash_plus_hash_0_sp, 1));
             addlenmod(cptr.decay(form), __s_empty$lstrlib);
-            nb = cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), n);
+            nb = cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), n__2);
             { __pc = 11; continue; }
         }
         case 27: {
@@ -393836,10 +393860,10 @@ function* str_pack(L) {
                 }
             case NHC.Knumber:
                 {
-                    let f = cptr.box((yield* luaL_checknumber(L, arg)), "f64");  /* get argument */
+                    let f__2 = cptr.box((yield* luaL_checknumber(L, arg)), "f64");  /* get argument */
                     let buff = (yield* luaL_prepbuffsize(b, 8n));
                     /* move 'f' to final result, correcting endianness if needed */
-                    (yield* copywithendian(buff, cptr.byteView(f), 8, cptr.ldI32o(h, $Header_islittle)));
+                    (yield* copywithendian(buff, cptr.byteView(f__2), 8, cptr.ldI32o(h, $Header_islittle)));
                     (cptr.stU64o(
                         (b),
                         $luaL_Buffer_n,
@@ -393852,10 +393876,10 @@ function* str_pack(L) {
                 }
             case NHC.Kdouble:
                 {
-                    let f = cptr.box((yield* luaL_checknumber(L, arg)), "f64");  /* get argument */
+                    let f__3 = cptr.box((yield* luaL_checknumber(L, arg)), "f64");  /* get argument */
                     let buff = (yield* luaL_prepbuffsize(b, 8n));
                     /* move 'f' to final result, correcting endianness if needed */
-                    (yield* copywithendian(buff, cptr.byteView(f), 8, cptr.ldI32o(h, $Header_islittle)));
+                    (yield* copywithendian(buff, cptr.byteView(f__3), 8, cptr.ldI32o(h, $Header_islittle)));
                     (cptr.stU64o(
                         (b),
                         $luaL_Buffer_n,
@@ -394042,10 +394066,11 @@ function* unpackint(L, str, islittle, size, issigned) {
             res = (BigInt.asUintN(64, (res ^ mask) - mask));  /* do sign extension */
         }
     } else if (size > 8) {
-        let mask = (!issigned || BigInt.asIntN(64, res) >= 0n) ? 0 : 255;
+        let mask__2 = (!issigned || BigInt.asIntN(64, res) >= 0n) ? 0 : 255;
         for (i = limit; i < size; i++) {
             if ((__builtin_expect(
-                BigInt(((uchar(cptr.ld1so(str, islittle ? i : (size - 1 - i) | 0)) != mask) != 0)),
+                BigInt(((uchar(cptr.ld1so(str, islittle ? i : (size - 1 - i) | 0)) != mask__2) !=
+                    0)),
                 0n
             )))
                 (yield* luaL_error(L, __s_d_byte_integer_does_not_fit_into_lua, size));
@@ -394115,26 +394140,26 @@ function* str_unpack(L) {
                 }
             case NHC.Knumber:
                 {
-                    let f = cptr.box(0, "f64");
+                    let f__2 = cptr.box(0, "f64");
                     (yield* copywithendian(
-                        cptr.byteView(f),
+                        cptr.byteView(f__2),
                         cptr.add(data, pos),
                         8,
                         cptr.ldI32o(h, $Header_islittle)
                     ));
-                    (yield* lua_pushnumber(L, f.v));
+                    (yield* lua_pushnumber(L, f__2.v));
                     break;
                 }
             case NHC.Kdouble:
                 {
-                    let f = cptr.box(0, "f64");
+                    let f__3 = cptr.box(0, "f64");
                     (yield* copywithendian(
-                        cptr.byteView(f),
+                        cptr.byteView(f__3),
                         cptr.add(data, pos),
                         8,
                         cptr.ldI32o(h, $Header_islittle)
                     ));
-                    (yield* lua_pushnumber(L, f.v));
+                    (yield* lua_pushnumber(L, f__3.v));
                     break;
                 }
             case NHC.Kchar:
@@ -417342,7 +417367,7 @@ function* zap_map(x, y, obj) {
         /*
          * Probing, either up/down or lateral.
          */
-        let ltyp;
+        let ltyp__2;
         let oldtyp;
         let oldglyph;
 
@@ -417355,9 +417380,9 @@ function* zap_map(x, y, obj) {
             /* TODO: ought to give some message */
             learn_it.v = 1;
         }
-        ltyp = schar(SURFACE_AT(x, y));
+        ltyp__2 = schar(SURFACE_AT(x, y));
         /* secret door gets revealed, converted into regular door */
-        if (ltyp == NHC.SDOOR) {
+        if (ltyp__2 == NHC.SDOOR) {
             cvt_sdoor_to_door(cptr.add(
                 cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
                 y,
@@ -417394,7 +417419,7 @@ function* zap_map(x, y, obj) {
             /* secret corridor likewise, although only ones within view will
                still be secret; for the !cansee(x,y) case, show_map_spot()
                above has already converted the spot to regular corridor */
-        } else if (ltyp == NHC.SCORR) {
+        } else if (ltyp__2 == NHC.SCORR) {
             cptr.st1o3(
                 svl,
                 x,
@@ -417411,7 +417436,7 @@ function* zap_map(x, y, obj) {
 
             /* if on or over ice, describe it ("solid ice", "thin ice", &c);
                likewise for furniture in case hero is levitating while blind */
-        } else if (ltyp == NHC.ICE || IS_FURNITURE(ltyp)) {
+        } else if (ltyp__2 == NHC.ICE || IS_FURNITURE(ltyp__2)) {
             if (cptr.ldI32o(u, $you_dz) > 0) {
                 (yield* force_decor(1));
                 learn_it.v = 1;
@@ -454389,7 +454414,7 @@ function* wall_angle(lev) {
     let row;
     let col;
     let idx;
-    switch (cptr.ld1so(lev, $rm_typ)) {
+    __sw_1: switch (cptr.ld1so(lev, $rm_typ)) {
         case NHC.TUWALL:
             row = cptr.add(wall_matrix, 2, 20);
             seenv = (((seenv >>> 4 | (seenv << 4) >>> 0) >>> 0) & 255) >>> 0;  /* rotate to tdwall */
@@ -454455,7 +454480,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TLWALL:
             row = cptr.add(wall_matrix, 1, 20);
@@ -454520,7 +454545,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TRWALL:
             row = cptr.add(wall_matrix, 3, 20);
@@ -454585,7 +454610,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TDWALL:
             row = cptr.add(wall_matrix, 0, 20);
@@ -454674,7 +454699,7 @@ function* wall_angle(lev) {
                             idx = NHC.S_stone;
                             break;
                     }
-                    break;
+                    break __sw_1;
                 }
             // @FallThrough
             ;
@@ -454807,7 +454832,7 @@ function* wall_angle(lev) {
             ;
             break;
         case NHC.CROSSWALL:
-            switch ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.WM_MASK) {
+            __sw_2: switch ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.WM_MASK) {
                 case 0:
                     if (seenv == 1)
                         idx = NHC.S_brcorn;
@@ -454863,7 +454888,7 @@ function* wall_angle(lev) {
 
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_TR:
                     row = cptr.add(cross_matrix, 2, 24);
@@ -454899,7 +454924,7 @@ function* wall_angle(lev) {
                             }
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_BL:
                     row = cptr.add(cross_matrix, 0, 24);
@@ -454935,7 +454960,7 @@ function* wall_angle(lev) {
                             }
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_BR:
                     row = cptr.add(cross_matrix, 3, 24);

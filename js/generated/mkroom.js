@@ -373,7 +373,7 @@ export function fill_zoo(sroom) {
     /* Note: This doesn't check needfill; it assumes the caller has already
        done that. */
     sh = cptr.ldI32o(sroom, $mkroom_fdoor);
-    switch (type) {
+    __sw_1: switch (type) {
         case NHC.COURT:
             if (cptr.ldBits(
                 cptr.add(
@@ -401,7 +401,7 @@ export function fill_zoo(sroom) {
                                 NHC.THRONE))
                             {
                                 mk_zoo_thronemon(tx, ty);
-                                break;
+                                break __sw_1;
                             }
             }
             i = 100;

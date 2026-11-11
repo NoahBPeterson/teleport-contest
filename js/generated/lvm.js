@@ -235,32 +235,32 @@ function forprep(L, ra) {
     let pstep = ((cptr.add(ra, 2, 16)));
     if (((cptr.ld1uo(((pinit)), $TValue_tt_)) == 3) &&
             ((cptr.ld1uo(((pstep)), $TValue_tt_)) == 3)) {
-        let init = cptr.box((cptr.ldI64(((pinit)))), "i64");
-        let step = cptr.box((cptr.ldI64(((pstep)))), "i64");
+        let init = (cptr.ldI64(((pinit))));
+        let step = (cptr.ldI64(((pstep))));
         let limit = cptr.box(0n, "i64");
-        if (step.v == 0n)
+        if (step == 0n)
             luaG_runerror(L, __s_for_step_is_zero);
         {
             let io = (((cptr.add(ra, 3, 16))));  /* control variable */
-            cptr.stI64(((io)), (init.v));
+            cptr.stI64(((io)), (init));
             (cptr.st1o((io), $TValue_tt_, 3));
         }
         ;
-        if (forlimit(L, init.v, plimit, limit, step.v))
+        if (forlimit(L, init, plimit, limit, step))
             return 1;  /* skip the loop */
         else {
             let count;
-            if (step.v > 0n) {
+            if (step > 0n) {
                 count = BigInt.asUintN(
                     64,
-                    (BigInt.asUintN(64, (limit.v))) - (BigInt.asUintN(64, (init.v)))
+                    (BigInt.asUintN(64, (limit.v))) - (BigInt.asUintN(64, (init)))
                 );
-                if (step.v != 1n)
-                    count = count / (BigInt.asUintN(64, (step.v)));
+                if (step != 1n)
+                    count = count / (BigInt.asUintN(64, (step)));
             } else {
                 count = BigInt.asUintN(
                     64,
-                    (BigInt.asUintN(64, (init.v))) - (BigInt.asUintN(64, (limit.v)))
+                    (BigInt.asUintN(64, (init))) - (BigInt.asUintN(64, (limit.v)))
                 );
                 /* 'step+1' avoids negating 'mininteger' */
                 count = count /
@@ -268,7 +268,7 @@ function forprep(L, ra) {
                             64,
                             (BigInt.asUintN(
                                 64,
-                                (BigInt.asIntN(64, -(BigInt.asIntN(64, step.v + 1n))))
+                                (BigInt.asIntN(64, -(BigInt.asIntN(64, step + 1n))))
                             )) + 1n
                         );
             }
@@ -282,60 +282,60 @@ function forprep(L, ra) {
             ;
         }
     } else {
-        let init = cptr.box(0, "f64");
-        let limit = cptr.box(0, "f64");
-        let step = cptr.box(0, "f64");
+        let init__2 = cptr.box(0, "f64");
+        let limit__2 = cptr.box(0, "f64");
+        let step__2 = cptr.box(0, "f64");
         if ((__builtin_expect(
             BigInt(((!(((cptr.ld1uo(((plimit)), $TValue_tt_)) == 19)
-                ? (cptr.stF64((limit), (cptr.ldF64(((plimit))))), 1)
-                : luaV_tonumber_(plimit, limit))) !=
+                ? (cptr.stF64((limit__2), (cptr.ldF64(((plimit))))), 1)
+                : luaV_tonumber_(plimit, limit__2))) !=
                 0)),
             0n
         )))
             luaG_forerror(L, plimit, __s_limit);
         if ((__builtin_expect(
             BigInt(((!(((cptr.ld1uo(((pstep)), $TValue_tt_)) == 19)
-                ? (cptr.stF64((step), (cptr.ldF64(((pstep))))), 1)
-                : luaV_tonumber_(pstep, step))) !=
+                ? (cptr.stF64((step__2), (cptr.ldF64(((pstep))))), 1)
+                : luaV_tonumber_(pstep, step__2))) !=
                 0)),
             0n
         )))
             luaG_forerror(L, pstep, __s_step);
         if ((__builtin_expect(
             BigInt(((!(((cptr.ld1uo(((pinit)), $TValue_tt_)) == 19)
-                ? (cptr.stF64((init), (cptr.ldF64(((pinit))))), 1)
-                : luaV_tonumber_(pinit, init))) !=
+                ? (cptr.stF64((init__2), (cptr.ldF64(((pinit))))), 1)
+                : luaV_tonumber_(pinit, init__2))) !=
                 0)),
             0n
         )))
             luaG_forerror(L, pinit, __s_initial_value);
-        if (step.v == 0)
+        if (step__2.v == 0)
             luaG_runerror(L, __s_for_step_is_zero);
-        if ((0 < (step.v)) ? ((limit.v) < (init.v)) : ((init.v) < (limit.v)))
+        if ((0 < (step__2.v)) ? ((limit__2.v) < (init__2.v)) : ((init__2.v) < (limit__2.v)))
             return 1;  /* skip the loop */
         else {
             {
                 /* make sure internal values are all floats */
                 let io = (plimit);
-                cptr.stF64(((io)), (limit.v));
+                cptr.stF64(((io)), (limit__2.v));
                 (cptr.st1o((io), $TValue_tt_, 19));
             }
             ;
             {
                 let io = (pstep);
-                cptr.stF64(((io)), (step.v));
+                cptr.stF64(((io)), (step__2.v));
                 (cptr.st1o((io), $TValue_tt_, 19));
             }
             ;
             {
                 let io = (((ra)));  /* internal index */
-                cptr.stF64(((io)), (init.v));
+                cptr.stF64(((io)), (init__2.v));
                 (cptr.st1o((io), $TValue_tt_, 19));
             }
             ;
             {
                 let io = (((cptr.add(ra, 3, 16))));  /* control variable */
-                cptr.stF64(((io)), (init.v));
+                cptr.stF64(((io)), (init__2.v));
                 (cptr.st1o((io), $TValue_tt_, 19));
             }
             ;
@@ -1605,7 +1605,10 @@ export function luaV_execute(L, ci) {
             io2,
             b,
             io,
+            b__2,
             rb,
+            b__3,
+            b__4,
             uv,
             slot,
             upval,
@@ -1613,6 +1616,9 @@ export function luaV_execute(L, ci) {
             key,
             n,
             c,
+            key__2,
+            key__3,
+            b__5,
             t,
             x_,
             v1,
@@ -1631,6 +1637,8 @@ export function luaV_execute(L, ci) {
             tm,
             result,
             flip,
+            imm__2,
+            n__2,
             cond,
             ni,
             ia,
@@ -1639,17 +1647,23 @@ export function luaV_execute(L, ci) {
             fim,
             isf,
             newci,
+            b__6,
             nresults,
+            b__7,
+            n__3,
             nparams1,
             delta,
+            n__4,
             nres,
             count,
             step,
             idx,
+            n__5,
             last,
             h,
             val,
-            p;
+            p,
+            n__6;
     const __smNums = {
         "startfunc": 1,
         "returning": 2,
@@ -1860,11 +1874,12 @@ export function luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = (((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+            b__2 = (((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
                 0)) -
                     65535) | 0);
             io = (((ra)));
-            cptr.stF64(((io)), ((((b)))));
+            cptr.stF64(((io)), ((((b__2)))));
             (cptr.st1o((io), $TValue_tt_, 19));
             ;
             if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
@@ -2050,11 +2065,11 @@ export function luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            b__3 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
             do {
                 (cptr.st1o((((cptr.postinc(() => ra, (v) => { ra = v; }, 16)))), $TValue_tt_, 0));
-            } while (b--);
+            } while (b__3--);
             if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
                 trap = luaG_traceexec(L, pc);
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
@@ -2080,10 +2095,10 @@ export function luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            b__4 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
             io1 = (((ra)));
-            io2 = (cptr.ldPtro(cptr.ldPtro2(cl, b, 8, $LClosure_upvals), $UpVal_v));
+            io2 = (cptr.ldPtro(cptr.ldPtro2(cl, b__4, 8, $LClosure_upvals), $UpVal_v));
             cptr.memcpy(io1, io2, 8);
             (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
             (void L, (void 0));
@@ -2343,9 +2358,9 @@ export function luaV_execute(L, ci) {
                 }
                 ;
             } else {
-                key = cptr.alloc(16);
+                key__2 = cptr.alloc(16);
                 {
-                    io = (key);
+                    io = (key__2);
                     cptr.stI64(((io)), BigInt((c)));
                     (cptr.st1o((io), $TValue_tt_, 3));
                 }
@@ -2355,7 +2370,7 @@ export function luaV_execute(L, ci) {
                         (cptr.stPtro(ci, $CallInfo_u, pc)),
                         cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
                     ),
-                    (luaV_finishget(L, rb, key, ra, slot)),
+                    (luaV_finishget(L, rb, key__2, ra, slot)),
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
             }
@@ -2690,9 +2705,9 @@ export function luaV_execute(L, ci) {
                 }
                 ;
             } else {
-                key = cptr.alloc(16);
+                key__3 = cptr.alloc(16);
                 {
-                    io = (key);
+                    io = (key__3);
                     cptr.stI64(((io)), BigInt((c)));
                     (cptr.st1o((io), $TValue_tt_, 3));
                 }
@@ -2702,7 +2717,7 @@ export function luaV_execute(L, ci) {
                         (cptr.stPtro(ci, $CallInfo_u, pc)),
                         cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
                     ),
-                    (luaV_finishset(L, ((ra)), key, rc, slot)),
+                    (luaV_finishset(L, ((ra)), key__3, rc, slot)),
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
             }
@@ -2811,12 +2826,12 @@ export function luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            b__5 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));  /* log2(hash size) + 1 */
             c = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));  /* array size */
-            if (b > 0)
-                b = 1 << (b - 1);  /* size is 2^(b - 1) */
+            if (b__5 > 0)
+                b__5 = 1 << (b__5 - 1);  /* size is 2^(b - 1) */
             (void 0);
             if (((((((((i) & 32768) >>> 0))) | 0))))
                 c = (c +
@@ -2836,8 +2851,8 @@ export function luaV_execute(L, ci) {
             (cptr.st1o((io), $TValue_tt_, 69));
             (void L, (void 0));
             ;
-            if (b != 0 || c != 0)
-                luaH_resize(L, t, c >>> 0, b >>> 0);  /* idem */
+            if (b__5 != 0 || c != 0)
+                luaH_resize(L, t, c >>> 0, b__5 >>> 0);  /* idem */
             if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
                 (
                     (cptr.stPtro(ci, $CallInfo_u, pc)),
@@ -4672,7 +4687,7 @@ export function luaV_execute(L, ci) {
                 16
             ));
             pi = cptr.ldI32((cptr.add(pc, -(2), 4))) >>> 0;  /* original arith. expression */
-            imm = (cptr.add(
+            imm__2 = (cptr.add(
                 k,
                 ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
                     0))),
@@ -4693,7 +4708,7 @@ export function luaV_execute(L, ci) {
                     (cptr.stPtro(ci, $CallInfo_u, pc)),
                     cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
                 ),
-                (luaT_trybinassocTM(L, ((ra)), imm, flip, result, tm)),
+                (luaT_trybinassocTM(L, ((ra)), imm__2, flip, result, tm)),
                 (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
             );
             if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
@@ -4914,12 +4929,12 @@ export function luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            n__2 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));  /* number of elements to concatenate */
-            cptr.stPtro(L, $lua_State_top, cptr.add(ra, n, 16));  /* mark the end of concat operands */
+            cptr.stPtro(L, $lua_State_top, cptr.add(ra, n__2, 16));  /* mark the end of concat operands */
             (
                 (cptr.stPtro(ci, $CallInfo_u, pc)),
-                (luaV_concat(L, n)),
+                (luaV_concat(L, n__2)),
                 (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
             );
             if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
@@ -5781,13 +5796,13 @@ export function luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            b__6 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
             nresults = (((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                 0)) |
                     0))) - 1) | 0;
-            if (b != 0)
-                cptr.stPtro(L, $lua_State_top, cptr.add(ra, b, 16));  /* top signals number of arguments */
+            if (b__6 != 0)
+                cptr.stPtro(L, $lua_State_top, cptr.add(ra, b__6, 16));  /* top signals number of arguments */
             /* else previous instruction set top */
             (cptr.stPtro(ci, $CallInfo_u, pc));  /* in case of errors */
             if (cptr.eq((newci = luaD_precall(L, ra, nresults)), (null))) { __pc = 94; continue; }
@@ -5828,16 +5843,16 @@ export function luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            b__7 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));  /* number of arguments + 1 (function) */
             nparams1 = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
             /* delta is virtual 'func' - real 'func' (vararg functions) */
             delta = (nparams1) ? (cptr.ldI32o(ci, $CallInfo_u + 12) + nparams1) | 0 : 0;
-            if (b != 0)
-                cptr.stPtro(L, $lua_State_top, cptr.add(ra, b, 16));
+            if (b__7 != 0)
+                cptr.stPtro(L, $lua_State_top, cptr.add(ra, b__7, 16));
             else
-                b = (Number(BigInt.asIntN(
+                b__7 = (Number(BigInt.asIntN(
                     32,
                     ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
                 )));
@@ -5847,7 +5862,7 @@ export function luaV_execute(L, ci) {
                 (void 0);  /* no pending tbc variables */
                 (void 0);
             }
-            if ((n = luaD_pretailcall(L, ci, ra, b, delta)) < 0) { __pc = 97; continue; }
+            if ((n__3 = luaD_pretailcall(L, ci, ra, b__7, delta)) < 0) { __pc = 97; continue; }
             __pc = 98; continue;
         }
         case 97: {
@@ -5855,7 +5870,7 @@ export function luaV_execute(L, ci) {
         }
         case 98: {
             cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));  /* restore 'func' (if vararg) */
-            luaD_poscall(L, ci, n);  /* finish caller */
+            luaD_poscall(L, ci, n__3);  /* finish caller */
             (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* 'luaD_poscall' can change hooks */
             { __pc = 76; continue; }
         }
@@ -5869,18 +5884,19 @@ export function luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = (((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+            n__4 = (((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
                     0))) - 1) | 0;  /* number of results */
             nparams1 = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
-            if (n < 0)
-                n = (Number(BigInt.asIntN(
+            if (n__4 < 0)
+                n__4 = (Number(BigInt.asIntN(
                     32,
                     ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
                 )));  /* get what is available */
             (cptr.stPtro(ci, $CallInfo_u, pc));
             if (((((((((i) & 32768) >>> 0))) | 0)))) {
-                cptr.stI32o(ci, $CallInfo_u2, n);  /* save number of returns */
+                cptr.stI32o(ci, $CallInfo_u2, n__4);  /* save number of returns */
                 if (cptr.cmp(cptr.ldPtro(L, $lua_State_top), cptr.ldPtro(ci, $CallInfo_top)) < 0)
                     cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));
                 luaF_close(L, base, -1, 1);
@@ -5905,8 +5921,8 @@ export function luaV_execute(L, ci) {
                     ci,
                     cptr.sub(cptr.ldPtr(ci), (cptr.ldI32o(ci, $CallInfo_u + 12) + nparams1) | 0, 16)
                 );
-            cptr.stPtro(L, $lua_State_top, cptr.add(ra, n, 16));  /* set call for 'luaD_poscall' */
-            luaD_poscall(L, ci, n);
+            cptr.stPtro(L, $lua_State_top, cptr.add(ra, n__4, 16));  /* set call for 'luaD_poscall' */
+            luaD_poscall(L, ci, n__4);
             (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* 'luaD_poscall' can change hooks */
             { __pc = 76; continue; }
         }
@@ -6234,19 +6250,19 @@ export function luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+            n__5 = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0)));
             last = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
                     0))) >>> 0;
             h = ((((((cptr.ldPtr(((((ra)))))))))));
-            if (n == 0)
-                n = ((Number(BigInt.asIntN(
+            if (n__5 == 0)
+                n__5 = ((Number(BigInt.asIntN(
                     32,
                     ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
                 ))) - 1) | 0;  /* get up to the top */
             else
                 cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* correct top in case of emergency GC */
-            last = (last + (n >>> 0)) >>> 0;
+            last = (last + (n__5 >>> 0)) >>> 0;
             if (((((((((i) & 32768) >>> 0))) | 0)))) {
                 last = (last +
                         (Math.imul(
@@ -6261,8 +6277,8 @@ export function luaV_execute(L, ci) {
             }
             if (last > luaH_realasize(h))
                 luaH_resizearray(L, h, last);  /* preallocate it at once */
-            for (; n > 0; n--) {
-                val = ((cptr.add(ra, n, 16)));
+            for (; n__5 > 0; n__5--) {
+                val = ((cptr.add(ra, n__5, 16)));
                 {
                     io1 = (cptr.add(
                         cptr.ldPtro(h, $Table_array),
@@ -6362,14 +6378,15 @@ export function luaV_execute(L, ci) {
                 (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = (((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+            n__6 = (((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
                     0))) - 1) | 0;  /* required results */
             (
                 (
                     (cptr.stPtro(ci, $CallInfo_u, pc)),
                     cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
                 ),
-                (luaT_getvarargs(L, ci, ra, n)),
+                (luaT_getvarargs(L, ci, ra, n__6)),
                 (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
             );
             if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {

@@ -874,8 +874,8 @@ function luaH_newkey(L, t, key, value) {
     if (!(((((cptr.ld1uo(((((mp)))), $TValue_tt_))) & 15)) == 0) ||
             (cptr.eq(cptr.ldPtro((t), $Table_lastfree), (null)))) {
         let othern;
-        let f = getfreepos(t);  /* get a free place */
-        if (cptr.eq(f, (null))) {
+        let f__2 = getfreepos(t);  /* get a free place */
+        if (cptr.eq(f__2, (null))) {
             rehash(L, t, key);  /* grow table */
             /* whatever called 'newkey' takes care of TM cache */
             luaH_set(L, t, key, value);  /* insert key into grown table */
@@ -890,15 +890,15 @@ function luaH_newkey(L, t, key, value) {
             cptr.stI32o(
                 (othern),
                 $NodeKey_next,
-                (Number(BigInt.asIntN(32, ((cptr.diff(f, othern) / 24n)))))
+                (Number(BigInt.asIntN(32, ((cptr.diff(f__2, othern) / 24n)))))
             );  /* rechain to point to 'f' */
-            cptr.memcpy(f, mp, 24);  /* copy colliding node into free pos. (mp->next also goes) */
+            cptr.memcpy(f__2, mp, 24);  /* copy colliding node into free pos. (mp->next also goes) */
             if ((cptr.ldI32o((mp), $NodeKey_next)) != 0) {
                 cptr.stI32o(
-                    (f),
+                    (f__2),
                     $NodeKey_next,
-                    (cptr.ldI32o((f), $NodeKey_next) +
-                        (Number(BigInt.asIntN(32, ((cptr.diff(mp, f) / 24n)))))) | 0
+                    (cptr.ldI32o((f__2), $NodeKey_next) +
+                        (Number(BigInt.asIntN(32, ((cptr.diff(mp, f__2) / 24n)))))) | 0
                 );  /* correct 'next' */
                 cptr.stI32o((mp), $NodeKey_next, 0);  /* now 'mp' is free */
             }
@@ -907,13 +907,13 @@ function luaH_newkey(L, t, key, value) {
             /* new node will go into free position */
             if ((cptr.ldI32o((mp), $NodeKey_next)) != 0)
                 cptr.stI32o(
-                    (f),
+                    (f__2),
                     $NodeKey_next,
                     (Number(BigInt.asIntN(
                         32,
                         ((cptr.diff(
                             (cptr.add(mp, (cptr.ldI32o((mp), $NodeKey_next)), 24)),
-                            f
+                            f__2
                         ) / 24n))
                     )))
                 );  /* chain new position */
@@ -922,9 +922,9 @@ function luaH_newkey(L, t, key, value) {
             cptr.stI32o(
                 (mp),
                 $NodeKey_next,
-                (Number(BigInt.asIntN(32, ((cptr.diff(f, mp) / 24n)))))
+                (Number(BigInt.asIntN(32, ((cptr.diff(f__2, mp) / 24n)))))
             );
-            mp = f;
+            mp = f__2;
         }
     }
     {

@@ -85,7 +85,8 @@ function sgn(n) { return n < 0 ? -1 : (n !== 0 ? 1 : 0); }
 // throw when no seed is available rather than silently using a made-up one.
 function sys_random_seed() {
   const envSeed = (typeof globalThis.getenv === 'function') && globalThis.getenv('NETHACK_SEED');
-  if (envSeed) return BigInt(cptr.cstr(envSeed));
+  // strtoul, as in the recorder: a value past 2^64 saturates, and BigInt() would not.
+  if (envSeed) return globalThis.strtoul(envSeed, null, 10);
   throw new Error('sys_random_seed: NETHACK_SEED not set');
 }
 
