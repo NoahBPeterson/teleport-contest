@@ -42,7 +42,7 @@ export function strbuf_append(strbuf, str) {
 /* strbuf_reserve() ensure strbuf->str has storage for len characters */
 /** C ref: strutil.c:28 — @param {CPtr<strbuf_t>} strbuf @param {CInt} len */
 export function strbuf_reserve(strbuf, len) {
-    if (cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), cptr.byteView((null)))) {
+    if (cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), (null))) {
         cptr.stPtro(strbuf, $strbuf_t_str, cptr.add(strbuf, $strbuf_t_buf));
         cptr.st1o(cptr.ldPtro(strbuf, $strbuf_t_str), 0, 0);
         cptr.stI32(strbuf, 256);
@@ -52,7 +52,7 @@ export function strbuf_reserve(strbuf, len) {
         let oldbuf = cptr.ldPtro(strbuf, $strbuf_t_str);
 
         cptr.stI32(strbuf, (len + 256) | 0);
-        cptr.stPtro(strbuf, $strbuf_t_str, cptr.byteView(alloc(cptr.ldI32(strbuf) >>> 0)));
+        cptr.stPtro(strbuf, $strbuf_t_str, alloc(cptr.ldI32(strbuf) >>> 0));
         void cptr.strcpy(cptr.ldPtro(strbuf, $strbuf_t_str), oldbuf);
         if (!cptr.eq(oldbuf, cptr.add(strbuf, $strbuf_t_buf)))
             cptr.free(oldbuf);
@@ -62,7 +62,7 @@ export function strbuf_reserve(strbuf, len) {
 /* strbuf_empty() frees allocated memory and set strbuf to initial state */
 /** C ref: strutil.c:49 — @param {CPtr<strbuf_t>} strbuf */
 export function strbuf_empty(strbuf) {
-    if (!cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), cptr.byteView((null))) &&
+    if (!cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), (null)) &&
             !cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), cptr.add(strbuf, $strbuf_t_buf)))
         cptr.free(cptr.ldPtro(strbuf, $strbuf_t_str));
     strbuf_init(strbuf);
@@ -86,7 +86,7 @@ export function strbuf_nl_to_crlf(strbuf) {
                 count;
                 cp = cptr.add(cp, -1)
             )
-                if ((cptr.st1(cp, cptr.ld1so(cp, -count | 0))) == 10) {
+                if ((cptr.st1(cp, cptr.ld1so(cp, -count))) == 10) {
                     cptr.st1(cptr.predec(() => cp, (v) => { cp = v; }), 13);
                     --count;
                 }
@@ -108,7 +108,7 @@ export function Strlen_(str, file, line) {
     let len;
 
     /* strnlen(str, LARGEST_INT) w/o requiring posix.1 headers or libraries */
-    for (p = str, len = 0n; len < 32767n; len = BigInt.asUintN(64, len + 1n))
+    for (p = str, len = 0n; len < 32767n; ++len)
         if (cptr.ld1s(cptr.postinc(() => p, (v) => { p = v; })) == 0)
             break;
 

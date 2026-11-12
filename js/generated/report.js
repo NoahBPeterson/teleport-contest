@@ -3,7 +3,7 @@
 // Input sha256: 816c57e507cf128fc7f5313c7f0c50a2183c9101764a9494704ec425bbef55a2
 // Transpiler: tools/c2js c2js emit v1+batch
 
-import { u32mod, uchar } from '../cmachine.js';
+import { u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
@@ -132,7 +132,7 @@ export function crashreport_init(argc, argv) {
                     1
                 )
             );
-            cnt = uchar(cnt + -1);
+            --cnt;
         }
         cptr.st1(p, 0);
         ;
@@ -520,9 +520,9 @@ export function NH_panictrace_gdb() {
     let buf = new Uint8Array(256);
     let gdb;
 
-    if (cptr.eq(gdbpath, cptr.byteView((null))) || cptr.ld1so(gdbpath, 0) == 0)
+    if (cptr.eq(gdbpath, (null)) || cptr.ld1so(gdbpath, 0) == 0)
         return 0;
-    if (cptr.eq(greppath, cptr.byteView((null))) || cptr.ld1so(greppath, 0) == 0)
+    if (cptr.eq(greppath, (null)) || cptr.ld1so(greppath, 0) == 0)
         return 0;
 
     nh_snprintf(
@@ -559,7 +559,7 @@ export function get_saved_pline(lineno) {
     if (lineno >= NHM.DUMPLOG_MSG_COUNT)
         return null;
     p = u32mod(
-        (((cptr.ldI32o(gs, $instance_globals_s_saved_pline_index) >>> 0) - 1) >>> 0),
+        ((cptr.ldI32o(gs, $instance_globals_s_saved_pline_index) - 1) >>> 0),
         NHM.DUMPLOG_MSG_COUNT
     ) | 0;
 

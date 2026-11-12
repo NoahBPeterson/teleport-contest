@@ -214,7 +214,7 @@ export function dowrite(pen) {
                     ? __s_spellbook
                     : __s_scroll);
         if (Blind()) {
-            if (!cptr.ldBits(cptr.add(paper, $obj_dknown), 1, 1, 0)) {
+            if (!(cptr.ldI32o(paper, $obj_dknown) & 1)) {
                 You(__s_don_t_know_whether_that_s_is_blank_or, typeword);
                 return NHM.ECMD_OK;
             } else if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
@@ -284,13 +284,7 @@ export function dowrite(pen) {
                 (nm),
                 -1
             )) {
-                if (cptr.ldBits(
-                    cptr.add(cptr.add(objects, i, $sizeof_objclass), $objclass_oc_name_known),
-                    0,
-                    1,
-                    0
-                ) |
-                    0 ||
+                if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
                         cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
                     break __lbl_found;
                 } else {
@@ -327,15 +321,7 @@ export function dowrite(pen) {
                         -1
                     ) &&
                     !(real &&
-                        cptr.ldBits(
-                            cptr.add(
-                                cptr.add(objects, i, $sizeof_objclass),
-                                $objclass_oc_name_known
-                            ),
-                            0,
-                            1,
-                            0
-                        ) |
+                        (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) |
                             0) &&
                     !rn2(++deferralchance)) {
                 deferred = i;
@@ -388,12 +374,7 @@ export function dowrite(pen) {
         return NHM.ECMD_TIME;
     } else if (by_descr &&
             cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS &&
-            !cptr.ldBits(
-                cptr.add(cptr.add(objects, i, $sizeof_objclass), $objclass_oc_name_known),
-                0,
-                1,
-                0
-            )) {
+            !(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1)) {
         /* can't write unknown spellbooks by description */
         pline(__s_unfortunately_you_don_t_have_enough);
         return NHM.ECMD_TIME;
@@ -408,13 +389,10 @@ export function dowrite(pen) {
         livelog_printf(32n, __s_became_literate_by_writing_s, an(typeword));
 
     new_obj = mksobj(i, 0, 0);
-    cptr.stBits(
-        cptr.add(new_obj, $obj_bknown),
-        2,
-        1,
-        0,
-        (cptr.ldBits(cptr.add(paper, $obj_bknown), 2, 1, 0) | 0 &&
-            cptr.ldBits(cptr.add(pen, $obj_bknown), 2, 1, 0) | 0
+    cptr.stI32o(
+        new_obj,
+        $obj_bknown,
+        ((cptr.ldI32o(paper, $obj_bknown) & 1) | 0 && (cptr.ldI32o(pen, $obj_bknown) & 1) | 0
             ? 1
             : 0) >>> 0
     );
@@ -480,25 +458,21 @@ export function dowrite(pen) {
         spell_knowledge = NHC.spe_Unknown;
     }
     /* if known, then either by-name or by-descr works */
-    if (!cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_name_known
-        ),
-        0,
-        1,
-        0
-    ) &&
+    if (!(cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(new_obj, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_name_known
+    ) &
+        1) &&
             !(by_descr &&
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_encountered
-                    ),
-                    3,
-                    1,
-                    0
-                ) |
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(new_obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_encountered
+                ) &
+                    1) |
                     0) &&
             spell_knowledge != NHC.spe_Fresh &&
             rnl((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) &&
@@ -563,8 +537,8 @@ export function dowrite(pen) {
             new_book_description(cptr.ldI16o(new_obj, $obj_otyp), cptr.decay(namebuf))
         );
     }
-    cptr.stBits(cptr.add(new_obj, $obj_blessed), 1, 1, 0, (curseval > 0) >>> 0);
-    cptr.stBits(cptr.add(new_obj, $obj_cursed), 0, 1, 0, (curseval < 0) >>> 0);
+    cptr.stI32o(new_obj, $obj_blessed, (curseval > 0) >>> 0);
+    cptr.stI32o(new_obj, $obj_cursed, (curseval < 0) >>> 0);
     if (cptr.ldI16o(new_obj, $obj_otyp) == NHC.SCR_MAIL)
         /* 0: delivered in-game via external event (or randomly for fake mail);
            1: from bones or wishing; 2: written with marker */
@@ -574,16 +548,14 @@ export function dowrite(pen) {
        the exception is for being lucky writing an undiscovered scroll,
        where the label associated with the type-name isn't known yet;
        but if writing by description, the description is always known */
-    cptr.stBits(cptr.add(new_obj, $obj_dknown), 1, 1, 0, 0);
-    if (cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_name_known
-        ),
-        0,
-        1,
-        0
-    ) |
+    cptr.stI32o(new_obj, $obj_dknown, 0);
+    if ((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(new_obj, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_name_known
+    ) &
+        1) |
         0 ||
             by_descr)
         observe_object(new_obj);

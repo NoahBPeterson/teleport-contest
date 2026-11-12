@@ -498,9 +498,8 @@ function itimeout_incr(old, incr) {
 /* set the timeout field of intrinsic `which' */
 /** C ref: potion.c:75 — @param {CPtr<long>} which @param {CLongLong} val */
 export function set_itimeout(which, val) {
-    let __r1;
     cptr.stI64(which, cptr.ldI64(which) & (-16777216n));
-    (__r1 = itimeout(val), cptr.stI64(which, cptr.ldI64(which) | __r1));
+    cptr.stI64(which, cptr.ldI64(which) | itimeout(val));
 }
 
 /* increment the timeout field of intrinsic `which' */
@@ -593,24 +592,12 @@ export function make_sick(xtime, cause, talk, type) {
             cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SICK, $sizeof_prop), $prop_intrinsic),
             xtime
         );
-        cptr.stBits(
-            cptr.add(u, $you_usick_type),
-            0,
-            2,
-            0,
-            (cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | type >>> 0) >>> 0
-        );
+        cptr.stI32o(u, $you_usick_type, cptr.ldI32o(u, $you_usick_type) | type);
         cptr.st1(disp, 1);
-    } else if (old && (type & (cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0))) {
+    } else if (old && (type & ((cptr.ldI32o(u, $you_usick_type) & 3) | 0))) {
         /* was sick, now not */
-        cptr.stBits(
-            cptr.add(u, $you_usick_type),
-            0,
-            2,
-            0,
-            (cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) & (~type) >>> 0) >>> 0
-        );
-        if (cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0)) {
+        cptr.stI32o(u, $you_usick_type, cptr.ldI32o(u, $you_usick_type) & ~type);
+        if ((cptr.ldI32o(u, $you_usick_type) & 3)) {
             if (talk)
                 You_feel(__s_somewhat_better);
             set_itimeout(
@@ -661,7 +648,7 @@ export function make_slimed(xtime, msg) {
         dealloc_killer(find_delayed_killer(NHC.SLIMED));
         /* fake appearance is set late in turn-to-slime countdown */
         if (U_AP_TYPE() == NHC.M_AP_MONSTER &&
-                cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) >>> 0 ==
+                cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) ==
                     NHC.PM_GREEN_SLIME) {
             cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_NOTHING);
             cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, 0);
@@ -918,7 +905,7 @@ export function make_hallucinated(xtime, talk, mask) {
         if (!Hallucination())
             eatmupdate();
 
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             swallowed(0);  /* redraw swallow display */
         } else {
             /* The see_* routines should be called *before* the pline. */
@@ -1078,8 +1065,7 @@ export function dodrink() {
             ++drink_ok_extra;
         }
         /* Or are you surrounded by water? */
-        if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
-                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
             if (yn_function(__s_drink_the_water_around_you, cptr.decay(ynchars), 110, 1) == 121) {
                 pline(__s_do_you_know_what_lives_in_this_water);
                 return NHM.ECMD_TIME;
@@ -1116,7 +1102,7 @@ export function dodrink() {
             remove_worn_item(otmp, 0);
         }
     }
-    cptr.stBits(cptr.add(otmp, $obj_in_use), 2, 1, 0, 1);  /* you've opened the stopper */
+    cptr.stI32o(otmp, $obj_in_use, 1);  /* you've opened the stopper */
 
     if (objdescr_is(otmp, __s_milky) &&
             !(cptr.ld1uo2(
@@ -1170,7 +1156,7 @@ export function dodrink() {
 export function dopotion(otmp) {
     let retval;
 
-    cptr.stBits(cptr.add(otmp, $obj_in_use), 2, 1, 0, 1);
+    cptr.stI32o(otmp, $obj_in_use, 1);
     cptr.stI32o(
         gp,
         $instance_globals_p_potion_nothing,
@@ -1187,16 +1173,14 @@ export function dopotion(otmp) {
         )) - (1);
         You(__s_have_a_s_feeling_for_a_moment_then_it, Hallucination() ? __s_normal : __s_peculiar);
     }
-    if (cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0) | 0 &&
-            !cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            )) {
+    if ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 &&
+            !(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                1)) {
         if (!cptr.ldI32o(gp, $instance_globals_p_potion_unkn)) {
             discover_object((cptr.ldI16o(otmp, $obj_otyp)), 1, 1, 1);
             more_experienced(0, 10);
@@ -1216,7 +1200,7 @@ function peffect_restore_ability(otmp) {
         $instance_globals_p_potion_unkn,
         cptr.ldI32o(gp, $instance_globals_p_potion_unkn) + 1
     )) - (1);
-    if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         pline(__s_ulch_this_makes_you_feel_mediocre);
         return;
     } else {
@@ -1228,7 +1212,7 @@ function peffect_restore_ability(otmp) {
            or temporary dexterity loss due to wounded legs */
         pline(
             __s_wow_this_makes_you_feel_s,
-            (!cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0))
+            (!(cptr.ldI32o(otmp, $obj_blessed) & 1))
                 ? __s_good
                 : (unfixable_trouble_count(0) ? __s_better : __s_great)
         );
@@ -1253,7 +1237,7 @@ function peffect_restore_ability(otmp) {
 
                 cptr.st1(disp, 1);
                 /* only first found if not blessed */
-                if (!cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0))
+                if (!(cptr.ldI32o(otmp, $obj_blessed) & 1))
                     break;
             }
             if (++i >= NHC.A_MAX)
@@ -1270,7 +1254,7 @@ function peffect_restore_ability(otmp) {
             do {
                 pluslvl(0);
             } while (cptr.ldI32o(u, $you_ulevel) < cptr.ldI32o(u, $you_ulevelmax) &&
-                    cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0);
+                    (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0);
         }
     }
 }
@@ -1296,8 +1280,8 @@ function peffect_hallucination(otmp) {
         1,
         0n
     );
-    if ((cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 && !rn2(3)) ||
-            (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) && !rn2(6))) {
+    if (((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && !rn2(3)) ||
+            (!(cptr.ldI32o(otmp, $obj_cursed) & 1) && !rn2(6))) {
         You(__s_perceive_yourself);
         display_nhwindow()(WIN_MESSAGE.v, 0);
         enlightenment(NHM.MAGICENLIGHTENMENT, NHM.ENL_GAMEINPROGRESS);
@@ -1308,11 +1292,9 @@ function peffect_hallucination(otmp) {
 
 /** C ref: potion.c:717 — @param {CPtr<struct obj>} otmp */
 function peffect_water(otmp) {
-    let __r2;
-    if (!cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) &&
-            !cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+    if (!(cptr.ldI32o(otmp, $obj_blessed) & 1) && !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         pline(__s_this_tastes_like_s, hliquid(__s_water));
-        (__r2 = rnd(10), cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + __r2) | 0));
+        cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + rnd(10)) | 0);
         newuhs(0);
         return;
     }
@@ -1323,7 +1305,7 @@ function peffect_water(otmp) {
     )) - (1);
     if (mon_hates_blessings(cptr.add(gy, $instance_globals_y_youmonst)) ||
             cptr.ld1so(u, $you_ualign) == -1) {
-        if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0)) {
+        if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
             pline(__s_this_burns_like_s, hliquid(__s_acid));
             exercise(NHC.A_CON, 0);
             if (ismnum(cptr.ldI32o(u, $you_ulycn))) {
@@ -1350,7 +1332,7 @@ function peffect_water(otmp) {
                 __s_potion_of_holy_water,
                 NHM.KILLED_BY_AN
             );
-        } else if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+        } else if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
             You_feel(__s_quite_proud_of_yourself);
             healup(d(2, 6), 0, 0, 0);
             if (ismnum(cptr.ldI32o(u, $you_ulycn)) && !Upolyd())
@@ -1358,7 +1340,7 @@ function peffect_water(otmp) {
             exercise(NHC.A_CON, 1);
         }
     } else {
-        if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0)) {
+        if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
             You_feel(__s_full_of_awe);
             make_sick(0n, null, 1, NHM.SICK_ALL);
             exercise(NHC.A_WIS, 1);
@@ -1385,7 +1367,6 @@ function peffect_water(otmp) {
 
 /** C ref: potion.c:771 — @param {CPtr<struct obj>} otmp */
 function peffect_booze(otmp) {
-    let __r3;
     (cptr.stI32o(
         gp,
         $instance_globals_p_potion_unkn,
@@ -1393,35 +1374,33 @@ function peffect_booze(otmp) {
     )) - (1);
     pline(
         __s_ooph_this_tastes_like_s_s,
-        cptr.ldBits(cptr.add(otmp, $obj_oeroded), 0, 2, 0) | 0 ? __s_watered_down : __s_empty,
+        (cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 ? __s_watered_down : __s_empty,
         Hallucination() ? __s_dandelion_wine : __s_liquid_fire
     );
-    if (!cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0)) {
+    if (!(cptr.ldI32o(otmp, $obj_blessed) & 1)) {
         /* booze hits harder if drinking on an empty stomach */
-        make_confused(
-            itimeout_incr(HConfusion(), d((2 + (cptr.ldI32o(u, $you_uhs) >>> 0)) | 0, 8)),
-            0
-        );
+        make_confused(itimeout_incr(HConfusion(), d((2 + cptr.ldI32o(u, $you_uhs)) | 0, 8)), 0);
     }
     /* the whiskey makes us feel better */
-    if (!cptr.ldBits(cptr.add(otmp, $obj_oeroded), 0, 2, 0))
+    if (!(cptr.ldI32o(otmp, $obj_oeroded) & 3))
         healup(1, 0, 0, 0);
-    (
-        __r3 = Math.imul(10, 2 + bcsign(otmp)),
-        cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + __r3) | 0)
+    cptr.stI32o(
+        u,
+        $you_uhunger,
+        (cptr.ldI32o(u, $you_uhunger) + Math.imul(10, 2 + bcsign(otmp))) | 0
     );
     newuhs(0);
     exercise(NHC.A_WIS, 0);
-    if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         You(__s_pass_out);
-        cptr.stI64o(gm, $instance_globals_m_multi, BigInt((-rnd(15) | 0)));
+        cptr.stI64o(gm, $instance_globals_m_multi, BigInt((-rnd(15))));
         cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_you_awake_with_a_headache);
     }
 }
 
 /** C ref: potion.c:795 — @param {CPtr<struct obj>} otmp */
 function peffect_enlightenment(otmp) {
-    if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         (cptr.stI32o(
             gp,
             $instance_globals_p_potion_unkn,
@@ -1430,7 +1409,7 @@ function peffect_enlightenment(otmp) {
         You(__s_have_an_uneasy_feeling);
         exercise(NHC.A_WIS, 0);
     } else {
-        if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0)) {
+        if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
             void adjattrib(NHC.A_INT, 1, 0);
             void adjattrib(NHC.A_WIS, 1, 0);
         }
@@ -1456,7 +1435,7 @@ function peffect_invisibility(otmp) {
     } else {
         self_invis_message();
     }
-    if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 && !rn2(HInvis() ? 15 : 30))
+    if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && !rn2(HInvis() ? 15 : 30))
         cptr.stI64o2(
             u,
             NHC.INVIS,
@@ -1470,7 +1449,7 @@ function peffect_invisibility(otmp) {
             (d(((6 - Math.imul(3, bcsign(otmp))) | 0), 100) + 100) | 0
         );
     newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* update position */
-    if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         pline(__s_for_some_reason_you_feel_your_presence);
         aggravate();
 
@@ -1488,7 +1467,6 @@ function peffect_invisibility(otmp) {
 
 /** C ref: potion.c:841 — @param {CPtr<struct obj>} otmp */
 function peffect_see_invisible(otmp) {
-    let __r4;
     let msg = Invisible() && !Blind() ? 1 : 0;
     let permchance = (10 - (HInvis() ? 3 : 0) - (HSee_invisible() ? 6 : 0)) | 0;
 
@@ -1497,32 +1475,34 @@ function peffect_see_invisible(otmp) {
         $instance_globals_p_potion_unkn,
         cptr.ldI32o(gp, $instance_globals_p_potion_unkn) + 1
     )) - (1);
-    if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
+    if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
         pline(__s_yecch_this_tastes_s, Hallucination() ? __s_overripe : __s_rotten);
     else
         pline(
             Hallucination() ? __s_this_tastes_like_10_real_s_s_all : __s_this_tastes_like_s_s,
-            cptr.ldBits(cptr.add(otmp, $obj_oeroded), 0, 2, 0) | 0 ? __s_reconstituted : __s_empty,
+            (cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 ? __s_reconstituted : __s_empty,
             fruitname(1)
         );
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_FRUIT_JUICE) {
-        (
-            __r4 = Math.imul(
-                (cptr.ldBits(cptr.add(otmp, $obj_oeroded), 0, 2, 0) | 0 ? 5 : 10),
-                2 + bcsign(otmp)
-            ),
-            cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + __r4) | 0)
+        cptr.stI32o(
+            u,
+            $you_uhunger,
+            (cptr.ldI32o(u, $you_uhunger) +
+                Math.imul(
+                    ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 ? 5 : 10),
+                    2 + bcsign(otmp)
+                )) | 0
         );
         newuhs(0);
         return;
     }
-    if (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+    if (!(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         /* Tell them they can see again immediately, which
          * will help them identify the potion...
          */
         make_blinded(0n, 1);
     }
-    if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 && !rn2(permchance))
+    if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && !rn2(permchance))
         cptr.stI64o2(
             u,
             NHC.SEE_INVIS,
@@ -1602,7 +1582,7 @@ function peffect_paralysis(otmp) {
                 makeplural(body_part(NHC.FOOT)),
                 surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
             );
-        nomul(-(((rn2(10) + (25 - Math.imul(12, bcsign(otmp)))) | 0)) | 0);
+        nomul(-(((rn2(10) + (25 - Math.imul(12, bcsign(otmp)))) | 0)));
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_frozen_by_a_potion);
         cptr.stPtro(
             gn,
@@ -1621,13 +1601,13 @@ function peffect_sleeping(otmp) {
     } else {
         You(__s_suddenly_fall_asleep);
         monstunseesu(8n);
-        fall_asleep(-((rn2(10) + (25 - Math.imul(12, bcsign(otmp)))) | 0) | 0, 1);
+        fall_asleep(-((rn2(10) + (25 - Math.imul(12, bcsign(otmp)))) | 0), 1);
     }
 }
 
 /** C ref: potion.c:914 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function peffect_monster_detection(otmp) {
-    if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
         let i;
         let x;
         let y;
@@ -1683,7 +1663,7 @@ function peffect_monster_detection(otmp) {
             }
         }
         /* if swallowed or underwater, fall through to uncursed case */
-        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) && !Underwater()) {
+        if (!(cptr.ldI32o(u, $you_uswallow) & 1) && !Underwater()) {
             see_monsters();
             if (cptr.ldI32o(gp, $instance_globals_p_potion_unkn))
                 You_feel(__s_lonely);
@@ -1707,7 +1687,7 @@ function peffect_object_detection(otmp) {
 /** C ref: potion.c:964 — @param {CPtr<struct obj>} otmp */
 function peffect_sickness(otmp) {
     pline(__s_yecch_this_stuff_tastes_like_poison);
-    if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
         pline(__s_but_in_fact_it_was_mildly_stale_s, fruitname(1));
         if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_HEALER)) {
             /* NB: blessed otmp->fromsink is not possible */
@@ -1732,22 +1712,18 @@ function peffect_sickness(otmp) {
             );
             if (!Fixed_abil()) {
                 poisontell(typ, 0);
-                void adjattrib(typ, Poison_resistance() ? -1 : -((rn2(4) + 3) | 0) | 0, 1);
+                void adjattrib(typ, Poison_resistance() ? -1 : -((rn2(4) + 3) | 0), 1);
             }
             if (!Poison_resistance()) {
                 if (cptr.ldI32o(otmp, $obj_corpsenm))
                     losehp(
-                        (rnd(10) +
-                            Math.imul(5, !!(cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)))) |
-                            0,
+                        (rnd(10) + Math.imul(5, !!((cptr.ldI32o(otmp, $obj_cursed) & 1)))) | 0,
                         cptr.decay(contaminant),
                         NHM.KILLED_BY
                     );
                 else
                     losehp(
-                        (rnd(10) +
-                            Math.imul(5, !!(cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)))) |
-                            0,
+                        (rnd(10) + Math.imul(5, !!((cptr.ldI32o(otmp, $obj_cursed) & 1)))) | 0,
                         cptr.decay(contaminant),
                         NHM.KILLED_BY_AN
                     );
@@ -1794,7 +1770,7 @@ function peffect_confusion(otmp) {
 
 /** C ref: potion.c:1030 — @param {CPtr<struct obj>} otmp */
 function peffect_gain_ability(otmp) {
-    if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         pline(__s_ulch_that_potion_tasted_foul);
         (cptr.stI32o(
             gp,
@@ -1812,13 +1788,11 @@ function peffect_gain_ability(otmp) {
         let ii;
         let i = -1;  /* increment to 0 */
         for (ii = NHC.A_MAX; ii > 0; ii--) {
-            i = (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0
-                    ? (i + 1) | 0
-                    : rn2(NHC.A_MAX));
+            i = ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 ? (i + 1) | 0 : rn2(NHC.A_MAX));
             /* only give "your X is already as high as it can get"
                message on last attempt (except blessed potions) */
-            itmp = (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 || ii == 1) ? 0 : -1;
-            if (adjattrib(i, 1, itmp) && !cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0))
+            itmp = ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 || ii == 1) ? 0 : -1;
+            if (adjattrib(i, 1, itmp) && !(cptr.ldI32o(otmp, $obj_blessed) & 1))
                 break;
         }
     }
@@ -1831,7 +1805,7 @@ function peffect_speed(otmp) {
     /* skip when mounted; heal_legs() would heal steed's legs */
     if (is_speed &&
             Wounded_legs() &&
-            !cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) &&
+            !(cptr.ldI32o(otmp, $obj_cursed) & 1) &&
             !cptr.ldPtro(u, $you_usteed)) {
         heal_legs(0);
         (cptr.stI32o(
@@ -1845,7 +1819,7 @@ function peffect_speed(otmp) {
     speed_up(BigInt(((rn2(10) + (100 + Math.imul(60, bcsign(otmp)))) | 0)));
 
     /* non-cursed potion grants intrinsic speed */
-    if (is_speed && !cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) && !(HFast() & 117440512n)) {
+    if (is_speed && !(cptr.ldI32o(otmp, $obj_cursed) & 1) && !(HFast() & 117440512n)) {
         Your(__s_quickness_feels_very_natural);
         cptr.stI64o2(
             u,
@@ -1873,7 +1847,7 @@ function peffect_blindness(otmp) {
 
 /** C ref: potion.c:1083 — @param {CPtr<struct obj>} otmp */
 function peffect_gain_level(otmp) {
-    if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         let on_lvl_1 = schar((ledger_no(cptr.add(u, $you_uz)) == 1));
 
         (cptr.stI32o(
@@ -1883,7 +1857,7 @@ function peffect_gain_level(otmp) {
         )) - (1);
         /* they went up a level */
         if (on_lvl_1
-                ? cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0
+                ? (cptr.ldI32o(u, $you_uhave) & 1) | 0
                 : Can_rise_up(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz))) {
             let newlev;
             let newlevel = cptr.alloc(4);
@@ -1914,7 +1888,7 @@ function peffect_gain_level(otmp) {
     pluslvl(0);
     /* blessed potions place you at a random spot in the
        middle of the new level instead of the low point */
-    if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0))
+    if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
         cptr.stI64o(u, $you_uexp, rndexp(1));
 }
 
@@ -1923,9 +1897,9 @@ function peffect_healing(otmp) {
     You_feel(__s_better__2);
     healup(
         (8 + d(((4 + Math.imul(2, bcsign(otmp))) | 0), 4)) | 0,
-        !cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) ? 1 : 0,
-        schar((!!cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0))),
-        schar((!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)))
+        !(cptr.ldI32o(otmp, $obj_cursed) & 1) ? 1 : 0,
+        schar((!!(cptr.ldI32o(otmp, $obj_blessed) & 1))),
+        schar((!(cptr.ldI32o(otmp, $obj_cursed) & 1)))
     );
     exercise(NHC.A_CON, 1);
 }
@@ -1935,10 +1909,10 @@ function peffect_extra_healing(otmp) {
     You_feel(__s_much_better);
     healup(
         (16 + d(((4 + Math.imul(2, bcsign(otmp))) | 0), 8)) | 0,
-        cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0
+        (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0
             ? 5
-            : (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) ? 2 : 0),
-        schar((!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))),
+            : (!(cptr.ldI32o(otmp, $obj_cursed) & 1) ? 2 : 0),
+        schar((!(cptr.ldI32o(otmp, $obj_cursed) & 1))),
         1
     );
     void make_hallucinated(0n, 1, 0n);
@@ -1947,8 +1921,7 @@ function peffect_extra_healing(otmp) {
     /* blessed potion also heals wounded legs unless riding (where leg
        wounds apply to the steed rather than to the hero) */
     if (Wounded_legs() &&
-            (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 &&
-                !cptr.ldPtro(u, $you_usteed)))
+            ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && !cptr.ldPtro(u, $you_usteed)))
         heal_legs(0);
 }
 
@@ -1958,11 +1931,11 @@ function peffect_full_healing(otmp) {
     healup(
         400,
         (4 + Math.imul(4, bcsign(otmp))) | 0,
-        schar((!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))),
+        schar((!(cptr.ldI32o(otmp, $obj_cursed) & 1))),
         1
     );
     /* Restore one lost level if blessed */
-    if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 &&
+    if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 &&
             cptr.ldI32o(u, $you_ulevel) < cptr.ldI32o(u, $you_ulevelmax)) {
         /* when multiple levels have been lost, drinking
            multiple potions will only get half of them back */
@@ -1975,9 +1948,8 @@ function peffect_full_healing(otmp) {
     /* blessed potion heals wounded legs even when riding (so heals steed's
        legs--it's magic); uncursed potion heals hero's legs unless riding */
     if (Wounded_legs() &&
-            (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 ||
-                (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) &&
-                    !cptr.ldPtro(u, $you_usteed))))
+            ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 ||
+                (!(cptr.ldI32o(otmp, $obj_cursed) & 1) && !cptr.ldPtro(u, $you_usteed))))
         heal_legs(0);
 }
 
@@ -2011,7 +1983,7 @@ function peffect_levitation(otmp) {
             cptr.ldI32o(gp, $instance_globals_p_potion_nothing) + 1
         )) - (1);
 
-    if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         let stway;
 
         /* 'already levitating' used to block the cursed effect(s)
@@ -2048,7 +2020,7 @@ function peffect_levitation(otmp) {
             );
             cptr.stI32o(gp, $instance_globals_p_potion_nothing, 0);  /* not nothing after all */
         }
-    } else if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0)) {
+    } else if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
         /* at this point, timeout is already at least 1 */
         incr_itimeout(
             cptr.add(
@@ -2095,7 +2067,7 @@ function peffect_levitation(otmp) {
 function peffect_gain_energy(otmp) {
     let num;
 
-    if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
+    if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
         You_feel(__s_lackluster);
     else
         pline(__s_magical_energies_course_through_your);
@@ -2110,13 +2082,13 @@ function peffect_gain_energy(otmp) {
      *      cursed:   -1.. 6 max (- 3.5 avg), -3..18 current (-10.5 avg)
      */
     num = d(
-        (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0
+        ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0
             ? 3
-            : (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) ? 2 : 1)),
+            : (!(cptr.ldI32o(otmp, $obj_cursed) & 1) ? 2 : 1)),
         6
     );
-    if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
-        num = -num | 0;  /* subtract instead of add when cursed */
+    if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
+        num = -num;  /* subtract instead of add when cursed */
     cptr.stI32o(u, $you_uenmax, (cptr.ldI32o(u, $you_uenmax) + num) | 0);
     if (cptr.ldI32o(u, $you_uenmax) > cptr.ldI32o(u, $you_uenpeak))
         cptr.stI32o(u, $you_uenpeak, cptr.ldI32o(u, $you_uenmax));
@@ -2136,7 +2108,7 @@ function peffect_oil(otmp) {
     let good_for_you = 0;
     let vulnerable;
 
-    if (cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_lamplit) & 1)) {
         if (likes_fire(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             pline(__s_ahh_a_refreshing_drink);
             good_for_you = 1;
@@ -2158,7 +2130,7 @@ function peffect_oil(otmp) {
          * "you burn your face" seems consistent enough.
          */
         burn_away_slime();
-    } else if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
+    } else if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         pline(__s_this_tastes_like_castor_oil);
     } else {
         pline(__s_that_was_smooth);
@@ -2176,15 +2148,13 @@ function peffect_acid(otmp) {
 
         pline(
             __s_this_burns_s,
-            cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0
+            (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0
                 ? __s_a_little
-                : (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0
-                    ? __s_a_lot
-                    : __s_like_acid)
+                : ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? __s_a_lot : __s_like_acid)
         );
         dmg = d(
-            (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0 ? 2 : 1),
-            (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 ? 4 : 8)
+            ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? 2 : 1),
+            ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 ? 4 : 8)
         );
         losehp(
             ((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)),
@@ -2206,7 +2176,7 @@ function peffect_acid(otmp) {
 function peffect_polymorph(otmp) {
     You_feel(__s_a_little_s, Hallucination() ? __s_normal : __s_strange);
     if (!Unchanging()) {
-        if (!cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) ||
+        if (!(cptr.ldI32o(otmp, $obj_blessed) & 1) ||
                 (cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_umonster)))
             polyself(NHC.POLY_NOFLAGS);
         else {
@@ -2374,7 +2344,7 @@ export function strange_feeling(obj, txt) {
     if (!obj)
         return;
 
-    if (cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0))
+    if ((cptr.ldI32o(obj, $obj_dknown) & 1))
         trycall(obj);
 
     useup(obj);
@@ -2444,23 +2414,23 @@ function H2Opotion_dip(potion, targobj, useeit, objphrase) {
     if (!potion || cptr.ldI16o(potion, $obj_otyp) != NHC.POT_WATER)
         return 0;
 
-    if (cptr.ldBits(cptr.add(potion, $obj_blessed), 1, 1, 0)) {
-        if (cptr.ldBits(cptr.add(targobj, $obj_cursed), 0, 1, 0)) {
+    if ((cptr.ldI32o(potion, $obj_blessed) & 1)) {
+        if ((cptr.ldI32o(targobj, $obj_cursed) & 1)) {
             func = uncurse;
             glowcolor = cptr.ldPtro(c_color_names, $c_color_names_c_amber);
             costchange = NHC.COST_UNCURS;
-        } else if (!cptr.ldBits(cptr.add(targobj, $obj_blessed), 1, 1, 0)) {
+        } else if (!(cptr.ldI32o(targobj, $obj_blessed) & 1)) {
             func = bless;
             glowcolor = cptr.ldPtro(c_color_names, $c_color_names_c_light_blue);
             costchange = -2;
             altfmt = 1;  /* "with a <color> aura" */
         }
-    } else if (cptr.ldBits(cptr.add(potion, $obj_cursed), 0, 1, 0)) {
-        if (cptr.ldBits(cptr.add(targobj, $obj_blessed), 1, 1, 0)) {
+    } else if ((cptr.ldI32o(potion, $obj_cursed) & 1)) {
+        if ((cptr.ldI32o(targobj, $obj_blessed) & 1)) {
             func = unbless;
             glowcolor = __s_brown;
             costchange = NHC.COST_UNBLSS;
-        } else if (!cptr.ldBits(cptr.add(targobj, $obj_cursed), 0, 1, 0)) {
+        } else if (!(cptr.ldI32o(targobj, $obj_cursed) & 1)) {
             func = curse;
             glowcolor = cptr.ldPtr(c_color_names);
             costchange = -2;
@@ -2489,21 +2459,20 @@ function H2Opotion_dip(potion, targobj, useeit, objphrase) {
             else
                 pline(__s_s_s, objphrase, glowcolor);
             cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OBJ_GLOWS);
-            cptr.stBits(cptr.add(targobj, $obj_bknown), 2, 1, 0, (!Hallucination()) >>> 0);
+            cptr.stI32o(targobj, $obj_bknown, (!Hallucination()) >>> 0);
         } else {
             /* didn't see what happened:  forget the BUC state if that was
                known unless the bless/curse state of the water is known;
                without this, hero would know the new state even without
                seeing the glow; priest[ess] will immediately relearn it */
-            if (!cptr.ldBits(cptr.add(potion, $obj_bknown), 2, 1, 0) ||
-                    !cptr.ldBits(cptr.add(potion, $obj_dknown), 1, 1, 0))
-                cptr.stBits(cptr.add(targobj, $obj_bknown), 2, 1, 0, 0);
+            if (!(cptr.ldI32o(potion, $obj_bknown) & 1) || !(cptr.ldI32o(potion, $obj_dknown) & 1))
+                cptr.stI32o(targobj, $obj_bknown, 0);
             /* [should the bknown+dknown exception require that water
                be discovered or at least named?] */
         }
         /* potions of water are the only shop goods whose price depends
            on their curse/bless state */
-        if (cptr.ldBits(cptr.add(targobj, $obj_unpaid), 2, 1, 0) | 0 &&
+        if ((cptr.ldI32o(targobj, $obj_unpaid) & 1) | 0 &&
                 cptr.ldI16o(targobj, $obj_otyp) == NHC.POT_WATER) {
             if (costchange == -2)
                 /* added blessing or cursing; update shop
@@ -2530,8 +2499,8 @@ export function impact_arti_light(obj, worsen, seeit) {
 
     /* if already worst/best BUC it can be, or if it resists, do nothing */
     if ((worsen
-        ? cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0
-        : cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0) ||
+        ? (cptr.ldI32o(obj, $obj_cursed) & 1) | 0
+        : (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ||
             obj_resists(obj, 25, 75))
         return;
 
@@ -2554,7 +2523,6 @@ export function impact_arti_light(obj, worsen, seeit) {
  * @param {CInt} how
  */
 export function potionhit(mon, obj, how) {
-    let __r5, __r6, __r7;
     let botlnam,
             isyou,
             distance,
@@ -2601,10 +2569,8 @@ export function potionhit(mon, obj, how) {
                     (saddle = which_armor(mon, 1048576n))) &&
                         (!rn2(10) ||
                             (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER &&
-                                ((rnl(10) > 7 &&
-                                    cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0) ||
-                                    (rnl(10) < 4 &&
-                                        cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0) ||
+                                ((rnl(10) > 7 && (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) ||
+                                    (rnl(10) < 4 && (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ||
                                     !rn2(3)))))
                     hit_saddle = 1;
                 distance = dist2(i16((tx)), i16((ty)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -2660,7 +2626,7 @@ export function potionhit(mon, obj, how) {
         case 4: {
             switch (cptr.ldI16o(obj, $obj_otyp)) {
                 case NHC.POT_OIL:
-                    if (cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0))
+                    if ((cptr.ldI32o(obj, $obj_lamplit) & 1))
                         explode_oil(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
                     break;
                 case NHC.POT_POLYMORPH:
@@ -2673,15 +2639,13 @@ export function potionhit(mon, obj, how) {
 
                         pline(
                             __s_this_burns_s,
-                            cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0
+                            (cptr.ldI32o(obj, $obj_blessed) & 1) | 0
                                 ? __s_a_little
-                                : (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0
-                                    ? __s_a_lot
-                                    : __s_empty)
+                                : ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? __s_a_lot : __s_empty)
                         );
                         dmg = d(
-                            (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 ? 2 : 1),
-                            (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 ? 4 : 8)
+                            ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? 2 : 1),
+                            ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 4 : 8)
                         );
                         losehp(
                             ((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)),
@@ -2768,7 +2732,7 @@ export function potionhit(mon, obj, how) {
             continue;
         }
         case 12: {
-            if (!cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0))
+            if (!(cptr.ldI32o(obj, $obj_cursed) & 1))
                 cureblind = 1;
             // @FallThrough
             ;
@@ -2776,7 +2740,7 @@ export function potionhit(mon, obj, how) {
             continue;
         }
         case 13: {
-            if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0))
+            if ((cptr.ldI32o(obj, $obj_blessed) & 1))
                 cureblind = 1;
             if (cptr.eq(
                 cptr.ldPtro(mon, $monst_data),
@@ -2851,17 +2815,14 @@ export function potionhit(mon, obj, how) {
         }
         case 18: {
             if (!resist(mon, NHC.POTION_CLASS, 0, NHM.NOTELL))
-                cptr.stBits(cptr.add(mon, $monst_mconf), 0, 1, 0, 1);
+                cptr.stI32o(mon, $monst_mconf, 1);
             { __pc = 9; continue; }
         }
         case 19: {
             sawit = schar(canspotmon(mon));
-            cursed_potion = schar((cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 ? 1 : 0));
+            cursed_potion = schar(((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? 1 : 0));
 
-            angermon = schar((cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) | 0 &&
-                cursed_potion
-                    ? 1
-                    : 0));
+            angermon = schar(((cptr.ldI32o(mon, $monst_minvis) & 1) | 0 && cursed_potion ? 1 : 0));
             mon_set_minvis(mon, cursed_potion);
             if (sawit && !canspotmon(mon)) {
                 if (((cptr.ld1uo(
@@ -2893,7 +2854,7 @@ export function potionhit(mon, obj, how) {
             { __pc = 9; continue; }
         }
         case 21: {
-            if (cptr.ldBits(cptr.add(mon, $monst_mcanmove), 7, 1, 0)) {
+            if ((cptr.ldI32o(mon, $monst_mcanmove) & 1)) {
                 /* really should be rnd(5) for consistency with players
                  * breathing potions, but...
                  */
@@ -2913,15 +2874,9 @@ export function potionhit(mon, obj, how) {
                         rn2(32) +
                         Math.imul(rn2(32), !resist(mon, NHC.POTION_CLASS, 0, NHM.NOTELL))) | 0;
 
-                btmp = (btmp + (cptr.ldBits(cptr.add(mon, $monst_mblinded), 0, 7, 0) | 0)) | 0;
-                cptr.stBits(
-                    cptr.add(mon, $monst_mblinded),
-                    0,
-                    7,
-                    0,
-                    ((btmp) < 127 ? (btmp) : 127) >>> 0
-                );
-                cptr.stBits(cptr.add(mon, $monst_mcansee), 7, 1, 0, 0);
+                btmp = (btmp + ((cptr.ldI32o(mon, $monst_mblinded) & 127) | 0)) | 0;
+                cptr.stI32o(mon, $monst_mblinded, ((btmp) < 127 ? (btmp) : 127) >>> 0);
+                cptr.stI32o(mon, $monst_mcansee, 0);
             }
             { __pc = 9; continue; }
         }
@@ -2930,7 +2885,7 @@ export function potionhit(mon, obj, how) {
                     ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 4n) !=
                         0n) ||
                     is_vampshifter(mon)) {
-                if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0)) {
+                if ((cptr.ldI32o(obj, $obj_blessed) & 1)) {
                     pline(
                         __s_s_s_in_pain,
                         Monnam(mon),
@@ -2949,10 +2904,7 @@ export function potionhit(mon, obj, how) {
                                 10
                             )
                         );
-                    (
-                        __r5 = d(2, 6),
-                        cptr.stI32o(mon, $monst_mhp, (cptr.ldI32o(mon, $monst_mhp) - __r5) | 0)
-                    );
+                    cptr.stI32o(mon, $monst_mhp, (cptr.ldI32o(mon, $monst_mhp) - d(2, 6)) | 0);
                     /* should only be by you */
                     if ((cptr.ldI32o((mon), $monst_mhp) < 1))
                         killed(mon);
@@ -2962,7 +2914,7 @@ export function potionhit(mon, obj, how) {
                             !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) &
                                 8n) != 0n))
                         new_were(mon);  /* revert to human */
-                } else if (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)) {
+                } else if ((cptr.ldI32o(obj, $obj_cursed) & 1)) {
                     angermon = 0;
                     if (canseemon(mon))
                         pline(__s_s_looks_healthier, Monnam(mon));
@@ -2987,10 +2939,7 @@ export function potionhit(mon, obj, how) {
             )) {
                 if (canseemon(mon))
                     pline(__s_s_rusts, Monnam(mon));
-                (
-                    __r6 = d(1, 6),
-                    cptr.stI32o(mon, $monst_mhp, (cptr.ldI32o(mon, $monst_mhp) - __r6) | 0)
-                );
+                cptr.stI32o(mon, $monst_mhp, (cptr.ldI32o(mon, $monst_mhp) - d(1, 6)) | 0);
                 /* should only be by you */
                 if ((cptr.ldI32o((mon), $monst_mhp) < 1))
                     killed(mon);
@@ -2998,7 +2947,7 @@ export function potionhit(mon, obj, how) {
             { __pc = 9; continue; }
         }
         case 25: {
-            if (cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0))
+            if ((cptr.ldI32o(obj, $obj_lamplit) & 1))
                 explode_oil(obj, i16(tx), i16(ty));
             { __pc = 9; continue; }
         }
@@ -3018,12 +2967,14 @@ export function potionhit(mon, obj, how) {
                         i16(ty),
                         Math.imul(cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlevel), 10)
                     );
-                (
-                    __r7 = d(
-                        (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 ? 2 : 1),
-                        (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 ? 4 : 8)
-                    ),
-                    cptr.stI32o(mon, $monst_mhp, (cptr.ldI32o(mon, $monst_mhp) - __r7) | 0)
+                cptr.stI32o(
+                    mon,
+                    $monst_mhp,
+                    (cptr.ldI32o(mon, $monst_mhp) -
+                        d(
+                            ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? 2 : 1),
+                            ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 4 : 8)
+                        )) | 0
                 );
                 if ((cptr.ldI32o((mon), $monst_mhp) < 1)) {
                     if (your_fault)
@@ -3044,7 +2995,7 @@ export function potionhit(mon, obj, how) {
                 if (angermon)
                     wakeup(mon, 1);
                 else
-                    cptr.stBits(cptr.add(mon, $monst_msleeping), 7, 1, 0, 0);
+                    cptr.stI32o(mon, $monst_msleeping, 0);
             }
             __pc = 6;
             continue;
@@ -3070,7 +3021,7 @@ export function potionhit(mon, obj, how) {
                         ) &
                             4096n) == 0n)))
                 potionbreathe(obj);
-            else if (cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0 &&
+            else if ((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
                     ((cptr.ld1uo(
                         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ty, 8),
                         tx
@@ -3078,8 +3029,7 @@ export function potionhit(mon, obj, how) {
                         NHM.IN_SIGHT) != 0))
                 trycall(obj);
 
-            if (cptr.ld1so(u, $you_ushops) &&
-                    cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0) {
+            if (cptr.ld1so(u, $you_ushops) && (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) {
                 shkp = shop_keeper(cptr.ld1s(in_rooms(
                     cptr.ldI16(u),
                     cptr.ldI16o(u, $you_uy),
@@ -3090,7 +3040,7 @@ export function potionhit(mon, obj, how) {
                    only the hero should ever have an unpaid item, and only
                    when inside a tended shop */
                 if (!shkp)
-                    cptr.stBits(cptr.add(obj, $obj_unpaid), 2, 1, 0, 0);
+                    cptr.stI32o(obj, $obj_unpaid, 0);
                 else if (cptr.ld1so(svc, $context_info_mon_moving))
                     subfrombill(obj, shkp);
                 else
@@ -3098,7 +3048,7 @@ export function potionhit(mon, obj, how) {
                         obj,
                         cptr.ldI16(u),
                         cptr.ldI16o(u, $you_uy),
-                        schar(cptr.ldBits(cptr.add(shkp, $monst_mpeaceful), 1, 1, 0)),
+                        schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)),
                         0
                     );
             }
@@ -3119,12 +3069,12 @@ export function potionbreathe(obj) {
     let isdone;
     let kn = 0;
     let cureblind = 0;
-    let already_in_use = cptr.ldBits(cptr.add(obj, $obj_in_use), 2, 1, 0);
+    let already_in_use = (cptr.ldI32o(obj, $obj_in_use) & 1);
 
     /* potion of unholy water might be wielded; prevent
        you_were() -> drop_weapon() from dropping it so that it
        remains in inventory where our caller expects it to be */
-    cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 1);
+    cptr.stI32o(obj, $obj_in_use, 1);
 
     /* wearing a wet towel protects both eyes and breathing, even when
        the breath effect might be beneficial; we still pass down to the
@@ -3135,7 +3085,7 @@ export function potionbreathe(obj) {
             break;
         case NHC.POT_RESTORE_ABILITY:
         case NHC.POT_GAIN_ABILITY:
-            if (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)) {
+            if ((cptr.ldI32o(obj, $obj_cursed) & 1)) {
                 if (!((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
@@ -3162,7 +3112,7 @@ export function potionbreathe(obj) {
                     if ((cptr.ld1so2(u, i, 1, $you_acurr)) < (cptr.ld1so2(u, i, 1, $you_amax))) {
                         cptr.postinc1(cptr.add(cptr.add(u, $you_acurr), i, 1));
                         /* only first found if not blessed */
-                        isdone = !(cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0));
+                        isdone = !((cptr.ldI32o(obj, $obj_blessed) & 1));
                         cptr.st1(disp, 1);
                     }
                     if (++i >= NHC.A_MAX)
@@ -3183,7 +3133,7 @@ export function potionbreathe(obj) {
                 (cptr.stI32o(u, $you_mh, cptr.ldI32o(u, $you_mh) + 1)) - (1), cptr.st1(disp, 1);
             if (cptr.ldI32o(u, $you_uhp) < cptr.ldI32o(u, $you_uhpmax))
                 (cptr.stI32o(u, $you_uhp, cptr.ldI32o(u, $you_uhp) + 1)) - (1), cptr.st1(disp, 1);
-            if (!cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0))
+            if (!(cptr.ldI32o(obj, $obj_cursed) & 1))
                 cureblind = 1;
             // @FallThrough
             ;
@@ -3192,10 +3142,10 @@ export function potionbreathe(obj) {
                 (cptr.stI32o(u, $you_mh, cptr.ldI32o(u, $you_mh) + 1)) - (1), cptr.st1(disp, 1);
             if (cptr.ldI32o(u, $you_uhp) < cptr.ldI32o(u, $you_uhpmax))
                 (cptr.stI32o(u, $you_uhp, cptr.ldI32o(u, $you_uhp) + 1)) - (1), cptr.st1(disp, 1);
-            if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0))
+            if ((cptr.ldI32o(obj, $obj_blessed) & 1))
                 cureblind = 1;
             if (cureblind) {
-                make_blinded(0n, schar((!(cptr.ldI32o(u, $you_ucreamed) >>> 0))));
+                make_blinded(0n, schar((!cptr.ldI32o(u, $you_ucreamed))));
                 make_deaf(0n, 1);
             }
             exercise(NHC.A_CON, 1);
@@ -3244,7 +3194,7 @@ export function potionbreathe(obj) {
                     __s_s_seems_to_be_holding_you,
                     cptr.ldPtro(c_common_strings, $c_common_strings_c_Something)
                 );
-                nomul(-rnd(5) | 0);
+                nomul(-rnd(5));
                 cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_frozen_by_a_potion);
                 cptr.stPtro(
                     gn,
@@ -3259,7 +3209,7 @@ export function potionbreathe(obj) {
             kn++;
             if (!Free_action() && !Sleep_resistance()) {
                 You_feel(__s_rather_tired);
-                nomul(-rnd(5) | 0);
+                nomul(-rnd(5));
                 cptr.stPtro(
                     gm,
                     $instance_globals_m_multi_reason,
@@ -3307,13 +3257,13 @@ export function potionbreathe(obj) {
             } else if (ismnum(cptr.ldI32o(u, $you_ulycn))) {
                 /* vapor from [un]holy water will trigger
                    transformation but won't cure lycanthropy */
-                if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 &&
+                if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 &&
                         cptr.eq(
                             cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
                             cptr.add(mons, cptr.ldI32o(u, $you_ulycn), $sizeof_permonst)
                         ))
                     you_unwere(0);
-                else if (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 && !Upolyd())
+                else if ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 && !Upolyd())
                     you_were();
             }
             break;
@@ -3324,9 +3274,9 @@ export function potionbreathe(obj) {
     }
 
     if (!already_in_use)
-        cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
+        cptr.stI32o(obj, $obj_in_use, 0);
     /* note: no obfree() -- that's our caller's responsibility */
-    if (cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0)) {
+    if ((cptr.ldI32o(obj, $obj_dknown) & 1)) {
         if (kn)
             discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1);
         else
@@ -3567,7 +3517,7 @@ export function dodip() {
             /* "Dip <the object> into the fountain?" */
             if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) == 121) {
                 if (!is_hands)
-                    cptr.stBits(cptr.add(obj, $obj_pickup_prev), 4, 1, 0, 0);
+                    cptr.stI32o(obj, $obj_pickup_prev, 0);
                 dipfountain(obj);
                 return NHM.ECMD_TIME;
             }
@@ -3584,7 +3534,7 @@ export function dodip() {
             );
             if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) == 121) {
                 if (!is_hands)
-                    cptr.stBits(cptr.add(obj, $obj_pickup_prev), 4, 1, 0, 0);
+                    cptr.stI32o(obj, $obj_pickup_prev, 0);
                 dipsink(obj);
                 return NHM.ECMD_TIME;
             }
@@ -3618,14 +3568,14 @@ export function dodip() {
                     rider_cant_reach();  /* not skilled enough to reach */
                 } else if (is_hands || cptr.eq(obj, uarmg.v)) {
                     if (!is_hands)
-                        cptr.stBits(cptr.add(obj, $obj_pickup_prev), 4, 1, 0, 0);
+                        cptr.stI32o(obj, $obj_pickup_prev, 0);
                     void wash_hands();
                 } else {
-                    cptr.stBits(cptr.add(obj, $obj_pickup_prev), 4, 1, 0, 0);
+                    cptr.stI32o(obj, $obj_pickup_prev, 0);
                     if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_ACID)
-                        cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 1);
+                        cptr.stI32o(obj, $obj_in_use, 1);
                     if (water_damage(obj, null, 1) != NHM.ER_DESTROYED &&
-                            cptr.ldBits(cptr.add(obj, $obj_in_use), 2, 1, 0) | 0)
+                            (cptr.ldI32o(obj, $obj_in_use) & 1) | 0)
                         useup(obj);
                 }
                 return NHM.ECMD_TIME;
@@ -3690,7 +3640,7 @@ export function dip_into() {
 
 /** C ref: potion.c:2408 — @param {CPtr<struct obj>} potion */
 function poof(potion) {
-    if (cptr.ldBits(cptr.add(potion, $obj_dknown), 1, 1, 0))
+    if ((cptr.ldI32o(potion, $obj_dknown) & 1))
         trycall(potion);
     useup(potion);
 }
@@ -3698,16 +3648,16 @@ function poof(potion) {
 /* do dipped potion(s) explode? */
 /** C ref: potion.c:2417 — @param {CPtr<struct obj>} obj @param {CInt} dmg @returns {CInt} */
 function dip_potion_explosion(obj, dmg) {
-    if (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 ||
+    if ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ||
             cptr.ldI16o(obj, $obj_otyp) == NHC.POT_ACID ||
             (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL &&
-                cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0) ||
+                (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0) ||
             !rn2((uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ALCHEMY_SMOCK) ? 30 : 10)) {
         /* it would be better to use up the whole stack in advance
            of the message, but we can't because we need to keep it
            around for potionbreathe() [and we can't set obj->in_use
            to 'amt' because that's not implemented] */
-        cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 1);
+        cptr.stI32o(obj, $obj_in_use, 1);
         pline(__s_sthey_explode, !Deaf() ? __s_boom : __s_empty);
         wake_nearto(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 81);
         exercise(NHC.A_STR, 0);
@@ -3752,8 +3702,8 @@ function potion_dip(obj, potion) {
             return NHM.ECMD_OK;
         }
 
-        cptr.stBits(cptr.add(obj, $obj_pickup_prev), 4, 1, 0, 0);  /* no longer 'recently picked up' */
-        cptr.stBits(cptr.add(potion, $obj_in_use), 2, 1, 0, 1);  /* assume it will be used up */
+        cptr.stI32o(obj, $obj_pickup_prev, 0);  /* no longer 'recently picked up' */
+        cptr.stI32o(potion, $obj_in_use, 1);  /* assume it will be used up */
         if (cptr.ldI16o(potion, $obj_otyp) == NHC.POT_WATER) {
             let useeit = schar((!Blind() || (cptr.eq(obj, ublindf.v) && Blindfolded_only())
                     ? 1
@@ -3813,7 +3763,7 @@ function potion_dip(obj, potion) {
                     return NHM.ECMD_TIME;
                 }
             }
-            cptr.stBits(cptr.add(potion, $obj_in_use), 2, 1, 0, 0);  /* didn't go poof */
+            cptr.stI32o(potion, $obj_in_use, 0);  /* didn't go poof */
             return NHM.ECMD_TIME;
         } else if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS &&
                 cptr.ldI16o(obj, $obj_otyp) != cptr.ldI16o(potion, $obj_otyp)) {
@@ -3823,36 +3773,25 @@ function potion_dip(obj, potion) {
             mixture = mixtype(obj, potion);
 
             magic = schar(((mixture != NHC.STRANGE_OBJECT)
-                    ? cptr.ldBits(
-                        cptr.add(cptr.add(objects, mixture, $sizeof_objclass), $objclass_oc_magic),
-                        4,
-                        1,
-                        0
-                    ) | 0
-                    : (cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_magic
-                        ),
-                        4,
-                        1,
-                        0
-                    ) |
+                    ? (cptr.ldI32o2(objects, mixture, $sizeof_objclass, $objclass_oc_magic) & 1) | 0
+                    : ((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_magic
+                    ) &
+                        1) |
                         0 ||
-                        cptr.ldBits(
-                            cptr.add(
-                                cptr.add(objects, cptr.ldI16o(potion, $obj_otyp), $sizeof_objclass),
-                                $objclass_oc_magic
-                            ),
-                            4,
-                            1,
-                            0
-                        ) | 0
+                        (cptr.ldI32o2(
+                            objects,
+                            cptr.ldI16o(potion, $obj_otyp),
+                            $sizeof_objclass,
+                            $objclass_oc_magic
+                        ) & 1) | 0
                         ? 1
                         : 0)));
             void cptr.strcpy(cptr.decay(qbuf), __s_the);  /* assume full stack */
-            if (amt >
-                    (cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) | 0 ? 2 : (magic ? 3 : 7))) {
+            if (amt > ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0 ? 2 : (magic ? 3 : 7))) {
                 /* Trying to dip multiple potions will usually affect only a
                    subset; pick an amount between 3 and 8, inclusive, for magic
                    potion result, between 7 and N for non-magic. If diluted
@@ -3861,7 +3800,7 @@ function potion_dip(obj, potion) {
                    common) potion of healing into the (very valuable) potion of
                    full healing, whilst permitting both healing->extra healing
                    and extra healing->full healing. */
-                if (cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0))
+                if ((cptr.ldI32o(obj, $obj_oeroded) & 3))
                     amt = 2;
                 else if (magic)
                     amt = (rnd((((amt) < 8 ? (amt) : 8) - 2) | 0) + 2) | 0;  /* 1..6 + 2 */
@@ -3889,28 +3828,20 @@ function potion_dip(obj, potion) {
             if (dip_potion_explosion(obj, (amt + rnd(9)) | 0))
                 return NHM.ECMD_TIME;
 
-            cptr.stBits(
-                cptr.add(obj, $obj_blessed),
-                1,
-                1,
-                0,
-                cptr.stBits(
-                    cptr.add(obj, $obj_cursed),
-                    0,
-                    1,
-                    0,
-                    cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 0)
-                )
+            cptr.stI32o(
+                obj,
+                $obj_blessed,
+                cptr.stI32o(obj, $obj_cursed, cptr.stI32o(obj, $obj_bknown, 0))
             );
             if (Blind() || Hallucination())
-                cptr.stBits(cptr.add(obj, $obj_dknown), 1, 1, 0, 0);
+                cptr.stI32o(obj, $obj_dknown, 0);
 
             if (mixture != NHC.STRANGE_OBJECT) {
                 cptr.stI16o(obj, $obj_otyp, mixture);
             } else {
                 let otmp;
 
-                switch (cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) | 0 ? 1 : rnd(8)) {
+                switch ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0 ? 1 : rnd(8)) {
                     case 1:
                         cptr.stI16o(obj, $obj_otyp, NHC.POT_WATER);
                         break;
@@ -3936,13 +3867,7 @@ function potion_dip(obj, potion) {
                         return NHM.ECMD_TIME;
                 }
             }
-            cptr.stBits(
-                cptr.add(obj, $obj_oeroded),
-                0,
-                2,
-                0,
-                (cptr.ldI16o(obj, $obj_otyp) != NHC.POT_WATER) >>> 0
-            );
+            cptr.stI32o(obj, $obj_oeroded, (cptr.ldI16o(obj, $obj_otyp) != NHC.POT_WATER) >>> 0);
 
             if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER && !Hallucination()) {
                 pline_The(__s_mixture_bubbles_s, Blind() ? __s_empty : __s_then_clears);
@@ -3981,12 +3906,12 @@ function potion_dip(obj, potion) {
                 otense(obj, __s_turn),
                 Blind()
                     ? __s_wrinkled
-                    : (cptr.ldBits(cptr.add(potion, $obj_oeroded), 0, 2, 0) | 0
+                    : ((cptr.ldI32o(potion, $obj_oeroded) & 3) | 0
                         ? hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_orange))
                         : hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red)))
             );
-            cptr.stBits(cptr.add(potion, $obj_in_use), 2, 1, 0, 0);  /* didn't go poof */
-            if (cptr.ldBits(cptr.add(potion, $obj_dknown), 1, 1, 0))
+            cptr.stI32o(potion, $obj_in_use, 0);  /* didn't go poof */
+            if ((cptr.ldI32o(potion, $obj_dknown) & 1))
                 trycall(potion);
             return NHM.ECMD_TIME;
         }
@@ -4001,7 +3926,7 @@ function potion_dip(obj, potion) {
 
         if (is_poisonable(obj)) {
             if (cptr.ldI16o(potion, $obj_otyp) == NHC.POT_SICKNESS &&
-                    !cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0)) {
+                    !(cptr.ldI32o(obj, $obj_otrapped) & 1)) {
                 let buf = new Uint8Array(256);
 
                 if (cptr.ldI64o(potion, $obj_quan) > 1n)
@@ -4009,16 +3934,16 @@ function potion_dip(obj, potion) {
                 else
                     void cptr.strcpy(cptr.decay(buf), The(xname(potion)));
                 pline(__s_s_forms_a_coating_on_s, cptr.decay(buf), the(xname(obj)));
-                cptr.stBits(cptr.add(obj, $obj_otrapped), 7, 1, 0, 1);
+                cptr.stI32o(obj, $obj_otrapped, 1);
                 poof(potion);
                 return NHM.ECMD_TIME;
-            } else if (cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0) | 0 &&
+            } else if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 &&
                     !permapoisoned(obj) &&
                     (cptr.ldI16o(potion, $obj_otyp) == NHC.POT_HEALING ||
                         cptr.ldI16o(potion, $obj_otyp) == NHC.POT_EXTRA_HEALING ||
                         cptr.ldI16o(potion, $obj_otyp) == NHC.POT_FULL_HEALING)) {
                 pline(__s_a_coating_wears_off_s, the(xname(obj)));
-                cptr.stBits(cptr.add(obj, $obj_otrapped), 7, 1, 0, 0);
+                cptr.stI32o(obj, $obj_otrapped, 0);
                 poof(potion);
                 return NHM.ECMD_TIME;
             }
@@ -4034,9 +3959,9 @@ function potion_dip(obj, potion) {
         if (cptr.ldI16o(potion, $obj_otyp) == NHC.POT_OIL) {
             let wisx = 0;
 
-            if (cptr.ldBits(cptr.add(potion, $obj_lamplit), 7, 1, 0)) {
+            if ((cptr.ldI32o(potion, $obj_lamplit) & 1)) {
                 fire_damage(obj, 1, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-            } else if (cptr.ldBits(cptr.add(potion, $obj_cursed), 0, 1, 0)) {
+            } else if ((cptr.ldI32o(potion, $obj_cursed) & 1)) {
                 pline_The(__s_potion_spills_and_covers_your_s_with_oil, fingers_or_gloves(1));
                 make_glib((Number(BigInt.asIntN(32, (Glib() & 16777215n))) + d(2, 10)) | 0);
             } else if (cptr.ld1so(obj, $obj_oclass) != NHC.WEAPON_CLASS && !is_weptool(obj)) {
@@ -4046,21 +3971,19 @@ function potion_dip(obj, potion) {
                  * cracks.  Arrows, etc are classed as metallic due to arrowhead
                  * material, but dipping in oil shouldn't repair them.
                  */
-            } else if ((!((cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            } else if ((!(((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                 0) ==
                 NHC.IRON) &&
                 !is_corrodeable(obj)) ||
                     is_ammo(obj) ||
-                    (!cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) &&
-                        !cptr.ldBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0))) {
+                    (!(cptr.ldI32o(obj, $obj_oeroded) & 3) &&
+                        !(cptr.ldI32o(obj, $obj_oeroded2) & 3))) {
                 /* uses up potion, doesn't set obj->greased */
                 if (!Blind())
                     pline(__s_s_s_with_an_oily_sheen, Yname2(obj), otense(obj, __s_gleam));
@@ -4071,27 +3994,19 @@ function potion_dip(obj, potion) {
                     __s_s_s_less_s,
                     Yname2(obj),
                     otense(obj, !Blind() ? __s_are : __s_feel),
-                    (cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) | 0 &&
-                        cptr.ldBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0) | 0)
+                    ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0 &&
+                        (cptr.ldI32o(obj, $obj_oeroded2) & 3) | 0)
                         ? __s_corroded_and_rusty
-                        : (cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) | 0
-                            ? __s_rusty
-                            : __s_corroded)
+                        : ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0 ? __s_rusty : __s_corroded)
                 );
-                if ((cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) | 0) > 0)
-                    ((old_) => (
-                        cptr.stBits(cptr.add(obj, $obj_oeroded), 0, 2, 0, old_ + -1),
-                        old_
-                    ))(cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0));
-                if ((cptr.ldBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0) | 0) > 0)
-                    ((old_) => (
-                        cptr.stBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0, old_ + -1),
-                        old_
-                    ))(cptr.ldBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0));
+                if (((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0) > 0)
+                    (cptr.stI32o(obj, $obj_oeroded, cptr.ldI32o(obj, $obj_oeroded) + -1)) - (-1);
+                if (((cptr.ldI32o(obj, $obj_oeroded2) & 3) | 0) > 0)
+                    (cptr.stI32o(obj, $obj_oeroded2, cptr.ldI32o(obj, $obj_oeroded2) + -1)) - (-1);
                 wisx = 1;
             }
             exercise(NHC.A_WIS, wisx);
-            if (cptr.ldBits(cptr.add(potion, $obj_dknown), 1, 1, 0))
+            if ((cptr.ldI32o(potion, $obj_dknown) & 1))
                 discover_object((cptr.ldI16o(potion, $obj_otyp)), 1, 1, 1);
             useup(potion);
             return NHM.ECMD_TIME;
@@ -4103,8 +4018,8 @@ function potion_dip(obj, potion) {
         cptr.ldI16o(obj, $obj_otyp) == NHC.MAGIC_LAMP) &&
             (cptr.ldI16o(potion, $obj_otyp) == NHC.POT_OIL)) {
         /* Turn off engine before fueling, turn off fuel too :-)  */
-        if (cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0 ||
-                cptr.ldBits(cptr.add(potion, $obj_lamplit), 7, 1, 0) | 0) {
+        if ((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ||
+                (cptr.ldI32o(potion, $obj_lamplit) & 1) | 0) {
             useup(potion);
             explode(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 11, d(6, 6), 0, NHC.EXPL_FIERY);
             exercise(NHC.A_WIS, 0);
@@ -4117,7 +4032,7 @@ function potion_dip(obj, potion) {
         }
         if (cptr.ldI64o(obj, $obj_age) > 1000n) {
             pline(__s_s_s_full, Yname2(obj), otense(obj, __s_are));
-            cptr.stBits(cptr.add(potion, $obj_in_use), 2, 1, 0, 0);  /* didn't go poof */
+            cptr.stI32o(potion, $obj_in_use, 0);  /* didn't go poof */
         } else {
             You(__s_fill_s_with_oil, yname(obj));
             check_unpaid(potion);  /* Yendorian Fuel Tax */
@@ -4130,7 +4045,7 @@ function potion_dip(obj, potion) {
                 cptr.ldI64o(obj, $obj_age) +
                     (BigInt.asIntN(
                         64,
-                        (!cptr.ldBits(cptr.add(potion, $obj_oeroded), 0, 2, 0) ? 4n : 3n) *
+                        (!(cptr.ldI32o(potion, $obj_oeroded) & 3) ? 4n : 3n) *
                             cptr.ldI64o(potion, $obj_age)
                     ) / 2n)
             );
@@ -4139,14 +4054,14 @@ function potion_dip(obj, potion) {
             useup(potion);
             exercise(NHC.A_WIS, 1);
         }
-        if (cptr.ldBits(cptr.add(potion, $obj_dknown), 1, 1, 0))
+        if ((cptr.ldI32o(potion, $obj_dknown) & 1))
             discover_object(NHC.POT_OIL, 1, 1, 1);
         cptr.st1o(obj, $obj_spe, 1);
         update_inventory();
         return NHM.ECMD_TIME;
     }
 
-    cptr.stBits(cptr.add(potion, $obj_in_use), 2, 1, 0, 0);  /* didn't go poof */
+    cptr.stI32o(potion, $obj_in_use, 0);  /* didn't go poof */
     if ((cptr.ldI16o(obj, $obj_otyp) == NHC.UNICORN_HORN ||
         cptr.ldI16o(obj, $obj_otyp) == NHC.AMETHYST) &&
             (mixture = mixtype(obj, potion)) != NHC.STRANGE_OBJECT) {
@@ -4157,7 +4072,7 @@ function potion_dip(obj, potion) {
         let more_than_one = schar((cptr.ldI64o(potion, $obj_quan) > 1n));
 
         cptr.st1o(cptr.decay(oldbuf), 0, 0, 1);
-        if (cptr.ldBits(cptr.add(potion, $obj_dknown), 1, 1, 0)) {
+        if ((cptr.ldI32o(potion, $obj_dknown) & 1)) {
             old_dknown = 1;
             void cptr.sprintf(
                 cptr.decay(oldbuf),
@@ -4182,31 +4097,18 @@ function potion_dip(obj, potion) {
 
         costly_alteration(singlepotion, NHC.COST_NUTRLZ);
         cptr.stI16o(singlepotion, $obj_otyp, mixture);
-        cptr.stBits(cptr.add(singlepotion, $obj_blessed), 1, 1, 0, 0);
+        cptr.stI32o(singlepotion, $obj_blessed, 0);
         if (mixture == NHC.POT_WATER)
-            cptr.stBits(
-                cptr.add(singlepotion, $obj_cursed),
-                0,
-                1,
-                0,
-                cptr.stBits(cptr.add(singlepotion, $obj_oeroded), 0, 2, 0, 0)
-            );
+            cptr.stI32o(singlepotion, $obj_cursed, cptr.stI32o(singlepotion, $obj_oeroded, 0));
         else
-            cptr.stBits(
-                cptr.add(singlepotion, $obj_cursed),
-                0,
-                1,
-                0,
-                cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)
-            );  /* odiluted left as-is */
-        cptr.stBits(cptr.add(singlepotion, $obj_bknown), 2, 1, 0, 0);
-        cptr.stBits(cptr.add(singlepotion, $obj_dknown), 1, 1, 0, 0);  /* provisionally */
+            cptr.stI32o(singlepotion, $obj_cursed, (cptr.ldI32o(obj, $obj_cursed) & 1));  /* odiluted left as-is */
+        cptr.stI32o(singlepotion, $obj_bknown, 0);
+        cptr.stI32o(singlepotion, $obj_dknown, 0);  /* provisionally */
         if (!Blind()) {
             if (!Hallucination())
                 observe_object(singlepotion);
             cptr.st1(cptr.decay(newbuf), 0);
-            if (mixture == NHC.POT_WATER &&
-                    cptr.ldBits(cptr.add(singlepotion, $obj_dknown), 1, 1, 0) | 0)
+            if (mixture == NHC.POT_WATER && (cptr.ldI32o(singlepotion, $obj_dknown) & 1) | 0)
                 void cptr.sprintf(cptr.decay(newbuf), __s_clears);
             else if (!Blind())
                 void cptr.sprintf(
@@ -4233,20 +4135,13 @@ function potion_dip(obj, potion) {
                 pline(__s_something_happens);
 
             if (old_dknown &&
-                    !cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, old_otyp, $sizeof_objclass),
-                            $objclass_oc_name_known
-                        ),
-                        0,
-                        1,
-                        0
-                    ) &&
+                    !(cptr.ldI32o2(objects, old_otyp, $sizeof_objclass, $objclass_oc_name_known) &
+                        1) &&
                     !cptr.ldPtro2(objects, old_otyp, $sizeof_objclass, $objclass_oc_uname)) {
-                let fakeobj = cptr.alloc(112);
+                let fakeobj = cptr.alloc(216);
 
-                cptr.memcpy(fakeobj, cg, 112);
-                cptr.stBits(cptr.add(fakeobj, $obj_dknown), 1, 1, 0, 1);  /* no need to observe_object */
+                cptr.memcpy(fakeobj, cg, 216);
+                cptr.stI32o(fakeobj, $obj_dknown, 1);  /* no need to observe_object */
                 cptr.stI16o(fakeobj, $obj_otyp, old_otyp);
                 cptr.st1o(fakeobj, $obj_oclass, NHC.POTION_CLASS);
                 docall(fakeobj);
@@ -4307,9 +4202,9 @@ export function djinni_from_bottle(obj) {
     }
 
     chance = rn2(5);
-    if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0))
+    if ((cptr.ldI32o(obj, $obj_blessed) & 1))
         chance = (chance == 4) ? rnd(4) : 0;
-    else if (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0))
+    else if ((cptr.ldI32o(obj, $obj_cursed) & 1))
         chance = (chance == 0) ? rn2(4) : 4;
     /* 0,1,2,3,4:  b=80%,5,5,5,5; nc=20%,20,20,20,20; c=5%,5,5,5,80 */
 
@@ -4326,7 +4221,7 @@ export function djinni_from_bottle(obj) {
             break;
         case 2:
             verbalize(__s_you_freed_me);
-            cptr.stBits(cptr.add(mtmp.v, $monst_mpeaceful), 1, 1, 0, 1);
+            cptr.stI32o(mtmp.v, $monst_mpeaceful, 1);
             set_malign(mtmp.v);
             break;
         case 3:
@@ -4337,7 +4232,7 @@ export function djinni_from_bottle(obj) {
             break;
         default:
             verbalize(__s_you_disturbed_me_fool);
-            cptr.stBits(cptr.add(mtmp.v, $monst_mpeaceful), 1, 1, 0, 0);
+            cptr.stI32o(mtmp.v, $monst_mpeaceful, 0);
             set_malign(mtmp.v);
             break;
     }

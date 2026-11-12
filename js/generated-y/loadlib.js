@@ -140,15 +140,14 @@ function* noenv(L) {
  * @param {CPtr<char>} dft
  */
 function* setpath(L, fieldname, envname, dft) {
-    let __r1, __r2;
     let dftmark;
     let nver = (yield* lua_pushfstring(L, __s_s_s, envname, __s_5_4));
     let path = getenv(nver);  /* try versioned name */
-    if (cptr.eq(path, cptr.byteView((null))))
+    if (cptr.eq(path, (null)))
         path = getenv(envname);  /* try unversioned name */
-    if (cptr.eq(path, cptr.byteView((null))) || (yield* noenv(L)))
+    if (cptr.eq(path, (null)) || (yield* noenv(L)))
         (yield* lua_pushstring(L, dft));  /* use default */
-    else if (cptr.eq((dftmark = cptr.strstr(path, __s_semi2)), cptr.byteView((null))))
+    else if (cptr.eq((dftmark = cptr.strstr(path, __s_semi2)), (null)))
         (yield* lua_pushstring(L, path));  /* nothing to change */
     else {
         let len = cptr.strlen(path);
@@ -161,14 +160,11 @@ function* setpath(L, fieldname, envname, dft) {
                     (yield* luaL_prepbuffsize((b), 1n))
                     ? 1
                     : 0),
-                ((
-                    __r1 = (cptr.ld1s(__s_semi)),
-                    cptr.st1o(
-                        cptr.ldPtr((b)),
-                        (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) -
-                            (1n),
-                        __r1
-                    )
+                (cptr.st1o(
+                    cptr.ldPtr((b)),
+                    (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) -
+                        (1n),
+                    (cptr.ld1s(__s_semi))
                 ))
             );
         }
@@ -179,14 +175,11 @@ function* setpath(L, fieldname, envname, dft) {
                     (yield* luaL_prepbuffsize((b), 1n))
                     ? 1
                     : 0),
-                ((
-                    __r2 = (cptr.ld1s(__s_semi)),
-                    cptr.st1o(
-                        cptr.ldPtr((b)),
-                        (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) -
-                            (1n),
-                        __r2
-                    )
+                (cptr.st1o(
+                    cptr.ldPtr((b)),
+                    (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) -
+                        (1n),
+                    (cptr.ld1s(__s_semi))
                 ))
             );
             (yield* luaL_addlstring(
@@ -345,7 +338,7 @@ function getnextfilename(path, end) {
         name = cptr.add(name, 1);  /* skip it */
     }
     sep = cptr.strchr(name, cptr.ld1s(__s_semi));  /* find next separator */
-    if (cptr.eq(sep, cptr.byteView((null))))
+    if (cptr.eq(sep, (null)))
         sep = end;  /* name goes until the end */
     cptr.st1(sep, 0);  /* finish file name */
     cptr.stPtr(path, sep);  /* will start next search from here */
@@ -383,7 +376,7 @@ function* searchpath(L, name, path, sep, dirsep) {
     let endpathname;  /* its end */
     let filename;
     /* separator is non-empty and appears in 'name'? */
-    if (cptr.ld1s(sep) != 0 && !cptr.eq(cptr.strchr(name, cptr.ld1s(sep)), cptr.byteView((null))))
+    if (cptr.ld1s(sep) != 0 && !cptr.eq(cptr.strchr(name, cptr.ld1s(sep)), (null)))
         name = (yield* luaL_gsub(L, name, sep, dirsep));  /* replace it by 'dirsep' */
     (yield* luaL_buffinit(L, buff));
     /* add path to the buffer, replacing marks ('?') with the file name */
@@ -401,7 +394,7 @@ function* searchpath(L, name, path, sep, dirsep) {
     );
     pathname.v = (cptr.ldPtr((buff)));  /* writable list of file names */
     endpathname = cptr.add(cptr.add(pathname.v, (cptr.ldU64o((buff), $luaL_Buffer_n))), -(1));
-    while (!cptr.eq((filename = getnextfilename(pathname, endpathname)), cptr.byteView((null)))) {
+    while (!cptr.eq((filename = getnextfilename(pathname, endpathname)), (null))) {
         if (readable(filename))
             return (yield* lua_pushstring(L, filename));  /* save and return name */
     }
@@ -419,7 +412,7 @@ function* ll_searchpath(L) {
         ((yield* luaL_optlstring(L, 3, (__s_dot), null))),
         ((yield* luaL_optlstring(L, 4, (__s_slash), null)))
     ));
-    if (!cptr.eq(f, cptr.byteView((null))))
+    if (!cptr.eq(f, (null)))
         return 1;
     else {
         (yield* lua_pushnil(L));
@@ -440,7 +433,7 @@ function* findfile(L, name, pname, dirsep) {
     let path;
     (yield* lua_getfield(L, -1001001, pname));
     path = (yield* lua_tolstring(L, -1, null));
-    if ((__builtin_expect(BigInt(((cptr.eq(path, cptr.byteView((null)))) != 0)), 0n)))
+    if ((__builtin_expect(BigInt(((cptr.eq(path, (null))) != 0)), 0n)))
         (yield* luaL_error(L, __s_package_s_must_be_a_string, pname));
     return (yield* searchpath(L, name, path, __s_dot, dirsep));
 }
@@ -471,7 +464,7 @@ function* searcher_Lua(L) {
     let filename;
     let name = ((yield* luaL_checklstring(L, 1, null)));
     filename = (yield* findfile(L, name, __s_path, __s_slash));
-    if (cptr.eq(filename, cptr.byteView((null))))
+    if (cptr.eq(filename, (null)))
         return 1;  /* module not found in this path */
     return (yield* checkload(L, ((yield* luaL_loadfilex(L, filename, null)) == 0), filename));
 }
@@ -513,7 +506,7 @@ function* loadfunc(L, filename, modname) {
 function* searcher_C(L) {
     let name = ((yield* luaL_checklstring(L, 1, null)));
     let filename = (yield* findfile(L, name, __s_cpath, __s_slash));
-    if (cptr.eq(filename, cptr.byteView((null))))
+    if (cptr.eq(filename, (null)))
         return 1;  /* module not found in this path */
     return (yield* checkload(L, ((yield* loadfunc(L, filename, name)) == 0), filename));
 }
@@ -524,11 +517,11 @@ function* searcher_Croot(L) {
     let name = ((yield* luaL_checklstring(L, 1, null)));
     let p = cptr.strchr(name, 46);
     let stat;
-    if (cptr.eq(p, cptr.byteView((null))))
+    if (cptr.eq(p, (null)))
         return 0;  /* is root */
     (yield* lua_pushlstring(L, name, BigInt.asUintN(64, cptr.diff(p, name))));
     filename = (yield* findfile(L, (yield* lua_tolstring(L, -1, null)), __s_cpath, __s_slash));
-    if (cptr.eq(filename, cptr.byteView((null))))
+    if (cptr.eq(filename, (null)))
         return 1;  /* root not found */
     if ((stat = (yield* loadfunc(L, filename, name))) != 0) {
         if (stat != 2)
@@ -568,11 +561,7 @@ function* findloader(L, name) {
         (yield* luaL_addstring(msg, __s_nl_tab));  /* error-message prefix */
         if ((__builtin_expect(BigInt((((yield* lua_rawgeti(L, 3, BigInt(i))) == 0) != 0)), 0n))) {
             (yield* lua_settop(L, -2));  /* remove nil */
-            (cptr.stU64o(
-                (msg),
-                $luaL_Buffer_n,
-                BigInt.asUintN(64, cptr.ldU64o((msg), $luaL_Buffer_n) - 2n)
-            ));  /* remove prefix */
+            (cptr.stU64o((msg), $luaL_Buffer_n, cptr.ldU64o((msg), $luaL_Buffer_n) - 2n));  /* remove prefix */
             (yield* luaL_pushresult(msg));  /* create error message */
             (yield* luaL_error(L, __s_module_s_not_found_s, name, (yield* lua_tolstring(L, -1, null))));
         }
@@ -585,11 +574,7 @@ function* findloader(L, name) {
             (yield* luaL_addvalue(msg));  /* concatenate error message */
         } else {
             (yield* lua_settop(L, -3));  /* remove both returns */
-            (cptr.stU64o(
-                (msg),
-                $luaL_Buffer_n,
-                BigInt.asUintN(64, cptr.ldU64o((msg), $luaL_Buffer_n) - 2n)
-            ));  /* remove prefix */
+            (cptr.stU64o((msg), $luaL_Buffer_n, cptr.ldU64o((msg), $luaL_Buffer_n) - 2n));  /* remove prefix */
         }
     }
 }

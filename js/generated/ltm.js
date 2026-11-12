@@ -112,12 +112,14 @@ cptr.stPtro(__static_luaT_init_luaT_eventname, 192, __s_close); /** C ref: ltm.c
 
 /** C ref: ltm.c:38 — @param {CPtr<lua_State>} L */
 export function luaT_init(L) {
-    let __r1;
     let i;
     for (i = 0; i < NHC.TM_N; i++) {
-        (
-            __r1 = luaS_new(L, cptr.ldPtro(__static_luaT_init_luaT_eventname, i, 8)),
-            cptr.stPtro2((cptr.ldPtro(L, $lua_State_l_G)), i, 8, $global_State_tmname, __r1)
+        cptr.stPtro2(
+            (cptr.ldPtro(L, $lua_State_l_G)),
+            i,
+            8,
+            $global_State_tmname,
+            luaS_new(L, cptr.ldPtro(__static_luaT_init_luaT_eventname, i, 8))
         );
         luaC_fix(
             L,

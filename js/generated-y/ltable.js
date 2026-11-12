@@ -81,16 +81,16 @@ function hashint(t, i) {
 /** C ref: ltable.c:131 — @param {CDouble} n @returns {CInt} */
 function l_hashfloat(n) {
     let i = cptr.box(0);
-    let ni = cptr.box(0n, "i64");
+    let ni = cptr.box(0n);
     n = frexp(n, i) * -(-2147483648);
     if (!((n) >= Number((-9223372036854775808n)) &&
             (n) < -Number((-9223372036854775808n)) &&
-            (cptr.stI64((ni), cptr.ftoi64((n))), 1))) {
+            (cptr.stI64((ni), BigInt.asIntN(64, BigInt(Math.trunc((n))))), 1))) {
         (void 0);
         return 0;
     } else {
         let u = ((((i.v)) >>> 0) + (Number(BigInt.asUintN(32, ((ni.v)))))) >>> 0;
-        return (((u <= 2147483647 ? u : ~u >>> 0)) | 0);
+        return (((u <= 2147483647 ? u : ~u)) | 0);
     }
 }
 
@@ -120,7 +120,7 @@ function mainpositionTV(t, key) {
                 let ts = ((((((cptr.ldPtr(((key)))))))));
                 return ((cptr.add(
                     cptr.ldPtro((t), $Table_node),
-                    (((((((((cptr.ldI32o((ts), $TString_hash) >>> 0)) &
+                    (((((((((cptr.ldI32o((ts), $TString_hash))) &
                         ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) >>> 0) >>>
                         0)) |
                         0)))),
@@ -276,19 +276,18 @@ function equalkey(k1, n2, deadok) {
 /** C ref: ltable.c:250 — @param {CPtr<Table>} t @returns {CUInt} */
 export function luaH_realasize(t) {
     if (((!(cptr.ld1uo((t), $Table_flags) & 128)) ||
-            ((((cptr.ldI32o((t), $Table_alimit) >>> 0) &
-                ((cptr.ldI32o((t), $Table_alimit) >>> 0) - 1)) >>>
+            ((((cptr.ldI32o((t), $Table_alimit)) & ((cptr.ldI32o((t), $Table_alimit)) - 1)) >>>
                 0) == 0)))
-        return cptr.ldI32o(t, $Table_alimit) >>> 0;  /* this is the size */
+        return cptr.ldI32o(t, $Table_alimit);  /* this is the size */
     else {
-        let size = cptr.ldI32o(t, $Table_alimit) >>> 0;
+        let size = cptr.ldI32o(t, $Table_alimit);
         /* compute the smallest power of 2 not smaller than 'size' */
-        size = (size | (size >>> 1)) >>> 0;
-        size = (size | (size >>> 2)) >>> 0;
-        size = (size | (size >>> 4)) >>> 0;
-        size = (size | (size >>> 8)) >>> 0;
-        size = (size | (size >>> 16)) >>> 0;
-        size = ((size + 1) >>> 0);
+        size |= (size >>> 1);
+        size |= (size >>> 2);
+        size |= (size >>> 4);
+        size |= (size >>> 8);
+        size |= (size >>> 16);
+        size++;
         (void 0);
         return size;
     }
@@ -302,8 +301,7 @@ export function luaH_realasize(t) {
 /** C ref: ltable.c:278 — @param {CPtr<Table>} t @returns {CInt} */
 function ispow2realasize(t) {
     return (!(!(cptr.ld1uo((t), $Table_flags) & 128)) ||
-        ((((cptr.ldI32o(t, $Table_alimit) >>> 0) & ((cptr.ldI32o(t, $Table_alimit) >>> 0) - 1)) >>>
-            0) == 0)
+        ((((cptr.ldI32o(t, $Table_alimit)) & ((cptr.ldI32o(t, $Table_alimit)) - 1)) >>> 0) == 0)
             ? 1
             : 0);
 }
@@ -311,8 +309,8 @@ function ispow2realasize(t) {
 /** C ref: ltable.c:283 — @param {CPtr<Table>} t @returns {CUInt} */
 function setlimittosize(t) {
     cptr.stI32o(t, $Table_alimit, luaH_realasize(t));
-    (cptr.st1o((t), $Table_flags, uchar((cptr.ld1uo((t), $Table_flags) & 127))));
-    return cptr.ldI32o(t, $Table_alimit) >>> 0;
+    (cptr.st1o((t), $Table_flags, cptr.ld1uo((t), $Table_flags) & 127));
+    return cptr.ldI32o(t, $Table_alimit);
 }
 
 /*
@@ -396,7 +394,7 @@ function* findindex(L, t, key, asize) {
 export function* luaH_next(L, t, key) {
     let asize = luaH_realasize(t);
     let i = (yield* findindex(L, t, ((key)), asize));  /* find original key */
-    for (; i < asize; i = ((i + 1) >>> 0)) {
+    for (; i < asize; i++) {
         if (!(((((cptr.ld1uo(
             ((cptr.add(cptr.ldPtro(t, $Table_array), i, $sizeof_TValue))),
             $TValue_tt_
@@ -421,11 +419,7 @@ export function* luaH_next(L, t, key) {
             return 1;
         }
     }
-    for (
-        i = (i - asize) >>> 0;
-        (((i)) | 0) < ((1 << (cptr.ld1uo((t), $Table_lsizenode))));
-        i = ((i + 1) >>> 0)
-    ) {
+    for (i = (i - asize) | 0; (((i)) | 0) < ((1 << (cptr.ld1uo((t), $Table_lsizenode)))); i++) {
         if (!(((((cptr.ld1uo(
             (((((cptr.add(cptr.ldPtro((t), $Table_node), i, $sizeof_Node)))))),
             $TValue_tt_
@@ -502,11 +496,11 @@ function computesizes(nums, pna) {
     for (
         i = 0,
         twotoi = 1;
-        twotoi > 0 && cptr.ldI32(pna) >>> 0 > u32div(twotoi, 2);
+        twotoi > 0 && cptr.ldI32(pna) > u32div(twotoi, 2);
         i++,
-        twotoi = Math.imul(twotoi, 2) >>> 0
+        twotoi = Math.imul(twotoi, 2)
     ) {
-        a = (a + (cptr.ldI32o(nums, i, 4) >>> 0)) >>> 0;
+        a = (a + cptr.ldI32o(nums, i, 4)) | 0;
         if (a > u32div(twotoi, 2)) {
             optimal = twotoi;  /* optimal size (till now) */
             na = a;  /* all elements up to 'optimal' will go to array part */
@@ -519,13 +513,9 @@ function computesizes(nums, pna) {
 
 /** C ref: ltable.c:413 — @param {CLongLong} key @param {CPtr<unsigned int>} nums @returns {CInt} */
 function countint(key, nums) {
-    let __r1;
     let k = arrayindex(key);
     if (k != 0) {
-        (
-            __r1 = luaO_ceillog2(k),
-            (cptr.stI32o(nums, __r1, (cptr.ldI32o(nums, __r1, 4) >>> 0) + 1, 4)) - (1)
-        );  /* count as such */
+        (cptr.stI32o(nums, luaO_ceillog2(k), cptr.ldI32o(nums, luaO_ceillog2(k), 4) + 1, 4)) - (1);  /* count as such */
         return 1;
     } else
         return 0;
@@ -547,9 +537,9 @@ function numusearray(t, nums) {
     let ttlg;  /* 2^lg */
     let ause = 0;  /* summation of 'nums' */
     let i = 1;  /* count to traverse all array keys */
-    let asize = (cptr.ldI32o(t, $Table_alimit) >>> 0);  /* real array size */
+    let asize = (cptr.ldI32o(t, $Table_alimit));  /* real array size */
     /* traverse each slice */
-    for (lg = 0, ttlg = 1; lg <= 31; lg++, ttlg = Math.imul(ttlg, 2) >>> 0) {
+    for (lg = 0, ttlg = 1; lg <= 31; lg++, ttlg = Math.imul(ttlg, 2)) {
         let lc = 0;  /* counter */
         let lim = ttlg;
         if (lim > asize) {
@@ -558,16 +548,16 @@ function numusearray(t, nums) {
                 break;  /* no more elements to count */
         }
         /* count elements in range (2^(lg - 1), 2^lg] */
-        for (; i <= lim; i = ((i + 1) >>> 0)) {
+        for (; i <= lim; i++) {
             if (!(((((cptr.ld1uo(
                 ((cptr.add(cptr.ldPtro(t, $Table_array), (i - 1) >>> 0, $sizeof_TValue))),
                 $TValue_tt_
             ))) &
                     15)) == 0))
-                lc = ((lc + 1) >>> 0);
+                lc++;
         }
-        cptr.stI32o(nums, lg, ((cptr.ldI32o(nums, lg, 4) >>> 0) + lc) >>> 0, 4);
-        ause = (ause + lc) >>> 0;
+        cptr.stI32o(nums, lg, (cptr.ldI32o(nums, lg, 4) + lc) | 0, 4);
+        ause = (ause + lc) | 0;
     }
     return ause;
 }
@@ -591,7 +581,7 @@ function numusehash(t, nums, pna) {
             totaluse++;
         }
     }
-    cptr.stI32(pna, ((cptr.ldI32(pna) >>> 0) + (ause >>> 0)) >>> 0);
+    cptr.stI32(pna, (cptr.ldI32(pna) + (ause >>> 0)) | 0);
     return totaluse;
 }
 
@@ -712,7 +702,7 @@ export function* luaH_resize(L, t, newasize, nhsize) {
         cptr.stI32o(t, $Table_alimit, newasize);  /* pretend array has new size... */
         exchangehashpart(t, newt);  /* and new hash */
         /* re-insert into the new hash the elements from vanishing slice */
-        for (i = newasize; i < oldasize; i = ((i + 1) >>> 0)) {
+        for (i = newasize; i < oldasize; i++) {
             if (!(((((cptr.ld1uo(
                 ((cptr.add(cptr.ldPtro(t, $Table_array), i, $sizeof_TValue))),
                 $TValue_tt_
@@ -746,7 +736,7 @@ export function* luaH_resize(L, t, newasize, nhsize) {
     exchangehashpart(t, newt);  /* 't' has the new hash ('newt' has the old) */
     cptr.stPtro(t, $Table_array, newarray);  /* set new array part */
     cptr.stI32o(t, $Table_alimit, newasize);
-    for (i = oldasize; i < newasize; i = ((i + 1) >>> 0))
+    for (i = oldasize; i < newasize; i++)
         (cptr.st1o((cptr.add(cptr.ldPtro(t, $Table_array), i, $sizeof_TValue)), $TValue_tt_, 16));
     /* re-insert elements from old hash part into new parts */
     (yield* reinsert(L, newt, t));  /* 'newt' now has the old hash */
@@ -771,9 +761,8 @@ export function* luaH_resizearray(L, t, nasize) {
  * @param {CPtr<TValue>} ek
  */
 function* rehash(L, t, ek) {
-    let __r2;
     let asize;  /* optimal size for array part */
-    let na = cptr.box(0, "u32");  /* number of keys in the array part */
+    let na = cptr.box(0);  /* number of keys in the array part */
     let nums = cptr.alloc(32 * 4);
     let i;
     let totaluse;
@@ -785,7 +774,7 @@ function* rehash(L, t, ek) {
     totaluse = (totaluse + numusehash(t, nums, na)) | 0;  /* count keys in hash part */
     /* count extra key */
     if (((cptr.ld1uo(((ek)), $TValue_tt_)) == 3))
-        (__r2 = countint((cptr.ldI64(((ek)))), nums) >>> 0, na.v = (na.v + __r2) >>> 0);
+        na.v = (na.v + (countint((cptr.ldI64(((ek)))), nums) >>> 0)) | 0;
     totaluse++;
     /* compute new size for array part */
     asize = computesizes(nums, na);
@@ -802,7 +791,7 @@ export function* luaH_new(L) {
     let o = (yield* luaC_newobj(L, 5, 56n));
     let t = (((((o)))));
     cptr.stPtro(t, $Table_metatable, null);
-    cptr.st1o(t, $Table_flags, (uchar((((~((~0 >>> 0 << ((NHC.TM_EQ + 1) | 0)) >>> 0) >>> 0))))));  /* table has no metamethod fields */
+    cptr.st1o(t, $Table_flags, (uchar((((~((~0 << ((NHC.TM_EQ + 1) | 0)) >>> 0)))))));  /* table has no metamethod fields */
     cptr.stPtro(t, $Table_array, null);
     cptr.stI32o(t, $Table_alimit, 0);
     (yield* setnodevector(L, t, 0));
@@ -860,7 +849,7 @@ function* luaH_newkey(L, t, key, value) {
         (yield* luaG_runerror(L, __s_table_index_is_nil));
     else if (((cptr.ld1uo(((key)), $TValue_tt_)) == 19)) {
         let f = (cptr.ldF64(((key))));
-        let k = cptr.box(0n, "i64");
+        let k = cptr.box(0n);
         if (luaV_flttointeger(f, k, NHC.F2Ieq)) {
             {
                 let io = (aux);
@@ -878,8 +867,8 @@ function* luaH_newkey(L, t, key, value) {
     if (!(((((cptr.ld1uo(((((mp)))), $TValue_tt_))) & 15)) == 0) ||
             (cptr.eq(cptr.ldPtro((t), $Table_lastfree), (null)))) {
         let othern;
-        let f__2 = (yield* getfreepos(t));  /* get a free place */
-        if (cptr.eq(f__2, (null))) {
+        let f = (yield* getfreepos(t));  /* get a free place */
+        if (cptr.eq(f, (null))) {
             (yield* rehash(L, t, key));  /* grow table */
             /* whatever called 'newkey' takes care of TM cache */
             (yield* luaH_set(L, t, key, value));  /* insert key into grown table */
@@ -894,15 +883,15 @@ function* luaH_newkey(L, t, key, value) {
             cptr.stI32o(
                 (othern),
                 $NodeKey_next,
-                (Number(BigInt.asIntN(32, ((cptr.diff(f__2, othern) / 24n)))))
+                (Number(BigInt.asIntN(32, ((cptr.diff(f, othern) / 24n)))))
             );  /* rechain to point to 'f' */
-            cptr.memcpy(f__2, mp, 24);  /* copy colliding node into free pos. (mp->next also goes) */
+            cptr.memcpy(f, mp, 24);  /* copy colliding node into free pos. (mp->next also goes) */
             if ((cptr.ldI32o((mp), $NodeKey_next)) != 0) {
                 cptr.stI32o(
-                    (f__2),
+                    (f),
                     $NodeKey_next,
-                    (cptr.ldI32o((f__2), $NodeKey_next) +
-                        (Number(BigInt.asIntN(32, ((cptr.diff(mp, f__2) / 24n)))))) | 0
+                    (cptr.ldI32o((f), $NodeKey_next) +
+                        (Number(BigInt.asIntN(32, ((cptr.diff(mp, f) / 24n)))))) | 0
                 );  /* correct 'next' */
                 cptr.stI32o((mp), $NodeKey_next, 0);  /* now 'mp' is free */
             }
@@ -911,13 +900,13 @@ function* luaH_newkey(L, t, key, value) {
             /* new node will go into free position */
             if ((cptr.ldI32o((mp), $NodeKey_next)) != 0)
                 cptr.stI32o(
-                    (f__2),
+                    (f),
                     $NodeKey_next,
                     (Number(BigInt.asIntN(
                         32,
                         ((cptr.diff(
                             (cptr.add(mp, (cptr.ldI32o((mp), $NodeKey_next)), 24)),
-                            f__2
+                            f
                         ) / 24n))
                     )))
                 );  /* chain new position */
@@ -926,9 +915,9 @@ function* luaH_newkey(L, t, key, value) {
             cptr.stI32o(
                 (mp),
                 $NodeKey_next,
-                (Number(BigInt.asIntN(32, ((cptr.diff(f__2, mp) / 24n)))))
+                (Number(BigInt.asIntN(32, ((cptr.diff(f, mp) / 24n)))))
             );
-            mp = f__2;
+            mp = f;
         }
     }
     {
@@ -981,7 +970,7 @@ function* luaH_newkey(L, t, key, value) {
 */
 /** C ref: ltable.c:745 — @param {CPtr<Table>} t @param {CLongLong} key @returns {CPtr<TValue>} */
 export function luaH_getint(t, key) {
-    let alimit = BigInt((cptr.ldI32o(t, $Table_alimit) >>> 0) >>> 0);
+    let alimit = BigInt(cptr.ldI32o(t, $Table_alimit) >>> 0);
     if (BigInt.asUintN(64, (BigInt.asUintN(64, (key))) - 1n) < alimit)
         return cptr.add(cptr.ldPtro(t, $Table_array), BigInt.asIntN(64, key - 1n), $sizeof_TValue);
     else if (!(!(cptr.ld1uo((t), $Table_flags) & 128)) &&
@@ -1019,7 +1008,7 @@ export function luaH_getint(t, key) {
 export function luaH_getshortstr(t, key) {
     let n = ((cptr.add(
         cptr.ldPtro((t), $Table_node),
-        (((((((((cptr.ldI32o((key), $TString_hash) >>> 0)) &
+        (((((((((cptr.ldI32o((key), $TString_hash))) &
             ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) >>> 0) >>>
             0)) |
             0)))),
@@ -1081,7 +1070,7 @@ export function luaH_get(t, key) {
             return absentkey.v;
         case 19:
             {
-                let k = cptr.box(0n, "i64");
+                let k = cptr.box(0n);
                 if (luaV_flttointeger((cptr.ldF64(((key)))), k, NHC.F2Ieq))
                     return luaH_getint(t, k.v);  /* use specialized version */
                 /* else... */
@@ -1181,11 +1170,11 @@ export function* luaH_setint(L, t, key, value) {
 function hash_search(t, j) {
     let i;
     if (j == 0n)
-        j = BigInt.asUintN(64, j + 1n);  /* the caller ensures 'j + 1' is present */
+        j++;  /* the caller ensures 'j + 1' is present */
     do {
         i = j;  /* 'i' is a present index */
         if (j <= 4611686018427387903n)
-            j = BigInt.asUintN(64, j * 2n);
+            j *= 2n;
         else {
             j = 9223372036854775807n;
             if ((((((cptr.ld1uo(((luaH_getint(t, BigInt.asIntN(64, j)))), $TValue_tt_))) &
@@ -1260,7 +1249,7 @@ function binsearch(array, i, j) {
 */
 /** C ref: ltable.c:938 — @param {CPtr<Table>} t @returns {*} */
 export function luaH_getn(t) {
-    let limit = cptr.ldI32o(t, $Table_alimit) >>> 0;
+    let limit = cptr.ldI32o(t, $Table_alimit);
     if (limit > 0 &&
             (((((cptr.ld1uo(
                 ((cptr.add(cptr.ldPtro(t, $Table_array), (limit - 1) >>> 0, $sizeof_TValue))),
@@ -1279,7 +1268,7 @@ export function luaH_getn(t) {
             /* 'limit - 1' is a boundary; can it be a new limit? */
             if (ispow2realasize(t) && !((((limit - 1) & (limit - 1 - 1)) >>> 0) == 0)) {
                 cptr.stI32o(t, $Table_alimit, (limit - 1) >>> 0);
-                (cptr.st1o((t), $Table_flags, uchar((cptr.ld1uo((t), $Table_flags) | 128))));  /* now 'alimit' is not the real size */
+                (cptr.st1o((t), $Table_flags, cptr.ld1uo((t), $Table_flags) | 128));  /* now 'alimit' is not the real size */
             }
             return BigInt(((limit - 1) >>> 0) >>> 0);
         } else {
@@ -1287,15 +1276,14 @@ export function luaH_getn(t) {
             /* can this boundary represent the real size of the array? */
             if (ispow2realasize(t) && boundary > u32div(luaH_realasize(t), 2)) {
                 cptr.stI32o(t, $Table_alimit, boundary);  /* use it as the new limit */
-                (cptr.st1o((t), $Table_flags, uchar((cptr.ld1uo((t), $Table_flags) | 128))));
+                (cptr.st1o((t), $Table_flags, cptr.ld1uo((t), $Table_flags) | 128));
             }
             return BigInt(boundary >>> 0);
         }
     }
     /* 'limit' is zero or present in table */
     if (!((!(cptr.ld1uo((t), $Table_flags) & 128)) ||
-            ((((cptr.ldI32o((t), $Table_alimit) >>> 0) &
-                ((cptr.ldI32o((t), $Table_alimit) >>> 0) - 1)) >>>
+            ((((cptr.ldI32o((t), $Table_alimit)) & ((cptr.ldI32o((t), $Table_alimit)) - 1)) >>>
                 0) ==
                 0))) {
         /* 'limit' > 0 and array has more elements after 'limit' */
@@ -1317,7 +1305,7 @@ export function luaH_getn(t) {
                and it must be a valid new limit */
             let boundary = binsearch(
                 cptr.ldPtro(t, $Table_array),
-                cptr.ldI32o(t, $Table_alimit) >>> 0,
+                cptr.ldI32o(t, $Table_alimit),
                 limit
             );
             cptr.stI32o(t, $Table_alimit, boundary);

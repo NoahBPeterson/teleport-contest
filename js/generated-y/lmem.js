@@ -117,10 +117,7 @@ export function* luaM_free_(L, block, osize) {
     cptr.stI64o(
         g,
         $global_State_GCdebt,
-        BigInt.asIntN(
-            64,
-            BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) - osize)
-        )
+        cptr.ldI64o(g, $global_State_GCdebt) - BigInt.asIntN(64, osize)
     );
 }
 
@@ -220,10 +217,7 @@ export function* luaM_malloc_(L, size, tag) {
         cptr.stI64o(
             g,
             $global_State_GCdebt,
-            BigInt.asIntN(
-                64,
-                BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) + size)
-            )
+            cptr.ldI64o(g, $global_State_GCdebt) + BigInt.asIntN(64, size)
         );
         return newblock;
     }

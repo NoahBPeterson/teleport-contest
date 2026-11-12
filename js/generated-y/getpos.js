@@ -226,7 +226,7 @@ export function* getpos_sethilite(gp_hilitef, gp_getvalidf) {
     let old_map_frame_color = cptr.ldI32o(
         gw,
         $instance_globals_w_wsettings + $win_settings_map_frame_color
-    ) >>> 0;
+    );
     let sel = (yield* selection_new());
 
     defaultHiliteState = cptr.ld1so(iflags, $instance_flags_bgcolors)
@@ -246,7 +246,7 @@ export function* getpos_sethilite(gp_hilitef, gp_getvalidf) {
     );
 
     if (getpos_getvalid !== old_getvalid ||
-            cptr.ldI32o(gw, $instance_globals_w_wsettings + $win_settings_map_frame_color) >>> 0 !=
+            cptr.ldI32o(gw, $instance_globals_w_wsettings + $win_settings_map_frame_color) !=
                 old_map_frame_color)
         (yield* selection_force_newsyms(sel));
     selection_free(sel, 1);
@@ -295,38 +295,44 @@ function* getpos_getvalids_selection(sel, validf) {
     if (!sel || !validf)
         return;
 
-    for (x = 1; x < cptr.ldI32(sel); x = i16(x + 1))
-        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y = i16(y + 1))
+    for (x = 1; x < cptr.ldI32(sel); x++)
+        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y++)
             if ((yield* Y.icall((validf)(x, y))))
                 selection_setpoint(x, y, sel, 1);
 }
 
 /** C ref: getpos.c:117 — char *[6][4] */
-const gloc_descr = cptr.alloc(6 * 32);
-cptr.stPtr(gloc_descr, __s_any_monsters);
-cptr.stPtro(gloc_descr, 8, __s_monster);
-cptr.stPtro(gloc_descr, 16, __s_next_previous_monster);
-cptr.stPtro(gloc_descr, 24, __s_monsters);
-cptr.stPtro(gloc_descr, 32, __s_any_items);
-cptr.stPtro(gloc_descr, 40, __s_item);
-cptr.stPtro(gloc_descr, 48, __s_next_previous_object);
-cptr.stPtro(gloc_descr, 56, __s_objects);
-cptr.stPtro(gloc_descr, 64, __s_any_doors);
-cptr.stPtro(gloc_descr, 72, __s_door);
-cptr.stPtro(gloc_descr, 80, __s_next_previous_door_or_doorway);
-cptr.stPtro(gloc_descr, 88, __s_doors_or_doorways);
-cptr.stPtro(gloc_descr, 96, __s_any_unexplored_areas);
-cptr.stPtro(gloc_descr, 104, __s_unexplored_area);
-cptr.stPtro(gloc_descr, 112, __s_unexplored_location);
-cptr.stPtro(gloc_descr, 120, __s_locations_next_to_unexplored_locations);
-cptr.stPtro(gloc_descr, 128, __s_anything_interesting);
-cptr.stPtro(gloc_descr, 136, __s_interesting_thing);
-cptr.stPtro(gloc_descr, 144, __s_anything_interesting);
-cptr.stPtro(gloc_descr, 152, __s_anything_interesting);
-cptr.stPtro(gloc_descr, 160, __s_any_valid_locations);
-cptr.stPtro(gloc_descr, 168, __s_valid_location);
-cptr.stPtro(gloc_descr, 176, __s_valid_location);
-cptr.stPtro(gloc_descr, 184, __s_valid_locations);
+const gloc_descr = (function () {
+    const flat = new Uint8Array(6 * 4 * 8);
+    const a = [];
+    for (let r = 0; r < 6; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8));
+    a.buf = flat;
+    return a;
+})();
+cptr.stPtro(cptr.decay(gloc_descr[0]), 0, __s_any_monsters);
+cptr.stPtro(cptr.decay(gloc_descr[0]), 8, __s_monster);
+cptr.stPtro(cptr.decay(gloc_descr[0]), 16, __s_next_previous_monster);
+cptr.stPtro(cptr.decay(gloc_descr[0]), 24, __s_monsters);
+cptr.stPtro(cptr.decay(gloc_descr[1]), 0, __s_any_items);
+cptr.stPtro(cptr.decay(gloc_descr[1]), 8, __s_item);
+cptr.stPtro(cptr.decay(gloc_descr[1]), 16, __s_next_previous_object);
+cptr.stPtro(cptr.decay(gloc_descr[1]), 24, __s_objects);
+cptr.stPtro(cptr.decay(gloc_descr[2]), 0, __s_any_doors);
+cptr.stPtro(cptr.decay(gloc_descr[2]), 8, __s_door);
+cptr.stPtro(cptr.decay(gloc_descr[2]), 16, __s_next_previous_door_or_doorway);
+cptr.stPtro(cptr.decay(gloc_descr[2]), 24, __s_doors_or_doorways);
+cptr.stPtro(cptr.decay(gloc_descr[3]), 0, __s_any_unexplored_areas);
+cptr.stPtro(cptr.decay(gloc_descr[3]), 8, __s_unexplored_area);
+cptr.stPtro(cptr.decay(gloc_descr[3]), 16, __s_unexplored_location);
+cptr.stPtro(cptr.decay(gloc_descr[3]), 24, __s_locations_next_to_unexplored_locations);
+cptr.stPtro(cptr.decay(gloc_descr[4]), 0, __s_anything_interesting);
+cptr.stPtro(cptr.decay(gloc_descr[4]), 8, __s_interesting_thing);
+cptr.stPtro(cptr.decay(gloc_descr[4]), 16, __s_anything_interesting);
+cptr.stPtro(cptr.decay(gloc_descr[4]), 24, __s_anything_interesting);
+cptr.stPtro(cptr.decay(gloc_descr[5]), 0, __s_any_valid_locations);
+cptr.stPtro(cptr.decay(gloc_descr[5]), 8, __s_valid_location);
+cptr.stPtro(cptr.decay(gloc_descr[5]), 16, __s_valid_location);
+cptr.stPtro(cptr.decay(gloc_descr[5]), 24, __s_valid_locations);
 
 /** C ref: getpos.c:130 — char *[3] */
 const gloc_filtertxt = cptr.alloc(3 * 8);
@@ -366,13 +372,10 @@ function* getpos_help_keyxhelp(tmpwin, k1, k2, gloc) {
         k1,
         k2,
         cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __s_get_a_menu_of : move_cursor_to,
-        cptr.ldPtro3(
-            gloc_descr,
-            gloc,
-            32,
+        cptr.ldPtro(
+            cptr.decay(gloc_descr[gloc]),
             (2 + cptr.ld1so(iflags, $instance_flags_getloc_usemenu)) | 0,
-            8,
-            0
+            8
         ),
         filtertxt
     );
@@ -437,10 +440,8 @@ function* getpos_help(force, goal) {
                 ))
             );
             (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(sbuf))));
-            if (!(cptr.ldI32o(iflags, $instance_flags_terrainmode) >>> 0) ||
-                    ((cptr.ldI32o(iflags, $instance_flags_terrainmode) >>> 0 & NHM.TER_MON) >>>
-                        0) !=
-                        0) {
+            if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                    ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MON) >>> 0) != 0) {
                 (yield* getpos_help_keyxhelp(
                     tmpwin,
                     visctrl(cptr.ld1so2(
@@ -465,10 +466,8 @@ function* getpos_help(force, goal) {
             { __pc = 1; continue; }
         }
         case 2: {
-            if (!(cptr.ldI32o(iflags, $instance_flags_terrainmode) >>> 0) ||
-                    ((cptr.ldI32o(iflags, $instance_flags_terrainmode) >>> 0 & NHM.TER_OBJ) >>>
-                        0) !=
-                        0) {
+            if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                    ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_OBJ) >>> 0) != 0) {
                 (yield* getpos_help_keyxhelp(
                     tmpwin,
                     visctrl(cptr.ld1so2(
@@ -486,10 +485,8 @@ function* getpos_help(force, goal) {
                     NHC.GLOC_OBJS
                 ));
             }
-            if (!(cptr.ldI32o(iflags, $instance_flags_terrainmode) >>> 0) ||
-                    ((cptr.ldI32o(iflags, $instance_flags_terrainmode) >>> 0 & NHM.TER_MAP) >>>
-                        0) !=
-                        0) {
+            if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                    ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MAP) >>> 0) != 0) {
                 /* these are primarily useful when choosing a travel
                    destination for the '_' command */
                 (yield* getpos_help_keyxhelp(
@@ -557,9 +554,8 @@ function* getpos_help(force, goal) {
                 )
             );
             (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(sbuf))));
-            if (!(cptr.ldI32o(iflags, $instance_flags_terrainmode) >>> 0) ||
-                    ((cptr.ldI32o(iflags, $instance_flags_terrainmode) >>> 0 & NHM.TER_DETECT) >>>
-                        0) ==
+            if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                    ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_DETECT) >>> 0) ==
                         0) {
                 void cptr.sprintf(
                     cptr.decay(sbuf),
@@ -584,7 +580,7 @@ function* getpos_help(force, goal) {
                 );
                 (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(sbuf))));
             }
-            if (!(cptr.ldI32o(iflags, $instance_flags_terrainmode) >>> 0)) { __pc = 5; continue; }
+            if (!cptr.ldI32o(iflags, $instance_flags_terrainmode)) { __pc = 5; continue; }
             __pc = 4; continue;
         }
         case 5: {
@@ -903,8 +899,8 @@ function known_vibrating_square_at(x, y) {
         let ttmp = t_at(x, y);
 
         return schar((ttmp &&
-            (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.VIBRATING_SQUARE &&
-            cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0
+            ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE &&
+            (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0
                 ? 1
                 : 0));
     }
@@ -1116,8 +1112,8 @@ function* gather_locs(arr_p, cnt_p, gloc) {
 
     cptr.stI32(cnt_p, idx = 0);
     for (pass = 0; pass < 2; pass++) {
-        for (x = 1; x < NHM.COLNO; x = i16(x + 1))
-            for (y = 0; y < NHM.ROWNO; y = i16(y + 1)) {
+        for (x = 1; x < NHM.COLNO; x++)
+            for (y = 0; y < NHM.ROWNO; y++) {
                 if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ||
                         (yield* gather_locs_interesting(x, y, gloc))) {
                     if (!pass) {
@@ -1151,15 +1147,21 @@ function* gather_locs(arr_p, cnt_p, gloc) {
 }
 
 const __static_dxdy_to_dist_descr_buf = new Uint8Array(30); /** C ref: getpos.c:559 — char[30] (function-static) */
-const __static_dxdy_to_dist_descr_dirnames = cptr.alloc(4 * 16);
-cptr.stPtr(__static_dxdy_to_dist_descr_dirnames, __s_n);
-cptr.stPtro(__static_dxdy_to_dist_descr_dirnames, 8, __s_north);
-cptr.stPtro(__static_dxdy_to_dist_descr_dirnames, 16, __s_s);
-cptr.stPtro(__static_dxdy_to_dist_descr_dirnames, 24, __s_south);
-cptr.stPtro(__static_dxdy_to_dist_descr_dirnames, 32, __s_w);
-cptr.stPtro(__static_dxdy_to_dist_descr_dirnames, 40, __s_west);
-cptr.stPtro(__static_dxdy_to_dist_descr_dirnames, 48, __s_e);
-cptr.stPtro(__static_dxdy_to_dist_descr_dirnames, 56, __s_east); /** C ref: getpos.c:568 — char *[4][2] (function-static) */
+const __static_dxdy_to_dist_descr_dirnames = (function () {
+    const flat = new Uint8Array(4 * 2 * 8);
+    const a = [];
+    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8));
+    a.buf = flat;
+    return a;
+})();
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[0]), 0, __s_n);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[0]), 8, __s_north);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[1]), 0, __s_s);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[1]), 8, __s_south);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[2]), 0, __s_w);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[2]), 8, __s_west);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 0, __s_e);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 8, __s_east); /** C ref: getpos.c:568 — char *[4][2] (function-static) */
 
 /**
  * C ref: getpos.c:557
@@ -1190,7 +1192,11 @@ export function dxdy_to_dist_descr(dx, dy, fulldir) {
                 eos(cptr.decay(__static_dxdy_to_dist_descr_buf)),
                 __s_d_s_s,
                 Math.abs(dy),
-                cptr.ldPtro3(__static_dxdy_to_dist_descr_dirnames, (dy > 0), 16, fulldir, 8, 0),
+                cptr.ldPtro(
+                    cptr.decay(__static_dxdy_to_dist_descr_dirnames[(dy > 0) ? 1 : 0]),
+                    fulldir,
+                    8
+                ),
                 dx ? __s_comma : __s_empty
             );
         }
@@ -1201,13 +1207,10 @@ export function dxdy_to_dist_descr(dx, dy, fulldir) {
                 eos(cptr.decay(__static_dxdy_to_dist_descr_buf)),
                 __s_d_s,
                 Math.abs(dx),
-                cptr.ldPtro3(
-                    __static_dxdy_to_dist_descr_dirnames,
-                    (2 + (dx > 0)) | 0,
-                    16,
+                cptr.ldPtro(
+                    cptr.decay(__static_dxdy_to_dist_descr_dirnames[(2 + (dx > 0)) | 0]),
                     fulldir,
-                    8,
-                    0
+                    8
                 )
             );
         }
@@ -1330,7 +1333,7 @@ export function* getpos_menu(ccp, gloc) {
             (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW)
                 ? __s_see
                 : __s_detect,
-            cptr.ldPtro3(gloc_descr, gloc, 32, 0, 8, 0)
+            cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 0, 8)
         ));
         return 0;
     }
@@ -1383,7 +1386,7 @@ export function* getpos_menu(ccp, gloc) {
     void cptr.sprintf(
         cptr.decay(tmpbuf),
         __s_pick_s_s_s,
-        (yield* an(cptr.ldPtro3(gloc_descr, gloc, 32, 1, 8, 0))),
+        (yield* an(cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 1, 8))),
         cptr.ldPtro(gloc_filtertxt, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8),
         cptr.ld1so(iflags, $instance_flags_getloc_travelmode)
             ? __s_for_travel_destination
@@ -1496,10 +1499,10 @@ export function* getpos(ccp, force, goal) {
             i,
             c,
             sidx = cptr.box(0),
-            cx = cptr.box(0, "i16"),
-            cy = cptr.box(0, "i16"),
-            tx = cptr.box(0, "i16"),
-            ty = cptr.box(0, "i16"),
+            cx = cptr.box(0),
+            cy = cptr.box(0),
+            tx = cptr.box(0),
+            ty = cptr.box(0),
             msg_given,
             show_goal_msg,
             garr,
@@ -2074,18 +2077,13 @@ export function* getpos(ccp, force, goal) {
             { __pc = 2; continue; }
         }
         case 74: {
-            if (cptr.ldBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-                ),
-                4,
-                1,
-                0
-            ) |
+            if ((cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+            ) &
+                1) |
                 0 &&
-                    !(cptr.ldI32o(iflags, $instance_flags_terrainmode) >>>
-                        0)) { __pc = 77; continue; }
+                    !cptr.ldI32o(iflags, $instance_flags_terrainmode)) { __pc = 77; continue; }
             __pc = 76; continue;
         }
         case 77: {
@@ -2151,7 +2149,7 @@ export function* getpos(ccp, force, goal) {
             { __pc = 3; continue; }
         }
         case 73: {
-            tx.v = i16(tx.v + 1);
+            tx.v++;
             __pc = 71;
             continue;
         }
@@ -2160,7 +2158,7 @@ export function* getpos(ccp, force, goal) {
             continue;
         }
         case 69: {
-            ty.v = i16(ty.v + 1);
+            ty.v++;
             __pc = 67;
             continue;
         }

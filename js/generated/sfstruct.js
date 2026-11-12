@@ -98,7 +98,7 @@ const __s_error_reading_level_file = cptr.lit("Error reading level file.");
  */
 export function historical_sfo_arti_info(nhfp, d_arti_info, myname) {
     norm_ptrs_arti_info(d_arti_info);
-    bwrite(cptr.ldI32(nhfp), d_arti_info, 4);
+    bwrite(cptr.ldI32(nhfp), d_arti_info, 36);
     /* NetHack 5.0	sfstruct.c	$NHDT-Date: 1606765215 2020/11/30 19:40:15 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.4 $ */
     /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
     /*-Copyright (c) Michael Allison, 2025. */
@@ -114,7 +114,7 @@ export function historical_sfi_arti_info(nhfp, d_arti_info, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_arti_info, 4);
+    mread(cptr.ldI32(nhfp), d_arti_info, 36);
     norm_ptrs_arti_info(d_arti_info);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -239,7 +239,7 @@ export function historical_sfi_cemetery(nhfp, d_cemetery, myname) {
  */
 export function historical_sfo_context_info(nhfp, d_context_info, myname) {
     norm_ptrs_context_info(d_context_info);
-    bwrite(cptr.ldI32(nhfp), d_context_info, 704);
+    bwrite(cptr.ldI32(nhfp), d_context_info, 720);
 }
 
 /**
@@ -252,7 +252,7 @@ export function historical_sfi_context_info(nhfp, d_context_info, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_context_info, 704);
+    mread(cptr.ldI32(nhfp), d_context_info, 720);
     norm_ptrs_context_info(d_context_info);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -378,7 +378,7 @@ export function historical_sfi_dgn_topology(nhfp, d_dgn_topology, myname) {
  */
 export function historical_sfo_dungeon(nhfp, d_dungeon, myname) {
     norm_ptrs_dungeon(d_dungeon);
-    bwrite(cptr.ldI32(nhfp), d_dungeon, 92);
+    bwrite(cptr.ldI32(nhfp), d_dungeon, 112);
 }
 
 /**
@@ -391,7 +391,7 @@ export function historical_sfi_dungeon(nhfp, d_dungeon, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_dungeon, 92);
+    mread(cptr.ldI32(nhfp), d_dungeon, 112);
     norm_ptrs_dungeon(d_dungeon);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -432,7 +432,7 @@ export function historical_sfi_d_level(nhfp, d_d_level, myname) {
  */
 export function historical_sfo_ebones(nhfp, d_ebones, myname) {
     norm_ptrs_ebones(d_ebones);
-    bwrite(cptr.ldI32(nhfp), d_ebones, 28);
+    bwrite(cptr.ldI32(nhfp), d_ebones, 36);
 }
 
 /**
@@ -445,7 +445,7 @@ export function historical_sfi_ebones(nhfp, d_ebones, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_ebones, 28);
+    mread(cptr.ldI32(nhfp), d_ebones, 36);
     norm_ptrs_ebones(d_ebones);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -486,7 +486,7 @@ export function historical_sfi_edog(nhfp, d_edog, myname) {
  */
 export function historical_sfo_egd(nhfp, d_egd, myname) {
     norm_ptrs_egd(d_egd);
-    bwrite(cptr.ldI32(nhfp), d_egd, 640);
+    bwrite(cptr.ldI32(nhfp), d_egd, 652);
 }
 
 /**
@@ -499,7 +499,7 @@ export function historical_sfi_egd(nhfp, d_egd, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_egd, 640);
+    mread(cptr.ldI32(nhfp), d_egd, 652);
     norm_ptrs_egd(d_egd);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -540,7 +540,7 @@ export function historical_sfi_emin(nhfp, d_emin, myname) {
  */
 export function historical_sfo_engr(nhfp, d_engr, myname) {
     norm_ptrs_engr(d_engr);
-    bwrite(cptr.ldI32(nhfp), d_engr, 64);
+    bwrite(cptr.ldI32(nhfp), d_engr, 80);
 }
 
 /**
@@ -553,7 +553,7 @@ export function historical_sfi_engr(nhfp, d_engr, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_engr, 64);
+    mread(cptr.ldI32(nhfp), d_engr, 80);
     norm_ptrs_engr(d_engr);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -758,7 +758,7 @@ export function historical_sfi_kinfo(nhfp, d_kinfo, myname) {
  */
 export function historical_sfo_levelflags(nhfp, d_levelflags, myname) {
     norm_ptrs_levelflags(d_levelflags);
-    bwrite(cptr.ldI32(nhfp), d_levelflags, 16);
+    bwrite(cptr.ldI32(nhfp), d_levelflags, 128);
 }
 
 /**
@@ -771,7 +771,7 @@ export function historical_sfi_levelflags(nhfp, d_levelflags, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_levelflags, 16);
+    mread(cptr.ldI32(nhfp), d_levelflags, 128);
     norm_ptrs_levelflags(d_levelflags);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -839,7 +839,7 @@ export function historical_sfi_linfo(nhfp, d_linfo, myname) {
  */
 export function historical_sfo_mapseen_feat(nhfp, d_mapseen_feat, myname) {
     norm_ptrs_mapseen_feat(d_mapseen_feat);
-    bwrite(cptr.ldI32(nhfp), d_mapseen_feat, 4);
+    bwrite(cptr.ldI32(nhfp), d_mapseen_feat, 52);
 }
 
 /**
@@ -852,7 +852,7 @@ export function historical_sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_mapseen_feat, 4);
+    mread(cptr.ldI32(nhfp), d_mapseen_feat, 52);
     norm_ptrs_mapseen_feat(d_mapseen_feat);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -866,7 +866,7 @@ export function historical_sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
  */
 export function historical_sfo_mapseen_flags(nhfp, d_mapseen_flags, myname) {
     norm_ptrs_mapseen_flags(d_mapseen_flags);
-    bwrite(cptr.ldI32(nhfp), d_mapseen_flags, 4);
+    bwrite(cptr.ldI32(nhfp), d_mapseen_flags, 64);
 }
 
 /**
@@ -879,7 +879,7 @@ export function historical_sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_mapseen_flags, 4);
+    mread(cptr.ldI32(nhfp), d_mapseen_flags, 64);
     norm_ptrs_mapseen_flags(d_mapseen_flags);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -893,7 +893,7 @@ export function historical_sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
  */
 export function historical_sfo_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
     norm_ptrs_mapseen_rooms(d_mapseen_rooms);
-    bwrite(cptr.ldI32(nhfp), d_mapseen_rooms, 4);
+    bwrite(cptr.ldI32(nhfp), d_mapseen_rooms, 8);
 }
 
 /**
@@ -906,7 +906,7 @@ export function historical_sfi_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_mapseen_rooms, 4);
+    mread(cptr.ldI32(nhfp), d_mapseen_rooms, 8);
     norm_ptrs_mapseen_rooms(d_mapseen_rooms);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -948,7 +948,7 @@ export function historical_sfi_mkroom(nhfp, d_mkroom, myname) {
  */
 export function historical_sfo_monst(nhfp, d_monst, myname) {
     norm_ptrs_monst(d_monst);
-    bwrite(cptr.ldI32(nhfp), d_monst, 192);
+    bwrite(cptr.ldI32(nhfp), d_monst, 320);
 }
 
 /**
@@ -961,7 +961,7 @@ export function historical_sfi_monst(nhfp, d_monst, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_monst, 192);
+    mread(cptr.ldI32(nhfp), d_monst, 320);
     norm_ptrs_monst(d_monst);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -975,7 +975,7 @@ export function historical_sfi_monst(nhfp, d_monst, myname) {
  */
 export function historical_sfo_mvitals(nhfp, d_mvitals, myname) {
     norm_ptrs_mvitals(d_mvitals);
-    bwrite(cptr.ldI32(nhfp), d_mvitals, 4);
+    bwrite(cptr.ldI32(nhfp), d_mvitals, 12);
 }
 
 /**
@@ -988,7 +988,7 @@ export function historical_sfi_mvitals(nhfp, d_mvitals, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_mvitals, 4);
+    mread(cptr.ldI32(nhfp), d_mvitals, 12);
     norm_ptrs_mvitals(d_mvitals);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -1002,7 +1002,7 @@ export function historical_sfi_mvitals(nhfp, d_mvitals, myname) {
  */
 export function historical_sfo_obj(nhfp, d_obj, myname) {
     norm_ptrs_obj(d_obj);
-    bwrite(cptr.ldI32(nhfp), d_obj, 112);
+    bwrite(cptr.ldI32(nhfp), d_obj, 216);
 }
 
 /**
@@ -1015,7 +1015,7 @@ export function historical_sfi_obj(nhfp, d_obj, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_obj, 112);
+    mread(cptr.ldI32(nhfp), d_obj, 216);
     norm_ptrs_obj(d_obj);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -1029,7 +1029,7 @@ export function historical_sfi_obj(nhfp, d_obj, myname) {
  */
 export function historical_sfo_objclass(nhfp, d_objclass, myname) {
     norm_ptrs_objclass(d_objclass);
-    bwrite(cptr.ldI32(nhfp), d_objclass, 72);
+    bwrite(cptr.ldI32(nhfp), d_objclass, 120);
 }
 
 /**
@@ -1042,7 +1042,7 @@ export function historical_sfi_objclass(nhfp, d_objclass, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_objclass, 72);
+    mread(cptr.ldI32(nhfp), d_objclass, 120);
     norm_ptrs_objclass(d_objclass);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -1056,7 +1056,7 @@ export function historical_sfi_objclass(nhfp, d_objclass, myname) {
  */
 export function historical_sfo_q_score(nhfp, d_q_score, myname) {
     norm_ptrs_q_score(d_q_score);
-    bwrite(cptr.ldI32(nhfp), d_q_score, 8);
+    bwrite(cptr.ldI32(nhfp), d_q_score, 88);
 }
 
 /**
@@ -1069,7 +1069,7 @@ export function historical_sfi_q_score(nhfp, d_q_score, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_q_score, 8);
+    mread(cptr.ldI32(nhfp), d_q_score, 88);
     norm_ptrs_q_score(d_q_score);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -1083,7 +1083,7 @@ export function historical_sfi_q_score(nhfp, d_q_score, myname) {
  */
 export function historical_sfo_rm(nhfp, d_rm, myname) {
     norm_ptrs_rm(d_rm);
-    bwrite(cptr.ldI32(nhfp), d_rm, 8);
+    bwrite(cptr.ldI32(nhfp), d_rm, 36);
 }
 
 /**
@@ -1096,7 +1096,7 @@ export function historical_sfi_rm(nhfp, d_rm, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_rm, 8);
+    mread(cptr.ldI32(nhfp), d_rm, 36);
     norm_ptrs_rm(d_rm);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -1164,7 +1164,7 @@ export function historical_sfi_stairway(nhfp, d_stairway, myname) {
  */
 export function historical_sfo_s_level(nhfp, d_s_level, myname) {
     norm_ptrs_s_level(d_s_level);
-    bwrite(cptr.ldI32(nhfp), d_s_level, 40);
+    bwrite(cptr.ldI32(nhfp), d_s_level, 56);
 }
 
 /**
@@ -1177,7 +1177,7 @@ export function historical_sfi_s_level(nhfp, d_s_level, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_s_level, 40);
+    mread(cptr.ldI32(nhfp), d_s_level, 56);
     norm_ptrs_s_level(d_s_level);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -1191,7 +1191,7 @@ export function historical_sfi_s_level(nhfp, d_s_level, myname) {
  */
 export function historical_sfo_trap(nhfp, d_trap, myname) {
     norm_ptrs_trap(d_trap);
-    bwrite(cptr.ldI32(nhfp), d_trap, 32);
+    bwrite(cptr.ldI32(nhfp), d_trap, 40);
 }
 
 /**
@@ -1204,7 +1204,7 @@ export function historical_sfi_trap(nhfp, d_trap, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_trap, 32);
+    mread(cptr.ldI32(nhfp), d_trap, 40);
     norm_ptrs_trap(d_trap);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -1218,7 +1218,7 @@ export function historical_sfi_trap(nhfp, d_trap, myname) {
  */
 export function historical_sfo_you(nhfp, d_you, myname) {
     norm_ptrs_you(d_you);
-    bwrite(cptr.ldI32(nhfp), d_you, 2760);
+    bwrite(cptr.ldI32(nhfp), d_you, 2864);
 }
 
 /**
@@ -1231,7 +1231,7 @@ export function historical_sfi_you(nhfp, d_you, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_you, 2760);
+    mread(cptr.ldI32(nhfp), d_you, 2864);
     norm_ptrs_you(d_you);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);

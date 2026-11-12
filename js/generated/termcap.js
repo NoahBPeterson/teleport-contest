@@ -33,7 +33,6 @@ const $DisplayDesc_curx = FLD.DisplayDesc_curx, $DisplayDesc_cury = FLD.DisplayD
       $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
       $nomux_cell_attr = FLD.nomux_cell_attr, $nomux_cell_decgfx = FLD.nomux_cell_decgfx,
       $nomux_cell_fg = FLD.nomux_cell_fg, $sizeof_nomux_cell = FLD.sizeof_nomux_cell,
-      $sizeof_nomux_cell_x80 = FLD.sizeof_nomux_cell_x80,
       $sizeof_symsetentry = FLD.sizeof_symsetentry, $sizeof_tc_lcl_data = FLD.sizeof_tc_lcl_data,
       $symsetentry_handling = FLD.symsetentry_handling, $tc_gbl_data_tc_AE = FLD.tc_gbl_data_tc_AE,
       $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO, $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI,
@@ -233,7 +232,7 @@ export function term_startup(wid, hgt) {
     term = getenv(__s_term);
     if (!term)
         error(__s_can_t_get_term);
-    tptr = cptr.byteView(alloc(1024));
+    tptr = alloc(1024);
 
     tbufptr.v = cptr.decay(tbuf);
     if (!cptr.strncmp(term, __s_5620, 4n))
@@ -700,7 +699,13 @@ export function nomux_capture_write_input_boundary() {
 
 /* NOMUX shadow frame buffer implementation */
 /** C ref: termcap.c:728 — nomux_cell[24][80] */
-export const nomux_buf = cptr.alloc(24 * 320);
+export const nomux_buf = (function () {
+    const flat = new Uint8Array(24 * 80 * 4);
+    const a = [];
+    for (let r = 0; r < 24; r++) a.push(flat.subarray(r * 80 * 4, (r + 1) * 80 * 4));
+    a.buf = flat;
+    return a;
+})();
 
 /** C ref: termcap.c:729 — unsigned char */
 let nomux_fg_cur = 7;
@@ -717,34 +722,10 @@ export function nomux_clear_screen() {
     let c;
     for (r = 0; r < 24; r++)
         for (c = 0; c < 80; c++) {
-            cptr.st1o3(nomux_buf, r, $sizeof_nomux_cell_x80, c, $sizeof_nomux_cell, 0, 32);
-            cptr.st1o3(
-                nomux_buf,
-                r,
-                $sizeof_nomux_cell_x80,
-                c,
-                $sizeof_nomux_cell,
-                $nomux_cell_fg,
-                7
-            );
-            cptr.st1o3(
-                nomux_buf,
-                r,
-                $sizeof_nomux_cell_x80,
-                c,
-                $sizeof_nomux_cell,
-                $nomux_cell_attr,
-                0
-            );
-            cptr.st1o3(
-                nomux_buf,
-                r,
-                $sizeof_nomux_cell_x80,
-                c,
-                $sizeof_nomux_cell,
-                $nomux_cell_decgfx,
-                0
-            );
+            cptr.st1o(cptr.decay(nomux_buf[r]), c, 32, $sizeof_nomux_cell);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, $sizeof_nomux_cell, $nomux_cell_fg, 7);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, $sizeof_nomux_cell, $nomux_cell_attr, 0);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, $sizeof_nomux_cell, $nomux_cell_decgfx, 0);
         }
 
 }
@@ -755,25 +736,9 @@ export function nomux_clear_to_eol(row, col) {
     if (row < 0 || row >= 24)
         return;
     for (c = (col < 0 ? 0 : col); c < 80; c++) {
-        cptr.st1o3(nomux_buf, row, $sizeof_nomux_cell_x80, c, $sizeof_nomux_cell, 0, 32);
-        cptr.st1o3(
-            nomux_buf,
-            row,
-            $sizeof_nomux_cell_x80,
-            c,
-            $sizeof_nomux_cell,
-            $nomux_cell_fg,
-            7
-        );
-        cptr.st1o3(
-            nomux_buf,
-            row,
-            $sizeof_nomux_cell_x80,
-            c,
-            $sizeof_nomux_cell,
-            $nomux_cell_attr,
-            0
-        );
+        cptr.st1o(cptr.decay(nomux_buf[row]), c, 32, $sizeof_nomux_cell);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, $sizeof_nomux_cell, $nomux_cell_fg, 7);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, $sizeof_nomux_cell, $nomux_cell_attr, 0);
         /* Reset decgfx too: cl_end's job is to wipe a region, and a
          * cleared cell shouldn't carry a graphics-mode flag from
          * whatever character occupied that position before. Without
@@ -783,15 +748,7 @@ export function nomux_clear_to_eol(row, col) {
          * blank cell — visually identical to a regular space, but
          * not byte-equal across rebuilds or when comparing against
          * a JS port that clears decgfx on every overwrite. */
-        cptr.st1o3(
-            nomux_buf,
-            row,
-            $sizeof_nomux_cell_x80,
-            c,
-            $sizeof_nomux_cell,
-            $nomux_cell_decgfx,
-            0
-        );
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, $sizeof_nomux_cell, $nomux_cell_decgfx, 0);
 
     }
 }
@@ -805,29 +762,23 @@ export function nomux_putch(ch) {
     row = cptr.ldI16o(ttyDisplay, $DisplayDesc_cury);
     col = cptr.ldI16o(ttyDisplay, $DisplayDesc_curx);
     if (row >= 0 && row < 24 && col >= 0 && col < 80) {
-        cptr.st1o3(nomux_buf, row, $sizeof_nomux_cell_x80, col, $sizeof_nomux_cell, 0, schar(ch));
-        cptr.st1o3(
-            nomux_buf,
-            row,
-            $sizeof_nomux_cell_x80,
+        cptr.st1o(cptr.decay(nomux_buf[row]), col, schar(ch), $sizeof_nomux_cell);
+        cptr.st1o2(
+            cptr.decay(nomux_buf[row]),
             col,
             $sizeof_nomux_cell,
             $nomux_cell_fg,
             nomux_fg_cur
         );
-        cptr.st1o3(
-            nomux_buf,
-            row,
-            $sizeof_nomux_cell_x80,
+        cptr.st1o2(
+            cptr.decay(nomux_buf[row]),
             col,
             $sizeof_nomux_cell,
             $nomux_cell_attr,
             nomux_attr_cur
         );
-        cptr.st1o3(
-            nomux_buf,
-            row,
-            $sizeof_nomux_cell_x80,
+        cptr.st1o2(
+            cptr.decay(nomux_buf[row]),
             col,
             $sizeof_nomux_cell,
             $nomux_cell_decgfx,
@@ -909,39 +860,19 @@ export function nomux_capture_screen() {
         cur_attr = 0;
         end = 79;
         while (end >= 0 &&
-                (cptr.ld1so3(nomux_buf, row, $sizeof_nomux_cell_x80, end, $sizeof_nomux_cell, 0) ==
-                    32 ||
-                    cptr.ld1so3(
-                        nomux_buf,
-                        row,
-                        $sizeof_nomux_cell_x80,
-                        end,
-                        $sizeof_nomux_cell,
-                        0
-                    ) ==
-                        0) &&
-                cptr.ld1uo3(
-                    nomux_buf,
-                    row,
-                    $sizeof_nomux_cell_x80,
+                (cptr.ld1so(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell) == 32 ||
+                    cptr.ld1so(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell) == 0) &&
+                cptr.ld1uo2(
+                    cptr.decay(nomux_buf[row]),
                     end,
                     $sizeof_nomux_cell,
                     $nomux_cell_attr
                 ) ==
                     0 &&
-                (cptr.ld1uo3(
-                    nomux_buf,
-                    row,
-                    $sizeof_nomux_cell_x80,
-                    end,
-                    $sizeof_nomux_cell,
-                    $nomux_cell_fg
-                ) ==
+                (cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell, $nomux_cell_fg) ==
                     7 ||
-                    cptr.ld1uo3(
-                        nomux_buf,
-                        row,
-                        $sizeof_nomux_cell_x80,
+                    cptr.ld1uo2(
+                        cptr.decay(nomux_buf[row]),
                         end,
                         $sizeof_nomux_cell,
                         $nomux_cell_fg
@@ -949,11 +880,7 @@ export function nomux_capture_screen() {
             end--;
         let in_dec = 0;
         for (col = 0; col <= end; col++) {
-            let c = cptr.add(
-                cptr.add(nomux_buf, row, $sizeof_nomux_cell_x80),
-                col,
-                $sizeof_nomux_cell
-            );
+            let c = cptr.add(cptr.decay(nomux_buf[row]), col, $sizeof_nomux_cell);
             let ch = schar((cptr.ld1s(c) ? cptr.ld1s(c) : 32));
             let fg = cptr.ld1uo(c, $nomux_cell_fg) ? cptr.ld1uo(c, $nomux_cell_fg) : 7;
             let at = cptr.ld1uo(c, $nomux_cell_attr);
@@ -1056,37 +983,28 @@ function nomux_raw_putch(ch) {
     if (ch < 32)
         return;
     if (nomux_raw_row >= 0 && nomux_raw_row < 24 && nomux_raw_col >= 0 && nomux_raw_col < 80) {
-        cptr.st1o3(
-            nomux_buf,
-            nomux_raw_row,
-            $sizeof_nomux_cell_x80,
+        cptr.st1o(
+            cptr.decay(nomux_buf[nomux_raw_row]),
             nomux_raw_col,
-            $sizeof_nomux_cell,
-            0,
-            schar(ch)
+            schar(ch),
+            $sizeof_nomux_cell
         );
-        cptr.st1o3(
-            nomux_buf,
-            nomux_raw_row,
-            $sizeof_nomux_cell_x80,
+        cptr.st1o2(
+            cptr.decay(nomux_buf[nomux_raw_row]),
             nomux_raw_col,
             $sizeof_nomux_cell,
             $nomux_cell_fg,
             nomux_fg_cur
         );
-        cptr.st1o3(
-            nomux_buf,
-            nomux_raw_row,
-            $sizeof_nomux_cell_x80,
+        cptr.st1o2(
+            cptr.decay(nomux_buf[nomux_raw_row]),
             nomux_raw_col,
             $sizeof_nomux_cell,
             $nomux_cell_attr,
             nomux_attr_cur
         );
-        cptr.st1o3(
-            nomux_buf,
-            nomux_raw_row,
-            $sizeof_nomux_cell_x80,
+        cptr.st1o2(
+            cptr.decay(nomux_buf[nomux_raw_row]),
             nomux_raw_col,
             $sizeof_nomux_cell,
             $nomux_cell_decgfx,
@@ -1185,17 +1103,13 @@ export function term_clear_screen() {
 
 /** C ref: termcap.c:1023 */
 export function home() {
-    let __r1;
     if (HO)
         xputs(HO);
     else if (cptr.ldPtr(tc_lcl_data))
         xputs(tgoto(cptr.ldPtr(tc_lcl_data), 0, 0));  /* using UP ... */
     else
         tty_curs(BASE_WINDOW, 1, 0);
-    (
-        __r1 = cptr.stI16o(ttyDisplay, $DisplayDesc_cury, 0),
-        cptr.stI16o(ttyDisplay, $DisplayDesc_curx, __r1)
-    );
+    cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.stI16o(ttyDisplay, $DisplayDesc_cury, 0));
 }
 
 /** C ref: termcap.c:1034 */
@@ -1376,7 +1290,6 @@ const nilstring = cptr.bytes("");
 
 /** C ref: termcap.c:1309 */
 function init_hilite() {
-    let __r2, __r3;
     let c;
     let colors;
     let setf;
@@ -1423,10 +1336,10 @@ function init_hilite() {
         for (c = 0; c < 6; c++) {
             /* system colors */
             scratch = tparm(setf, cptr.ldI32o2(ti_map, c, 12, 4));
-            (__r2 = dupstr(scratch), cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 4), __r2, 8));
+            cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 4), dupstr(scratch), 8);
             /* bright colors */
             scratch = tparm(setf, cptr.ldI32o2(ti_map, c, 12, 8));
-            (__r3 = dupstr(scratch), cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 8), __r3, 8));
+            cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 8), dupstr(scratch), 8);
         }
     } else {
         /* 8 system colors */
@@ -1436,10 +1349,10 @@ function init_hilite() {
 
             let work;
             scratch = tparm(setf, cptr.ldI32o(ti_map, c, 12));
-            work = cptr.byteView(alloc(Number(BigInt.asUintN(
+            work = alloc(Number(BigInt.asUintN(
                 32,
                 BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len)) + 1n)
-            ))));
+            )));
             void cptr.strcpy(work, MD);
             cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 8), work, 8);
             work = cptr.add(work, md_len);
@@ -1456,10 +1369,10 @@ function init_hilite() {
         cptr.stPtro(
             hilites,
             NHM.CLR_WHITE,
-            cptr.byteView(alloc(Number(BigInt.asUintN(
+            alloc(Number(BigInt.asUintN(
                 32,
                 BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len)) + 1n)
-            )))),
+            ))),
             8
         );
         void cptr.strcpy(cptr.ldPtro(hilites, NHM.CLR_WHITE, 8), MD);
@@ -1483,13 +1396,13 @@ function init_hilite() {
             cptr.stPtro(
                 hilites,
                 NHM.CLR_BLACK,
-                cptr.byteView(alloc(Number(BigInt.asUintN(
+                alloc(Number(BigInt.asUintN(
                     32,
                     BigInt.asUintN(
                         64,
                         cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len)) + 1n
                     )
-                )))),
+                ))),
                 8
             );
             void cptr.strcpy(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8), MD);
@@ -1776,7 +1689,7 @@ function emit256(color256idx) {
 export function term_start_extracolor(customcolor, color256idx) {
     /* color 0 has bit 0x1000000 set */
     let mcolor = BigInt(((customcolor & 16777215) >>> 0) >>> 0);
-    if (cptr.ldI32o(iflags, $instance_flags_colorcount) >>> 0 == 256)
+    if (cptr.ldI32o(iflags, $instance_flags_colorcount) == 256)
         emit256(color256idx);
     else
         emit24bit(mcolor);

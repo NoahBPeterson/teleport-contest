@@ -107,12 +107,12 @@ function* loadByte(S) {
 function* loadUnsigned(S, limit) {
     let x = 0n;
     let b;
-    limit = limit >> 7n;
+    limit >>= 7n;
     do {
         b = (yield* loadByte(S));
         if (x >= limit)
             (yield* error(S, __s_integer_overflow));
-        x = (BigInt.asUintN(64, x << 7n)) | BigInt.asUintN(64, BigInt((b & 127)));
+        x = (x << 7n) | BigInt.asUintN(64, BigInt((b & 127)));
     } while ((b & 128) == 0);
     return x;
 }
@@ -129,14 +129,14 @@ function* loadInt(S) {
 
 /** C ref: lundump.c:93 — @param {CPtr<LoadState>} S @returns {*} */
 function* loadNumber(S) {
-    let x = cptr.box(0, "f64");
+    let x = cptr.box(0);
     (yield* loadBlock(S, x, 8n));
     return x.v;
 }
 
 /** C ref: lundump.c:100 — @param {CPtr<LoadState>} S @returns {*} */
 function* loadInteger(S) {
-    let x = cptr.box(0n, "i64");
+    let x = cptr.box(0n);
     (yield* loadBlock(S, x, 8n));
     return x.v;
 }
@@ -156,7 +156,7 @@ function* loadStringN(S, p) {
     let size = (yield* loadSize(S));
     if (size == 0n)
         return null;
-    else if ((size = BigInt.asUintN(64, size + -1n)) <= 40n) {
+    else if (--size <= 40n) {
         let buff = new Uint8Array(40);
         (yield* loadBlock(S, cptr.decay(buff), BigInt.asUintN(64, (size) * 1n)));  /* load string into buffer */
         ts = (yield* luaS_newlstr(L, cptr.decay(buff), size));  /* create string */
@@ -208,14 +208,11 @@ function* loadCode(S, f) {
         $Proto_code,
         (
             ((void 0)),
-            (cptr.castView(
-                ((yield* luaM_malloc_(
-                    cptr.ldPtr(S),
-                    BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n),
-                    0
-                ))),
-                "u32"
-            ))
+            (((yield* luaM_malloc_(
+                cptr.ldPtr(S),
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n),
+                0
+            ))))
         )
     );
     cptr.stI32o(f, $Proto_sizecode, n);
@@ -293,7 +290,6 @@ function* loadConstants(S, f) {
 
 /** C ref: lundump.c:191 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function* loadProtos(S, f) {
-    let __r1;
     let i;
     let n = (yield* loadInt(S));
     cptr.stPtro(
@@ -312,7 +308,7 @@ function* loadProtos(S, f) {
     for (i = 0; i < n; i++)
         cptr.stPtro(cptr.ldPtro(f, $Proto_p), i, null, 8);
     for (i = 0; i < n; i++) {
-        (__r1 = (yield* luaF_newproto(cptr.ldPtr(S))), cptr.stPtro(cptr.ldPtro(f, $Proto_p), i, __r1, 8));
+        cptr.stPtro(cptr.ldPtro(f, $Proto_p), i, (yield* luaF_newproto(cptr.ldPtr(S))), 8);
         ((((cptr.ld1uo((f), $Proto_marked)) & 32) &&
             ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, $Proto_p), i, 8)), $Proto_marked)) & 24))
                 ? luaC_barrier_(
@@ -333,7 +329,6 @@ function* loadProtos(S, f) {
 */
 /** C ref: lundump.c:212 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function* loadUpvalues(S, f) {
-    let __r2, __r3, __r4;
     let i;
     let n;
     n = (yield* loadInt(S));
@@ -353,30 +348,32 @@ function* loadUpvalues(S, f) {
     for (i = 0; i < n; i++)
         cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, null, $sizeof_Upvaldesc);
     for (i = 0; i < n; i++) {
-        (
-            __r2 = (yield* loadByte(S)),
-            cptr.st1o2(
-                cptr.ldPtro(f, $Proto_upvalues),
-                i,
-                $sizeof_Upvaldesc,
-                $Upvaldesc_instack,
-                __r2
-            )
+        cptr.st1o2(
+            cptr.ldPtro(f, $Proto_upvalues),
+            i,
+            $sizeof_Upvaldesc,
+            $Upvaldesc_instack,
+            (yield* loadByte(S))
         );
-        (
-            __r3 = (yield* loadByte(S)),
-            cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_idx, __r3)
+        cptr.st1o2(
+            cptr.ldPtro(f, $Proto_upvalues),
+            i,
+            $sizeof_Upvaldesc,
+            $Upvaldesc_idx,
+            (yield* loadByte(S))
         );
-        (
-            __r4 = (yield* loadByte(S)),
-            cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_kind, __r4)
+        cptr.st1o2(
+            cptr.ldPtro(f, $Proto_upvalues),
+            i,
+            $sizeof_Upvaldesc,
+            $Upvaldesc_kind,
+            (yield* loadByte(S))
         );
     }
 }
 
 /** C ref: lundump.c:227 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function* loadDebug(S, f) {
-    let __r5, __r6, __r7, __r8, __r9, __r10;
     let i;
     let n;
     n = (yield* loadInt(S));
@@ -385,11 +382,11 @@ function* loadDebug(S, f) {
         $Proto_lineinfo,
         (
             ((void 0)),
-            (cptr.byteView(((yield* luaM_malloc_(
+            (((yield* luaM_malloc_(
                 cptr.ldPtr(S),
                 BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n),
                 0
-            )))))
+            ))))
         )
     );
     cptr.stI32o(f, $Proto_sizelineinfo, n);
@@ -413,19 +410,13 @@ function* loadDebug(S, f) {
     );
     cptr.stI32o(f, $Proto_sizeabslineinfo, n);
     for (i = 0; i < n; i++) {
-        (
-            __r5 = (yield* loadInt(S)),
-            cptr.stI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, __r5, $sizeof_AbsLineInfo)
-        );
-        (
-            __r6 = (yield* loadInt(S)),
-            cptr.stI32o2(
-                cptr.ldPtro(f, $Proto_abslineinfo),
-                i,
-                $sizeof_AbsLineInfo,
-                $AbsLineInfo_line,
-                __r6
-            )
+        cptr.stI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, (yield* loadInt(S)), $sizeof_AbsLineInfo);
+        cptr.stI32o2(
+            cptr.ldPtro(f, $Proto_abslineinfo),
+            i,
+            $sizeof_AbsLineInfo,
+            $AbsLineInfo_line,
+            (yield* loadInt(S))
         );
     }
     n = (yield* loadInt(S));
@@ -445,27 +436,21 @@ function* loadDebug(S, f) {
     for (i = 0; i < n; i++)
         cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), i, null, $sizeof_LocVar);
     for (i = 0; i < n; i++) {
-        (
-            __r7 = (yield* loadStringN(S, f)),
-            cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), i, __r7, $sizeof_LocVar)
+        cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), i, (yield* loadStringN(S, f)), $sizeof_LocVar);
+        cptr.stI32o2(
+            cptr.ldPtro(f, $Proto_locvars),
+            i,
+            $sizeof_LocVar,
+            $LocVar_startpc,
+            (yield* loadInt(S))
         );
-        (
-            __r8 = (yield* loadInt(S)),
-            cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_startpc, __r8)
-        );
-        (
-            __r9 = (yield* loadInt(S)),
-            cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_endpc, __r9)
-        );
+        cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_endpc, (yield* loadInt(S)));
     }
     n = (yield* loadInt(S));
     if (n != 0)
         n = cptr.ldI32o(f, $Proto_sizeupvalues);  /* must be this many */
     for (i = 0; i < n; i++)
-        (
-            __r10 = (yield* loadStringN(S, f)),
-            cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, __r10, $sizeof_Upvaldesc)
-        );
+        cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, (yield* loadStringN(S, f)), $sizeof_Upvaldesc);
 }
 
 /**

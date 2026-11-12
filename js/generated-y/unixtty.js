@@ -172,7 +172,6 @@ export function* settty(s) {
 
 /** C ref: unixtty.c:267 */
 export function setftty() {
-    let __r1, __r2, __r3, __r4, __r5, __r6;
     let ef;
     let cf;
     let change = 0;
@@ -205,30 +204,12 @@ export function setftty() {
         /* be satisfied with one character; no timeout */
         cptr.st1o2(curttyb, 16, 1, $termios_c_cc, 1);  /* was VEOF */
         cptr.st1o2(curttyb, 17, 1, $termios_c_cc, 0);  /* was VEOL */
-        (
-            __r1 = Number(BigInt.asUintN(8, (fpathconf(0, 9)))),
-            cptr.st1o2(curttyb, 10, 1, $termios_c_cc, __r1)
-        );
-        (
-            __r2 = Number(BigInt.asUintN(8, (fpathconf(0, 9)))),
-            cptr.st1o2(curttyb, 11, 1, $termios_c_cc, __r2)
-        );
-        (
-            __r3 = Number(BigInt.asUintN(8, (fpathconf(0, 9)))),
-            cptr.st1o2(curttyb, 6, 1, $termios_c_cc, __r3)
-        );
-        (
-            __r4 = Number(BigInt.asUintN(8, (fpathconf(0, 9)))),
-            cptr.st1o2(curttyb, 15, 1, $termios_c_cc, __r4)
-        );
-        (
-            __r5 = Number(BigInt.asUintN(8, (fpathconf(0, 9)))),
-            cptr.st1o2(curttyb, 4, 1, $termios_c_cc, __r5)
-        );
-        (
-            __r6 = Number(BigInt.asUintN(8, (fpathconf(0, 9)))),
-            cptr.st1o2(curttyb, 14, 1, $termios_c_cc, __r6)
-        );
+        cptr.st1o2(curttyb, 10, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 11, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 6, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 15, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 4, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
+        cptr.st1o2(curttyb, 14, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         change++;
     }
     if (!(cptr.ldU64o((inittyb), $termios_c_cflag) & 512n))
@@ -260,14 +241,10 @@ export function intron() {
 
 /** C ref: unixtty.c:350 */
 export function introff() {
-    let __r7;
     /* Ugly hack to keep from changing tty modes for non-tty games -dlc */
     if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) &&
             BigInt(cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) >>> 0) != (fpathconf(0, 9))) {
-        (
-            __r7 = Number(BigInt.asUintN(8, (fpathconf(0, 9)))),
-            cptr.st1o2(curttyb, 8, 1, $termios_c_cc, __r7)
-        );
+        cptr.st1o2(curttyb, 8, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         setctty();
     }
 }

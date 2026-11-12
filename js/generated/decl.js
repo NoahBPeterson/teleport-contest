@@ -471,14 +471,7 @@ const $Race_adj = FLD.Race_adj, $Race_allow = FLD.Race_allow, $Race_attrmax = FL
       $instance_globals_y_ysize = FLD.instance_globals_y_ysize,
       $instance_globals_y_ystart = FLD.instance_globals_y_ystart,
       $instance_globals_z_havestate = FLD.instance_globals_z_havestate,
-      $instance_globals_z_zap_oseen = FLD.instance_globals_z_zap_oseen, $istat_s_a = FLD.istat_s_a,
-      $istat_s_anytype = FLD.istat_s_anytype, $istat_s_chg = FLD.istat_s_chg,
-      $istat_s_fld = FLD.istat_s_fld, $istat_s_fldfmt = FLD.istat_s_fldfmt,
-      $istat_s_hilite_rule = FLD.istat_s_hilite_rule, $istat_s_idxmax = FLD.istat_s_idxmax,
-      $istat_s_percent_matters = FLD.istat_s_percent_matters,
-      $istat_s_percent_value = FLD.istat_s_percent_value, $istat_s_rawval = FLD.istat_s_rawval,
-      $istat_s_thresholds = FLD.istat_s_thresholds, $istat_s_time = FLD.istat_s_time,
-      $istat_s_val = FLD.istat_s_val, $istat_s_valwidth = FLD.istat_s_valwidth,
+      $instance_globals_z_zap_oseen = FLD.instance_globals_z_zap_oseen,
       $launchplace_x = FLD.launchplace_x, $launchplace_y = FLD.launchplace_y,
       $lev_region_del_islev = FLD.lev_region_del_islev,
       $lev_region_delarea = FLD.lev_region_delarea, $lev_region_in_islev = FLD.lev_region_in_islev,
@@ -701,9 +694,9 @@ cptr.stPtro(c_common_strings, $c_common_strings_c_Something, __s_something__2);
 cptr.stPtro(c_common_strings, $c_common_strings_c_You_can_move_again, __s_you_can_move_again);
 cptr.stPtro(c_common_strings, $c_common_strings_c_Never_mind, __s_never_mind);
 cptr.stPtro(c_common_strings, $c_common_strings_c_vision_clears, __s_vision_quickly_clears);
-cptr.stPtro(c_common_strings, $c_common_strings_c_the_your, __s_the);
+cptr.stPtro(c_common_strings, $c_common_strings_c_the_your + 0, __s_the);
 cptr.stPtro(c_common_strings, $c_common_strings_c_the_your + 8, __s_your);
-cptr.stPtro(c_common_strings, $c_common_strings_c_fakename, __s_mon);
+cptr.stPtro(c_common_strings, $c_common_strings_c_fakename + 0, __s_mon);
 cptr.stPtro(c_common_strings, $c_common_strings_c_fakename + 8, __s_you);
 
 /** C ref: decl.c:54 — char[7] */
@@ -743,7 +736,7 @@ export const dirs_ord = [
 ];
 
 /** C ref: decl.c:84 — signed char */
-export let has_strong_rngseed = cptr.box(0, "i8");
+export let has_strong_rngseed = cptr.box(0);
 
 /** C ref: decl.c:85 — struct engr * */
 export let head_engr = cptr.box(null);
@@ -812,7 +805,7 @@ cptr.stI32o(shield_static, 80, NHC.S_ss4);
 export let u = cptr.alloc($sizeof_you);
 
 /** C ref: decl.c:103 — long */
-export let ubirthday = cptr.box(0n, "i64");
+export let ubirthday = cptr.box(0n);
 
 /** C ref: decl.c:104 — struct u_realtime */
 export let urealtime = cptr.alloc($sizeof_u_realtime);
@@ -902,7 +895,7 @@ export const rightleftchars = cptr.bytes("rl");
 export const hidespinchars = cptr.bytes("hsq");
 
 /** C ref: decl.c:119 — long */
-export let yn_number = cptr.box(0n, "i64");
+export let yn_number = cptr.box(0n);
 
 /** C ref: decl.c:121 — char * */
 export let ARGV0 = cptr.box(null);
@@ -911,8 +904,8 @@ export let ARGV0 = cptr.box(null);
 let urole_init_data = cptr.alloc($sizeof_Role);
 cptr.stPtr(urole_init_data, __s_undefined);
 cptr.stPtro(urole_init_data, $RoleName_f, null);
-cptr.stPtro(urole_init_data, $Role_rank, null);
-cptr.stPtro(urole_init_data, $Role_rank + $RoleName_f, null);
+cptr.stPtro(urole_init_data, $Role_rank + 0, null);
+cptr.stPtro(urole_init_data, $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(urole_init_data, $Role_rank + 16, null);
 cptr.stPtro(urole_init_data, $Role_rank + 16 + $RoleName_f, null);
 cptr.stPtro(urole_init_data, $Role_rank + 32, null);
@@ -946,13 +939,13 @@ cptr.st1o(urole_init_data, $Role_enemy1sym, 0);
 cptr.st1o(urole_init_data, $Role_enemy2sym, 0);
 cptr.stI16o(urole_init_data, $Role_questarti, 0);
 cptr.stI16o(urole_init_data, $Role_allow, 0);
-cptr.stI16o(urole_init_data, $Role_attrbase, 7);
+cptr.stI16o(urole_init_data, $Role_attrbase + 0, 7);
 cptr.stI16o(urole_init_data, $Role_attrbase + 2, 7);
 cptr.stI16o(urole_init_data, $Role_attrbase + 4, 7);
 cptr.stI16o(urole_init_data, $Role_attrbase + 6, 7);
 cptr.stI16o(urole_init_data, $Role_attrbase + 8, 7);
 cptr.stI16o(urole_init_data, $Role_attrbase + 10, 7);
-cptr.stI16o(urole_init_data, $Role_attrdist, 20);
+cptr.stI16o(urole_init_data, $Role_attrdist + 0, 20);
 cptr.stI16o(urole_init_data, $Role_attrdist + 2, 15);
 cptr.stI16o(urole_init_data, $Role_attrdist + 4, 15);
 cptr.stI16o(urole_init_data, $Role_attrdist + 6, 20);
@@ -995,13 +988,13 @@ cptr.stI16o(urace_init_data, $Race_allow, 0);
 cptr.stI16o(urace_init_data, $Race_selfmask, 0);
 cptr.stI16o(urace_init_data, $Race_lovemask, 0);
 cptr.stI16o(urace_init_data, $Race_hatemask, 0);
-cptr.stI16o(urace_init_data, $Race_attrmin, 3);
+cptr.stI16o(urace_init_data, $Race_attrmin + 0, 3);
 cptr.stI16o(urace_init_data, $Race_attrmin + 2, 3);
 cptr.stI16o(urace_init_data, $Race_attrmin + 4, 3);
 cptr.stI16o(urace_init_data, $Race_attrmin + 6, 3);
 cptr.stI16o(urace_init_data, $Race_attrmin + 8, 3);
 cptr.stI16o(urace_init_data, $Race_attrmin + 10, 3);
-cptr.stI16o(urace_init_data, $Race_attrmax, 118);
+cptr.stI16o(urace_init_data, $Race_attrmax + 0, 118);
 cptr.stI16o(urace_init_data, $Race_attrmax + 2, 18);
 cptr.stI16o(urace_init_data, $Race_attrmax + 4, 18);
 cptr.stI16o(urace_init_data, $Race_attrmax + 6, 18);
@@ -1030,7 +1023,7 @@ cptr.stPtr(g_init_a, null);
 cptr.stI32o(g_init_a, $instance_globals_a_already_found_flag, 0);
 cptr.st1o(g_init_a, $instance_globals_a_at_ladder, 0);
 cptr.stPtro(g_init_a, $instance_globals_a_apelist, null);
-cptr.stI64o(g_init_a, $instance_globals_a_amulets, 0n);
+cptr.stI64o(g_init_a, $instance_globals_a_amulets + 0, 0n);
 cptr.stPtro(g_init_a, $instance_globals_a_animal_list, null);
 cptr.stI32o(g_init_a, $instance_globals_a_animal_list_count, NHM.UNDEFINED_VALUE);
 cptr.stI32o(g_init_a, $instance_globals_a_A_first_hint, 0);
@@ -1045,27 +1038,31 @@ cptr.st1o(g_init_a, $instance_globals_a_havestate, 1);
 
 /** C ref: decl.c:206 — struct instance_globals_b */
 let g_init_b = cptr.alloc($sizeof_instance_globals_b);
-cptr.stPtr(g_init_b, null);
-cptr.stPtro(g_init_b, $istat_s_fldfmt, null);
-cptr.stI64o(g_init_b, $istat_s_time, 0n);
-cptr.st1o(g_init_b, $istat_s_chg, 0);
-cptr.st1o(g_init_b, $istat_s_percent_matters, 0);
-cptr.stI16o(g_init_b, $istat_s_percent_value, 0);
-cptr.stI32o(g_init_b, $istat_s_anytype, NHC.ANY_INVALID);
-cptr.stPtro(g_init_b, $istat_s_a, null);
-cptr.stPtro(g_init_b, $istat_s_rawval, null);
-cptr.stPtro(g_init_b, $istat_s_val, null);
-cptr.stI32o(g_init_b, $istat_s_valwidth, 0);
-cptr.stI32o(g_init_b, $istat_s_idxmax, 0);
-cptr.stI32o(g_init_b, $istat_s_fld, 0);
-cptr.stPtro(g_init_b, $istat_s_hilite_rule, null);
-cptr.stPtro(g_init_b, $istat_s_thresholds, null);
+cptr.stPtro(g_init_b, 0, [
+    {
+        fldname: null,
+        fldfmt: null,
+        time: 0n,
+        chg: 0,
+        percent_matters: 0,
+        percent_value: 0,
+        anytype: NHC.ANY_INVALID,
+        a: { a_void: null },
+        rawval: { a_void: null },
+        val: null,
+        valwidth: 0,
+        idxmax: 0,
+        fld: 0,
+        hilite_rule: null,
+        thresholds: null
+    }
+]);
 cptr.st1o(g_init_b, $instance_globals_b_blinit, 0);
 cptr.stI64o(g_init_b, $instance_globals_b_bl_hilite_moves, 0n);
 cptr.stI16o(g_init_b, $instance_globals_b_bhitpos, 0);
 cptr.stI16o(g_init_b, $instance_globals_b_bhitpos + $nhcoord_y, 0);
 cptr.stPtro(g_init_b, $instance_globals_b_billobjs, null);
-cptr.strncpy(cptr.add(g_init_b, $instance_globals_b_bones), __s_bonesnn_xxx_le, 15);
+cptr.strcpy(cptr.add(g_init_b, $instance_globals_b_bones), __s_bonesnn_xxx_le);
 cptr.stI32o(g_init_b, $instance_globals_b_bldrpush_oid, 0);
 cptr.stI64o(g_init_b, $instance_globals_b_bldrpushtime, 0n);
 cptr.stI16o(g_init_b, $instance_globals_b_bughack, NHM.COLNO);
@@ -1088,8 +1085,8 @@ cptr.st1o(g_init_b, $instance_globals_b_havestate, 1);
 
 /** C ref: decl.c:238 — struct instance_globals_c */
 let g_init_c = cptr.alloc($sizeof_instance_globals_c);
-cptr.stPtr(g_init_c, null);
-cptr.stU64o(g_init_c, $instance_globals_c_cond_hilites, 0n);
+cptr.stPtro(g_init_c, 0, null);
+cptr.stU64o(g_init_c, $instance_globals_c_cond_hilites + 0, 0n);
 cptr.stU64o(g_init_c, $instance_globals_c_cond_hilites + 8, 0n);
 cptr.stU64o(g_init_c, $instance_globals_c_cond_hilites + 16, 0n);
 cptr.stU64o(g_init_c, $instance_globals_c_cond_hilites + 24, 0n);
@@ -1114,12 +1111,12 @@ cptr.stI32o(g_init_c, $instance_globals_c_condmenu_sortorder, 0);
 cptr.stI32o(g_init_c, $instance_globals_c_Cmd, 0);
 cptr.stI16o(g_init_c, $instance_globals_c_clicklook_cc, 0);
 cptr.stI16o(g_init_c, $instance_globals_c_clicklook_cc + $nhcoord_y, 0);
-cptr.st1o(g_init_c, $instance_globals_c_chosen_windowtype, 0);
+cptr.st1o(g_init_c, $instance_globals_c_chosen_windowtype + 0, 0);
 cptr.stI32o(g_init_c, $instance_globals_c_cmd_key, 0);
 cptr.stPtro(g_init_c, $instance_globals_c_cmd_bind, null);
 cptr.stI64o(g_init_c, $instance_globals_c_command_count, 0n);
 cptr.stPtro(g_init_c, $instance_globals_c_current_wand, null);
-cptr.st1o(g_init_c, $instance_globals_c_catname, 0);
+cptr.st1o(g_init_c, $instance_globals_c_catname + 0, 0);
 cptr.stPtro(g_init_c, $instance_globals_c_crash_email, null);
 cptr.stPtro(g_init_c, $instance_globals_c_crash_name, null);
 cptr.stI32o(g_init_c, $instance_globals_c_crash_urlmax, -1);
@@ -1135,7 +1132,7 @@ cptr.stPtro(g_init_c, $instance_globals_c_cmdline_windowsys, null);
 cptr.stPtro(g_init_c, $instance_globals_c_color_colorings, null);
 cptr.stPtro(g_init_c, $instance_globals_c_current_container, null);
 cptr.st1o(g_init_c, $instance_globals_c_class_filter, 0);
-cptr.st1o(g_init_c, $instance_globals_c_cvt_buf, 0);
+cptr.st1o(g_init_c, $instance_globals_c_cvt_buf + 0, 0);
 cptr.stI32o(g_init_c, $instance_globals_c_chosen_soundlib, NHC.soundlib_nosound);
 cptr.stPtro(g_init_c, $instance_globals_c_coder, null);
 cptr.stI16o(g_init_c, $instance_globals_c_corpsenm_digested, NHC.NON_PM);
@@ -1153,7 +1150,7 @@ cptr.st1o(g_init_d, $instance_globals_d_did_dig_msg, NHM.UNDEFINED_VALUE);
 cptr.stPtro(g_init_d, $instance_globals_d_dfr_pre_msg, null);
 cptr.stPtro(g_init_d, $instance_globals_d_dfr_post_msg, null);
 cptr.stI32o(g_init_d, $instance_globals_d_did_nothing_flag, 0);
-cptr.st1o(g_init_d, $instance_globals_d_dogname, 0);
+cptr.st1o(g_init_d, $instance_globals_d_dogname + 0, 0);
 cptr.stI64o(g_init_d, $instance_globals_d_done_seq, 0n);
 cptr.st1o(g_init_d, $instance_globals_d_disintegested, 0);
 cptr.stI32o(g_init_d, $instance_globals_d_distantname, 0);
@@ -1176,7 +1173,7 @@ cptr.st1o(g_init_e, $instance_globals_e_havestate, 1);
 /** C ref: decl.c:333 — struct instance_globals_f */
 let g_init_f = cptr.alloc($sizeof_instance_globals_f);
 cptr.stPtr(g_init_f, null);
-cptr.stPtro(g_init_f, $instance_globals_f_fqn_prefix, null);
+cptr.stPtro(g_init_f, $instance_globals_f_fqn_prefix + 0, null);
 cptr.stPtro(g_init_f, $instance_globals_f_ffruit, null);
 cptr.st1o(g_init_f, $instance_globals_f_force_save_hs, 0);
 cptr.st1o(g_init_f, $instance_globals_f_far_noise, 0);
@@ -1188,9 +1185,11 @@ cptr.st1o(g_init_f, $instance_globals_f_havestate, 1);
 
 /** C ref: decl.c:351 — struct instance_globals_g */
 let g_init_g = cptr.alloc($sizeof_instance_globals_g);
-cptr.st1(g_init_g, 0);
-cptr.stI16o(g_init_g, $instance_globals_g_gbuf_start, 0);
-cptr.stI16o(g_init_g, $instance_globals_g_gbuf_stop, 0);
+cptr.stPtro(g_init_g, 0, [
+    { gnew: 0 }
+]);
+cptr.stI16o(g_init_g, $instance_globals_g_gbuf_start + 0, 0);
+cptr.stI16o(g_init_g, $instance_globals_g_gbuf_stop + 0, 0);
 cptr.stI16o(g_init_g, $instance_globals_g_getposx, 0);
 cptr.stI16o(g_init_g, $instance_globals_g_getposy, 0);
 cptr.stPtro(g_init_g, $instance_globals_g_gloc_filter_map, null);
@@ -1199,7 +1198,7 @@ cptr.stI16o(g_init_g, $instance_globals_g_gtyp, NHM.UNDEFINED_VALUE);
 cptr.stI16o(g_init_g, $instance_globals_g_gx, 0);
 cptr.stI16o(g_init_g, $instance_globals_g_gy, 0);
 cptr.stPtro(g_init_g, $instance_globals_g_gate_str, null);
-cptr.stI64o(g_init_g, $instance_globals_g_gems, 0n);
+cptr.stI64o(g_init_g, $instance_globals_g_gems + 0, 0n);
 cptr.stI64o(g_init_g, $instance_globals_g_glyph_reset_timestamp, 0n);
 cptr.st1o(g_init_g, $instance_globals_g_gmst_stored, 0);
 cptr.stI64o(g_init_g, $instance_globals_g_gmst_moves, 0n);
@@ -1207,7 +1206,7 @@ cptr.stPtro(g_init_g, $instance_globals_g_gmst_invent, null);
 cptr.stPtro(g_init_g, $instance_globals_g_gmst_ubak, null);
 cptr.stPtro(g_init_g, $instance_globals_g_gmst_disco, null);
 cptr.stPtro(g_init_g, $instance_globals_g_gmst_mvitals, null);
-cptr.stI16o(g_init_g, $instance_globals_g_gmst_spl_book, 0);
+cptr.stI16o(g_init_g, $instance_globals_g_gmst_spl_book + 0, 0);
 cptr.stPtro(g_init_g, $instance_globals_g_gamelog, null);
 cptr.st1o(g_init_g, $instance_globals_g_gas_cloud_diss_within, 0);
 cptr.stI32o(g_init_g, $instance_globals_g_gas_cloud_diss_seen, 0);
@@ -1218,7 +1217,7 @@ cptr.st1o(g_init_g, $instance_globals_g_havestate, 1);
 let g_init_h = cptr.alloc($sizeof_instance_globals_h);
 cptr.stPtr(g_init_h, null);
 cptr.stI64o(g_init_h, $instance_globals_h_hero_seq, 8n);
-cptr.st1o(g_init_h, $instance_globals_h_horsename, 0);
+cptr.st1o(g_init_h, $instance_globals_h_horsename + 0, 0);
 cptr.stI32o(g_init_h, $instance_globals_h_hitmsg_mid, 0);
 cptr.stPtro(g_init_h, $instance_globals_h_hitmsg_prev, null);
 cptr.st1o(g_init_h, $instance_globals_h_havestate, 1);
@@ -1257,13 +1256,13 @@ let g_init_l = cptr.alloc($sizeof_instance_globals_l);
 cptr.stI64(g_init_l, 0n);
 cptr.stI32o(g_init_l, $instance_globals_l_locknum, 0);
 cptr.stI32o(g_init_l, $instance_globals_l_lockptr, NHM.UNDEFINED_VALUE);
-cptr.strncpy(cptr.add(g_init_l, $instance_globals_l_lock), __s_1lock, 46);
+cptr.strcpy(cptr.add(g_init_l, $instance_globals_l_lock), __s_1lock);
 cptr.stI32o(g_init_l, $instance_globals_l_lastinvnr, 51);
 cptr.stPtro(g_init_l, $instance_globals_l_light_base, null);
-cptr.stPtro(g_init_l, $instance_globals_l_luathemes, (null));
+cptr.stPtro(g_init_l, $instance_globals_l_luathemes + 0, (null));
 cptr.stI32o(g_init_l, $instance_globals_l_last_hider, 0);
 cptr.stPtro(g_init_l, $instance_globals_l_luacore, null);
-cptr.st1o(g_init_l, $instance_globals_l_lua_warnbuf, 0);
+cptr.st1o(g_init_l, $instance_globals_l_lua_warnbuf + 0, 0);
 cptr.stI32o(g_init_l, $instance_globals_l_loglua, 0);
 cptr.stI32o(g_init_l, $instance_globals_l_lua_sid, 0);
 cptr.st1o(g_init_l, $instance_globals_l_loot_reset_justpicked, 0);
@@ -1275,8 +1274,8 @@ cptr.stPtro(g_init_l, $instance_globals_l_launchplace, null);
 cptr.stI16o(g_init_l, $instance_globals_l_launchplace + $launchplace_x, 0);
 cptr.stI16o(g_init_l, $instance_globals_l_launchplace + $launchplace_y, 0);
 cptr.stPtro(g_init_l, $instance_globals_l_last_winchoice, null);
-cptr.st1o(g_init_l, $instance_globals_l_lua_ver, 0);
-cptr.st1o(g_init_l, $instance_globals_l_lua_copyright, 0);
+cptr.st1o(g_init_l, $instance_globals_l_lua_ver + 0, 0);
+cptr.st1o(g_init_l, $instance_globals_l_lua_copyright + 0, 0);
 cptr.st1o(g_init_l, $instance_globals_l_havestate, 1);
 
 /** C ref: decl.c:493 — struct instance_globals_m */
@@ -1285,7 +1284,7 @@ cptr.stI32(g_init_m, 0);
 cptr.stI32o(g_init_m, $instance_globals_m_mrank_sz, 0);
 cptr.stI64o(g_init_m, $instance_globals_m_multi, 0n);
 cptr.stPtro(g_init_m, $instance_globals_m_multi_reason, null);
-cptr.st1o(g_init_m, $instance_globals_m_multireasonbuf, 0);
+cptr.st1o(g_init_m, $instance_globals_m_multireasonbuf + 0, 0);
 cptr.stI32o(g_init_m, $instance_globals_m_m_shot, 0);
 cptr.stI32o(g_init_m, $instance_globals_m_m_shot + $multishot_i, 0);
 cptr.stI16o(g_init_m, $instance_globals_m_m_shot + $multishot_o, NHC.STRANGE_OBJECT);
@@ -1309,8 +1308,8 @@ cptr.stPtro(g_init_m, $instance_globals_m_mtarget, null);
 cptr.stPtro(g_init_m, $instance_globals_m_marcher, null);
 cptr.st1o(g_init_m, $instance_globals_m_m_using, 0);
 cptr.stPtro(g_init_m, $instance_globals_m_m, null);
-cptr.st1o(g_init_m, $instance_globals_m_mapped_menu_cmds, 0);
-cptr.st1o(g_init_m, $instance_globals_m_mapped_menu_op, 0);
+cptr.st1o(g_init_m, $instance_globals_m_mapped_menu_cmds + 0, 0);
+cptr.st1o(g_init_m, $instance_globals_m_mapped_menu_op + 0, 0);
 cptr.stI32o(g_init_m, $instance_globals_m_max_regions, 0);
 cptr.st1o(g_init_m, $instance_globals_m_mentioned_water, 0);
 cptr.st1o(g_init_m, $instance_globals_m_havestate, 1);
@@ -1328,7 +1327,7 @@ cptr.stPtro(g_init_n, $instance_globals_n_new_locations, null);
 cptr.stI32o(g_init_n, $instance_globals_n_n_loc_filled, NHM.UNDEFINED_VALUE);
 cptr.stI16o(g_init_n, $instance_globals_n_n_menu_mapped, 0);
 cptr.st1o(g_init_n, $instance_globals_n_notonhead, 0);
-cptr.st1o(g_init_n, $instance_globals_n_nambuf, 0);
+cptr.st1o(g_init_n, $instance_globals_n_nambuf + 0, 0);
 cptr.stI32o(g_init_n, $instance_globals_n_n_ids_mapped, 0);
 cptr.stI32o(g_init_n, $instance_globals_n_num_lregions, 0);
 cptr.stI16o(g_init_n, $instance_globals_n_nocreate, NHC.STRANGE_OBJECT);
@@ -1340,16 +1339,16 @@ cptr.st1o(g_init_n, $instance_globals_n_havestate, 1);
 /** C ref: decl.c:577 — struct instance_globals_o */
 let g_init_o = cptr.alloc($sizeof_instance_globals_o);
 cptr.stPtr(g_init_o, null);
-cptr.stPtro(g_init_o, $instance_globals_o_occupants, null);
+cptr.stPtro(g_init_o, $instance_globals_o_occupants + 0, null);
 cptr.stPtro(g_init_o, $instance_globals_o_occupation, null);
 cptr.stI32o(g_init_o, $instance_globals_o_occtime, 0);
 cptr.stI32o(g_init_o, $instance_globals_o_otg_temp, NHM.UNDEFINED_VALUE);
 cptr.stPtro(g_init_o, $instance_globals_o_otg_otmp, null);
 cptr.stPtro(g_init_o, $instance_globals_o_occtxt, null);
-cptr.st1o(g_init_o, $instance_globals_o_ov_primary_syms, 0);
-cptr.st1o(g_init_o, $instance_globals_o_ov_rogue_syms, 0);
+cptr.st1o(g_init_o, $instance_globals_o_ov_primary_syms + 0, 0);
+cptr.st1o(g_init_o, $instance_globals_o_ov_rogue_syms + 0, 0);
 cptr.stI16o(g_init_o, $instance_globals_o_only, 0);
-cptr.stI16o(g_init_o, $instance_globals_o_oclass_prob_totals, 0);
+cptr.stI16o(g_init_o, $instance_globals_o_oclass_prob_totals + 0, 0);
 cptr.stI32o(g_init_o, $instance_globals_o_opt_phase, NHC.phase_not_set);
 cptr.st1o(g_init_o, $instance_globals_o_opt_initial, 0);
 cptr.st1o(g_init_o, $instance_globals_o_opt_from_file, 0);
@@ -1376,12 +1375,12 @@ cptr.st1o(g_init_p, $instance_globals_p_pl_race, 0);
 cptr.stPtro(g_init_p, $instance_globals_p_plinemsg_types, null);
 cptr.stI32o(g_init_p, $instance_globals_p_petname_used, 0);
 cptr.st1o(g_init_p, $instance_globals_p_preferred_pet, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_p, $instance_globals_p_primary_syms, 0);
+cptr.st1o(g_init_p, $instance_globals_p_primary_syms + 0, 0);
 cptr.stI32o(g_init_p, $instance_globals_p_perm_invent_toggling_direction, 0);
 cptr.st1o(g_init_p, $instance_globals_p_picked_filter, 0);
 cptr.stI32o(g_init_p, $instance_globals_p_pickup_encumbrance, 0);
 cptr.stI32o(g_init_p, $instance_globals_p_pline_flags, 0);
-cptr.st1o(g_init_p, $instance_globals_p_prevmsg, 0);
+cptr.st1o(g_init_p, $instance_globals_p_prevmsg + 0, 0);
 cptr.stI32o(g_init_p, $instance_globals_p_potion_nothing, NHM.UNDEFINED_VALUE);
 cptr.stI32o(g_init_p, $instance_globals_p_potion_unkn, NHM.UNDEFINED_VALUE);
 cptr.st1o(g_init_p, $instance_globals_p_p_aligntyp, NHM.UNDEFINED_VALUE);
@@ -1397,14 +1396,16 @@ cptr.st1(g_init_q, 1);
 
 /** C ref: decl.c:657 — struct instance_globals_r */
 let g_init_r = cptr.alloc($sizeof_instance_globals_r);
-cptr.st1(g_init_r, 0);
-cptr.stI16o(g_init_r, $instance_globals_r_r, 0);
+cptr.st1o(g_init_r, 0, 0);
+cptr.stPtro(g_init_r, $instance_globals_r_r + 0, [
+    { rlx: 0 }
+]);
 cptr.st1o(g_init_r, $instance_globals_r_ransacked, 0);
 cptr.stPtro(g_init_r, $instance_globals_r_regions, null);
 cptr.stPtro(g_init_r, $instance_globals_r_rip, null);
-cptr.st1o(g_init_r, $instance_globals_r_role_pa, 0);
+cptr.st1o(g_init_r, $instance_globals_r_role_pa + 0, 0);
 cptr.st1o(g_init_r, $instance_globals_r_role_post_attribs, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_r, $instance_globals_r_rfilter, 0);
+cptr.st1o(g_init_r, $instance_globals_r_rfilter + 0, 0);
 cptr.stI16o(g_init_r, $instance_globals_r_rfilter + $role_filter_mask, 0);
 cptr.stPtro(g_init_r, $instance_globals_r_repo, null);
 cptr.st1o(g_init_r, $instance_globals_r_havestate, 1);
@@ -1413,18 +1414,22 @@ cptr.st1o(g_init_r, $instance_globals_r_havestate, 1);
 let g_init_s = cptr.alloc($sizeof_instance_globals_s);
 cptr.stI32(g_init_s, 0);
 cptr.stPtro(g_init_s, $instance_globals_s_stairs, null);
-cptr.stI32o(g_init_s, $instance_globals_s_smeq, 0);
+cptr.stI32o(g_init_s, $instance_globals_s_smeq + 0, 0);
 cptr.st1o(g_init_s, $instance_globals_s_stoned, 0);
 cptr.stPtro(g_init_s, $instance_globals_s_subrooms, null);
 cptr.stI16o(g_init_s, $instance_globals_s_save_dlevel, 0);
 cptr.stI16o(g_init_s, $instance_globals_s_save_dlevel + $d_level_dlevel, 0);
-cptr.stPtro(g_init_s, $instance_globals_s_symset, null);
-cptr.stPtro(g_init_s, $instance_globals_s_sym_customizations, null);
-cptr.stPtro(g_init_s, $instance_globals_s_sym_customizations + 128, null);
-cptr.st1o(g_init_s, $instance_globals_s_showsyms, 0);
+cptr.stPtro(g_init_s, $instance_globals_s_symset + 0, null);
+cptr.stPtro(g_init_s, $instance_globals_s_sym_customizations + 0, [
+    { customization_name: null }
+]);
+cptr.stPtro(g_init_s, $instance_globals_s_sym_customizations + 128, [
+    { customization_name: null }
+]);
+cptr.st1o(g_init_s, $instance_globals_s_showsyms + 0, 0);
 cptr.stI32o(g_init_s, $instance_globals_s_symset_count, 0);
 cptr.stI32o(g_init_s, $instance_globals_s_symset_which_set, 0);
-cptr.st1o(g_init_s, $instance_globals_s_SAVEF, 0);
+cptr.st1o(g_init_s, $instance_globals_s_SAVEF + 0, 0);
 cptr.stI32o(g_init_s, $instance_globals_s_sortlootmode, 0);
 cptr.st1o(g_init_s, $instance_globals_s_skipdrin, 0);
 cptr.st1o(g_init_s, $instance_globals_s_somebody_can_move, 0);
@@ -1435,7 +1440,7 @@ cptr.st1o(g_init_s, $instance_globals_s_simple_options_help, 0);
 cptr.st1o(g_init_s, $instance_globals_s_sellobj_first, 0);
 cptr.st1o(g_init_s, $instance_globals_s_shop_filter, 0);
 cptr.stI32o(g_init_s, $instance_globals_s_saved_pline_index, 0);
-cptr.stPtro(g_init_s, $instance_globals_s_saved_plines, null);
+cptr.stPtro(g_init_s, $instance_globals_s_saved_plines + 0, null);
 cptr.stI32o(g_init_s, $instance_globals_s_sex_change_ok, 0);
 cptr.st1o(g_init_s, $instance_globals_s_sell_response, 97);
 cptr.stI32o(g_init_s, $instance_globals_s_sell_how, NHM.SELL_NORMAL);
@@ -1451,7 +1456,7 @@ let g_init_t = cptr.alloc($sizeof_instance_globals_t);
 cptr.stPtr(g_init_t, null);
 cptr.st1o(g_init_t, $instance_globals_t_tbx, 0);
 cptr.st1o(g_init_t, $instance_globals_t_tby, 0);
-cptr.st1o(g_init_t, $instance_globals_t_toplines, 0);
+cptr.st1o(g_init_t, $instance_globals_t_toplines + 0, 0);
 cptr.stPtro(g_init_t, $instance_globals_t_thrownobj, null);
 cptr.stPtro(g_init_t, $instance_globals_t_tc_gbl_data, null);
 cptr.stPtro(g_init_t, $instance_globals_t_tmp_anything, null);
@@ -1475,8 +1480,8 @@ cptr.st1(g_init_u, 0);
 cptr.st1o(g_init_u, $instance_globals_u_unweapon, 0);
 cptr.stPtro(g_init_u, $instance_globals_u_urole, null);
 cptr.stPtro(g_init_u, $instance_globals_u_urole + $RoleName_f, null);
-cptr.stPtro(g_init_u, $instance_globals_u_urole + $Role_rank, null);
-cptr.stPtro(g_init_u, $instance_globals_u_urole + $Role_rank + $RoleName_f, null);
+cptr.stPtro(g_init_u, $instance_globals_u_urole + $Role_rank + 0, null);
+cptr.stPtro(g_init_u, $instance_globals_u_urole + $Role_rank + 0 + $RoleName_f, null);
 cptr.stPtro(g_init_u, $instance_globals_u_urole + $Role_lgod, null);
 cptr.stPtro(g_init_u, $instance_globals_u_urole + $Role_ngod, null);
 cptr.stPtro(g_init_u, $instance_globals_u_urole + $Role_cgod, null);
@@ -1494,8 +1499,8 @@ cptr.st1o(g_init_u, $instance_globals_u_urole + $Role_enemy1sym, 0);
 cptr.st1o(g_init_u, $instance_globals_u_urole + $Role_enemy2sym, 0);
 cptr.stI16o(g_init_u, $instance_globals_u_urole + $Role_questarti, NHC.STRANGE_OBJECT);
 cptr.stI16o(g_init_u, $instance_globals_u_urole + $Role_allow, 0);
-cptr.stI16o(g_init_u, $instance_globals_u_urole + $Role_attrbase, 0);
-cptr.stI16o(g_init_u, $instance_globals_u_urole + $Role_attrdist, 0);
+cptr.stI16o(g_init_u, $instance_globals_u_urole + $Role_attrbase + 0, 0);
+cptr.stI16o(g_init_u, $instance_globals_u_urole + $Role_attrdist + 0, 0);
 cptr.stI16o(g_init_u, $instance_globals_u_urole + $Role_hpadv, 0);
 cptr.stI16o(g_init_u, $instance_globals_u_urole + $Role_enadv, 0);
 cptr.stI16o(g_init_u, $instance_globals_u_urole + $Role_xlev, 0);
@@ -1520,8 +1525,8 @@ cptr.stI16o(g_init_u, $instance_globals_u_urace + $Race_allow, 0);
 cptr.stI16o(g_init_u, $instance_globals_u_urace + $Race_selfmask, 0);
 cptr.stI16o(g_init_u, $instance_globals_u_urace + $Race_lovemask, 0);
 cptr.stI16o(g_init_u, $instance_globals_u_urace + $Race_hatemask, 0);
-cptr.stI16o(g_init_u, $instance_globals_u_urace + $Race_attrmin, 0);
-cptr.stI16o(g_init_u, $instance_globals_u_urace + $Race_attrmax, 0);
+cptr.stI16o(g_init_u, $instance_globals_u_urace + $Race_attrmin + 0, 0);
+cptr.stI16o(g_init_u, $instance_globals_u_urace + $Race_attrmax + 0, 0);
 cptr.stI16o(g_init_u, $instance_globals_u_urace + $Race_hpadv, 0);
 cptr.stI16o(g_init_u, $instance_globals_u_urace + $Race_enadv, 0);
 cptr.stI16o(g_init_u, $instance_globals_u_uz_save, 0);
@@ -1530,7 +1535,7 @@ cptr.st1o(g_init_u, $instance_globals_u_havestate, 1);
 
 /** C ref: decl.c:780 — struct instance_globals_v */
 let g_init_v = cptr.alloc($sizeof_instance_globals_v);
-cptr.st1(g_init_v, 0);
+cptr.st1o(g_init_v, 0, 0);
 cptr.st1o(g_init_v, 1, 0);
 cptr.st1o(g_init_v, 2, 0);
 cptr.st1o(g_init_v, 3, 0);
@@ -1552,13 +1557,13 @@ cptr.st1o(g_init_v, 18, 0);
 cptr.st1o(g_init_v, 19, 0);
 cptr.st1o(g_init_v, 20, 0);
 cptr.st1o(g_init_v, 21, 0);
-cptr.stPtro(g_init_v, $instance_globals_v_valuables, null);
+cptr.stPtro(g_init_v, $instance_globals_v_valuables + 0, null);
 cptr.st1o(g_init_v, $instance_globals_v_vis, 0);
 cptr.stI16o(g_init_v, $instance_globals_v_vault_x, NHM.UNDEFINED_VALUE);
 cptr.stI16o(g_init_v, $instance_globals_v_vault_y, NHM.UNDEFINED_VALUE);
 cptr.st1o(g_init_v, $instance_globals_v_vamp_rise_msg, 0);
 cptr.stI64o(g_init_v, $instance_globals_v_val_for_n_or_more, 0n);
-cptr.st1o(g_init_v, $instance_globals_v_valid_menu_classes, 0);
+cptr.st1o(g_init_v, $instance_globals_v_valid_menu_classes + 0, 0);
 cptr.stPtro(g_init_v, $instance_globals_v_viz_array, null);
 cptr.stPtro(g_init_v, $instance_globals_v_viz_rmin, null);
 cptr.stPtro(g_init_v, $instance_globals_v_viz_rmax, null);
@@ -1571,8 +1576,8 @@ let g_init_w = cptr.alloc($sizeof_instance_globals_w);
 cptr.stI32(g_init_w, 0);
 cptr.stI64o(g_init_w, $instance_globals_w_wailmsg, 0n);
 cptr.st1o(g_init_w, $instance_globals_w_wasinwater, 0);
-cptr.st1o(g_init_w, $instance_globals_w_warnsyms, 0);
-cptr.st1o(g_init_w, $instance_globals_w_wizkit, 0);
+cptr.st1o(g_init_w, $instance_globals_w_warnsyms + 0, 0);
+cptr.st1o(g_init_w, $instance_globals_w_wizkit + 0, 0);
 cptr.stI32o(g_init_w, $instance_globals_w_wc, NHM.UNDEFINED_VALUE);
 cptr.stPtro(g_init_w, $instance_globals_w_wportal, null);
 cptr.stI32o(g_init_w, $instance_globals_w_wsettings, NHC.wdmode_traditional);
@@ -1609,7 +1614,7 @@ cptr.st1o(g_init_z, $instance_globals_z_havestate, 1);
 let init_svb = cptr.alloc($sizeof_instance_globals_saved_b);
 cptr.stPtr(init_svb, null);
 cptr.stPtro(init_svb, $instance_globals_saved_b_bbubbles, null);
-cptr.stI32o(init_svb, $instance_globals_saved_b_bases, 0);
+cptr.stI32o(init_svb, $instance_globals_saved_b_bases + 0, 0);
 
 /** C ref: decl.c:867 — struct instance_globals_saved_c */
 let init_svc = cptr.alloc($sizeof_instance_globals_saved_c);
@@ -1617,17 +1622,17 @@ cptr.stI32(init_svc, 0);
 
 /** C ref: decl.c:872 — struct instance_globals_saved_d */
 let init_svd = cptr.alloc($sizeof_instance_globals_saved_d);
-cptr.st1(init_svd, 0);
-cptr.st1o(init_svd, $dungeon_proto, 0);
-cptr.st1o(init_svd, $dungeon_fill_lvl, 0);
-cptr.st1o(init_svd, $dungeon_themerms, 0);
-cptr.st1o(init_svd, $dungeon_boneid, 0);
-cptr.stBits(cptr.add(init_svd, $dungeon_flags), 0, 1, 0, 0);
-cptr.stI16o(init_svd, $dungeon_entry_lev, 0);
-cptr.stI16o(init_svd, $dungeon_num_dunlevs, 0);
-cptr.stI16o(init_svd, $dungeon_dunlev_ureached, 0);
-cptr.stI32o(init_svd, $dungeon_ledger_start, 0);
-cptr.stI32o(init_svd, $dungeon_depth_start, 0);
+cptr.st1o(init_svd, 0, 0);
+cptr.st1o(init_svd, 0 + $dungeon_proto + 0, 0);
+cptr.st1o(init_svd, 0 + $dungeon_fill_lvl + 0, 0);
+cptr.st1o(init_svd, 0 + $dungeon_themerms + 0, 0);
+cptr.st1o(init_svd, 0 + $dungeon_boneid, 0);
+cptr.stI32o(init_svd, 0 + $dungeon_flags, 0);
+cptr.stI16o(init_svd, 0 + $dungeon_entry_lev, 0);
+cptr.stI16o(init_svd, 0 + $dungeon_num_dunlevs, 0);
+cptr.stI16o(init_svd, 0 + $dungeon_dunlev_ureached, 0);
+cptr.stI32o(init_svd, 0 + $dungeon_ledger_start, 0);
+cptr.stI32o(init_svd, 0 + $dungeon_depth_start, 0);
 cptr.stI16o(init_svd, $instance_globals_saved_d_dungeon_topology, 0);
 cptr.stI16o(
     init_svd,
@@ -1713,7 +1718,7 @@ cptr.stI16o(init_svd, $instance_globals_saved_d_dndest + $dest_area_nhx, 0);
 cptr.stI16o(init_svd, $instance_globals_saved_d_dndest + $dest_area_nhy, 0);
 cptr.stPtro(init_svd, $instance_globals_saved_d_doors, null);
 cptr.stI32o(init_svd, $instance_globals_saved_d_doors_alloc, 0);
-cptr.stI16o(init_svd, $instance_globals_saved_d_disco, 0);
+cptr.stI16o(init_svd, $instance_globals_saved_d_disco + 0, 0);
 
 /** C ref: decl.c:888 — struct instance_globals_saved_e */
 let init_sve = cptr.alloc($sizeof_instance_globals_saved_e);
@@ -1734,28 +1739,34 @@ cptr.stPtr(init_svk, null);
 
 /** C ref: decl.c:908 — struct instance_globals_saved_l */
 let init_svl = cptr.alloc($sizeof_instance_globals_saved_l);
-cptr.st1(init_svl, 0);
-cptr.stI32o(init_svl, $instance_globals_saved_l_level, 0);
-cptr.stPtro(init_svl, $instance_globals_saved_l_level + $dlevel_t_objects, null);
-cptr.stPtro(init_svl, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+cptr.stPtro(init_svl, 0, [0]);
+cptr.stPtro(init_svl, $instance_globals_saved_l_level + 0, [
+    { glyph: 0 }
+]);
+cptr.stPtro(init_svl, $instance_globals_saved_l_level + $dlevel_t_objects + 0, [
+    null
+]);
+cptr.stPtro(init_svl, $instance_globals_saved_l_level + $dlevel_t_monsters + 0, [
+    null
+]);
 cptr.stPtro(init_svl, $instance_globals_saved_l_level + $dlevel_t_objlist, null);
 cptr.stPtro(init_svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist, null);
 cptr.stPtro(init_svl, $instance_globals_saved_l_level + $dlevel_t_monlist, null);
 cptr.stPtro(init_svl, $instance_globals_saved_l_level + $dlevel_t_damagelist, null);
 cptr.stPtro(init_svl, $instance_globals_saved_l_level + $dlevel_t_bonesinfo, null);
 cptr.st1o(init_svl, $instance_globals_saved_l_level + $dlevel_t_flags, 0);
-cptr.st1o(init_svl, $instance_globals_saved_l_level_info, 0);
+cptr.st1o(init_svl, $instance_globals_saved_l_level_info + 0, 0);
 
 /** C ref: decl.c:918 — struct instance_globals_saved_m */
 let init_svm = cptr.alloc($sizeof_instance_globals_saved_m);
 cptr.stPtr(init_svm, null);
 cptr.stI64o(init_svm, $instance_globals_saved_m_moves, 0n);
-cptr.st1o(init_svm, $instance_globals_saved_m_mvitals, 0);
+cptr.st1o(init_svm, $instance_globals_saved_m_mvitals + 0, 0);
 
 /** C ref: decl.c:926 — struct instance_globals_saved_n */
 let init_svn = cptr.alloc($sizeof_instance_globals_saved_n);
 cptr.stI32(init_svn, 0);
-cptr.st1o(init_svn, $instance_globals_saved_n_nhuuid, 0);
+cptr.st1o(init_svn, $instance_globals_saved_n_nhuuid + 0, 0);
 cptr.st1o(init_svn, $instance_globals_saved_n_nhuuid + 1, 0);
 cptr.st1o(init_svn, $instance_globals_saved_n_nhuuid + 2, 0);
 cptr.st1o(init_svn, $instance_globals_saved_n_nhuuid + 3, 0);
@@ -1803,26 +1814,26 @@ cptr.stI64o(init_svo, $instance_globals_saved_o_omoves, 0n);
 
 /** C ref: decl.c:949 — struct instance_globals_saved_p */
 let init_svp = cptr.alloc($sizeof_instance_globals_saved_p);
-cptr.st1(init_svp, 0);
-cptr.st1o(init_svp, $instance_globals_saved_p_pl_character, 0);
-cptr.st1o(init_svp, $instance_globals_saved_p_pl_fruit, 0);
+cptr.st1o(init_svp, 0, 0);
+cptr.st1o(init_svp, $instance_globals_saved_p_pl_character + 0, 0);
+cptr.st1o(init_svp, $instance_globals_saved_p_pl_fruit + 0, 0);
 
 /** C ref: decl.c:956 — struct instance_globals_saved_q */
 let init_svq = cptr.alloc($sizeof_instance_globals_saved_q);
-cptr.stBits(init_svq, 0, 1, 0, 0);
+cptr.stI32(init_svq, 0);
 
 /** C ref: decl.c:961 — struct instance_globals_saved_r */
 let init_svr = cptr.alloc($sizeof_instance_globals_saved_r);
-cptr.stI16(init_svr, 0);
+cptr.stI16o(init_svr, 0, 0);
 
 /** C ref: decl.c:966 — struct instance_globals_saved_s */
 let init_svs = cptr.alloc($sizeof_instance_globals_saved_s);
-cptr.stI16(init_svs, 0);
+cptr.stI16o(init_svs, 0, 0);
 cptr.stPtro(init_svs, $instance_globals_saved_s_sp_levchn, null);
 
 /** C ref: decl.c:972 — struct instance_globals_saved_t */
 let init_svt = cptr.alloc($sizeof_instance_globals_saved_t);
-cptr.st1(init_svt, 0);
+cptr.st1o(init_svt, 0, 0);
 cptr.stU64o(init_svt, $instance_globals_saved_t_timer_id, 1n);
 
 /** C ref: decl.c:979 — struct instance_globals_saved_u */
@@ -2023,32 +2034,32 @@ export function decl_globals_init() {
     cptr.memcpy(gk, g_init_k, 24);
     cptr.memcpy(gl, g_init_l, 696);
     cptr.memcpy(gm, g_init_m, 384);
-    cptr.memcpy(gn, g_init_n, 152);
+    cptr.memcpy(gn, g_init_n, 176);
     cptr.memcpy(go, g_init_o, 560);
     cptr.memcpy(gp, g_init_p, 536);
     cptr.memcpy(gq, g_init_q, 1);
     cptr.memcpy(gr, g_init_r, 408);
-    cptr.memcpy(gs, g_init_s, 1408);
+    cptr.memcpy(gs, g_init_s, 1424);
     cptr.memcpy(gt, g_init_t, 456);
     cptr.memcpy(gu, g_init_u, 440);
     cptr.memcpy(gv, g_init_v, 200);
     cptr.memcpy(gw, g_init_w, 192);
     cptr.memcpy(gx, g_init_x, 56);
-    cptr.memcpy(gy, g_init_y, 224);
+    cptr.memcpy(gy, g_init_y, 352);
     cptr.memcpy(gz, g_init_z, 3);
     cptr.memcpy(svb, init_svb, 96);
-    cptr.memcpy(svc, init_svc, 704);
-    cptr.memcpy(svd, init_svd, 2584);
+    cptr.memcpy(svc, init_svc, 720);
+    cptr.memcpy(svd, init_svd, 2904);
     cptr.memcpy(sve, init_sve, 8);
     cptr.memcpy(svh, init_svh, 4);
     cptr.memcpy(svi, init_svi, 4);
     cptr.memcpy(svk, init_svk, 272);
-    cptr.memcpy(svl, init_svl, 42568);
-    cptr.memcpy(svm, init_svm, 1552);
+    cptr.memcpy(svl, init_svl, 89720);
+    cptr.memcpy(svm, init_svm, 4616);
     cptr.memcpy(svn, init_svn, 52);
     cptr.memcpy(svo, init_svo, 24);
     cptr.memcpy(svp, init_svp, 96);
-    cptr.memcpy(svq, init_svq, 8);
+    cptr.memcpy(svq, init_svq, 88);
     cptr.memcpy(svr, init_svr, 18368);
     cptr.memcpy(svs, init_svs, 352);
     cptr.memcpy(svt, init_svt, 16);
@@ -2273,10 +2284,10 @@ export function decl_globals_init() {
     cptr.stPtro(gs, $instance_globals_s_subrooms, cptr.add(svr, 41, $sizeof_mkroom));
 
     __builtin___memset_chk(flags, 0, 208n, __builtin_object_size(flags, 0));
-    __builtin___memset_chk(iflags, 0, 424n, __builtin_object_size(iflags, 0));
+    __builtin___memset_chk(iflags, 0, 432n, __builtin_object_size(iflags, 0));
     __builtin___memset_chk(a11y, 0, 16n, __builtin_object_size(a11y, 0));
     __builtin___memset_chk(disp, 0, 3n, __builtin_object_size(disp, 0));
-    __builtin___memset_chk(u, 0, 2760n, __builtin_object_size(u, 0));
+    __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
     __builtin___memset_chk(ubirthday, 0, 8n, __builtin_object_size(ubirthday, 0));
     __builtin___memset_chk(urealtime, 0, 24n, __builtin_object_size(urealtime, 0));
 

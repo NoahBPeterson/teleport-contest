@@ -366,7 +366,7 @@ export function inven_inuse(quietly) {
 
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = otmp2) {
         otmp2 = cptr.ldPtr(otmp);
-        if (cptr.ldBits(cptr.add(otmp, $obj_in_use), 2, 1, 0)) {
+        if ((cptr.ldI32o(otmp, $obj_in_use) & 1)) {
             if (!quietly)
                 pline(__s_finishing_off_s, xname(otmp));
             useup(otmp);
@@ -384,7 +384,7 @@ function restlevchn(nhfp) {
     sfi_int(nhfp, cnt, __s_levchn_lev_count);
     ;
     for (; cnt.v > 0; cnt.v--) {
-        tmplev = alloc(40);
+        tmplev = alloc(56);
         sfi_s_level(nhfp, tmplev, __s_levchn_s_level);
 
         if (!cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn))
@@ -404,7 +404,7 @@ function restlevchn(nhfp) {
 
 /** C ref: restore.c:153 — @param {CPtr<NHFILE>} nhfp */
 function restdamage(nhfp) {
-    let dmgcount = cptr.box(0, "u32");
+    let dmgcount = cptr.box(0);
     let counter;
     let tmp_dam;
     let ghostly = schar((cptr.ldI32o(nhfp, $NHFILE_ftype) == NHM.NHF_BONESFILE));
@@ -443,7 +443,7 @@ function restdamage(nhfp) {
 /** C ref: restore.c:183 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct obj>} otmp */
 function restobj(nhfp, otmp) {
     let buflen = cptr.box(0);
-    let omid = cptr.box(0, "u32");
+    let omid = cptr.box(0);
 
     sfi_obj(nhfp, otmp, __s_obj);
     cptr.stI32o(otmp, $obj_lua_ref_cnt, 0);
@@ -476,7 +476,7 @@ function restobj(nhfp, otmp) {
         sfi_int(nhfp, buflen, __s_obj_omailcmd_length);
         ;
         if (buflen.v > 0) {
-            let omailcmd = cptr.byteView(alloc(buflen.v >>> 0));
+            let omailcmd = alloc(buflen.v >>> 0);
 
             sfi_char(nhfp, omailcmd, __s_obj_omailcmd, buflen.v);
             new_omailcmd(otmp, omailcmd);
@@ -510,7 +510,7 @@ function restobjchn(nhfp, frozen) {
         if (buflen.v == -1)
             break;
 
-        otmp = alloc(112);
+        otmp = alloc(216);
         (__builtin_expect(BigInt((!(otmp !== null))), 0n)
                 ? __assert_rtn(__s_restobjchn, __s_restore_c, 246, __s_otmp_0)
                 : void 0);
@@ -522,7 +522,7 @@ function restobjchn(nhfp, frozen) {
         if (ghostly) {
             let nid = next_ident();
 
-            add_id_mapping(cptr.ldI32o(otmp, $obj_o_id) >>> 0, nid);
+            add_id_mapping(cptr.ldI32o(otmp, $obj_o_id), nid);
             cptr.stI32o(otmp, $obj_o_id, nid);
         }
         if (ghostly && cptr.ldI16o(otmp, $obj_otyp) == NHC.SLIME_MOLD)
@@ -556,18 +556,18 @@ function restobjchn(nhfp, frozen) {
             for (otmp3 = cptr.ldPtro(otmp, $obj_cobj); otmp3; otmp3 = cptr.ldPtr(otmp3))
                 cptr.stPtro(otmp3, $obj_v, otmp);
         }
-        if (cptr.ldBits(cptr.add(otmp, $obj_bypass), 3, 1, 0))
-            cptr.stBits(cptr.add(otmp, $obj_bypass), 3, 1, 0, 0);
+        if ((cptr.ldI32o(otmp, $obj_bypass) & 1))
+            cptr.stI32o(otmp, $obj_bypass, 0);
         if (!ghostly) {
             /* fix the pointers */
-            if (cptr.ldI32o(otmp, $obj_o_id) >>> 0 ==
-                    cptr.ldI32o(svc, $context_info_victual + $victual_info_o_id) >>> 0)
+            if (cptr.ldI32o(otmp, $obj_o_id) ==
+                    cptr.ldI32o(svc, $context_info_victual + $victual_info_o_id))
                 cptr.stPtro(svc, $context_info_victual, otmp);
-            if (cptr.ldI32o(otmp, $obj_o_id) >>> 0 ==
-                    cptr.ldI32o(svc, $context_info_tin + $tin_info_o_id) >>> 0)
+            if (cptr.ldI32o(otmp, $obj_o_id) ==
+                    cptr.ldI32o(svc, $context_info_tin + $tin_info_o_id))
                 cptr.stPtro(svc, $context_info_tin, otmp);
-            if (cptr.ldI32o(otmp, $obj_o_id) >>> 0 ==
-                    cptr.ldI32o(svc, $context_info_spbook + $book_info_o_id) >>> 0)
+            if (cptr.ldI32o(otmp, $obj_o_id) ==
+                    cptr.ldI32o(svc, $context_info_spbook + $book_info_o_id))
                 cptr.stPtro(svc, $context_info_spbook, otmp);
         }
         otmp2 = otmp;
@@ -715,7 +715,7 @@ function restmonchn(nhfp) {
         if (buflen.v == -1)
             break;
 
-        mtmp = alloc(192);
+        mtmp = alloc(320);
         (__builtin_expect(BigInt((!(mtmp !== null))), 0n)
                 ? __assert_rtn(__s_restmonchn, __s_restore_c, 392, __s_mtmp_0)
                 : void 0);
@@ -727,7 +727,7 @@ function restmonchn(nhfp) {
         if (ghostly) {
             let nid = next_ident();
 
-            add_id_mapping(cptr.ldI32o(mtmp, $monst_m_id) >>> 0, nid);
+            add_id_mapping(cptr.ldI32o(mtmp, $monst_m_id), nid);
             cptr.stI32o(mtmp, $monst_m_id, nid);
         }
         offset = cptr.ldI16o(mtmp, $monst_mnum);
@@ -764,14 +764,14 @@ function restmonchn(nhfp) {
             }
         }
 
-        if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0))
+        if ((cptr.ldI32o(mtmp, $monst_isshk) & 1))
             restshk(mtmp, ghostly);
-        if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0))
+        if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1))
             restpriest(mtmp, ghostly);
 
         if (!ghostly) {
-            if (cptr.ldI32o(mtmp, $monst_m_id) >>> 0 ==
-                    cptr.ldI32o(svc, $context_info_polearm + $polearm_info_m_id) >>> 0)
+            if (cptr.ldI32o(mtmp, $monst_m_id) ==
+                    cptr.ldI32o(svc, $context_info_polearm + $polearm_info_m_id))
                 cptr.stPtro(svc, $context_info_polearm, mtmp);
         }
         mtmp2 = mtmp;
@@ -835,10 +835,10 @@ function ghostfruit(otmp) {
 function restgamestate(nhfp) {
     let i;
     let newgameflags = cptr.alloc(208);
-    let newgamecontext = cptr.alloc(704);  /* all 0, but has some pointers */
+    let newgamecontext = cptr.alloc(720);  /* all 0, but has some pointers */
     let bc_obj;
     let timebuf = new Uint8Array(15);
-    let uid = cptr.box(0n, "u64");
+    let uid = cptr.box(0n);
     let defer_perm_invent;
     let restoring_special;
     let otmp;
@@ -860,7 +860,7 @@ function restgamestate(nhfp) {
             return 0;
         }
     }
-    cptr.memcpy(newgamecontext, svc, 704);  /* copy statically init'd context */
+    cptr.memcpy(newgamecontext, svc, 720);  /* copy statically init'd context */
     sfi_context_info(nhfp, svc, __s_gamestate_context);
     relative_time_to_moves(cptr.add(svc, $context_info_seer_turn));
     relative_time_to_moves(cptr.add(svc, $context_info_digging + $dig_info_lastdigtime));
@@ -958,11 +958,11 @@ function restgamestate(nhfp) {
         cptr.st1o(iflags, $instance_flags_deferred_X, 0);
         cptr.st1o(iflags, $instance_flags_perm_invent, defer_perm_invent);
         cptr.memcpy(flags, newgameflags, 208);
-        cptr.memcpy(svc, newgamecontext, 704);
+        cptr.memcpy(svc, newgamecontext, 720);
         cptr.memcpy(
             cptr.add(gy, $instance_globals_y_youmonst),
             cptr.add(cg, $const_globals_zeromonst),
-            192
+            320
         );
         return 0;
     }
@@ -1026,7 +1026,7 @@ function restgamestate(nhfp) {
     cptr.stI64o(
         gh,
         $instance_globals_h_hero_seq,
-        BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) << 3n)
+        cptr.ldI64o(svm, $instance_globals_saved_m_moves) << 3n
     );  /* normally handled in moveloop() */
     sfi_q_score(nhfp, svq, __s_gamestate_quest_status);
 
@@ -1052,7 +1052,7 @@ function restgamestate(nhfp) {
     /* must come after all mons & objs are restored */
     relink_timers(0);
     relink_light_sources(0);
-    adj_erinys(cptr.ldI32o(u, $you_ualign + $align_abuse) >>> 0);
+    adj_erinys(cptr.ldI32o(u, $you_ualign + $align_abuse));
     /* inventory display is now viable */
     cptr.st1o(iflags, $instance_flags_perm_invent, defer_perm_invent);
     return 1;
@@ -1107,7 +1107,7 @@ function restlevelfile(ltmp) {
 
 /** C ref: restore.c:789 — @param {CPtr<NHFILE>} nhfp @returns {CInt} */
 export function dorecover(nhfp) {
-    let ltmp = cptr.box(0, "i8");
+    let ltmp = cptr.box(0);
     let rtmp;
 
     /* suppress map display if some part of the code tries to update that */
@@ -1361,7 +1361,7 @@ export function getlev(nhfp, pid, lev) {
     let y;
     let elapsed = 0n;
     let hpid = cptr.box(0);
-    let dlvl = cptr.box(0, "i8");
+    let dlvl = cptr.box(0);
     let i;
     let c;
     let r;
@@ -1482,7 +1482,7 @@ export function getlev(nhfp, pid, lev) {
 
     cptr.stPtr(gf, null);
     for (; ; ) {
-        trap = alloc(32);
+        trap = alloc(40);
         sfi_trap(nhfp, trap, __s_trap);
         if (cptr.ldI16o(trap, $trap_tx) != 0) {
             if (cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE &&
@@ -1530,22 +1530,22 @@ export function getlev(nhfp, pid, lev) {
         mtmp;
         mtmp = cptr.ldPtr(mtmp)
     ) {
-        if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0))
+        if ((cptr.ldI32o(mtmp, $monst_isshk) & 1))
             set_residency(mtmp, 0);
-        if (cptr.ldI32o(mtmp, $monst_m_id) >>> 0 == cptr.ldI32o(u, $you_usteed_mid) >>> 0) {
+        if (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(u, $you_usteed_mid)) {
             /* steed is kept on fmon list but off the map */
             cptr.stPtro(u, $you_usteed, mtmp);
             cptr.stI32o(u, $you_usteed_mid, 0);
         } else {
-            if (cptr.ldI32o(mtmp, $monst_m_id) >>> 0 == cptr.ldI32o(u, $you_ustuck_mid) >>> 0) {
+            if (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(u, $you_ustuck_mid)) {
                 set_ustuck(mtmp);
                 cptr.stI32o(u, $you_ustuck_mid, 0);
             }
             place_monster(mtmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-            if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0))
+            if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
                 place_wsegs(mtmp, null);
             if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n) &&
-                    cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0)
+                    (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0)
                 void hideunder(mtmp);
         }
 
@@ -1556,12 +1556,10 @@ export function getlev(nhfp, pid, lev) {
         if (ghostly) {
             /* reset peaceful/malign relative to new character;
                shopkeepers will reset based on name */
-            if (!cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0))
-                cptr.stBits(
-                    cptr.add(mtmp, $monst_mpeaceful),
-                    1,
-                    1,
-                    0,
+            if (!(cptr.ldI32o(mtmp, $monst_isshk) & 1))
+                cptr.stI32o(
+                    mtmp,
+                    $monst_mpeaceful,
                     ((is_unicorn(cptr.ldPtro(mtmp, $monst_data)) &&
                         (sgn(cptr.ld1so(u, $you_ualign)) ==
                             sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp))))
@@ -1658,8 +1656,7 @@ export function getlev(nhfp, pid, lev) {
                     break;
                 case NHM.BR_PORTAL:
                     for (trap = cptr.ldPtr(gf); trap; trap = cptr.ldPtr(trap))
-                        if ((cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) ==
-                                NHC.MAGIC_PORTAL)
+                        if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                             break;
                     if (!trap)
                         panic(__s_getlev_need_portal_but_none_found);
@@ -1672,7 +1669,7 @@ export function getlev(nhfp, pid, lev) {
             /* Remove any dangling portals. */
             for (trap = cptr.ldPtr(gf); trap; trap = ttmp) {
                 ttmp = cptr.ldPtr(trap);
-                if ((cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.MAGIC_PORTAL)
+                if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                     deltrap(trap);
             }
         }
@@ -1750,7 +1747,7 @@ export function get_plname_from_file(nhfp, outbuf, name_only) {
 
 /** C ref: restore.c:1369 — @param {CPtr<NHFILE>} nhfp */
 function rest_bubbles(nhfp) {
-    let bbubbly = cptr.box(0, "i8");
+    let bbubbly = cptr.box(0);
 
     /* whether or not the Plane of Water's air bubbles or Plane of Air's
        clouds are present is recorded during save so that we don't have to
@@ -1867,8 +1864,8 @@ export function lookup_id_mapping(gid, nidp) {
                 i = 64;
 
             while (--i >= 0)
-                if (gid == cptr.ldI32o2(curr, i, 8, $bucket_map) >>> 0) {
-                    cptr.stI32(nidp, cptr.ldI32o2(curr, i, 8, $bucket_map + 4) >>> 0);
+                if (gid == cptr.ldI32o2(curr, i, 8, $bucket_map)) {
+                    cptr.stI32(nidp, cptr.ldI32o2(curr, i, 8, $bucket_map + 4));
                     return 1;
                 }
         }
@@ -1880,7 +1877,7 @@ export function lookup_id_mapping(gid, nidp) {
 function reset_oattached_mids(ghostly) {
     let otmp;
     let oldid;
-    let nid = cptr.box(0, "u32");
+    let nid = cptr.box(0);
 
     for (
         otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist);
@@ -1891,16 +1888,10 @@ function reset_oattached_mids(ghostly) {
             let mtmp = (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst));
 
             cptr.stI32o(mtmp, $monst_m_id, 0);
-            cptr.stBits(
-                cptr.add(mtmp, $monst_mpeaceful),
-                1,
-                1,
-                0,
-                cptr.st1o(mtmp, $monst_mtame, 0) >>> 0
-            );  /* pet's owner died! */
+            cptr.stI32o(mtmp, $monst_mpeaceful, cptr.st1o(mtmp, $monst_mtame, 0));  /* pet's owner died! */
         }
         if (ghostly && has_omid(otmp)) {
-            oldid = (cptr.ldI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid) >>> 0);
+            oldid = (cptr.ldI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid));
             if (lookup_id_mapping(oldid, nid))
                 cptr.stI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid, nid.v);
             else

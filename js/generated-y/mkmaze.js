@@ -127,9 +127,11 @@ const $NHFILE_mode = FLD.NHFILE_mode, $NhRegion_player_flags = FLD.NhRegion_play
       $objclass_oc_class = FLD.objclass_oc_class, $objclass_oc_prob = FLD.objclass_oc_prob,
       $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
       $permonst_mresists = FLD.permonst_mresists, $prop_intrinsic = FLD.prop_intrinsic,
-      $rm_candig = FLD.rm_candig, $rm_flags = FLD.rm_flags, $rm_lit = FLD.rm_lit,
-      $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $s_level_dlevel = FLD.s_level_dlevel,
-      $s_level_flags = FLD.s_level_flags, $s_level_rndlevs = FLD.s_level_rndlevs,
+      $rm_candig = FLD.rm_candig, $rm_edge = FLD.rm_edge, $rm_flags = FLD.rm_flags,
+      $rm_horizontal = FLD.rm_horizontal, $rm_lit = FLD.rm_lit, $rm_roomno = FLD.rm_roomno,
+      $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $rm_waslit = FLD.rm_waslit,
+      $s_level_dlevel = FLD.s_level_dlevel, $s_level_flags = FLD.s_level_flags,
+      $s_level_rndlevs = FLD.s_level_rndlevs,
       $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
       $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_mkroom = FLD.sizeof_mkroom,
       $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
@@ -268,18 +270,13 @@ export function* set_levltyp(x, y, newtyp) {
         /* hack for secret doors in garden theme rooms */
         if (oldtyp == NHC.SDOOR && newtyp == NHC.AIR) {
             /* levl[][].typ stays SDOOR rather than change to AIR */
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_candig
-                ),
-                7,
-                1,
-                0,
+            cptr.stI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_candig,
                 1
             );
             return 1;
@@ -304,22 +301,13 @@ export function* set_levltyp(x, y, newtyp) {
              */
 
             if (IS_LAVA(newtyp))
-                cptr.stBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_lit
-                    ),
-                    6,
-                    1,
-                    0,
+                cptr.stI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_lit,
                     1
                 );
             if (was_ice && newtyp != NHC.ICE) {
@@ -356,19 +344,14 @@ export function* set_levltyp_lit(x, y, typ, lit) {
             else if (lit == -1)
                 lit = schar(rn2(2));
 
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_lit
-                ),
-                6,
-                1,
-                0,
-                lit >>> 0
+            cptr.stI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_lit,
+                lit
             );
         }
     }
@@ -449,8 +432,8 @@ function* wall_cleanup(x1, y1, x2, y2) {
         (yield* panic(__s_wall_cleanup_bad_bounds_d_d_to_d_d, x1, y1, x2, y2));
 
     /* change walls surrounded by rock to rock. */
-    for (x = x1; x <= x2; x = i16(x + 1))
-        for (y = y1; y <= y2; y = i16(y + 1)) {
+    for (x = x1; x <= x2; x++)
+        for (y = y1; y <= y2; y++) {
             if (((x) >= (cptr.ldI16o(gb, $instance_globals_b_bughack)) &&
                     (x) <= (cptr.ldI16o(gb, $instance_globals_b_bughack + 4)) &&
                     (y) >= (cptr.ldI16o(gb, $instance_globals_b_bughack + 2)) &&
@@ -497,22 +480,27 @@ cptr.stI16o(__static_fix_wall_spines_spine_array, 30, NHC.CROSSWALL); /** C ref:
 
 /** C ref: mkmaze.c:229 — @param {CInt} x1 @param {CInt} y1 @param {CInt} x2 @param {CInt} y2 */
 export function* fix_wall_spines(x1, y1, x2, y2) {
-    let __r1, __r2, __r3, __r4, __r5, __r6, __r7, __r8;
     let type;
     let x;
     let y;
     let lev;
     let loc_f;
     let bits;
-    let locale = cptr.alloc(3 * 12);  /* rock or wall status surrounding positions */
+    let locale = (function () {
+        const flat = new Uint8Array(3 * 3 * 4);
+        const a = [];
+        for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 3 * 4, (r + 1) * 3 * 4));
+        a.buf = flat;
+        return a;
+    })();  /* rock or wall status surrounding positions */
 
     /* sanity check on incoming variables */
     if (x1 < 0 || x2 >= NHM.COLNO || x1 > x2 || y1 < 0 || y2 >= NHM.ROWNO || y1 > y2)
         (yield* panic(__s_wall_extends_bad_bounds_d_d_to_d_d, x1, y1, x2, y2));
 
     /* set the correct wall type. */
-    for (x = x1; x <= x2; x = i16(x + 1))
-        for (y = y1; y <= y2; y = i16(y + 1)) {
+    for (x = x1; x <= x2; x++)
+        for (y = y1; y <= y2; y++) {
             lev = cptr.add(
                 cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
                 y,
@@ -529,34 +517,42 @@ export function* fix_wall_spines(x1, y1, x2, y2) {
                 (y) <= (cptr.ldI16o(gb, $instance_globals_b_bughack + 6)))
                     ? iswall
                     : iswall_or_stone;
-            (
-                __r1 = (yield* Y.icall((loc_f)(i16(((x - 1) | 0)), i16(((y - 1) | 0))))),
-                cptr.stI32o3(locale, 0, 12, 0, 4, 0, __r1)
+            cptr.stI32o(
+                cptr.decay(locale[0]),
+                0,
+                (yield* Y.icall((loc_f)(i16(((x - 1) | 0)), i16(((y - 1) | 0))))),
+                4
             );
-            (__r2 = (yield* Y.icall((loc_f)(x, i16(((y - 1) | 0))))), cptr.stI32o3(locale, 1, 12, 0, 4, 0, __r2));
-            (
-                __r3 = (yield* Y.icall((loc_f)(i16(((x + 1) | 0)), i16(((y - 1) | 0))))),
-                cptr.stI32o3(locale, 2, 12, 0, 4, 0, __r3)
+            cptr.stI32o(cptr.decay(locale[1]), 0, (yield* Y.icall((loc_f)(x, i16(((y - 1) | 0))))), 4);
+            cptr.stI32o(
+                cptr.decay(locale[2]),
+                0,
+                (yield* Y.icall((loc_f)(i16(((x + 1) | 0)), i16(((y - 1) | 0))))),
+                4
             );
 
-            (__r4 = (yield* Y.icall((loc_f)(i16(((x - 1) | 0)), y))), cptr.stI32o3(locale, 0, 12, 1, 4, 0, __r4));
-            (__r5 = (yield* Y.icall((loc_f)(i16(((x + 1) | 0)), y))), cptr.stI32o3(locale, 2, 12, 1, 4, 0, __r5));
+            cptr.stI32o(cptr.decay(locale[0]), 1, (yield* Y.icall((loc_f)(i16(((x - 1) | 0)), y))), 4);
+            cptr.stI32o(cptr.decay(locale[2]), 1, (yield* Y.icall((loc_f)(i16(((x + 1) | 0)), y))), 4);
 
-            (
-                __r6 = (yield* Y.icall((loc_f)(i16(((x - 1) | 0)), i16(((y + 1) | 0))))),
-                cptr.stI32o3(locale, 0, 12, 2, 4, 0, __r6)
+            cptr.stI32o(
+                cptr.decay(locale[0]),
+                2,
+                (yield* Y.icall((loc_f)(i16(((x - 1) | 0)), i16(((y + 1) | 0))))),
+                4
             );
-            (__r7 = (yield* Y.icall((loc_f)(x, i16(((y + 1) | 0))))), cptr.stI32o3(locale, 1, 12, 2, 4, 0, __r7));
-            (
-                __r8 = (yield* Y.icall((loc_f)(i16(((x + 1) | 0)), i16(((y + 1) | 0))))),
-                cptr.stI32o3(locale, 2, 12, 2, 4, 0, __r8)
+            cptr.stI32o(cptr.decay(locale[1]), 2, (yield* Y.icall((loc_f)(x, i16(((y + 1) | 0))))), 4);
+            cptr.stI32o(
+                cptr.decay(locale[2]),
+                2,
+                (yield* Y.icall((loc_f)(i16(((x + 1) | 0)), i16(((y + 1) | 0))))),
+                4
             );
 
             /* determine if wall should extend to each direction NSEW */
-            bits = (extend_spine(locale, iswall(x, i16(((y - 1) | 0))), 0, -1) << 3) |
-                    (extend_spine(locale, iswall(x, i16(((y + 1) | 0))), 0, 1) << 2) |
-                    (extend_spine(locale, iswall(i16(((x + 1) | 0)), y), 1, 0) << 1) |
-                    extend_spine(locale, iswall(i16(((x - 1) | 0)), y), -1, 0);
+            bits = (extend_spine(cptr.decay(locale), iswall(x, i16(((y - 1) | 0))), 0, -1) << 3) |
+                    (extend_spine(cptr.decay(locale), iswall(x, i16(((y + 1) | 0))), 0, 1) << 2) |
+                    (extend_spine(cptr.decay(locale), iswall(i16(((x + 1) | 0)), y), 1, 0) << 1) |
+                    extend_spine(cptr.decay(locale), iswall(i16(((x - 1) | 0)), y), -1, 0);
 
             /* don't change typ if wall is free-standing */
             if (bits)
@@ -579,16 +575,16 @@ function* okay(x, y, dir) {
     {
         switch (dir) {
             case 0:
-                (y) = i16((y) + -1);
+                --(y);
                 break;
             case 1:
-                (x) = i16((x) + 1);
+                (x)++;
                 break;
             case 2:
-                (y) = i16((y) + 1);
+                (y)++;
                 break;
             case 3:
-                (x) = i16((x) + -1);
+                --(x);
                 break;
             default:
                 (yield* panic(__s_mz_move_bad_direction_d, dir));
@@ -597,16 +593,16 @@ function* okay(x, y, dir) {
     {
         switch (dir) {
             case 0:
-                (y) = i16((y) + -1);
+                --(y);
                 break;
             case 1:
-                (x) = i16((x) + 1);
+                (x)++;
                 break;
             case 2:
-                (y) = i16((y) + 1);
+                (y)++;
                 break;
             case 3:
-                (x) = i16((x) + -1);
+                --(x);
                 break;
             default:
                 (yield* panic(__s_mz_move_bad_direction_d, dir));
@@ -685,15 +681,11 @@ export function bad_location(x, y, nlx, nly, nhx, nhy) {
             $instance_globals_saved_l_level + $rm_typ
         ) ==
             NHC.CORR &&
-            cptr.ldBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                ),
-                0,
-                1,
-                0
-            ) |
+            (cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+            ) &
+                1) |
                 0) ||
             cptr.ld1so3(
                 svl,
@@ -776,8 +768,8 @@ export function* place_lregion(lx, ly, hx, hy, nlx, nly, nhx, nhy, rtype, lev) {
 
     /* then a deterministic one */
 
-    for (x = lx; x <= hx; x = i16(x + 1))
-        for (y = ly; y <= hy; y = i16(y + 1))
+    for (x = lx; x <= hx; x++)
+        for (y = ly; y <= hy; y++)
             if ((yield* put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, 1, lev)))
                 return;
 
@@ -809,7 +801,7 @@ function* put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev) {
                It might still fail if there's a dungeon feature here. */
             let t = t_at(x, y);
 
-            if (t && !undestroyable_trap(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0))) {
+            if (t && !undestroyable_trap((cptr.ldI32o(t, $trap_ttyp) & 31))) {
                 if (((mtmp = (cptr.ldPtro3(
                     svl,
                     x,
@@ -819,8 +811,8 @@ function* put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev) {
                     $instance_globals_saved_l_level + $dlevel_t_monsters
                 ))) !==
                     null) &&
-                        cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0)
-                    cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
+                        (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
+                    cptr.stI32o(mtmp, $monst_mtrapped, 0);
                 (yield* deltrap(t));
             }
             if (bad_location(x, y, nlx, nly, nhx, nhy) || is_exclusion_zone(rtype, x, y))
@@ -889,19 +881,15 @@ function* baalz_fixup() {
     /* find low and high x for to-be-wallified portion of level */
     y = 10;
     for (lastx = (x = 0); x < NHM.COLNO; ++x)
-        if (((cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0
-        ) |
+        if ((((cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) &
+            31) |
             0) &
             NHM.W_NONDIGGABLE) !=
                 0) {
@@ -917,19 +905,15 @@ function* baalz_fixup() {
     /* find low and high y for to-be-wallified portion of level */
     x = cptr.ldI16o(gb, $instance_globals_b_bughack);
     for (lasty = (y = 0); y < NHM.ROWNO; ++y)
-        if (((cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0
-        ) |
+        if ((((cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) &
+            31) |
             0) &
             NHM.W_NONDIGGABLE) !=
                 0) {
@@ -996,188 +980,96 @@ function* baalz_fixup() {
                     NHC.IRONBARS) {
                 /* novelty effect; allowing digging in front of 'eyes' */
                 if (isok(i16(((x - 1) | 0)), i16(y)) &&
-                        ((cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        (x - 1) | 0,
-                                        $sizeof_rm_x21
-                                    ),
-                                    y,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
-                        ) |
+                        (((cptr.ldI32o3(
+                            svl,
+                            (x - 1) | 0,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) &
+                            31) |
                             0) &
                             NHM.W_NONDIGGABLE) !=
                             0) {
-                    cptr.stBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    (x - 1) | 0,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0,
-                        (cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        (x - 1) | 0,
-                                        $sizeof_rm_x21
-                                    ),
-                                    y,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
-                        ) &
-                            4294967287) >>> 0
+                    cptr.stI32o3(
+                        svl,
+                        (x - 1) | 0,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags,
+                        cptr.ldI32o3(
+                            svl,
+                            (x - 1) | 0,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) & -9
                     );
                     if (isok(i16(((x - 2) | 0)), i16(y)))
-                        cptr.stBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        (x - 2) | 0,
-                                        $sizeof_rm_x21
-                                    ),
-                                    y,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0,
-                            (cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(svl, $instance_globals_saved_l_level),
-                                            (x - 2) | 0,
-                                            $sizeof_rm_x21
-                                        ),
-                                        y,
-                                        $sizeof_rm
-                                    ),
-                                    $rm_flags
-                                ),
-                                0,
-                                5,
-                                0
-                            ) &
-                                4294967287) >>> 0
+                        cptr.stI32o3(
+                            svl,
+                            (x - 2) | 0,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags,
+                            cptr.ldI32o3(
+                                svl,
+                                (x - 2) | 0,
+                                $sizeof_rm_x21,
+                                y,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) & -9
                         );
                 } else if (isok(i16(((x + 1) | 0)), i16(y)) &&
-                        ((cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        (x + 1) | 0,
-                                        $sizeof_rm_x21
-                                    ),
-                                    y,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
-                        ) |
+                        (((cptr.ldI32o3(
+                            svl,
+                            (x + 1) | 0,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) &
+                            31) |
                             0) &
                             NHM.W_NONDIGGABLE) !=
                             0) {
-                    cptr.stBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    (x + 1) | 0,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0,
-                        (cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        (x + 1) | 0,
-                                        $sizeof_rm_x21
-                                    ),
-                                    y,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
-                        ) &
-                            4294967287) >>> 0
+                    cptr.stI32o3(
+                        svl,
+                        (x + 1) | 0,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags,
+                        cptr.ldI32o3(
+                            svl,
+                            (x + 1) | 0,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) & -9
                     );
                     if (isok(i16(((x + 2) | 0)), i16(y)))
-                        cptr.stBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        (x + 2) | 0,
-                                        $sizeof_rm_x21
-                                    ),
-                                    y,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0,
-                            (cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(svl, $instance_globals_saved_l_level),
-                                            (x + 2) | 0,
-                                            $sizeof_rm_x21
-                                        ),
-                                        y,
-                                        $sizeof_rm
-                                    ),
-                                    $rm_flags
-                                ),
-                                0,
-                                5,
-                                0
-                            ) &
-                                4294967287) >>> 0
+                        cptr.stI32o3(
+                            svl,
+                            (x + 2) | 0,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags,
+                            cptr.ldI32o3(
+                                svl,
+                                (x + 2) | 0,
+                                $sizeof_rm_x21,
+                                y,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) & -9
                         );
                 }
             }
@@ -1406,14 +1298,9 @@ export function* fixup_special() {
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
                     )
                 )))) {
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-            ),
-            4,
-            1,
-            0,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory,
             0
         );
         /* water level is an odd beast - it has to be set up
@@ -1620,14 +1507,9 @@ export function* fixup_special() {
     } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) &&
             In_quest(cptr.add(u, $you_uz))) {
         /* less chance for undead corpses (lured from lower morgues) */
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
-            ),
-            6,
-            1,
-            0,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard,
             1
         );
     } else if ((((cptr.ldI16o(
@@ -1648,14 +1530,9 @@ export function* fixup_special() {
                     $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
                 )
             )))) {
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
-            ),
-            6,
-            1,
-            0,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard,
             1
         );
     } else if (on_level(
@@ -1670,12 +1547,10 @@ export function* fixup_special() {
     }
 
     if ((sp = Is_special(cptr.add(u, $you_uz))) !== null &&
-            cptr.ldBits(cptr.add(sp, $s_level_flags), 0, 1, 0) | 0)
-        cptr.stBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town),
-            3,
-            1,
-            0,
+            (cptr.ldI32o(sp, $s_level_flags) & 1) | 0)
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town,
             1
         );
 
@@ -1771,7 +1646,6 @@ function* shiny_orc_stuff(mtmp) {
 
 /** C ref: mkmaze.c:780 — @param {CInt} otyp @param {CPtr<char>} gang */
 function* migr_booty_item(otyp, gang) {
-    let __r9;
     let otmp;
 
     otmp = (yield* mksobj_migr_to_species(otyp, NHM.M2_ORC, 1, 0));
@@ -1781,10 +1655,7 @@ function* migr_booty_item(otyp, gang) {
         if (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_class) == NHC.FOOD_CLASS) {
             if (otyp == NHC.SLIME_MOLD)
                 cptr.st1o(otmp, $obj_spe, schar((yield* fruitadd(cptr.ldPtro(orcfruit, rn2(2), 8), null))));
-            (
-                __r9 = BigInt(rn2(3)),
-                cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + __r9)
-            );
+            cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt(rn2(3)));
             cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
         }
     }
@@ -1841,7 +1712,7 @@ function* stolen_booty() {
     mtmp = (yield* makemon(cptr.add(mons, NHC.PM_ORC_CAPTAIN, $sizeof_permonst), 0, 0, NHM.MM_NONAME));
     if (mtmp) {
         mtmp = (yield* christen_monst(mtmp, upstart(gang)));
-        cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
+        cptr.stI32o(mtmp, $monst_mpeaceful, 0);
         set_malign(mtmp);
         (yield* shiny_orc_stuff(mtmp));
         (yield* migrate_orc(mtmp, 1n));
@@ -1914,8 +1785,8 @@ function* maze_remove_deadends(typ) {
     let dy2;
 
     cptr.st1o(cptr.decay(dirok), 0, 0, 1);  /* lint suppression */
-    for (x = 2; x < cptr.ldI32(gx); x = i16(x + 1))
-        for (y = 2; y < cptr.ldI32(gy); y = i16(y + 1))
+    for (x = 2; x < cptr.ldI32(gx); x++)
+        for (y = 2; y < cptr.ldI32(gy); y++)
             if (((cptr.ld1so3(
                 svl,
                 x,
@@ -1928,7 +1799,7 @@ function* maze_remove_deadends(typ) {
                     (x % 2) &&
                     (y % 2)) {
                 idx = (idx2 = 0);
-                for (dir = 0; dir < 4; dir = i16(dir + 1)) {
+                for (dir = 0; dir < 4; dir++) {
                     /* note: mz_move() is a macro which modifies
                        one of its first two parameters */
                     dx = (dx2 = x);
@@ -1936,38 +1807,38 @@ function* maze_remove_deadends(typ) {
                     {
                         switch (dir) {
                             case 0:
-                                (dy) = i16((dy) + -1);
+                                --(dy);
                                 break;
                             case 1:
-                                (dx) = i16((dx) + 1);
+                                (dx)++;
                                 break;
                             case 2:
-                                (dy) = i16((dy) + 1);
+                                (dy)++;
                                 break;
                             case 3:
-                                (dx) = i16((dx) + -1);
+                                --(dx);
                                 break;
                             default:
                                 (yield* panic(__s_mz_move_bad_direction_d, dir));
                         }
                     }
                     if (!maze_inbounds(dx, dy)) {
-                        idx2 = i16(idx2 + 1);
+                        idx2++;
                         continue;
                     }
                     {
                         switch (dir) {
                             case 0:
-                                (dy2) = i16((dy2) + -1);
+                                --(dy2);
                                 break;
                             case 1:
-                                (dx2) = i16((dx2) + 1);
+                                (dx2)++;
                                 break;
                             case 2:
-                                (dy2) = i16((dy2) + 1);
+                                (dy2)++;
                                 break;
                             case 3:
-                                (dx2) = i16((dx2) + -1);
+                                --(dx2);
                                 break;
                             default:
                                 (yield* panic(__s_mz_move_bad_direction_d, dir));
@@ -1976,23 +1847,23 @@ function* maze_remove_deadends(typ) {
                     {
                         switch (dir) {
                             case 0:
-                                (dy2) = i16((dy2) + -1);
+                                --(dy2);
                                 break;
                             case 1:
-                                (dx2) = i16((dx2) + 1);
+                                (dx2)++;
                                 break;
                             case 2:
-                                (dy2) = i16((dy2) + 1);
+                                (dy2)++;
                                 break;
                             case 3:
-                                (dx2) = i16((dx2) + -1);
+                                --(dx2);
                                 break;
                             default:
                                 (yield* panic(__s_mz_move_bad_direction_d, dir));
                         }
                     }
                     if (!maze_inbounds(dx2, dy2)) {
-                        idx2 = i16(idx2 + 1);
+                        idx2++;
                         continue;
                     }
                     if (!((cptr.ld1so3(
@@ -2013,13 +1884,8 @@ function* maze_remove_deadends(typ) {
                                 $instance_globals_saved_l_level + $rm_typ
                             )) >=
                                 NHC.DOOR)) {
-                        cptr.st1o(
-                            cptr.decay(dirok),
-                            (yield* Y.icall(((old_) => (idx = i16(old_ + 1), old_))(idx))),
-                            schar(dir),
-                            1
-                        );
-                        idx2 = i16(idx2 + 1);
+                        cptr.st1o(cptr.decay(dirok), idx++, schar(dir), 1);
+                        idx2++;
                     }
                 }
                 if (idx2 >= 3 && idx > 0) {
@@ -2029,16 +1895,16 @@ function* maze_remove_deadends(typ) {
                     {
                         switch (dir) {
                             case 0:
-                                (dy) = i16((dy) + -1);
+                                --(dy);
                                 break;
                             case 1:
-                                (dx) = i16((dx) + 1);
+                                (dx)++;
                                 break;
                             case 2:
-                                (dy) = i16((dy) + 1);
+                                (dy)++;
                                 break;
                             case 3:
-                                (dx) = i16((dx) + -1);
+                                --(dx);
                                 break;
                             default:
                                 (yield* panic(__s_mz_move_bad_direction_d, dir));
@@ -2091,14 +1957,12 @@ export function* create_maze(corrwid, wallthick, rmdeadends) {
     rdx = ((cptr.ldI32(gx) / scale) | 0);
     rdy = ((cptr.ldI32(gy) / scale) | 0);
 
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-        5,
-        1,
-        0
-    ))
-        for (x = 2; x < (Math.imul(rdx, 2)); x = i16(x + 1))
-            for (y = 2; y < (Math.imul(rdy, 2)); y = i16(y + 1))
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+    ) & 1))
+        for (x = 2; x < (Math.imul(rdx, 2)); x++)
+            for (y = 2; y < (Math.imul(rdy, 2)); y++)
                 cptr.st1o3(
                     svl,
                     x,
@@ -2109,8 +1973,8 @@ export function* create_maze(corrwid, wallthick, rmdeadends) {
                     NHC.STONE
                 );
     else
-        for (x = 2; x <= (Math.imul(rdx, 2)); x = i16(x + 1))
-            for (y = 2; y <= (Math.imul(rdy, 2)); y = i16(y + 1))
+        for (x = 2; x <= (Math.imul(rdx, 2)); x++)
+            for (y = 2; y <= (Math.imul(rdy, 2)); y++)
                 cptr.st1o3(
                     svl,
                     x,
@@ -2130,12 +1994,10 @@ export function* create_maze(corrwid, wallthick, rmdeadends) {
     (yield* walkfrom(i16(cptr.ldI16(mm)), i16(cptr.ldI16o(mm, $nhcoord_y)), 0));
 
     if (rmdeadends)
-        (yield* maze_remove_deadends(i16(((cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-            5,
-            1,
-            0
-        )) | 0
+        (yield* maze_remove_deadends(i16((((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+        ) & 1)) | 0
                 ? NHC.CORR
                 : NHC.ROOM))));
 
@@ -2145,7 +2007,13 @@ export function* create_maze(corrwid, wallthick, rmdeadends) {
 
     /* scale maze up if needed */
     if (scale > 2) {
-        let tmpmap = cptr.alloc(80 * 21);
+        let tmpmap = (function () {
+            const flat = new Uint8Array(80 * (21 * 1));
+            const a = [];
+            for (let r = 0; r < 80; r++) a.push(flat.subarray(r * (21 * 1), (r + 1) * (21 * 1)));
+            a.buf = flat;
+            return a;
+        })();
         let mx;
         let my;
         let dx;
@@ -2154,15 +2022,11 @@ export function* create_maze(corrwid, wallthick, rmdeadends) {
         let ry = 1;
 
         /* back up the existing smaller maze */
-        for (x = 1; x < cptr.ldI32(gx); x = i16(x + 1))
-            for (y = 1; y < cptr.ldI32(gy); y = i16(y + 1)) {
-                cptr.st1o3(
-                    tmpmap,
-                    x,
-                    21,
+        for (x = 1; x < cptr.ldI32(gx); x++)
+            for (y = 1; y < cptr.ldI32(gy); y++) {
+                cptr.st1o(
+                    cptr.decay(tmpmap[x]),
                     y,
-                    1,
-                    0,
                     cptr.ld1so3(
                         svl,
                         x,
@@ -2170,7 +2034,8 @@ export function* create_maze(corrwid, wallthick, rmdeadends) {
                         y,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_typ
-                    )
+                    ),
+                    1
                 );
             }
 
@@ -2192,14 +2057,14 @@ export function* create_maze(corrwid, wallthick, rmdeadends) {
                             (ry + dy) | 0,
                             $sizeof_rm,
                             $instance_globals_saved_l_level + $rm_typ,
-                            cptr.ld1so3(tmpmap, x, 21, y, 1, 0)
+                            cptr.ld1so(cptr.decay(tmpmap[x]), y, 1)
                         );
                     }
                 ry = (ry + my) | 0;
-                y = i16(y + 1);
+                y++;
             }
             rx = (rx + mx) | 0;
-            x = i16(x + 1);
+            x++;
         }
 
     }
@@ -2405,18 +2270,14 @@ export function* makemaz(s) {
         (yield* impossible(__s_couldn_t_load_s_making_a_maze, cptr.decay(protofile)));
     }
 
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev),
-        0,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev,
         1
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-        5,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze,
         (!rn2(3)) >>> 0
     );
 
@@ -2426,12 +2287,10 @@ export function* makemaz(s) {
         (yield* create_maze(1, 1, 0));
     }
 
-    if (!cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-        5,
-        1,
-        0
-    ))
+    if (!(cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+    ) & 1))
         (yield* wallification(2, 2, i16(cptr.ldI32(gx)), i16(cptr.ldI32(gy))));
 
     (yield* mazexy(mm));
@@ -2458,12 +2317,10 @@ export function* walkfrom(x, y, typ) {
     let dirs = cptr.alloc(4 * 4);
 
     if (!typ) {
-        if (cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-            5,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+        ) & 1))
             typ = NHC.CORR;
         else
             typ = NHC.ROOM;
@@ -2488,18 +2345,13 @@ export function* walkfrom(x, y, typ) {
             $instance_globals_saved_l_level + $rm_typ,
             typ
         );
-        cptr.stBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0,
+        cptr.stI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
             0
         );
     }
@@ -2515,16 +2367,16 @@ export function* walkfrom(x, y, typ) {
         {
             switch (dir) {
                 case 0:
-                    (y) = i16((y) + -1);
+                    --(y);
                     break;
                 case 1:
-                    (x) = i16((x) + 1);
+                    (x)++;
                     break;
                 case 2:
-                    (y) = i16((y) + 1);
+                    (y)++;
                     break;
                 case 3:
-                    (x) = i16((x) + -1);
+                    --(x);
                     break;
                 default:
                     (yield* panic(__s_mz_move_bad_direction_d, dir));
@@ -2542,16 +2394,16 @@ export function* walkfrom(x, y, typ) {
         {
             switch (dir) {
                 case 0:
-                    (y) = i16((y) + -1);
+                    --(y);
                     break;
                 case 1:
-                    (x) = i16((x) + 1);
+                    (x)++;
                     break;
                 case 2:
-                    (y) = i16((y) + 1);
+                    (y)++;
                     break;
                 case 3:
-                    (x) = i16((x) + -1);
+                    --(x);
                     break;
                 default:
                     (yield* panic(__s_mz_move_bad_direction_d, dir));
@@ -2567,12 +2419,10 @@ export function* walkfrom(x, y, typ) {
 export function* mazexy(cc) {
     let x;
     let y;
-    let allowedtyp = (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-        5,
-        1,
-        0
-    ) | 0
+    let allowedtyp = ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+    ) & 1) | 0
             ? NHC.CORR
             : NHC.ROOM);
     let cpt = 0;
@@ -2602,8 +2452,8 @@ export function* mazexy(cc) {
         }
     } while (++cpt < 100);
     /* 100 random attempts failed; systematically try every possibility */
-    for (x = 1; x <= cptr.ldI32(gx); x = i16(x + 1))
-        for (y = 1; y <= cptr.ldI32(gy); y = i16(y + 1))
+    for (x = 1; x <= cptr.ldI32(gx); x++)
+        for (y = 1; y <= cptr.ldI32(gy); y++)
             if (cptr.ld1so3(
                 svl,
                 x,
@@ -2643,14 +2493,14 @@ export function get_level_extends(left, top, right, bottom) {
     let ymax;
 
     found = (nonwall = 0);
-    for (xmin = 0; !found && xmin <= NHM.COLNO; xmin = i16(xmin + 1)) {
+    for (xmin = 0; !found && xmin <= NHM.COLNO; xmin++) {
         lev = cptr.add(
             cptr.add(cptr.add(svl, $instance_globals_saved_l_level), xmin, $sizeof_rm_x21),
             0,
             $sizeof_rm
         );
-        for (y = 0; y <= 20; y = i16(y + 1), lev = cptr.add(lev, 1, 8)) {
-            typ = cptr.ld1so(lev, $rm_typ) >>> 0;
+        for (y = 0; y <= 20; y++, lev = cptr.add(lev, 1, 36)) {
+            typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
                 if (!IS_WALL(typ))
@@ -2660,29 +2510,24 @@ export function get_level_extends(left, top, right, bottom) {
     }
     xmin = i16(xmin -
             ((nonwall ||
-                !cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                    ),
-                    0,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                ) & 1))
                 ? 2
                 : 1));
     if (xmin < 0)
         xmin = 0;
 
     found = (nonwall = 0);
-    for (xmax = 79; !found && xmax >= 0; xmax = i16(xmax + -1)) {
+    for (xmax = 79; !found && xmax >= 0; xmax--) {
         lev = cptr.add(
             cptr.add(cptr.add(svl, $instance_globals_saved_l_level), xmax, $sizeof_rm_x21),
             0,
             $sizeof_rm
         );
-        for (y = 0; y <= 20; y = i16(y + 1), lev = cptr.add(lev, 1, 8)) {
-            typ = cptr.ld1so(lev, $rm_typ) >>> 0;
+        for (y = 0; y <= 20; y++, lev = cptr.add(lev, 1, 36)) {
+            typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
                 if (!IS_WALL(typ))
@@ -2692,29 +2537,24 @@ export function get_level_extends(left, top, right, bottom) {
     }
     xmax = i16(xmax +
             ((nonwall ||
-                !cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                    ),
-                    0,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                ) & 1))
                 ? 2
                 : 1));
     if (xmax >= NHM.COLNO)
         xmax = 79;
 
     found = (nonwall = 0);
-    for (ymin = 0; !found && ymin <= NHM.ROWNO; ymin = i16(ymin + 1)) {
+    for (ymin = 0; !found && ymin <= NHM.ROWNO; ymin++) {
         lev = cptr.add(
             cptr.add(cptr.add(svl, $instance_globals_saved_l_level), xmin, $sizeof_rm_x21),
             ymin,
             $sizeof_rm
         );
-        for (x = xmin; x <= xmax; x = i16(x + 1), lev = cptr.add(lev, NHM.ROWNO, 8)) {
-            typ = cptr.ld1so(lev, $rm_typ) >>> 0;
+        for (x = xmin; x <= xmax; x++, lev = cptr.add(lev, NHM.ROWNO, 36)) {
+            typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
                 if (!IS_WALL(typ))
@@ -2724,27 +2564,22 @@ export function get_level_extends(left, top, right, bottom) {
     }
     ymin = i16(ymin -
             ((nonwall ||
-                !cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                    ),
-                    0,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                ) & 1))
                 ? 2
                 : 1));
 
     found = (nonwall = 0);
-    for (ymax = 20; !found && ymax >= 0; ymax = i16(ymax + -1)) {
+    for (ymax = 20; !found && ymax >= 0; ymax--) {
         lev = cptr.add(
             cptr.add(cptr.add(svl, $instance_globals_saved_l_level), xmin, $sizeof_rm_x21),
             ymax,
             $sizeof_rm
         );
-        for (x = xmin; x <= xmax; x = i16(x + 1), lev = cptr.add(lev, NHM.ROWNO, 8)) {
-            typ = cptr.ld1so(lev, $rm_typ) >>> 0;
+        for (x = xmin; x <= xmax; x++, lev = cptr.add(lev, NHM.ROWNO, 36)) {
+            typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
                 if (!IS_WALL(typ))
@@ -2754,15 +2589,10 @@ export function get_level_extends(left, top, right, bottom) {
     }
     ymax = i16(ymax +
             ((nonwall ||
-                !cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                    ),
-                    0,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                ) & 1))
                 ? 2
                 : 1));
 
@@ -2787,10 +2617,10 @@ export function get_level_extends(left, top, right, bottom) {
 export function bound_digging() {
     let x;
     let y;
-    let xmin = cptr.box(0, "i16");
-    let xmax = cptr.box(0, "i16");
-    let ymin = cptr.box(0, "i16");
-    let ymax = cptr.box(0, "i16");
+    let xmin = cptr.box(0);
+    let xmax = cptr.box(0);
+    let ymin = cptr.box(0);
+    let ymax = cptr.box(0);
 
     if ((((cptr.ldI16o(
         (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)),
@@ -2811,8 +2641,8 @@ export function bound_digging() {
 
     get_level_extends(xmin, ymin, xmax, ymax);
 
-    for (x = 0; x < NHM.COLNO; x = i16(x + 1))
-        for (y = 0; y < NHM.ROWNO; y = i16(y + 1))
+    for (x = 0; x < NHM.COLNO; x++)
+        for (y = 0; y < NHM.ROWNO; y++)
             if (((cptr.ld1so3(
                 svl,
                 x,
@@ -2824,77 +2654,41 @@ export function bound_digging() {
                     NHC.DBWALL)) {
                 /* undiggable walls at edges, ... */
                 if (y <= ymin.v || y >= ymax.v || x <= xmin.v || x >= xmax.v)
-                    cptr.stBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0,
-                        (cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        x,
-                                        $sizeof_rm_x21
-                                    ),
-                                    y,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
+                    cptr.stI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags,
+                        cptr.ldI32o3(
+                            svl,
+                            x,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
                         ) |
-                            8) >>> 0
+                            NHM.W_NONDIGGABLE
                     );
                 /* one tile past that, everything is also unphaseable */
                 if (y < ymin.v || y > ymax.v || x < xmin.v || x > xmax.v)
-                    cptr.stBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0,
-                        (cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        x,
-                                        $sizeof_rm_x21
-                                    ),
-                                    y,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
+                    cptr.stI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags,
+                        cptr.ldI32o3(
+                            svl,
+                            x,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
                         ) |
-                            16) >>> 0
+                            NHM.W_NONPASSWALL
                     );
             }
 }
@@ -2958,7 +2752,7 @@ export function* fumaroles() {
                     $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
                 )
             )))) {
-        nmax = i16(nmax + 1);
+        nmax++;
         sizemin = (sizemin + 5) | 0;
     }
     if (cptr.ld1so(
@@ -2966,11 +2760,11 @@ export function* fumaroles() {
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_temperature
     ) >
             0) {
-        nmax = i16(nmax + 1);
+        nmax++;
         sizemin = (sizemin + 5) | 0;
     }
 
-    for (n = nmax; n; n = i16(n + -1)) {
+    for (n = nmax; n; n--) {
         let x = i16(((rn2(76) + 3) | 0));
         let y = i16(((rn2(17) + 3) | 0));
 
@@ -2988,7 +2782,7 @@ export function* fumaroles() {
             (cptr.stI32o(
                 (r),
                 $NhRegion_player_flags,
-                (cptr.ldI32o((r), $NhRegion_player_flags) >>> 0 | NHM.REG_NOT_HEROS) >>> 0
+                cptr.ldI32o((r), $NhRegion_player_flags) | NHM.REG_NOT_HEROS
             ));
             snd = 1;
             if (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 15)
@@ -3012,13 +2806,13 @@ cptr.stI32(
 );
 cptr.st1o(__static_movebubbles_water_pos, $rm_typ, NHC.WATER);
 cptr.st1o(__static_movebubbles_water_pos, $rm_seenv, 0);
-cptr.stBits(cptr.add(__static_movebubbles_water_pos, 6), 0, 5, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_water_pos, 6), 5, 1, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_water_pos, 6), 6, 1, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_water_pos, 6), 7, 1, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_water_pos, 7), 0, 6, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_water_pos, 7), 6, 1, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_water_pos, 7), 7, 1, 0, 0);
+cptr.stI32o(__static_movebubbles_water_pos, $rm_flags, 0);
+cptr.stI32o(__static_movebubbles_water_pos, $rm_horizontal, 0);
+cptr.stI32o(__static_movebubbles_water_pos, $rm_lit, 0);
+cptr.stI32o(__static_movebubbles_water_pos, $rm_waslit, 0);
+cptr.stI32o(__static_movebubbles_water_pos, $rm_roomno, 0);
+cptr.stI32o(__static_movebubbles_water_pos, $rm_edge, 0);
+cptr.stI32o(__static_movebubbles_water_pos, $rm_candig, 0);
 let __static_movebubbles_air_pos = cptr.alloc($sizeof_rm); /** C ref: mkmaze.c:1543 — struct rm (function-static) */
 cptr.stI32(
     __static_movebubbles_air_pos,
@@ -3026,13 +2820,13 @@ cptr.stI32(
 );
 cptr.st1o(__static_movebubbles_air_pos, $rm_typ, NHC.AIR);
 cptr.st1o(__static_movebubbles_air_pos, $rm_seenv, 0);
-cptr.stBits(cptr.add(__static_movebubbles_air_pos, 6), 0, 5, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_air_pos, 6), 5, 1, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_air_pos, 6), 6, 1, 0, 1);
-cptr.stBits(cptr.add(__static_movebubbles_air_pos, 6), 7, 1, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_air_pos, 7), 0, 6, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_air_pos, 7), 6, 1, 0, 0);
-cptr.stBits(cptr.add(__static_movebubbles_air_pos, 7), 7, 1, 0, 0);
+cptr.stI32o(__static_movebubbles_air_pos, $rm_flags, 0);
+cptr.stI32o(__static_movebubbles_air_pos, $rm_horizontal, 0);
+cptr.stI32o(__static_movebubbles_air_pos, $rm_lit, 1);
+cptr.stI32o(__static_movebubbles_air_pos, $rm_waslit, 0);
+cptr.stI32o(__static_movebubbles_air_pos, $rm_roomno, 0);
+cptr.stI32o(__static_movebubbles_air_pos, $rm_edge, 0);
+cptr.stI32o(__static_movebubbles_air_pos, $rm_candig, 0);
 let __static_movebubbles_up = 0; /** C ref: mkmaze.c:1546 — signed char (function-static) */
 
 /** C ref: mkmaze.c:1539 */
@@ -3088,19 +2882,13 @@ export function* movebubbles() {
         ) {
             if (cptr.ldPtro(b, $bubble_cons))
                 (yield* panic(__s_movebubbles_cons_null));
-            for (
-                i = 0,
-                x = cptr.ldI16(b);
-                i < cptr.ld1uo2(b, 0, 1, $bubble_bm);
-                i++,
-                x = i16(x + 1)
-            )
+            for (i = 0, x = cptr.ldI16(b); i < cptr.ld1uo2(b, 0, 1, $bubble_bm); i++, x++)
                 for (
                     j = 0,
                     y = cptr.ldI16o(b, $bubble_y);
                     j < cptr.ld1uo2(b, 1, 1, $bubble_bm);
                     j++,
-                    y = i16(y + 1)
+                    y++
                 )
                     if (cptr.ld1uo2(b, (j + 2) | 0, 1, $bubble_bm) & (1 << i)) {
                         if (!isok(x, y)) {
@@ -3171,7 +2959,7 @@ export function* movebubbles() {
                             cptr.stPtr(cons, cptr.ldPtro(b, $bubble_cons));
                             cptr.stPtro(b, $bubble_cons, cons);
 
-                            if (cptr.ldBits(cptr.add(mon, $monst_wormno), 1, 5, 0))
+                            if ((cptr.ldI32o(mon, $monst_wormno) & 31))
                                 (yield* remove_worm(mon));
                             else
                                 cptr.stPtro3(
@@ -3188,7 +2976,7 @@ export function* movebubbles() {
                             cptr.stI16o(mon, $monst_mx, cptr.stI16o(mon, $monst_my, 0));
                             cptr.stI64o(mon, $monst_mstate, cptr.ldI64o(mon, $monst_mstate) | 16n);
                         }
-                        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
+                        if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
                                 ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
                             cons = (yield* alloc(24));
                             cptr.stI16o(cons, $container_x, x);
@@ -3222,7 +3010,7 @@ export function* movebubbles() {
                                 $sizeof_rm
                             ),
                             __static_movebubbles_water_pos,
-                            8
+                            36
                         );
                         (yield* block_point(x, y));
                     }
@@ -3245,8 +3033,8 @@ export function* movebubbles() {
         let xedge;
         let yedge;
 
-        for (x = 1; x <= 79; x = i16(x + 1))
-            for (y = 0; y <= 20; y = i16(y + 1)) {
+        for (x = 1; x <= 79; x++)
+            for (y = 0; y <= 20; y++) {
                 cptr.memcpy(
                     cptr.add(
                         cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
@@ -3254,7 +3042,7 @@ export function* movebubbles() {
                         $sizeof_rm
                     ),
                     __static_movebubbles_air_pos,
-                    8
+                    36
                 );
                 (yield* recalc_block_point(x, y));
                 /* all air or all cloud around the perimeter of the Air
@@ -3535,13 +3323,7 @@ function* set_wportal() {
             cptr.ldPtr(cptr.ldPtro(gw, $instance_globals_w_wportal))
         )
     )
-        if ((cptr.ldBits(
-            cptr.add(cptr.ldPtro(gw, $instance_globals_w_wportal), $trap_ttyp),
-            0,
-            5,
-            0
-        ) |
-            0) ==
+        if (((cptr.ldI32o(cptr.ldPtro(gw, $instance_globals_w_wportal), $trap_ttyp) & 31) | 0) ==
                 NHC.MAGIC_PORTAL)
             return;
     (yield* impossible(__s_set_wportal_no_portal));
@@ -3886,8 +3668,8 @@ function* setup_waterlevel() {
             : NHC.AIR;
 
     /* set unspecified terrain (stone) and hero's memory to water or air */
-    for (x = 1; x <= 79; x = i16(x + 1))
-        for (y = 0; y <= 20; y = i16(y + 1)) {
+    for (x = 1; x <= 79; x++)
+        for (y = 0; y <= 20; y++) {
             cptr.stI32o3(
                 svl,
                 x,
@@ -4177,29 +3959,23 @@ function* mv_bubble(b, dx, dy, ini) {
 
         /* bounce if we're trying to move off the border */
         if (cptr.ldI16(b) == ((cptr.ldI32(svx) + 1) | 0) && dx < 0)
-            dx = i16((-dx | 0));
+            dx = i16((-dx));
         if (((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm) - 1) | 0) ==
                 ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0) && dx > 0)
-            dx = i16((-dx | 0));
+            dx = i16((-dx));
         if (cptr.ldI16o(b, $bubble_y) == ((cptr.ldI32(svy) + 1) | 0) && dy < 0)
-            dy = i16((-dy | 0));
+            dy = i16((-dy));
         if (((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm) - 1) | 0) ==
                 ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0) && dy > 0)
-            dy = i16((-dy | 0));
+            dy = i16((-dy));
 
         cptr.stI16(b, cptr.ldI16(b) + dx);
         cptr.stI16o(b, $bubble_y, cptr.ldI16o(b, $bubble_y) + dy);
     }
 
     /* draw the bubbles */
-    for (i = 0, x = cptr.ldI16(b); i < cptr.ld1uo2(b, 0, 1, $bubble_bm); i++, x = i16(x + 1))
-        for (
-            j = 0,
-            y = cptr.ldI16o(b, $bubble_y);
-            j < cptr.ld1uo2(b, 1, 1, $bubble_bm);
-            j++,
-            y = i16(y + 1)
-        )
+    for (i = 0, x = cptr.ldI16(b); i < cptr.ld1uo2(b, 0, 1, $bubble_bm); i++, x++)
+        for (j = 0, y = cptr.ldI16o(b, $bubble_y); j < cptr.ld1uo2(b, 1, 1, $bubble_bm); j++, y++)
             if (cptr.ld1uo2(b, (j + 2) | 0, 1, $bubble_bm) & (1 << i)) {
                 if ((((cptr.ldI16o(
                     (cptr.add(
@@ -4229,22 +4005,13 @@ function* mv_bubble(b, dx, dy, ini) {
                         $instance_globals_saved_l_level + $rm_typ,
                         NHC.AIR
                     );
-                    cptr.stBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_lit
-                        ),
-                        6,
-                        1,
-                        0,
+                    cptr.stI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_lit,
                         1
                     );
                     unblock_point(x, y);
@@ -4276,22 +4043,13 @@ function* mv_bubble(b, dx, dy, ini) {
                         $instance_globals_saved_l_level + $rm_typ,
                         NHC.CLOUD
                     );
-                    cptr.stBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_lit
-                        ),
-                        6,
-                        1,
-                        0,
+                    cptr.stI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_lit,
                         1
                     );
                     (yield* block_point(x, y));
@@ -4399,14 +4157,14 @@ function* mv_bubble(b, dx, dy, ini) {
     /* boing? */
     switch (colli) {
         case 1:
-            cptr.st1o(b, $bubble_dy, schar((-cptr.ld1so(b, $bubble_dy) | 0)));
+            cptr.st1o(b, $bubble_dy, schar((-cptr.ld1so(b, $bubble_dy))));
             break;
         case 3:
-            cptr.st1o(b, $bubble_dy, schar((-cptr.ld1so(b, $bubble_dy) | 0)));
+            cptr.st1o(b, $bubble_dy, schar((-cptr.ld1so(b, $bubble_dy))));
             // @FallThrough
             ;
         case 2:
-            cptr.st1o(b, $bubble_dx, schar((-cptr.ld1so(b, $bubble_dx) | 0)));
+            cptr.st1o(b, $bubble_dx, schar((-cptr.ld1so(b, $bubble_dx))));
             break;
         default:
             /* sometimes alter direction for fun anyway

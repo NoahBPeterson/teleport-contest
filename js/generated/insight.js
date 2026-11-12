@@ -172,7 +172,8 @@ const $Race_adj = FLD.Race_adj, $Race_attrmax = FLD.Race_attrmax, $RoleName_f = 
       $u_conduct_sokocheat = FLD.u_conduct_sokocheat, $u_conduct_unvegan = FLD.u_conduct_unvegan,
       $u_conduct_weaphit = FLD.u_conduct_weaphit, $u_conduct_wisharti = FLD.u_conduct_wisharti,
       $u_conduct_wishes = FLD.u_conduct_wishes, $u_event_ascended = FLD.u_event_ascended,
-      $u_event_uhand_of_elbereth = FLD.u_event_uhand_of_elbereth,
+      $u_event_uhand_of_elbereth = FLD.u_event_uhand_of_elbereth, $u_have_bell = FLD.u_have_bell,
+      $u_have_book = FLD.u_have_book, $u_have_menorah = FLD.u_have_menorah,
       $u_realtime_start_timing = FLD.u_realtime_start_timing,
       $u_roleplay_deaf = FLD.u_roleplay_deaf, $u_roleplay_nudist = FLD.u_roleplay_nudist,
       $u_roleplay_numbones = FLD.u_roleplay_numbones,
@@ -1164,7 +1165,7 @@ function enlght_halfdmg(category, final) {
 /* is hero actively using water walking capability on water (or lava)? */
 /** C ref: insight.c:224 @returns {CInt} */
 function walking_on_water() {
-    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 || Levitation() || Flying())
+    if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 || Levitation() || Flying())
         return 0;
     return schar((((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
         cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) &&
@@ -1204,7 +1205,7 @@ export function trap_predicament(outbuf, final, wizxtra) {
 
     /* caller has verified u.utrap */
     cptr.st1(outbuf, 0);
-    switch (cptr.ldI32o(u, $you_utraptype) >>> 0) {
+    switch (cptr.ldI32o(u, $you_utraptype)) {
         case NHC.TT_BURIEDBALL:
             void cptr.strcpy(outbuf, __s_tethered_to_something_buried);
             break;
@@ -1224,18 +1225,14 @@ export function trap_predicament(outbuf, final, wizxtra) {
                 void cptr.sprintf(
                     eos(outbuf),
                     __s_in_s,
-                    an(trapname(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0, 0))
+                    an(trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0))
                 );
             break;
     }
     if (wizxtra) {
         /* curly braces: u.utrap is an escape attempt counter rather than a
            turn timer so use different ornamentation than usual parentheses */
-        void cptr.sprintf(
-            eos(outbuf),
-            __s_sp_lbrace_pct_u_rbrace,
-            cptr.ldI32o(u, $you_utrap) >>> 0
-        );
+        void cptr.sprintf(eos(outbuf), __s_sp_lbrace_pct_u_rbrace, cptr.ldI32o(u, $you_utrap));
     }
     return outbuf;
 }
@@ -1255,17 +1252,15 @@ function cause_known(propindx) {
             continue;
         if (cptr.ld1uo2(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) ==
             propindx &&
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_name_known
-                    ),
-                    0,
-                    1,
-                    0
-                ) |
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(o, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) &
+                    1) |
                     0 &&
-                cptr.ldBits(cptr.add(o, $obj_dknown), 1, 1, 0) | 0)
+                (cptr.ldI32o(o, $obj_dknown) & 1) | 0)
             return 1;
     }
     return 0;
@@ -1407,9 +1402,7 @@ export function enlightenment(mode, final) {
         256n,
         __s_s_the_s_s_attributes,
         cptr.decay(tmpbuf),
-        ((Upolyd()
-            ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
-            : cptr.ld1so(flags, $flag_female)) &&
+        ((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) &&
             cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
             ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)
             : cptr.ldPtro(gu, $instance_globals_u_urole)
@@ -1529,7 +1522,7 @@ function background_enlightenment(unused_mode, final) {
     /* note that if poly'd, we need to use u.mfemale instead of flags.female
        to access hero's saved gender-as-human/elf/&c rather than current */
     innategend = (Upolyd()
-        ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
+        ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
         : cptr.ld1so(flags, $flag_female))
             ? 1
             : 0;
@@ -1888,8 +1881,8 @@ function background_enlightenment(unused_mode, final) {
         enlght_line((__s_it), final ? (__s_was__2) : (__s_is__2), (__s_nighttime), (__s_empty));
     }
     /* other environmental factors */
-    if (cptr.ldI32o(flags, $flag_moonphase) >>> 0 == NHM.FULL_MOON ||
-            cptr.ldI32o(flags, $flag_moonphase) >>> 0 == NHM.NEW_MOON) {
+    if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ||
+            cptr.ldI32o(flags, $flag_moonphase) == NHM.NEW_MOON) {
         /* [This had "tonight" but has been changed to "in effect".
            There is a similar issue to Friday the 13th--it's the value
            at the start of the current session but that session might
@@ -1899,11 +1892,11 @@ function background_enlightenment(unused_mode, final) {
         void cptr.sprintf(
             cptr.decay(buf),
             __s_a_s_moon_in_effect_s,
-            (cptr.ldI32o(flags, $flag_moonphase) >>> 0 == NHM.FULL_MOON)
+            (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON)
                 ? __s_full
-                : ((cptr.ldI32o(flags, $flag_moonphase) >>> 0 == NHM.NEW_MOON)
+                : ((cptr.ldI32o(flags, $flag_moonphase) == NHM.NEW_MOON)
                     ? __s_new
-                    : ((cptr.ldI32o(flags, $flag_moonphase) >>> 0 < NHM.FULL_MOON)
+                    : ((cptr.ldI32o(flags, $flag_moonphase) < NHM.FULL_MOON)
                         ? __s_first_quarter
                         : __s_last_quarter)),
             final ? __s_when_your_adventure_ended : __s_empty
@@ -2204,26 +2197,25 @@ function one_characteristic(mode, final, attrindx) {
         case NHC.A_STR:
             if (uarmg.v &&
                     cptr.ldI16o(uarmg.v, $obj_otyp) == NHC.GAUNTLETS_OF_POWER &&
-                    cptr.ldBits(cptr.add(uarmg.v, $obj_cursed), 0, 1, 0) | 0)
+                    (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
                 hide_innate_value = 1;
             break;
         case NHC.A_DEX:
             break;
         case NHC.A_CON:
-            if (is_art(uwep.v, NHC.ART_OGRESMASHER) &&
-                    cptr.ldBits(cptr.add(uwep.v, $obj_cursed), 0, 1, 0) | 0)
+            if (is_art(uwep.v, NHC.ART_OGRESMASHER) && (cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0)
                 hide_innate_value = 1;
             break;
         case NHC.A_INT:
             if (uarmh.v &&
                     cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP &&
-                    cptr.ldBits(cptr.add(uarmh.v, $obj_cursed), 0, 1, 0) | 0)
+                    (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
                 hide_innate_value = 1;
             break;
         case NHC.A_WIS:
             if (uarmh.v &&
                     cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP &&
-                    cptr.ldBits(cptr.add(uarmh.v, $obj_cursed), 0, 1, 0) | 0)
+                    (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
                 hide_innate_value = 1;
             break;
         case NHC.A_CHA:
@@ -2388,7 +2380,7 @@ function status_enlightenment(mode, final) {
             ((__s_underwater)),
             ((__s_empty))
         );
-    } else if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
+    } else if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
         enlght_line(
             cptr.decay((You_)),
             final ? cptr.decay((were)) : cptr.decay((are)),
@@ -2413,9 +2405,7 @@ function status_enlightenment(mode, final) {
             ((from_what(NHC.WWALKING)))
         );
     }
-    if (Upolyd() &&
-            (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 ||
-                U_AP_TYPE() != NHC.M_AP_NOTHING))
+    if (Upolyd() && ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 || U_AP_TYPE() != NHC.M_AP_NOTHING))
         youhiding(1, final);
 
     /* internal troubles, mostly in the order that prayer ranks them */
@@ -2442,7 +2432,7 @@ function status_enlightenment(mode, final) {
             );
     }
     if (Strangled()) {
-        if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uburied) & 1)) {
             enlght_line(
                 cptr.decay((You_)),
                 final ? cptr.decay((were)) : cptr.decay((are)),
@@ -2475,7 +2465,7 @@ function status_enlightenment(mode, final) {
                 cptr.decay(buf),
                 __s_sdied_from_s,
                 cptr.decay(You_),
-                ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_NONVOMITABLE)
+                (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE)
                     ? __s_terminal_illness
                     : __s_food_poisoning
             );  /* has trailing space */
@@ -2483,14 +2473,14 @@ function status_enlightenment(mode, final) {
         } else {
             /* unlike death due to sickness, report the two cases separately
                because it is possible to cure one without curing the other */
-            if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_NONVOMITABLE)
+            if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE)
                 enlght_line(
                     cptr.decay((You_)),
                     final ? cptr.decay((were)) : cptr.decay((are)),
                     ((__s_terminally_sick_from_illness)),
                     ((__s_empty))
                 );
-            if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_VOMITABLE)
+            if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE)
                 enlght_line(
                     cptr.decay((You_)),
                     final ? cptr.decay((were)) : cptr.decay((are)),
@@ -2577,9 +2567,9 @@ function status_enlightenment(mode, final) {
             ((__s_empty))
         );
     }
-    if (cptr.ldI32o(u, $you_utrap) >>> 0) {
+    if (cptr.ldI32o(u, $you_utrap)) {
         let predicament = new Uint8Array(256);
-        let anchored = schar((cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_BURIEDBALL));
+        let anchored = schar((cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL));
 
         void trap_predicament(cptr.decay(predicament), final, wizard());
         if (cptr.ldPtro(u, $you_usteed)) {
@@ -2615,7 +2605,7 @@ function status_enlightenment(mode, final) {
                     ) != 0))
             void cptr.strcpy(cptr.decay(heldmon), __s_an_unseen_creature);
     }
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(u, $you_ustuck), (null))))), 0n)
                 ? __assert_rtn(__s_status_enlightenment, __s_insight_c, 1108, __s_u_ustuck_null)
                 : void 0);  /* implied by u.uswallow */
@@ -2637,7 +2627,7 @@ function status_enlightenment(mode, final) {
         if (dmgtype(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), NHM.AD_DGST)) {
             /* if final, death via digestion can be deduced by u.uswallow
                still being True and u.uswldtim having been decremented to 0 */
-            if (final && !(cptr.ldI32o(u, $you_uswldtim) >>> 0))
+            if (final && !cptr.ldI32o(u, $you_uswldtim))
                 void cptr.strcat(cptr.decay(buf), __s_and_got_totally_digested);
             else
                 void cptr.sprintf(
@@ -2650,7 +2640,7 @@ function status_enlightenment(mode, final) {
             void cptr.sprintf(
                 eos(cptr.decay(buf)),
                 __s_sp_lparen_pct_u_rparen,
-                cptr.ldI32o(u, $you_uswldtim) >>> 0
+                cptr.ldI32o(u, $you_uswldtim)
             );
         enlght_line(
             cptr.decay((You_)),
@@ -2687,7 +2677,7 @@ function status_enlightenment(mode, final) {
     if (Riding) {
         let saddle = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n);
 
-        if (saddle && cptr.ldBits(cptr.add(saddle, $obj_cursed), 0, 1, 0) | 0) {
+        if (saddle && (cptr.ldI32o(saddle, $obj_cursed) & 1) | 0) {
             void cptr.sprintf(
                 cptr.decay(buf),
                 __s_stuck_to_s_s,
@@ -2786,7 +2776,7 @@ function status_enlightenment(mode, final) {
                 (from_what(NHC.HUNGER))
             );
     }
-    void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs) >>> 0, 8));  /* hunger status; omitted if "normal" */
+    void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs), 8));  /* hunger status; omitted if "normal" */
     mungspaces(cptr.decay(buf));  /* strip trailing spaces */
     /* status line doesn't show hunger when state is "not hungry", we do;
        needed for wizard mode's reveal of u.uhunger but add it for everyone */
@@ -2870,7 +2860,7 @@ function status_enlightenment(mode, final) {
     if (cptr.ld1so(iflags, $instance_flags_tux_penalty) && !Upolyd()) {
         void enlght_combatinc(
             __s_to_hit,
-            -cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr) | 0,
+            -cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr),
             final,
             cptr.decay(buf)
         );
@@ -3268,15 +3258,13 @@ function attributes_enlightenment(unused_mode, final) {
     enlght_out(__s_empty);
     enlght_out(final ? __s_final_attributes : __s_attributes);
 
-    if (cptr.ldBits(cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth), 3, 2, 0)) {
+    if ((cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3)) {
         enlght_line(
             cptr.decay((You_)),
             final ? cptr.decay((were)) : cptr.decay((are)),
             ((cptr.ldPtro(
                 __static_attributes_enlightenment_hofe_titles,
-                ((cptr.ldBits(cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth), 3, 2, 0) | 0) -
-                    1) |
-                    0,
+                (((cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3) | 0) - 1) | 0,
                 8
             ))),
             ((__s_empty))
@@ -3426,7 +3414,7 @@ function attributes_enlightenment(unused_mode, final) {
             (__s_hallucinations),
             (from_what(NHC.HALLUC_RES))
         );
-    if (cptr.ldBits(cptr.add(u, $you_uedibility), 6, 1, 0))
+    if ((cptr.ldI32o(u, $you_uedibility) & 1))
         enlght_line(
             cptr.decay((You_)),
             final ? cptr.decay((could)) : cptr.decay((can)),
@@ -3598,16 +3586,16 @@ function attributes_enlightenment(unused_mode, final) {
             ((__s_empty))
         );
     }
-    if (cptr.ldI32o(u, $you_umconf) >>> 0) {
+    if (cptr.ldI32o(u, $you_umconf)) {
         void cptr.strcpy(cptr.decay(buf), __s_monsters_when_hitting_them);
         if (wizard() && !final) {
-            if (cptr.ldI32o(u, $you_umconf) >>> 0 == 1)
+            if (cptr.ldI32o(u, $you_umconf) == 1)
                 void cptr.strcat(cptr.decay(buf), __s_next_hit_only);
             else
                 void cptr.sprintf(
                     eos(cptr.decay(buf)),
                     __s_next_u_hits,
-                    cptr.ldI32o(u, $you_umconf) >>> 0
+                    cptr.ldI32o(u, $you_umconf)
                 );
         }
         enlght_line(
@@ -3787,7 +3775,7 @@ function attributes_enlightenment(unused_mode, final) {
             0n)) {
         let has_lid = has_ceiling(cptr.add(u, $you_uz));
 
-        if (has_lid && !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
+        if (has_lid && !(cptr.ldI32o(u, $you_uinwater) & 1)) {
             enlght_line(
                 cptr.decay((You_)),
                 final ? cptr.decay((could)) : cptr.decay((can)),
@@ -3799,11 +3787,9 @@ function attributes_enlightenment(unused_mode, final) {
                 cptr.decay(buf),
                 __s_to_the_ceiling_if_s_s_s,
                 !has_lid ? __s_there_was_one : __s_empty,
-                (!has_lid && cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0)
-                    ? __s_and__2
-                    : __s_empty,
-                cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0
-                    ? ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0
+                (!has_lid && (cptr.ldI32o(u, $you_uinwater) & 1) | 0) ? __s_and__2 : __s_empty,
+                (cptr.ldI32o(u, $you_uinwater) & 1) | 0
+                    ? (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0
                         ? __s_you_weren_t_underwater
                         : __s_you_weren_t_in_the_water)
                     : __s_empty
@@ -3847,8 +3833,7 @@ function attributes_enlightenment(unused_mode, final) {
         );
     /* actively swimming (in water but not under it) handled earlier */
     if (Swimming() &&
-            ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
-                !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)))
+            (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || !(cptr.ldI32o(u, $you_uinwater) & 1)))
         enlght_line(
             cptr.decay((You_)),
             final ? cptr.decay((could)) : cptr.decay((can)),
@@ -4365,11 +4350,10 @@ export function youhiding(via_enlghtmt, msgflag) {
             void cptr.sprintf(
                 bp,
                 __s_sp_pct_s,
-                an(simple_typename((cptr.ldI32o(
+                an(simple_typename(cptr.ldI32o(
                     gy,
                     $instance_globals_y_youmonst + $monst_mappearance
-                ) >>>
-                    0) | 0))
+                ) | 0))
             );
         } else if (U_AP_TYPE() == NHC.M_AP_FURNITURE) {
             void cptr.strcpy(bp, __s_something);
@@ -4378,7 +4362,7 @@ export function youhiding(via_enlghtmt, msgflag) {
         } else {
             ;  /* something unexpected; leave 'buf' as-is */
         }
-    } else if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0)) {
+    } else if ((cptr.ldI32o(u, $you_uundetected) & 1)) {
         bp = eos(cptr.decay(buf));  /* points past "hiding" */
         if (cptr.ld1so(
             cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
@@ -4419,14 +4403,13 @@ export function youhiding(via_enlghtmt, msgflag) {
             void cptr.sprintf(bp, __s_on_the_s, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         } else {
             /* on floor; is_hider() but otherwise not special: 'trapper' */
-            if (cptr.ldI32o(u, $you_utrap) >>> 0 &&
-                    cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_PIT) {
+            if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
                 let t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 
                 void cptr.sprintf(
                     bp,
                     __s_in_a_spit,
-                    (t && (cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.SPIKED_PIT)
+                    (t && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.SPIKED_PIT)
                         ? __s_spiked
                         : __s_empty
                 );
@@ -4951,10 +4934,10 @@ function show_achievements(final) {
                 enlght_line(
                     cptr.decay((You_)),
                     final
-                        ? (cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0) | 0
+                        ? ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0
                             ? __s_had__3
                             : __s_handled)
-                        : (cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0) | 0
+                        : ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0
                             ? __s_have__2
                             : __s_have_handled),
                     (__s_the_bell_of_opening),
@@ -4973,10 +4956,10 @@ function show_achievements(final) {
                 enlght_line(
                     cptr.decay((You_)),
                     final
-                        ? (cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0) | 0
+                        ? ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1) | 0
                             ? __s_had__3
                             : __s_handled)
-                        : (cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0) | 0
+                        : ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1) | 0
                             ? __s_have__2
                             : __s_have_handled),
                     (__s_the_candelabrum_of_invocation),
@@ -4987,10 +4970,10 @@ function show_achievements(final) {
                 enlght_line(
                     cptr.decay((You_)),
                     final
-                        ? (cptr.ldBits(cptr.add(u, $you_uhave), 2, 1, 0) | 0
+                        ? ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1) | 0
                             ? __s_had__3
                             : __s_handled)
-                        : (cptr.ldBits(cptr.add(u, $you_uhave), 2, 1, 0) | 0
+                        : ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1) | 0
                             ? __s_have__2
                             : __s_have_handled),
                     (__s_the_book_of_the_dead),
@@ -5011,14 +4994,12 @@ function show_achievements(final) {
                 enlght_line(
                     cptr.decay((You_)),
                     final
-                        ? (cptr.ldBits(cptr.add(u, $you_uevent + $u_event_ascended), 7, 1, 0) | 0
+                        ? ((cptr.ldI32o(u, $you_uevent + $u_event_ascended) & 1) | 0
                             ? __s_delivered
-                            : (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0
+                            : ((cptr.ldI32o(u, $you_uhave) & 1) | 0
                                 ? __s_had__3
                                 : __s_had_obtained))
-                        : (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0
-                            ? __s_have__2
-                            : __s_have_obtained),
+                        : ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? __s_have__2 : __s_have_obtained),
                     (__s_the_amulet_of_yendor),
                     (__s_empty)
                 );
@@ -5201,7 +5182,7 @@ export function achieve_rank(rank) {
     let achidx = schar(((rank - 1 + NHC.ACH_RNK1) | 0));
 
     if (cptr.ld1so(flags, $flag_female))
-        achidx = schar((-achidx | 0));
+        achidx = schar((-achidx));
     return achidx;
 }
 
@@ -5280,31 +5261,37 @@ export function show_gamelog(final) {
 /* the two uppercase choices are implemented but suppressed from menu.
    also used in options.c */
 /** C ref: insight.c:2601 — char *[8][3] */
-export const vanqorders = cptr.alloc(8 * 24);
-cptr.stPtr(vanqorders, __s_t);
-cptr.stPtro(vanqorders, 8, __s_traditional_by_monster_level);
-cptr.stPtro(vanqorders, 16, __s_traditional_by_monster_level_by);
-cptr.stPtro(vanqorders, 24, __s_d);
-cptr.stPtro(vanqorders, 32, __s_by_monster_difficulty_rating);
-cptr.stPtro(vanqorders, 40, __s_by_monster_difficulty_rating_by);
-cptr.stPtro(vanqorders, 48, __s_a);
-cptr.stPtro(vanqorders, 56, __s_alphabetically_unique_monsters_separate);
-cptr.stPtro(vanqorders, 64, __s_alphabetically_first_unique_monsters);
-cptr.stPtro(vanqorders, 72, __s_a__2);
-cptr.stPtro(vanqorders, 80, __s_alphabetically_unique_monsters);
-cptr.stPtro(vanqorders, 88, __s_alphabetically_unique_monsters_and);
-cptr.stPtro(vanqorders, 96, __s_c);
-cptr.stPtro(vanqorders, 104, __s_by_monster_class_high_to_low_level_in);
-cptr.stPtro(vanqorders, 112, __s_by_monster_class_high_to_low_level);
-cptr.stPtro(vanqorders, 120, __s_c__2);
-cptr.stPtro(vanqorders, 128, __s_by_monster_class_low_to_high_level_in);
-cptr.stPtro(vanqorders, 136, __s_by_monster_class_low_to_high_level);
-cptr.stPtro(vanqorders, 144, __s_n);
-cptr.stPtro(vanqorders, 152, __s_by_count_high_to_low);
-cptr.stPtro(vanqorders, 160, __s_by_count_high_to_low_by_internal_index);
-cptr.stPtro(vanqorders, 168, __s_z);
-cptr.stPtro(vanqorders, 176, __s_by_count_low_to_high);
-cptr.stPtro(vanqorders, 184, __s_by_count_low_to_high_by_internal_index);
+export const vanqorders = (function () {
+    const flat = new Uint8Array(8 * 3 * 8);
+    const a = [];
+    for (let r = 0; r < 8; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8));
+    a.buf = flat;
+    return a;
+})();
+cptr.stPtro(cptr.decay(vanqorders[0]), 0, __s_t);
+cptr.stPtro(cptr.decay(vanqorders[0]), 8, __s_traditional_by_monster_level);
+cptr.stPtro(cptr.decay(vanqorders[0]), 16, __s_traditional_by_monster_level_by);
+cptr.stPtro(cptr.decay(vanqorders[1]), 0, __s_d);
+cptr.stPtro(cptr.decay(vanqorders[1]), 8, __s_by_monster_difficulty_rating);
+cptr.stPtro(cptr.decay(vanqorders[1]), 16, __s_by_monster_difficulty_rating_by);
+cptr.stPtro(cptr.decay(vanqorders[2]), 0, __s_a);
+cptr.stPtro(cptr.decay(vanqorders[2]), 8, __s_alphabetically_unique_monsters_separate);
+cptr.stPtro(cptr.decay(vanqorders[2]), 16, __s_alphabetically_first_unique_monsters);
+cptr.stPtro(cptr.decay(vanqorders[3]), 0, __s_a__2);
+cptr.stPtro(cptr.decay(vanqorders[3]), 8, __s_alphabetically_unique_monsters);
+cptr.stPtro(cptr.decay(vanqorders[3]), 16, __s_alphabetically_unique_monsters_and);
+cptr.stPtro(cptr.decay(vanqorders[4]), 0, __s_c);
+cptr.stPtro(cptr.decay(vanqorders[4]), 8, __s_by_monster_class_high_to_low_level_in);
+cptr.stPtro(cptr.decay(vanqorders[4]), 16, __s_by_monster_class_high_to_low_level);
+cptr.stPtro(cptr.decay(vanqorders[5]), 0, __s_c__2);
+cptr.stPtro(cptr.decay(vanqorders[5]), 8, __s_by_monster_class_low_to_high_level_in);
+cptr.stPtro(cptr.decay(vanqorders[5]), 16, __s_by_monster_class_low_to_high_level);
+cptr.stPtro(cptr.decay(vanqorders[6]), 0, __s_n);
+cptr.stPtro(cptr.decay(vanqorders[6]), 8, __s_by_count_high_to_low);
+cptr.stPtro(cptr.decay(vanqorders[6]), 16, __s_by_count_high_to_low_by_internal_index);
+cptr.stPtro(cptr.decay(vanqorders[7]), 0, __s_z);
+cptr.stPtro(cptr.decay(vanqorders[7]), 8, __s_by_count_low_to_high);
+cptr.stPtro(cptr.decay(vanqorders[7]), 16, __s_by_count_low_to_high_by_internal_index);
 
 const __static_vanqsort_cmp_punctclasses = [
     NHC.S_LIZARD,
@@ -5318,89 +5305,38 @@ const __static_vanqsort_cmp_punctclasses = [
 
 /** C ref: insight.c:2621 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function vanqsort_cmp(vptr1, vptr2) {
-    let indx1,
-            indx2,
-            mlev1,
-            mlev2,
-            mstr1,
-            mstr2,
-            uniq1,
-            uniq2,
-            died1,
-            died2,
-            res,
-            name1,
-            name2,
-            punct,
-            mcls1,
-            mcls2;
-    let __pc = 0;
-    __dispatch: while (true) {
-        switch (__pc) {
-        case 0: {
-            indx1 = cptr.ldI16(cptr.castView(vptr1, "i16"));
-            indx2 = cptr.ldI16(cptr.castView(vptr2, "i16"));
-            let __sw12 = cptr.ld1uo(flags, $flag_vanq_sortmode);
-            if (__sw12 === (NHC.VANQ_MLVL_MNDX)) { __pc = 14; continue; }
-            if (__sw12 === (NHC.VANQ_MSTR_MNDX)) { __pc = 15; continue; }
-            if (__sw12 === (NHC.VANQ_ALPHA_SEP)) { __pc = 16; continue; }
-            if (__sw12 === (NHC.VANQ_ALPHA_MIX)) { __pc = 17; continue; }
-            if (__sw12 === (NHC.VANQ_MCLS_HTOL)) { __pc = 18; continue; }
-            if (__sw12 === (NHC.VANQ_MCLS_LTOH)) { __pc = 19; continue; }
-            if (__sw12 === (NHC.VANQ_COUNT_H_L)) { __pc = 20; continue; }
-            if (__sw12 === (NHC.VANQ_COUNT_L_H)) { __pc = 21; continue; }
-            __pc = 13; continue;
-        }
-        case 13: {
-            { __pc = 1; continue; }
-        }
-        case 14: {
-            { __pc = 2; continue; }
-        }
-        case 15: {
-            { __pc = 3; continue; }
-        }
-        case 16: {
-            { __pc = 4; continue; }
-        }
-        case 17: {
-            { __pc = 5; continue; }
-        }
-        case 18: {
-            { __pc = 6; continue; }
-        }
-        case 19: {
-            { __pc = 7; continue; }
-        }
-        case 20: {
-            { __pc = 8; continue; }
-        }
-        case 21: {
-            { __pc = 9; continue; }
-        }
-        case 11: {
-            __pc = 1;
-            continue;
-        }
-        case 1 /* duff_1_case_0: */: {
-            __pc = 2;
-            continue;
-        }
-        case 2 /* duff_1_case_1: */: {
+    let indx1 = cptr.ldI16(vptr1);
+    let indx2 = cptr.ldI16(vptr2);
+    let mlev1;
+    let mlev2;
+    let mstr1;
+    let mstr2;
+    let uniq1;
+    let uniq2;
+    let died1;
+    let died2;
+    let res;
+    let name1;
+    let name2;
+    let punct;
+    let mcls1;
+    let mcls2;
+
+    switch (cptr.ld1uo(flags, $flag_vanq_sortmode)) {
+        default:
+        case NHC.VANQ_MLVL_MNDX:
             /* sort by monster level */
             mlev1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlevel);
             mlev2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlevel);
             res = (mlev2 - mlev1) | 0;  /* mlevel high to low */
-            { __pc = 10; continue; }
-        }
-        case 3 /* duff_1_case_2: */: {
+            break;
+        case NHC.VANQ_MSTR_MNDX:
             /* sort by monster toughness */
             mstr1 = cptr.ld1uo2(mons, indx1, $sizeof_permonst, $permonst_difficulty);
             mstr2 = cptr.ld1uo2(mons, indx2, $sizeof_permonst, $permonst_difficulty);
             res = (mstr2 - mstr1) | 0;  /* monstr high to low */
-            { __pc = 10; continue; }
-        }
-        case 4 /* duff_1_case_3: */: {
+            break;
+        case NHC.VANQ_ALPHA_SEP:
             uniq1 = ((cptr.ldU16o2(mons, indx1, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) &&
                 indx1 != NHC.PM_HIGH_CLERIC
                     ? 1
@@ -5409,30 +5345,19 @@ function vanqsort_cmp(vptr1, vptr2) {
                 indx2 != NHC.PM_HIGH_CLERIC
                     ? 1
                     : 0);
-            if (uniq1 ^ uniq2) { __pc = 23; continue; }
-            __pc = 22; continue;
-        }
-        case 23: {
-            res = (uniq2 - uniq1) | 0;
-            { __pc = 10; continue; }
-        }
-        case 22: {
+            if (uniq1 ^ uniq2) {
+                res = (uniq2 - uniq1) | 0;
+                break;
+            }  /* else both unique or neither unique */
             // @FallThrough
             ;
-            __pc = 5;
-            continue;
-        }
-        case 5 /* duff_1_case_4: */: {
+        case NHC.VANQ_ALPHA_MIX:
             name1 = cptr.ldPtro3(mons, indx1, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
             name2 = cptr.ldPtro3(mons, indx2, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
             res = strncmpi((name1), (name2), -1);  /* caseblind alpha, low to high */
-            { __pc = 10; continue; }
-        }
-        case 6 /* duff_1_case_5: */: {
-            __pc = 7;
-            continue;
-        }
-        case 7 /* duff_1_case_6: */: {
+            break;
+        case NHC.VANQ_MCLS_HTOL:
+        case NHC.VANQ_MCLS_LTOH:
             /* mons[].mlet is a small integer, 1..N, of type plain char;
                if 'char' happens to be unsigned, (mlet1 - mlet2) would yield
                an inappropriate result when mlet2 is greater than mlet1,
@@ -5464,38 +5389,26 @@ function vanqsort_cmp(vptr1, vptr2) {
                             ))) | 0));
             }
             res = (mcls1 - mcls2) | 0;  /* class */
-            if (res == 0) { __pc = 25; continue; }
-            __pc = 24; continue;
-        }
-        case 25: {
-            /* Riders are in the same class as major demons, yielding res==0
-               above when both mcls1 and mcls2 are either Riders or demons or
-               one of each; force Riders to be sorted before demons */
-            res = (is_rider(cptr.add(mons, indx2, $sizeof_permonst)) -
-                    is_rider(cptr.add(mons, indx1, $sizeof_permonst))) | 0;
-            if (res) { __pc = 27; continue; }
-            __pc = 26; continue;
-        }
-        case 27: {
-            { __pc = 10; continue; }
-        }
-        case 26: {
-            mlev1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlevel);
-            mlev2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlevel);
-            res = (mlev1 - mlev2) | 0;  /* mlevel low to high */
-            if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL)
-                res = -res | 0;  /* mlevel high to low */
-            __pc = 24;
-            continue;
-        }
-        case 24: {
-            { __pc = 10; continue; }
-        }
-        case 8 /* duff_1_case_7: */: {
-            __pc = 9;
-            continue;
-        }
-        case 9 /* duff_1_case_8: */: {
+            if (res == 0) {
+                /* Riders are in the same class as major demons, yielding res==0
+                   above when both mcls1 and mcls2 are either Riders or demons or
+                   one of each; force Riders to be sorted before demons */
+                res = (is_rider(cptr.add(mons, indx2, $sizeof_permonst)) -
+                        is_rider(cptr.add(mons, indx1, $sizeof_permonst))) | 0;
+                /* res -1 => #1 is a Rider, #2 isn't;
+                        0 => both Riders or neither;
+                       +1 => #2 is a Rider, #1 isn't */
+                if (res)
+                    break;
+                mlev1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlevel);
+                mlev2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlevel);
+                res = (mlev1 - mlev2) | 0;  /* mlevel low to high */
+                if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL)
+                    res = -res;  /* mlevel high to low */
+            }
+            break;
+        case NHC.VANQ_COUNT_H_L:
+        case NHC.VANQ_COUNT_L_H:
             died1 = cptr.ld1uo2(
                 svm,
                 indx1,
@@ -5510,19 +5423,13 @@ function vanqsort_cmp(vptr1, vptr2) {
             );
             res = (died2 - died1) | 0;  /* dead count high to low */
             if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_L_H)
-                res = -res | 0;  /* dead count low to high */
-            { __pc = 10; continue; }
-        }
-        case 10 /* duff_end_1: */: {
-            ;
-            /* tiebreaker: internal mons[] index */
-            if (res == 0)
-                res = (indx1 - indx2) | 0;  /* mndx low to high */
-            return res;
-        }
-        }
-        if (__pc === -1) break __dispatch;
+                res = -res;  /* dead count low to high */
+            break;
     }
+    /* tiebreaker: internal mons[] index */
+    if (res == 0)
+        res = (indx1 - indx2) | 0;  /* mndx low to high */
+    return res;
 }
 
 /* returns -1 if cancelled via ESC */
@@ -5541,13 +5448,13 @@ export function set_vanq_order(for_vanq) {
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* zero out all bits */
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < vanqorders.length; i++) {
         if (i == NHC.VANQ_ALPHA_MIX || i == NHC.VANQ_MCLS_HTOL)
             continue;
         /* suppress some orderings if this menu if for 'm #genocided' */
         if (!for_vanq && (i == NHC.VANQ_COUNT_H_L || i == NHC.VANQ_COUNT_L_H))
             continue;
-        desc = cptr.ldPtro3(vanqorders, i, 24, 2, 8, 0);
+        desc = cptr.ldPtro(cptr.decay(vanqorders[i]), 2, 8);
         /* unique monsters can't be genocided so "alpha, unique separate"
            and "alpha, unique intermixed" are confusing descriptions when
            this menu is for #genocided rather than for #vanquished */
@@ -5558,7 +5465,7 @@ export function set_vanq_order(for_vanq) {
             tmpwin,
             nul_glyphinfo.v,
             any,
-            cptr.ld1s(cptr.ldPtro3(vanqorders, i, 24, 0, 8, 0)),
+            cptr.ld1s(cptr.ldPtro(cptr.decay(vanqorders[i]), 0, 8)),
             0,
             NHM.ATR_NONE,
             clr,
@@ -5641,7 +5548,7 @@ export function list_vanquished(defquery, ask) {
             $instance_globals_saved_m_mvitals + $mvitals_died
         )) == 0)
             continue;
-        cptr.stI16o(mindx, ((old_) => (ntypes = ((old_ + 1) >>> 0), old_))(ntypes), i16(i), 2);
+        cptr.stI16o(mindx, ntypes++, i16(i), 2);
         total_killed += BigInt(nkilled);
     }
 
@@ -5704,7 +5611,7 @@ export function list_vanquished(defquery, ask) {
                 putstr()(klwin, 0, __s_empty);
 
             nh_deterministic_qsort((mindx), BigInt((ntypes) >>> 0), 2n, (vanqsort_cmp));
-            for (ni = 0; ni < ntypes; ni = ((ni + 1) >>> 0)) {
+            for (ni = 0; ni < ntypes; ni++) {
                 i = cptr.ldI16o(mindx, ni, 2);
                 nkilled = cptr.ld1uo2(
                     svm,
@@ -6289,7 +6196,7 @@ export function mstatusline(mtmp) {
                 __s_sp_lparen_pct_d,
                 cptr.ld1so(mtmp, $monst_mtame)
             );
-            if (!cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0))
+            if (!(cptr.ldI32o(mtmp, $monst_isminion) & 1))
                 void cptr.sprintf(
                     eos(cptr.decay(info)),
                     __s_hungry_ld_apport_d,
@@ -6304,7 +6211,7 @@ export function mstatusline(mtmp) {
                 );
             void cptr.strcat(cptr.decay(info), __s_rparen);
         }
-    } else if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
+    } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
         void cptr.strcat(cptr.decay(info), __s_peaceful);
 
     if (cptr.eq(
@@ -6348,43 +6255,42 @@ export function mstatusline(mtmp) {
         void cptr.strcat(cptr.decay(info), __s_eating);
     /* a stethoscope exposes mimic before getting here so this
        won't be relevant for it, but wand of probing doesn't */
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0 ||
+    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 ||
             cptr.ld1uo(mtmp, $monst_m_ap_type) ||
             visible_region_at(
                 cptr.ldI16o(gb, $instance_globals_b_bhitpos),
                 cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)
             ))
         mhidden_description(mtmp, 15, eos(cptr.decay(info)));
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mcan) & 1))
         void cptr.strcat(cptr.decay(info), __s_cancelled);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mconf) & 1))
         void cptr.strcat(cptr.decay(info), __s_confused__2);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0) | 0 ||
-            !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mblinded) & 127) | 0 || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
         void cptr.strcat(cptr.decay(info), __s_blind);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mstun) & 1))
         void cptr.strcat(cptr.decay(info), __s_stunned__2);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1))
         void cptr.strcat(cptr.decay(info), __s_asleep);
-    else if (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) | 0 ||
-            !cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0))
+    else if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0 ||
+            !(cptr.ldI32o(mtmp, $monst_mcanmove) & 1))
         void cptr.strcat(cptr.decay(info), __s_can_t_move);
     else if ((cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n) != 0n)
         void cptr.strcat(cptr.decay(info), __s_meditating);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mflee) & 1))
         void cptr.strcat(cptr.decay(info), __s_scared);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1))
         void cptr.strcat(cptr.decay(info), __s_trapped__2);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mspeed), 0, 2, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mspeed) & 3))
         void cptr.strcat(
             cptr.decay(info),
-            ((cptr.ldBits(cptr.add(mtmp, $monst_mspeed), 0, 2, 0) | 0) == NHM.MFAST)
+            (((cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0) == NHM.MFAST)
                 ? __s_fast__2
-                : (((cptr.ldBits(cptr.add(mtmp, $monst_mspeed), 0, 2, 0) | 0) == NHM.MSLOW)
+                : ((((cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0) == NHM.MSLOW)
                     ? __s_slow
                     : __s_speed)
         );
-    if (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_minvis) & 1))
         void cptr.strcat(cptr.decay(info), __s_invisible__3);
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
         let pm = cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data);
@@ -6393,7 +6299,7 @@ export function mstatusline(mtmp) {
            this used to have that backwards and checked sticks() first */
         void cptr.strcat(
             cptr.decay(info),
-            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0
                 ? ((dmgtype_fromattack((pm), NHM.AD_DGST, NHM.AT_ENGL) !== null)
                     ? __s_digesting_you
                     : ((((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) &&
@@ -6419,7 +6325,7 @@ export function mstatusline(mtmp) {
             void cptr.sprintf(eos(cptr.decay(info)), __s_injured_s, what);
         }
     }
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1))
         void cptr.strcat(cptr.decay(info), __s_leashed);
 
     /* avoid "Status of the invisible newt ..., invisible" */
@@ -6449,10 +6355,10 @@ export function ustatusline() {
     cptr.st1o(cptr.decay(info), 0, 0, 1);
     if (Sick()) {
         void cptr.strcat(cptr.decay(info), __s_dying_from);
-        if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_VOMITABLE)
+        if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE)
             void cptr.strcat(cptr.decay(info), __s_food_poisoning__2);
-        if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_NONVOMITABLE) {
-            if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_VOMITABLE)
+        if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) {
+            if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE)
                 void cptr.strcat(cptr.decay(info), __s_and);
             void cptr.strcat(cptr.decay(info), __s_illness);
         }
@@ -6469,8 +6375,8 @@ export function ustatusline() {
         void cptr.strcat(cptr.decay(info), __s_confused__2);
     if (Blind()) {
         void cptr.strcat(cptr.decay(info), __s_blind);
-        if (cptr.ldI32o(u, $you_ucreamed) >>> 0) {
-            if (BigInt((cptr.ldI32o(u, $you_ucreamed) >>> 0) >>> 0) < BlindedTimeout() ||
+        if (cptr.ldI32o(u, $you_ucreamed)) {
+            if (BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) < BlindedTimeout() ||
                     EBlinded() ||
                     !((cptr.ldU64o(
                         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
@@ -6498,18 +6404,18 @@ export function ustatusline() {
     }
     if (Glib())
         void cptr.sprintf(eos(cptr.decay(info)), __s_slippery_s__2, fingers_or_gloves(1));
-    if (cptr.ldI32o(u, $you_utrap) >>> 0)
+    if (cptr.ldI32o(u, $you_utrap))
         void cptr.strcat(cptr.decay(info), __s_trapped__2);
     if (Fast())
         void cptr.strcat(cptr.decay(info), Very_fast() ? __s_very_fast__2 : __s_fast__2);
-    if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))
+    if ((cptr.ldI32o(u, $you_uundetected) & 1))
         void cptr.strcat(cptr.decay(info), __s_concealed);
     else if (U_AP_TYPE() != NHC.M_AP_NOTHING)
         void cptr.strcat(cptr.decay(info), __s_disguised);
     if (Invis())
         void cptr.strcat(cptr.decay(info), __s_invisible__3);
     if (cptr.ldPtro(u, $you_ustuck)) {
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+        if ((cptr.ldI32o(u, $you_uswallow) & 1))
             void cptr.strcat(
                 cptr.decay(info),
                 (dmgtype_fromattack(
@@ -6530,7 +6436,7 @@ export function ustatusline() {
            fiddling with just for self-probing while engulfed */
         void cptr.strcat(cptr.decay(info), a_monnam(cptr.ldPtro(u, $you_ustuck)));
     }
-    if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
+    if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
             (reg = visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null &&
             (ln = cptr.strlen(cptr.decay(info))) < 256n)
         nh_snprintf(

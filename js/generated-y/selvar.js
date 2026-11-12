@@ -60,7 +60,7 @@ export function* selection_new() {
         $selectionvar_bounds + $nhrect_hx,
         cptr.stI16o(tmps, $selectionvar_bounds + $nhrect_hy, 0)
     );
-    cptr.stPtro(tmps, $selectionvar_map, cptr.byteView((yield* alloc(1681))));
+    cptr.stPtro(tmps, $selectionvar_map, (yield* alloc(1681)));
     void __builtin___memset_chk(
         cptr.ldPtro(tmps, $selectionvar_map),
         1,
@@ -170,8 +170,8 @@ export function selection_recalc_bounds(sel) {
     );
 
     /* left */
-    for (x = 0; x < cptr.ldI32(sel); x = i16(x + 1)) {
-        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y = i16(y + 1)) {
+    for (x = 0; x < cptr.ldI32(sel); x++) {
+        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y++) {
             if (selection_getpoint(x, y, sel)) {
                 cptr.stI16(r, x);
                 break;
@@ -183,8 +183,8 @@ export function selection_recalc_bounds(sel) {
 
     if (cptr.ldI16(r) > -1) {
         /* right */
-        for (x = i16(((cptr.ldI32(sel) - 1) | 0)); x >= cptr.ldI16(r); x = i16(x + -1)) {
-            for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y = i16(y + 1)) {
+        for (x = i16(((cptr.ldI32(sel) - 1) | 0)); x >= cptr.ldI16(r); x--) {
+            for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y++) {
                 if (selection_getpoint(x, y, sel)) {
                     cptr.stI16o(r, $nhrect_hx, x);
                     break;
@@ -195,8 +195,8 @@ export function selection_recalc_bounds(sel) {
         }
 
         /* top */
-        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y = i16(y + 1)) {
-            for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, $nhrect_hx); x = i16(x + 1)) {
+        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y++) {
+            for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, $nhrect_hx); x++) {
                 if (selection_getpoint(x, y, sel)) {
                     cptr.stI16o(r, $nhrect_ly, y);
                     break;
@@ -210,9 +210,9 @@ export function selection_recalc_bounds(sel) {
         for (
             y = i16(((cptr.ldI32o(sel, $selectionvar_hei) - 1) | 0));
             y >= cptr.ldI16o(r, $nhrect_ly);
-            y = i16(y + -1)
+            y--
         ) {
-            for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, $nhrect_hx); x = i16(x + 1)) {
+            for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, $nhrect_hx); x++) {
                 if (selection_getpoint(x, y, sel)) {
                     cptr.stI16o(r, $nhrect_hy, y);
                     break;
@@ -378,23 +378,15 @@ export function* selection_filter_mapchar(ov, typ, lit) {
                         break;
                     case 0:
                     case 1:
-                        if (cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        x,
-                                        $sizeof_rm_x21
-                                    ),
-                                    y,
-                                    $sizeof_rm
-                                ),
-                                $rm_lit
-                            ),
-                            6,
-                            1,
-                            0
-                        ) ==
+                        if ((cptr.ldI32o3(
+                            svl,
+                            x,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_lit
+                        ) &
+                            1) ==
                                 lit >>> 0)
                             selection_setpoint(i16(x), i16(y), ret, 1);
                         break;
@@ -469,7 +461,7 @@ export function* selection_do_grow(ov, dir) {
             (79 < ((cptr.ldI16o(rect, $nhrect_hx) + 1) | 0)
                 ? 79
                 : ((cptr.ldI16o(rect, $nhrect_hx) + 1) | 0));
-        x = i16(x + 1)
+        x++
     )
         for (
             y = i16((0 > ((cptr.ldI16o(rect, $nhrect_ly) - 1) | 0)
@@ -479,7 +471,7 @@ export function* selection_do_grow(ov, dir) {
                 (20 < ((cptr.ldI16o(rect, $nhrect_hy) + 1) | 0)
                     ? 20
                     : ((cptr.ldI16o(rect, $nhrect_hy) + 1) | 0));
-            y = i16(y + 1)
+            y++
         ) {
             /* note:  dir is a mask of multiple directions, but the only
                way to specify diagonals is by including the two adjacent
@@ -503,8 +495,8 @@ export function* selection_do_grow(ov, dir) {
 
     selection_getbounds(tmp, rect);
 
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x = i16(x + 1))
-        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y = i16(y + 1))
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
             if (selection_getpoint(x, y, tmp))
                 selection_setpoint(x, y, ov, 1);
 
@@ -733,10 +725,10 @@ export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
     let y = b;
     let a2 = BigInt.asIntN(64, BigInt(a) * BigInt(a));
     let b2 = BigInt.asIntN(64, BigInt(b) * BigInt(b));
-    let crit1 = BigInt.asIntN(64, -(BigInt.asIntN(64, a2 / 4n + BigInt((a % 2)) + b2)));
-    let crit2 = BigInt.asIntN(64, -(BigInt.asIntN(64, b2 / 4n + BigInt((b % 2)) + a2)));
-    let crit3 = BigInt.asIntN(64, -(BigInt.asIntN(64, b2 / 4n + BigInt((b % 2)))));
-    let t = BigInt.asIntN(64, BigInt.asIntN(64, -a2) * BigInt(y));  /* e(x+1/2,y-1/2) - (a^2+b^2)/4 */
+    let crit1 = -(BigInt.asIntN(64, a2 / 4n + BigInt((a % 2)) + b2));
+    let crit2 = -(BigInt.asIntN(64, b2 / 4n + BigInt((b % 2)) + a2));
+    let crit3 = -(BigInt.asIntN(64, b2 / 4n + BigInt((b % 2))));
+    let t = BigInt.asIntN(64, -a2 * BigInt(y));  /* e(x+1/2,y-1/2) - (a^2+b^2)/4 */
     let dxt = BigInt.asIntN(64, 2n * b2 * BigInt(x));
     let dyt = BigInt.asIntN(64, -2n * a2 * BigInt(y));
     let d2xt = BigInt.asIntN(64, 2n * b2);
@@ -857,7 +849,7 @@ function line_dist_coord(x1, y1, x2, y2, x3, y3) {
     let dx;
     let dy;
     let distsq = 0n;
-    let lu = Math.fround(0);
+    let lu = 0;
 
     if (x1 == x2 && y1 == y2)
         return BigInt(dist2(
@@ -867,15 +859,14 @@ function line_dist_coord(x1, y1, x2, y2, x3, y3) {
             Number(BigInt.asIntN(16, y3))
         ));
 
-    lu = Math.fround(Math.fround(Number((BigInt.asIntN(64, (x3 - x1) * px + (y3 - y1) * py)))) /
-            Math.fround(Number(s)));
-    if (lu > Math.fround(1))
-        lu = Math.fround(1);
-    else if (lu < Math.fround(0))
-        lu = Math.fround(0);
+    lu = Number((BigInt.asIntN(64, (x3 - x1) * px + (y3 - y1) * py))) / Number(s);
+    if (lu > 1)
+        lu = 1;
+    else if (lu < 0)
+        lu = 0;
 
-    x = cptr.ftoi64(cptr.fmafR(Math.fround(Number(x1)), lu, Math.fround(Number(px))));
-    y = cptr.ftoi64(cptr.fmafR(Math.fround(Number(y1)), lu, Math.fround(Number(py))));
+    x = BigInt.asIntN(64, BigInt(Math.trunc((Number(x1) + lu * Number(px)))));
+    y = BigInt.asIntN(64, BigInt(Math.trunc((Number(y1) + lu * Number(py)))));
     dx = BigInt.asIntN(64, x - x3);
     dy = BigInt.asIntN(64, y - y3);
     distsq = BigInt.asIntN(64, dx * dx + dy * dy);
@@ -1079,7 +1070,7 @@ export function selection_do_randline(x1, y1, x2, y2, rough, rec, ov) {
 
     rough = schar((((Math.imul(rough, 2)) / 3) | 0));
 
-    rec = schar(rec + -1);
+    rec--;
 
     selection_do_randline(x1, y1, i16(mx), i16(my), rough, rec, ov);
     selection_do_randline(i16(mx), i16(my), x2, y2, rough, rec, ov);
@@ -1104,8 +1095,8 @@ export function* selection_iterate(ov, func, arg) {
 
     selection_getbounds(ov, rect);
 
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x = i16(x + 1))
-        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y = i16(y + 1))
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
             if (isok(x, y) && selection_getpoint(x, y, ov))
                 (yield* Y.icall((func)(x, y, arg)));
 }
@@ -1120,8 +1111,8 @@ export function selection_is_irregular(sel) {
 
     selection_getbounds(sel, rect);
 
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x = i16(x + 1))
-        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y = i16(y + 1))
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
             if (isok(x, y) && !selection_getpoint(x, y, sel))
                 return 1;
 
@@ -1171,43 +1162,27 @@ export function* selection_from_mkroom(croom) {
         return sel;
 
     rmno = Number(BigInt.asUintN(32, (BigInt.asIntN(64, (cptr.diff(croom, svr) / 224n) + 3n))));
-    for (y = cptr.ldI16o(croom, $mkroom_ly); y <= cptr.ldI16o(croom, $mkroom_hy); y = i16(y + 1))
-        for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); x = i16(x + 1))
+    for (y = cptr.ldI16o(croom, $mkroom_ly); y <= cptr.ldI16o(croom, $mkroom_hy); y++)
+        for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); x++)
             if (isok(x, y) &&
-                    !cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_edge
-                        ),
-                        6,
-                        1,
-                        0
-                    ) &&
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_roomno
-                        ),
-                        0,
-                        6,
-                        0
-                    ) == rmno)
+                    !(cptr.ldI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_edge
+                    ) &
+                        1) &&
+                    (cptr.ldI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) &
+                        63) == rmno)
                 selection_setpoint(x, y, sel, 1);
     return sel;
 }
@@ -1217,8 +1192,8 @@ export function* selection_force_newsyms(sel) {
     let x;
     let y;
 
-    for (x = 1; x < cptr.ldI32(sel); x = i16(x + 1))
-        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y = i16(y + 1))
+    for (x = 1; x < cptr.ldI32(sel); x++)
+        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y++)
             if (selection_getpoint(x, y, sel))
                 (yield* newsym_force(x, y));
 }

@@ -21,16 +21,13 @@ export function alloc(lth) {
 
             lth = Number(BigInt.asUintN(
                 32,
-                BigInt.asUintN(
-                    64,
-                    BigInt(lth >>> 0) + BigInt.asUintN(64, 8n - BigInt((lth) >>> 0) % 8n)
-                )
+                BigInt(lth >>> 0) + BigInt.asUintN(64, 8n - BigInt((lth) >>> 0) % 8n)
             ));
     }
     ptr = cptr.malloc(BigInt(lth >>> 0));
     if (!ptr)
         panic(__s_memory_allocation_failure_cannot_get_u, lth);
-    return cptr.castView(ptr, "i64");
+    return ptr;
 }
 
 /* realloc() call that might get substituted by nhrealloc(p,n,file,line) */
@@ -42,13 +39,10 @@ export function re_alloc(oldptr, newlth) {
 
             newlth = Number(BigInt.asUintN(
                 32,
-                BigInt.asUintN(
-                    64,
-                    BigInt(newlth >>> 0) + BigInt.asUintN(64, 8n - BigInt((newlth) >>> 0) % 8n)
-                )
+                BigInt(newlth >>> 0) + BigInt.asUintN(64, 8n - BigInt((newlth) >>> 0) % 8n)
             ));
     }
-    newptr = cptr.castView(realloc(oldptr, BigInt(newlth >>> 0)), "i64");
+    newptr = realloc(oldptr, BigInt(newlth >>> 0));
     /* "extend to":  assume it won't ever fail if asked to shrink */
     if (newlth && !newptr)
         panic(__s_memory_allocation_failure_cannot_extend, newlth);
@@ -56,7 +50,13 @@ export function re_alloc(oldptr, newlth) {
 }
 
 /** C ref: alloc.c:120 — char[4][32] */
-const ptrbuf = cptr.alloc(4 * 32);
+const ptrbuf = (function () {
+    const flat = new Uint8Array(4 * (32 * 1));
+    const a = [];
+    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * (32 * 1), (r + 1) * (32 * 1)));
+    a.buf = flat;
+    return a;
+})();
 
 /** C ref: alloc.c:121 — int */
 let ptrbufidx = 0;
@@ -66,7 +66,7 @@ let ptrbufidx = 0;
 export function fmt_ptr(ptr) {
     let buf;
 
-    buf = cptr.add(ptrbuf, ptrbufidx, 32);
+    buf = cptr.decay(ptrbuf[ptrbufidx]);
     if (++ptrbufidx >= 4)
         ptrbufidx = 0;
 
@@ -82,13 +82,10 @@ export function dupstr(string) {
     let len = cptr.strlen(string);
 
     /* make sure len+1 doesn't overflow plain unsigned (for alloc()) */
-    if (len > BigInt((((~0 >>> 0) - 1) >>> 0) >>> 0))
+    if (len > BigInt(((~0 - 1) >>> 0) >>> 0))
         panic(__s_dupstr_string_length_overflow);
 
-    return cptr.strcpy(
-        cptr.byteView(alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, len + 1n))))),
-        string
-    );
+    return cptr.strcpy(alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, len + 1n)))), string);
 }
 
 /* cast to int or panic on overflow; use via macro */
