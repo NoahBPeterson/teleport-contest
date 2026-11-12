@@ -374,6 +374,36 @@ and counts one step per read), but at least one held-out session was evidently r
 one byte per key and every step kept. Main keeps the Nov 4 input (`2b2d682`). Open question:
 which recorder the held-out sessions came from, and what it sends for a key above U+007F.
 
+**The generated code, on the judge (Nov 11).** `2b2d682` (the Nov 4 generated code on the
+runtime above, minus the key-input change) scored 13120, 54 passing. `eb3e9b6`, the same runtime
+with `d54cbab`'s `js/generated` and `js/generated-y`, scored 13036 at 01:03 UTC: still 54 passing,
+RNG 99.9901% and steps 99.9848% unchanged, screens 99.954% → 99.314%, animation frames
+3006 → 3002. That is the Nov 6 loss (−84) again, so it is in the regenerated code, and it only
+changes what is drawn. Since 54 sessions still pass, the lost screens are in held-out sessions
+that already fail. `aab3df0` put main back to `2b2d682`.
+
+Nothing local reproduces it. Comparing the two builds' JS output (screen hashes, cursors,
+animation frames, RNG) with no C involved:
+
+| Inputs | Games | Differ |
+|---|---|---|
+| every corpus input, recorded seed | 3,943 | wizard-memory (9) and `env-seed-u64max` only |
+| corpus +1, public and `sessions-extra` +2 | 4,350 | the same |
+| corpus at its seed with `symset:DECgraphics,color,time,showexp,lit_corridor,mention_walls` added; public +1..+8 | 4,295 | the same |
+| public sessions, seeds +9..+100 | 4,048 | none |
+| Linux, Node 22 container (partial) | 52 | none |
+
+Also identical: all 19,267 string literals, and the public sessions under `TZ=UTC` (44/44 both).
+`cptr.fma` is used only in Lua's `lcode.js`. The judge's `replayInputFor` passes the same four
+fields as the local runner, and the replay harness reads no clock. The wizard-memory change is a
+fix (C prints 112; the old code prints 216).
+
+The old and new trees can't be mixed file by file: bit-field packing changed 1,034 layout
+constants in `nhfield.js`, and old files read bit-fields without the new shifts. None of
+b768f36, 5b37c5f or b8a95ed put their emitter changes behind a switch, so finding the change
+on the judge means adding switches to `emit.mjs`, regenerating, and probing one split per judge
+run. Until then the judged `js/generated*` stays at the Nov 4 build.
+
 Closes when each remaining part is back on main and the held-out score holds, or the part
 that costs points is found and fixed.
 
