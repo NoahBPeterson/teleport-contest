@@ -492,6 +492,26 @@ memory addresses. So these differences are C on Linux versus C on macOS:
 The port follows macOS, as do the public sessions. Which one the held-out sessions follow isn't
 known. Of the other ports read, one uses the glibc regex text and four use Darwin's.
 
+### C2JS-064: the new 006 patch's `nomux_reset_raw_mode()` contradicts a public session. OPEN (untested)
+Upstream `6ee30e6` (Nov 14, issue #23) changed `nethack-c/patches/006-nomux-capture.patch`: a larger
+`nomux_out`, and a new `nomux_reset_raw_mode()` called in `tty_exit_nhwindows()` after
+`tty_suspend_nhwindows()`. The commit says both were made in July and verified against the
+organizers' own sessions.
+
+Applied to our recorder C and regenerated with the Nov 4 transpiler (the setup reproduces main
+byte for byte), the reset makes `seed0013-friday13-save-then-fullmoon-restore` fail: RNG and cells
+match, cursors 97/99. Steps 48 and 98, the last screen of each segment after the save, have the
+cursor at `[0,1,1]` in the recording and `[0,0,1]` with the reset. So that public session looks
+recorded without the reset, and the held-out sessions probably were too. Main keeps the old 006
+(our only change to it is the 24*1024 buffer, already larger than any capture seen). Not
+reported upstream yet.
+
+To test: build a second recorder install from the new 006 (don't overwrite the current one), record
+the `seed0013-friday13-save-then-fullmoon-restore` input with `scripts/record-session.mjs`, and
+compare steps 48 and 98 with the public recording. Row 0 there means the public sessions predate
+the reset, and that is worth telling the organizers on #23. Row 1 means our applied change differs
+from theirs. Closes when the test is run and either the port or the report follows from it.
+
 ## Test infrastructure
 
 ### C2JS-017: assignment evaluated its sides in the wrong order. DONE (b768f36)
