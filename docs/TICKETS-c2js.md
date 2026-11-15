@@ -317,8 +317,9 @@ matcher. No effect on NetHack.
 1:30), dates before 1901 (Darwin returns -1), and local mean time before 1883. The standalone
 `mktime` also hardcodes offsets of -5 and -4, so other zones are wrong. No effect on NetHack.
 
-### C2JS-060: RNG from bytes past the last recorded step. FIXED
-The recorder writes each key as UTF-8 and stops at `moves.length + 1` reads, so a multi-byte key
+### C2JS-060: RNG from bytes past the last recorded step. WONTFIX (wrong recorder)
+Superseded by C2JS-065: the judged sessions send one byte per key, so this describes the old UTF-8
+recorder, not the judge. Kept for the record. The old recorder writes each key as UTF-8 and stops at `moves.length + 1` reads, so a multi-byte key
 leaves bytes unread at that point. They are already in the pipe, and C keeps running them until
 it is killed: their RNG and file writes land in the recording, their screens do not. The harness
 cut its input to `moves.length` bytes, so `'      €   €€.i   '` was 4 RNG calls short. It now reads
@@ -511,6 +512,48 @@ the `seed0013-friday13-save-then-fullmoon-restore` input with `scripts/record-se
 compare steps 48 and 98 with the public recording. Row 0 there means the public sessions predate
 the reset, and that is worth telling the organizers on #23. Row 1 means our applied change differs
 from theirs. Closes when the test is run and either the port or the report follows from it.
+
+### C2JS-065: the 2 failing held-out sessions. OPEN
+Main scores 13120 of 13126: 54 of 56 passing, RNG 99.9901%, RNG steps 99.9848%, screens 99.954%,
+animation frames 3006/3006. The steps figure works out to about 2 steps of 13,126 with wrong RNG,
+so one session diverges in RNG only at its very end. The screens lost add up to exactly 6 across
+the two sessions. From C2JS-062, the Nov 6 generated code redraws 78 more screens in these same
+two sessions without changing RNG, so they run code where the two trees differ and the local
+corpus doesn't.
+
+**Key input, settled.** `b2eac20` (Nov 15) repeated `8354f3c`'s experiment by mistake: keys as
+UTF-8 and steps cut at `moves.length+1` scored 13065, 53 passing, 2998/3006 animation frames, the
+same as Nov 10. Upstream `6ee30e6` agrees: "the recorder used for our own sessions already writes
+one byte per key", with keys "in the tty's 8-bit input domain". Before running a judge experiment,
+check this file for it.
+
+The harness now sends each UTF-16 code unit's low byte, the same as the fixed
+`scripts/record-session.mjs` (`Buffer.from(moves[i], 'latin1')`, also applied to our copy). That is
+the same as before for every key up to U+00FF. The four `env-key-*` recordings were re-recorded
+with the fixed recorder and pass. The old ones were made by the UTF-8 recorder and taught the
+wrong behavior (C2JS-060).
+
+**Ruled out on Nov 15, each against C:**
+
+| Hypothesis | Test | Result |
+|---|---|---|
+| Single-byte meta keys (M-a to M-z, M-?, bytes 0x80-0xFF in getlin, getpos, menus, counts, engrave, #name) | 50 new recordings | all pass |
+| Warning display (Monk XL7, XL15 roles, deep levels) | 24 recordings; `display_warning` covered | all pass |
+| rc options: all 104 settable booleans flipped from their default, plus 71 compound values (symsets, runmode, msg_window, number_pad, menustyle, hilite_status, menucolor, paranoid_confirmation, statuslines:3, perm_invent, ...) | 1,044 recordings, each option on 6 public inputs | all pass |
+| Node 22 (the contest promises Node 22+), v22.23.5 | 481 sessions | same as Node 26 |
+| Capture overflow: upstream grew `nomux_out` to 61,825 bytes for Gehennom maps | ours is 24,576, and the largest capture seen is 6,671 | no effect |
+| Elapsed time in ^X | `getnow()` is pinned by patch 001 | deterministic |
+
+**Coverage.** V8 block coverage of the Nov 6 tree over 4,306 local sessions (vtjeng's public
+recordings plus ours): 284 of the 2,627 changed functions never run. Most are Lua library
+internals, debug dumps and `sfbase`/`sfstruct` save-field code. Lists: `cross.json` from
+`semdiff/cross.mjs`. Macro copies such as `mon_warning` are dead code, so a function that never ran is not
+proof that the feature is missing.
+
+Next: features in the 284 that a held-out session could reach (`shade_glare`, `invoke_taming`,
+`invoke_charge_obj`, `throne_mon_sound`, `chat_with_nemesis`, `leaddead`, `charm_snakes`,
+`create_polymon`, `food_substitution`, `book_substitution`, `bee_eat_jelly`, `silver_sears`,
+`do_statusline2`). Record each in C and compare.
 
 ## Test infrastructure
 

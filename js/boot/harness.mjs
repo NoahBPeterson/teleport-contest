@@ -297,23 +297,13 @@ export async function runBootGame(opts) {
   // The canonical sessions were captured under tmux, whose pty line discipline
   // maps incoming CR to LF (ICRNL) before the game reads it. The recorder's
   // pipe feed replicates that (record-session.mjs); so must we.
-  // The recorder that made the judged sessions wrote each UTF-16 code unit of
-  // the move string as UTF-8 (Buffer.from(moves[i], 'utf8')), so a key above
-  // 0x7f reached the game as two or three bytes, and each half of a surrogate
-  // pair as U+FFFD (EF BF BD).  Feed the game the same bytes.
+  // Each UTF-16 code unit of the moves string is one key, sent as its low
+  // byte, as record-session.mjs does (Buffer.from(moves[i], 'latin1')). Keys
+  // up to U+00FF are unchanged; an emoji is two keys.
   for (let i = 0; i < moves.length; i++) {
     const c = moves.charCodeAt(i);
-    if (c === 13) inputQueue.push(10);
-    else if (c < 0x80) inputQueue.push(c);
-    else if (c < 0x800) inputQueue.push(0xc0 | (c >> 6), 0x80 | (c & 63));
-    else if (c >= 0xd800 && c <= 0xdfff) inputQueue.push(0xef, 0xbf, 0xbd);
-    else inputQueue.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+    inputQueue.push(c === 13 ? 10 : c & 0xff);
   }
-  // Each key is written as soon as the game blocks for input, so with
-  // multi-byte keys the game runs ahead: the recorder keeps one screen per
-  // input read and stops at moves.length + 1 of them, while the game goes on
-  // through the bytes already in the pipe (their RNG draws are in the log).
-  const maxSteps = moves.length + 1;
 
   const g = globalThis;
   const cptr = await import('../cptr.js');
@@ -1139,7 +1129,7 @@ export async function runBootGame(opts) {
       i = end + 1 + len;
     }
   }
-  const inputFrames = frames.filter((f) => f.kind === 'input').slice(0, maxSteps);
+  const inputFrames = frames.filter((f) => f.kind === 'input');
   const screens = inputFrames.map((f) => f.screen);
   const cursors = inputFrames.map((f) => [f.cx, f.cy, 1]);
   // animation frames grouped per step (frames between input boundaries)
@@ -1150,7 +1140,6 @@ export async function runBootGame(opts) {
       if (f.kind === 'anim') pending.push({ screen: f.screen, cursor: [f.cx, f.cy, 1] });
       else { animFramesByStep.push(pending); pending = []; }
     }
-    animFramesByStep.length = Math.min(animFramesByStep.length, maxSteps);
   }
 
   const luaLoads = luaPort ? luaPort.closeTrace() : [];

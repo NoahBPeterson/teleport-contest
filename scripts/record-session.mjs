@@ -630,7 +630,10 @@ async function recordSegment({
                 // way out.  (DEL / 0x7f is fine to send verbatim because the
                 // patched gettty seeds erase_char with '\177'.)
                 if (k === '\r') k = '\n';
-                child.stdin.write(Buffer.from(k, 'utf8'));
+                // A session key is a code point in the tty's 8-bit input
+                // domain (a meta key such as M-e is U+00E5): one byte per key,
+                // as upstream 6ee30e6 and the judged sessions' recorder do.
+                child.stdin.write(Buffer.from(k, 'latin1'));
                 armTimeout(20000, `after key ${nextKeyIdx}/${moves.length}`);
                 await fireSignals('after-key', steps.length);
             } else if (!child.stdin.writableEnded) {
