@@ -493,7 +493,20 @@ memory addresses. So these differences are C on Linux versus C on macOS:
 The port follows macOS, as do the public sessions. Which one the held-out sessions follow isn't
 known. Of the other ports read, one uses the glibc regex text and four use Darwin's.
 
-### C2JS-064: the new 006 patch's `nomux_reset_raw_mode()` contradicts a public session. OPEN (untested)
+### C2JS-064: the new 006 patch's `nomux_reset_raw_mode()` contradicts a public session. TESTED (not adopted)
+**Nov 15 test.** A second recorder built from upstream's new 006 (`build-recorder.sh` on a copy of
+`nethack-c/`, with the current install untouched) re-records the `seed0013-friday13-save-then-fullmoon-restore`
+input identically to the public recording except steps 48 and 98: cursor `[0,0,1]` against
+`[0,1,1]`, the same as our port with the reset. The old-006 build reproduces the public recording
+exactly. So the public sessions were recorded without the reset, and our JS for it matches C.
+
+Applied to the JS by hand (three assignments in `termcap.js`, one call in `tty_exit_nhwindows`,
+both trees, rebundled), the reset makes 17 of 407 local sessions fail on their final screen or
+cursor after a save or death, with RNG unchanged. All 17 were recorded with the old 006. serteal passes
+all 44 public and all 56 held-out sessions. That isn't possible if the held-out sessions show the
+reset and seed0013 doesn't, so the held-out sessions were almost certainly recorded without it.
+Not adopted, and no judge run used. Worth telling the organizers on #23 that the public sessions
+predate the reset (draft for approval first).
 Upstream `6ee30e6` (Nov 14, issue #23) changed `nethack-c/patches/006-nomux-capture.patch`: a larger
 `nomux_out`, and a new `nomux_reset_raw_mode()` called in `tty_exit_nhwindows()` after
 `tty_suspend_nhwindows()`. The commit says both were made in July and verified against the
@@ -549,6 +562,23 @@ recordings plus ours): 284 of the 2,627 changed functions never run. Most are Lu
 internals, debug dumps and `sfbase`/`sfstruct` save-field code. Lists: `cross.json` from
 `semdiff/cross.mjs`. Macro copies such as `mon_warning` are dead code, so a function that never ran is not
 proof that the feature is missing.
+
+**Fuzzing against C (Nov 15 evening).** Random but plausible keys (movement and runs, stairs,
+item commands with random answers, prayer, #chat/#sit/#loot, travel, ^X), random roles and race,
+8 datetimes (full moon, new moon, Friday the 13th, night), half in wizard mode with level
+teleports, wishes and monster creation:
+
+| Set | Sessions | Steps | Fail |
+|---|---|---|---|
+| Single segment, ~1,500 keys | 200 | 250,997 | 0 |
+| 2 to 5 segments, each saved and restored | 100 | 176,833 | 0 |
+| 2 to 4 segments, death by wand, bones saved then loaded (70 saved, 42 loaded) | 80 | 77,533 | 0 |
+| Wizard-mode scenarios for never-run functions (shade, snake charming, coyote, Platinum card, confuse monster, ...) | 63 | | 0 |
+
+About 505,000 steps without a difference from our C. So the two held-out failures are probably not
+port bugs that our C recorder can expose. More likely the organizers' recorder behaves differently
+from ours on some input (C2JS-063 lists known Linux/macOS differences; C2JS-064 rules out the new
+006). Generators: `tools/fuzz/`.
 
 Next: features in the 284 that a held-out session could reach (`shade_glare`, `invoke_taming`,
 `invoke_charge_obj`, `throne_mon_sound`, `chat_with_nemesis`, `leaddead`, `charm_snakes`,
