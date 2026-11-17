@@ -348,7 +348,7 @@ export function weapon_descr(obj) {
                         ))),
                         $sizeof_objdescr
                     ))
-                    : ((cptr.ldI32o(obj, $obj_globby) & 1) | 0
+                    : (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0) | 0
                         ? __s_glob
                         : cptr.ldPtro2(
                             def_oc_syms,
@@ -425,7 +425,9 @@ export function hitval(otmp, mon) {
     /* Put weapon vs. monster type "to hit" bonuses in below: */
 
     /* Blessed weapons used against undead or demons */
-    if (Is_weapon && (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && mon_hates_blessings(mon))
+    if (Is_weapon &&
+            cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 &&
+            mon_hates_blessings(mon))
         tmp = (tmp + 2) | 0;
 
     if (is_spear(otmp) && cptr.strchr(cptr.decay(kebabable), cptr.ld1so(ptr, $permonst_mlet)))
@@ -602,7 +604,7 @@ export function dmgval(otmp, mon) {
             cptr.ld1so(otmp, $obj_oclass) == NHC.CHAIN_CLASS) {
         let bonus = 0;
 
-        if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && mon_hates_blessings(mon))
+        if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 && mon_hates_blessings(mon))
             bonus = (bonus + rnd(4)) | 0;
         if (is_axe(otmp) && (cptr.eq((ptr), cptr.add(mons, NHC.PM_WOOD_GOLEM, $sizeof_permonst))))
             bonus = (bonus + rnd(4)) | 0;
@@ -611,7 +613,7 @@ export function dmgval(otmp, mon) {
                 mon_hates_silver(mon))
             bonus = (bonus + rnd(20)) | 0;
         if (artifact_light(otmp) &&
-                (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 &&
+                cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0) | 0 &&
                 (cptr.eq((ptr), cptr.add(mons, NHC.PM_GREMLIN, $sizeof_permonst))))
             bonus = (bonus + rnd(8)) | 0;
 
@@ -671,7 +673,7 @@ export function special_dmgval(magr, mdef, armask, silverhit_p) {
     }
 
     if (obj) {
-        if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && mon_hates_blessings(mdef))
+        if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 && mon_hates_blessings(mdef))
             bonus = (bonus + rnd(4)) | 0;
         /* the only silver armor is shield of reflection (silver dragon
            scales refer to color, not material) and the only way to hit
@@ -751,8 +753,12 @@ export function silver_sears(magr, mdef, silverhit) {
             ? cptr.ldI16o(uright.v, $obj_otyp)
             : NHC.STRANGE_OBJECT);
     let both;
-    let l_dknown = schar((uleft.v && (cptr.ldI32o(uleft.v, $obj_dknown) & 1) | 0 ? 1 : 0));
-    let r_dknown = schar((uright.v && (cptr.ldI32o(uright.v, $obj_dknown) & 1) | 0 ? 1 : 0));
+    let l_dknown = schar((uleft.v && cptr.ldBits(cptr.add(uleft.v, $obj_dknown), 1, 1, 0) | 0
+            ? 1
+            : 0));
+    let r_dknown = schar((uright.v && cptr.ldBits(cptr.add(uright.v, $obj_dknown), 1, 1, 0) | 0
+            ? 1
+            : 0));
     let l_ag = schar((((cptr.ldI32o2(objects, ltyp, $sizeof_objclass, $objclass_oc_material) & 31) |
         0) ==
         NHC.SILVER &&
@@ -1045,7 +1051,7 @@ export function select_rwep(mtmp) {
             for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
                 if (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS &&
                         (cptr.ldI16o(otmp, $obj_otyp) != NHC.LOADSTONE ||
-                            !(cptr.ldI32o(otmp, $obj_cursed) & 1))) {
+                            !cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))) {
                     cptr.stPtro(gp, $instance_globals_p_propellor, m_carrying(mtmp, NHC.SLING));
                     return otmp;
                 }
@@ -1104,7 +1110,7 @@ export function select_rwep(mtmp) {
             } else
                 for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp)) {
                     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOADSTONE &&
-                            !(cptr.ldI32o(otmp, $obj_cursed) & 1))
+                            !cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
                         return otmp;
                 }
         }
@@ -1409,7 +1415,7 @@ export function mon_wield_item(mon) {
                     pline_mon(mon, __s_s_tries_to_wield_s, Monnam(mon), doname(obj));
                     pline(__s_s_s, Yname2(mw_tmp), cptr.decay(welded_buf));
                 }
-                cptr.stI32o(mw_tmp, $obj_bknown, 1);
+                cptr.stBits(cptr.add(mw_tmp, $obj_bknown), 2, 1, 0, 1);
             }
             cptr.stI16o(mon, $monst_weapon_check, NHC.NO_WEAPON_WANTED);
             return 1;
@@ -1446,10 +1452,10 @@ export function mon_wield_item(mon) {
                     s_suffix(mon_nam(mon)),
                     mon_hand
                 );
-                cptr.stI32o(obj, $obj_bknown, 1);
+                cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 1);
             }
         }
-        if (artifact_light(obj) && !(cptr.ldI32o(obj, $obj_lamplit) & 1)) {
+        if (artifact_light(obj) && !cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0)) {
             begin_burn(obj, 0);
             if (canseemon(mon))
                 pline(
@@ -2821,7 +2827,7 @@ export function skill_init(class_skill) {
 export function setmnotwielded(mon, obj) {
     if (!obj)
         return;
-    if (artifact_light(obj) && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0) {
+    if (artifact_light(obj) && cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0) {
         end_burn(obj, 0);
         if (canseemon(mon))
             pline(

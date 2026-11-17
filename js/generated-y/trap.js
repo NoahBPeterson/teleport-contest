@@ -1227,8 +1227,8 @@ export function* erode_obj(otmp, ostr, type, ef_flags) {
             return NHM.ER_NOTHING;
     }
     erosion = is_primary
-            ? (cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0
-            : (cptr.ldI32o(otmp, $obj_oeroded2) & 3) | 0;
+            ? cptr.ldBits(cptr.add(otmp, $obj_oeroded), 0, 2, 0) | 0
+            : cptr.ldBits(cptr.add(otmp, $obj_oeroded2), 2, 2, 0) | 0;
 
     if (!ostr)
         ostr = (yield* cxname(otmp));
@@ -1236,14 +1236,14 @@ export function* erode_obj(otmp, ostr, type, ef_flags) {
     if (visobj && !(uvictim || vismon) && !(yield* strncmpi(ostr, __s_the, 4)))
         ostr = cptr.add(ostr, 4);
 
-    if (check_grease && (cptr.ldI32o(otmp, $obj_greased) & 1) | 0) {
+    if (check_grease && cptr.ldBits(cptr.add(otmp, $obj_greased), 1, 1, 0) | 0) {
         (yield* grease_protect(otmp, ostr, victim));
         return NHM.ER_GREASED;
     } else if (!erosion_matters(otmp)) {
         return NHM.ER_NOTHING;
     } else if (!vulnerable ||
-            ((cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0 &&
-                (cptr.ldI32o(otmp, $obj_rknown) & 1) | 0)) {
+            (cptr.ldBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0) | 0 &&
+                cptr.ldBits(cptr.add(otmp, $obj_rknown), 3, 1, 0) | 0)) {
         if (cptr.ld1so(flags, $flag_verbose) && print && (uvictim || vismon))
             (yield* pline(
                 __s_s_s_s_not_affected_by_s,
@@ -1253,10 +1253,10 @@ export function* erode_obj(otmp, ostr, type, ef_flags) {
                 cptr.ldPtro(__static_erode_obj_bythe, type, 8)
             ));
         return NHM.ER_NOTHING;
-    } else if ((cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0 ||
-            ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && !rnl(4))) {
+    } else if (cptr.ldBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0) | 0 ||
+            (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 && !rnl(4))) {
         if (cptr.ld1so(flags, $flag_verbose) &&
-                (print || (cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0) &&
+                (print || cptr.ldBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0) | 0) &&
                 (uvictim || vismon || visobj))
             (yield* pline(
                 __s_somehow_s_s_s_not_affected_by_the_s,
@@ -1270,8 +1270,8 @@ export function* erode_obj(otmp, ostr, type, ef_flags) {
          * the hero can distinguish this from an object that is
          * actually proof against damage.
          */
-        if ((cptr.ldI32o(otmp, $obj_oerodeproof) & 1)) {
-            cptr.stI32o(otmp, $obj_rknown, 1);
+        if (cptr.ldBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0)) {
+            cptr.stBits(cptr.add(otmp, $obj_rknown), 3, 1, 0, 1);
             if (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst)))
                 (yield* update_inventory());
         }
@@ -1295,16 +1295,28 @@ export function* erode_obj(otmp, ostr, type, ef_flags) {
             (yield* costly_alteration(otmp, cost_type));
 
         if (is_primary)
-            (cptr.stI32o(otmp, $obj_oeroded, cptr.ldI32o(otmp, $obj_oeroded) + 1)) - (1);
+            (cptr.stBits(
+                cptr.add(otmp, $obj_oeroded),
+                0,
+                2,
+                0,
+                cptr.ldBits(cptr.add(otmp, $obj_oeroded), 0, 2, 0) + 1
+            )) - (1);
         else
-            (cptr.stI32o(otmp, $obj_oeroded2, cptr.ldI32o(otmp, $obj_oeroded2) + 1)) - (1);
+            (cptr.stBits(
+                cptr.add(otmp, $obj_oeroded2),
+                2,
+                2,
+                0,
+                cptr.ldBits(cptr.add(otmp, $obj_oeroded2), 2, 2, 0) + 1
+            )) - (1);
 
         if (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst)))
             (yield* update_inventory());
 
         return NHM.ER_DAMAGED;
     } else if (ef_flags & NHM.EF_DESTROY) {
-        cptr.stI32o(otmp, $obj_in_use, 1);  /* in case of hangup during message w/ --More-- */
+        cptr.stBits(cptr.add(otmp, $obj_in_use), 2, 1, 0, 1);  /* in case of hangup during message w/ --More-- */
         if (uvictim || vismon || visobj) {
             let actbuf = new Uint8Array(256);
 
@@ -1412,7 +1424,7 @@ export function* grease_protect(otmp, ostr, victim) {
         (yield* pline(__s_s_s, (yield* Yobjnam2(otmp, __s_are)), cptr.decay(__static_grease_protect_txt)));
     }
     if (!rn2(2)) {
-        cptr.stI32o(otmp, $obj_greased, 0);
+        cptr.stBits(cptr.add(otmp, $obj_greased), 1, 1, 0, 0);
         if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT)) {
             (yield* pline_The(__s_grease_dissolves));
             (yield* update_inventory());
@@ -1604,23 +1616,10 @@ export function* maketrap(x, y, typ) {
                    spot; this trap will be deleted if/when the bridge is opened;
                    terrain becomes room floor even if it was moat, lava, or ice */
                 clear_flags = 0;  /* keep lev->drawbridgemask */
-                was_ice = schar((((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) &
-                    NHM.DB_UNDER) ==
+                was_ice = schar(((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.DB_UNDER) ==
                         NHM.DB_ICE));
-                cptr.stBits(
-                    cptr.add(lev, $rm_flags),
-                    0,
-                    5,
-                    0,
-                    cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) & -29
-                );
-                cptr.stBits(
-                    cptr.add(lev, $rm_flags),
-                    0,
-                    5,
-                    0,
-                    cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | NHM.DB_FLOOR
-                );
+                cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) & -29);
+                cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) | NHM.DB_FLOOR);
                 if (was_ice) {
                     /* subset of set_levltyp() after changing ice to floor;
                        frozen corpses resume rotting, no more ice to melt away */
@@ -1657,7 +1656,7 @@ export function* maketrap(x, y, typ) {
                 ));
             }
             if (clear_flags)
-                cptr.stBits(cptr.add(lev, $rm_flags), 0, 5, 0, 0);  /* set_levltyp doesn't take care of this [yet?] */
+                cptr.stI32o(lev, $rm_flags, 0);  /* set_levltyp doesn't take care of this [yet?] */
 
             (yield* unearth_objs(x, y));
             (yield* recalc_block_point(x, y));
@@ -1750,23 +1749,15 @@ export function* fall_through(td, ftflags) {
     } else if (Levitation() ||
             cptr.ldPtro(u, $you_ustuck) ||
             (!Can_fall_thru(cptr.add(u, $you_uz)) &&
-                !cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21
-                            ),
-                            cptr.ldI16o(u, $you_uy),
-                            $sizeof_rm
-                        ),
-                        $rm_candig
-                    ),
-                    7,
-                    1,
-                    0
-                )) ||
+                !(cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_candig
+                ) &
+                    1)) ||
             ((Flying() ||
                 ((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
@@ -1950,7 +1941,9 @@ export function* animate_statue(statue, x, y, cause, fail_reason) {
         /* restore a petrified monster */
         cptr.stI16(cc, x), cptr.stI16o(cc, $nhcoord_y, y);
         mon = (yield* montraits(statue, cc, schar((cause == NHM.ANIMATE_SPELL))));
-        if (mon && cptr.ld1so(mon, $monst_mtame) && !(cptr.ldI32o(mon, $monst_isminion) & 1))
+        if (mon &&
+                cptr.ld1so(mon, $monst_mtame) &&
+                !cptr.ldBits(cptr.add(mon, $monst_isminion), 5, 1, 0))
             (yield* wary_dog(mon, 1));
     } else {
         let sgend = (cptr.ld1so(statue, $obj_spe) & NHM.CORPSTAT_GENDER);
@@ -2004,12 +1997,12 @@ export function* animate_statue(statue, x, y, cause, fail_reason) {
     if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK))
         (yield* seemimic(mon));
     else
-        cptr.stI32o(mon, $monst_mundetected, 0);
-    cptr.stI32o(mon, $monst_msleeping, 0);
+        cptr.stBits(cptr.add(mon, $monst_mundetected), 6, 1, 0, 0);
+    cptr.stBits(cptr.add(mon, $monst_msleeping), 7, 1, 0, 0);
     if (cause == NHM.ANIMATE_NORMAL || cause == NHM.ANIMATE_SHATTER) {
         /* trap always releases hostile monster */
         cptr.st1o(mon, $monst_mtame, 0);  /* (might be petrified pet tossed onto trap) */
-        cptr.stI32o(mon, $monst_mpeaceful, 0);
+        cptr.stBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0, 0);
         set_malign(mon);
     }
 
@@ -2074,11 +2067,17 @@ export function* animate_statue(statue, x, y, cause, fail_reason) {
         if (cause != NHM.ANIMATE_NORMAL &&
                 (yield* costly_spot(x, y)) &&
                 ((cptr.ld1so((statue), $obj_where) == NHM.OBJ_INVENT)
-                    ? (cptr.ldI32o(statue, $obj_unpaid) & 1) | 0
-                    : !(cptr.ldI32o(statue, $obj_no_charge) & 1)) &&
+                    ? cptr.ldBits(cptr.add(statue, $obj_unpaid), 2, 1, 0) | 0
+                    : !cptr.ldBits(cptr.add(statue, $obj_no_charge), 3, 1, 0)) &&
                 (shkp = (yield* shop_keeper(cptr.ld1s((yield* in_rooms(x, y, NHC.SHOPBASE)))))) !== null &&
                 !cptr.eq(mon, shkp))
-            void (yield* stolen_value(statue, x, y, schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)), 0));
+            void (yield* stolen_value(
+                statue,
+                x,
+                y,
+                schar(cptr.ldBits(cptr.add(shkp, $monst_mpeaceful), 1, 1, 0)),
+                0
+            ));
 
         if (historic) {
             (yield* You_feel(__s_guilty_s, cptr.decay(__static_animate_statue_historic_statue_is_gone)));
@@ -2279,7 +2278,7 @@ function* t_missile(otyp, trap) {
 
     cptr.stI64o(otmp, $obj_quan, 1n);
     cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
-    cptr.stI32o(otmp, $obj_otrapped, 0);
+    cptr.stBits(cptr.add(otmp, $obj_otrapped), 7, 1, 0, 0);
     cptr.stI16o(otmp, $obj_ox, cptr.ldI16o(trap, $trap_tx)),
             cptr.stI16o(otmp, $obj_oy, cptr.ldI16o(trap, $trap_ty));
     return otmp;
@@ -2546,7 +2545,7 @@ function* trapeffect_arrow_trap(mtmp, trap, trflags) {
 
         return trapkilled
                 ? NHC.Trap_Killed_Mon
-                : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+                : (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                     ? NHC.Trap_Caught_Mon
                     : NHC.Trap_Effect_Finished);
     }
@@ -2581,7 +2580,7 @@ function* trapeffect_dart_trap(mtmp, trap, trflags) {
         (yield* pline(__s_a_little_dart_shoots_out_at_you));
         otmp.v = (yield* t_missile(NHC.DART, trap));
         if (!rn2(6))
-            cptr.stI32o(otmp.v, $obj_otrapped, 1);
+            cptr.stBits(cptr.add(otmp.v, $obj_otrapped), 7, 1, 0, 1);
         dam = (yield* dmgval(otmp.v, cptr.add(gy, $instance_globals_y_youmonst)));
         if (cptr.ldPtro(u, $you_usteed) && !rn2(2) && (yield* steedintrap(trap, otmp.v))) {
             ;  /* nothing */
@@ -2592,7 +2591,7 @@ function* trapeffect_dart_trap(mtmp, trap, trflags) {
             __s_little_dart
         ))) {
             if (otmp.v) {
-                if ((cptr.ldI32o(otmp.v, $obj_otrapped) & 1))
+                if (cptr.ldBits(cptr.add(otmp.v, $obj_otrapped), 7, 1, 0))
                     (yield* poisoned(
                         __s_dart,
                         NHC.A_CON,
@@ -2636,7 +2635,7 @@ function* trapeffect_dart_trap(mtmp, trap, trflags) {
         cptr.stI32o(trap, $trap_once, 1);
         otmp.v = (yield* t_missile(NHC.DART, trap));
         if (!rn2(6))
-            cptr.stI32o(otmp.v, $obj_otrapped, 1);
+            cptr.stBits(cptr.add(otmp.v, $obj_otrapped), 7, 1, 0, 1);
         if (in_sight)
             (yield* seetrap(trap));
         if ((yield* thitm(7, mtmp, otmp.v, 0, 0)))
@@ -2644,7 +2643,7 @@ function* trapeffect_dart_trap(mtmp, trap, trflags) {
 
         return trapkilled
                 ? NHC.Trap_Killed_Mon
-                : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+                : (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                     ? NHC.Trap_Caught_Mon
                     : NHC.Trap_Effect_Finished);
     }
@@ -2749,7 +2748,7 @@ function* trapeffect_rocktrap(mtmp, trap, trflags) {
 
         return trapkilled
                 ? NHC.Trap_Killed_Mon
-                : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+                : (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                     ? NHC.Trap_Caught_Mon
                     : NHC.Trap_Effect_Finished);
     }
@@ -2962,7 +2961,7 @@ function* trapeffect_bear_trap(mtmp, trap, trflags) {
                 !m_in_air(mtmp) &&
                 !is_whirly(mptr) &&
                 !((cptr.ldU64o((mptr), $permonst_mflags1) & 1048576n) != 0n)) {
-            cptr.stI32o(mtmp, $monst_mtrapped, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 1);
             if (in_sight) {
                 (yield* pline_mon(
                     mtmp,
@@ -2989,12 +2988,12 @@ function* trapeffect_bear_trap(mtmp, trap, trflags) {
                 (yield* seetrap(trap));
             }
         }
-        if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 && !(yield* wearing_iron_shoes(mtmp)))
+        if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0 && !(yield* wearing_iron_shoes(mtmp)))
             trapkilled = (yield* thitm(0, mtmp, null, d(2, 4), 0));
 
         return trapkilled
                 ? NHC.Trap_Killed_Mon
-                : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+                : (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                     ? NHC.Trap_Caught_Mon
                     : NHC.Trap_Effect_Finished);
     }
@@ -3102,7 +3101,7 @@ function* trapeffect_rust_trap(mtmp, trap, trflags) {
                because cases 1 and 2 target them [via water_damage()] */
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
                 nextobj = cptr.ldPtr(otmp);
-                if ((cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 &&
+                if (cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0) | 0 &&
                         !cptr.eq(otmp, uwep.v) &&
                         (!cptr.eq(otmp, uswapwep.v) || !cptr.ld1so(u, $you_twoweap)))
                     void (yield* splash_lit(otmp));
@@ -3206,7 +3205,7 @@ function* trapeffect_rust_trap(mtmp, trap, trflags) {
             if (in_sight)
                 (yield* pline(__s_s_s__3, A_gush_of_water_hits, (yield* mon_nam(mtmp))));
             for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
-                if ((cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 &&
+                if (cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0) | 0 &&
                         (cptr.ldI64o(otmp, $obj_owornmask) & 1280n) == 0n)
                     void (yield* splash_lit(otmp));
             if ((target = (yield* which_armor(mtmp, 2n))) !== null)
@@ -3237,7 +3236,7 @@ function* trapeffect_rust_trap(mtmp, trap, trflags) {
 
             return trapkilled
                     ? NHC.Trap_Killed_Mon
-                    : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+                    : (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                         ? NHC.Trap_Caught_Mon
                         : NHC.Trap_Effect_Finished);
         }
@@ -3362,7 +3361,7 @@ function* trapeffect_fire_trap(mtmp, trap, trflags) {
 
         return trapkilled
                 ? NHC.Trap_Killed_Mon
-                : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+                : (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                     ? NHC.Trap_Caught_Mon
                     : NHC.Trap_Effect_Finished);
     }
@@ -3615,7 +3614,8 @@ function* trapeffect_pit(mtmp, trap, trflags) {
 
         fallverb = __s_falls;
         if (!grounded(mptr) ||
-                ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && count_wsegs(mtmp) > 5)) {
+                (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0) | 0 &&
+                    count_wsegs(mtmp) > 5)) {
             if (forcetrap && !Sokoban()) {
                 /* openfallingtrap; not inescapable here */
                 if (in_sight) {
@@ -3629,7 +3629,7 @@ function* trapeffect_pit(mtmp, trap, trflags) {
             fallverb = __s_is_dragged;  /* sokoban pit */
         }
         if (!((cptr.ldU64o((mptr), $permonst_mflags1) & 8n) != 0n))
-            cptr.stI32o(mtmp, $monst_mtrapped, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 1);
         if (in_sight) {
             (yield* pline_mon(
                 mtmp,
@@ -3652,7 +3652,7 @@ function* trapeffect_pit(mtmp, trap, trflags) {
 
         return trapkilled
                 ? NHC.Trap_Killed_Mon
-                : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+                : (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                     ? NHC.Trap_Caught_Mon
                     : NHC.Trap_Effect_Finished);
     }
@@ -3700,7 +3700,8 @@ function* trapeffect_hole(mtmp, trap, trflags) {
             return NHC.Trap_Effect_Finished;  /* don't activate it after all */
         }
         if (!grounded(mptr) ||
-                ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && count_wsegs(mtmp) > 5) ||
+                (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0) | 0 &&
+                    count_wsegs(mtmp) > 5) ||
                 cptr.ld1uo(mptr, $permonst_msize) >= NHM.MZ_HUGE) {
             if (forcetrap && !Sokoban()) {
                 /* openfallingtrap; not inescapable here */
@@ -3856,7 +3857,7 @@ function* trapeffect_web(mtmp, trap, trflags) {
                 /* mintrap currently does not return Trap_Killed_Mon
                    (mon died) for webs */
                 if ((yield* mintrap(cptr.ldPtro(u, $you_usteed), trflags)) != NHC.Trap_Effect_Finished) {
-                    cptr.stI32o(cptr.ldPtro(u, $you_usteed), $monst_mtrapped, 0);
+                    cptr.stBits(cptr.add(cptr.ldPtro(u, $you_usteed), $monst_mtrapped), 2, 1, 0, 0);
                     if (((cptr.ldU64o(
                         (cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)),
                         $permonst_mflags2
@@ -3916,7 +3917,7 @@ function* trapeffect_web(mtmp, trap, trflags) {
                 if (!in_sight) {
                     ;
                     (yield* You_hear(__s_the_roaring_of_a_confused_bear));
-                    cptr.stI32o(mtmp, $monst_mtrapped, 1);
+                    cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 1);
                     break;
                 }
                 // @FallThrough
@@ -3925,7 +3926,8 @@ function* trapeffect_web(mtmp, trap, trflags) {
                 if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_GIANT ||
                         (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_DRAGON &&
                             ((cptr.ldU64o((mptr), $permonst_mflags2) & 33554432n) != 0n)) ||
-                        ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && count_wsegs(mtmp) > 5)) {
+                        (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0) | 0 &&
+                            count_wsegs(mtmp) > 5)) {
                     tear_web = 1;
                 } else if (in_sight) {
                     (yield* pline_mon(
@@ -3936,7 +3938,7 @@ function* trapeffect_web(mtmp, trap, trflags) {
                     ));
                     (yield* seetrap(trap));
                 }
-                cptr.stI32o(mtmp, $monst_mtrapped, (tear_web ? 0 : 1) >>> 0);
+                cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, (tear_web ? 0 : 1) >>> 0);
                 break;
             case NHC.PM_TITANOTHERE:
             case NHC.PM_BALUCHITHERIUM:
@@ -3963,7 +3965,7 @@ function* trapeffect_web(mtmp, trap, trflags) {
                 ));
             (yield* deltrap(trap));
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
-        } else if (forcetrap && !(cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) {
+        } else if (forcetrap && !cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0)) {
             if (in_sight) {
                 (yield* pline_mon(
                     mtmp,
@@ -3974,7 +3976,7 @@ function* trapeffect_web(mtmp, trap, trflags) {
                 (yield* seetrap(trap));
             }
         }
-        return (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+        return cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                 ? NHC.Trap_Caught_Mon
                 : NHC.Trap_Effect_Finished;
     }
@@ -4133,7 +4135,7 @@ function* trapeffect_anti_magic(mtmp, trap, trflags) {
 
         /* similar to hero's case, more or less */
         if (!resists_magm(mtmp)) {
-            if (!(cptr.ldI32o(mtmp, $monst_mcan) & 1) &&
+            if (!cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0) &&
                     (attacktype(mptr, NHM.AT_MAGC) || attacktype(mptr, NHM.AT_BREA))) {
                 cptr.stI32o(
                     mtmp,
@@ -4172,7 +4174,7 @@ function* trapeffect_anti_magic(mtmp, trap, trflags) {
         }
         return trapkilled
                 ? NHC.Trap_Killed_Mon
-                : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+                : (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                     ? NHC.Trap_Caught_Mon
                     : NHC.Trap_Effect_Finished);
     }
@@ -4416,7 +4418,7 @@ function* trapeffect_landmine(mtmp, trap, trflags) {
         }
         return trapkilled
                 ? NHC.Trap_Killed_Mon
-                : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+                : (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                     ? NHC.Trap_Caught_Mon
                     : NHC.Trap_Effect_Finished);
     }
@@ -4497,7 +4499,7 @@ function* trapeffect_rolling_boulder_trap(mtmp, trap, trflags) {
             }
             return trapkilled
                     ? NHC.Trap_Killed_Mon
-                    : ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+                    : (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                         ? NHC.Trap_Caught_Mon
                         : NHC.Trap_Effect_Finished);
         }
@@ -4715,7 +4717,7 @@ export function* immune_to_trap(mon, ttype) {
 
                 /* following conditional lifted from mintrap ANTI_MAGIC logic */
             } else if (!resists_magm(mon) &&
-                    ((cptr.ldI32o(mon, $monst_mcan) & 1) | 0 ||
+                    (cptr.ldBits(cptr.add(mon, $monst_mcan), 4, 1, 0) | 0 ||
                         (!attacktype(pm, NHM.AT_MAGC) && !attacktype(pm, NHM.AT_BREA)))) {
                 return NHC.TRAP_CLEARLY_IMMUNE;
             }
@@ -4777,7 +4779,7 @@ export function* immune_to_trap(mon, ttype) {
                     if ((cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_FIRE ||
                         cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_FIREBALL) &&
                             (!is_you ||
-                                ((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
+                                (cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0 &&
                                     (cptr.ldI32o2(
                                         objects,
                                         cptr.ldI16o(obj, $obj_otyp),
@@ -5123,7 +5125,7 @@ export function* blow_up_landmine(trap) {
     (yield* del_engr_at(x, y));
     (yield* wake_nearto(x, y, 400));
     if (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR))
-        cptr.stBits(cptr.add(lev, $rm_flags), 0, 5, 0, NHM.D_BROKEN);
+        cptr.stI32o(lev, $rm_flags, NHM.D_BROKEN);
     /* destroy drawbridge if present */
     if (cptr.ld1so(lev, $rm_typ) == NHC.DRAWBRIDGE_DOWN || is_drawbridge_wall(x, y) >= 0) {
         dbx.v = x, dby.v = y;
@@ -5227,7 +5229,13 @@ export function launch_in_progress() {
 /** C ref: trap.c:3244 */
 export function* force_launch_placement() {
     if (cptr.ldPtro(gl, $instance_globals_l_launchplace)) {
-        cptr.stI32o(cptr.ldPtro(gl, $instance_globals_l_launchplace), $obj_otrapped, 0);
+        cptr.stBits(
+            cptr.add(cptr.ldPtro(gl, $instance_globals_l_launchplace), $obj_otrapped),
+            7,
+            1,
+            0,
+            0
+        );
         (yield* place_object(
             cptr.ldPtro(gl, $instance_globals_l_launchplace),
             cptr.ldI16o(gl, $instance_globals_l_launchplace + $launchplace_x),
@@ -5367,7 +5375,7 @@ export function* launch_obj(otyp, x1, y1, x2, y2, style) {
         }
         case 5: {
             /* use otrapped as a flag to ohitmon */
-            cptr.stI32o(singleobj.v, $obj_otrapped, 1);
+            cptr.stBits(cptr.add(singleobj.v, $obj_otrapped), 7, 1, 0, 1);
             style &= -129;
             // @FallThrough
             ;
@@ -5631,7 +5639,7 @@ export function* launch_obj(otyp, x1, y1, x2, y2, style) {
                             ) &
                                     NHM.IN_SIGHT) != 0))
                                 (yield* pline_mon(mtmp, __s_s_snatches_the_boulder, (yield* Monnam(mtmp))));
-                            cptr.stI32o(singleobj.v, $obj_otrapped, 0);
+                            cptr.stBits(cptr.add(singleobj.v, $obj_otrapped), 7, 1, 0, 0);
                             void (yield* mpickobj(mtmp, singleobj.v));
                             used_up = 1;
                             launch_drop_spot(null, 0, 0);
@@ -5698,7 +5706,7 @@ export function* launch_obj(otyp, x1, y1, x2, y2, style) {
                                     (yield* deltrap(t));
                                     (yield* del_engr_at(x, y));
                                     (yield* place_object(singleobj.v, x, y));
-                                    cptr.stI32o(singleobj.v, $obj_otrapped, 0);
+                                    cptr.stBits(cptr.add(singleobj.v, $obj_otrapped), 7, 1, 0, 0);
                                     (yield* fracture_rock(singleobj.v));
                                     void (yield* scatter(x, y, 4, 31, null));
                                     if (((cptr.ld1uo(
@@ -5737,7 +5745,7 @@ export function* launch_obj(otyp, x1, y1, x2, y2, style) {
                                     (yield* pline_xy(x, y, __s_suddenly_the_rolling_boulder_disappears));
                                 else if (!Deaf())
                                     (yield* You_hear(__s_a_rumbling_stop_abruptly));
-                                cptr.stI32o(singleobj.v, $obj_otrapped, 0);
+                                cptr.stBits(cptr.add(singleobj.v, $obj_otrapped), 7, 1, 0, 0);
                                 if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.TELEP_TRAP) {
                                     void (yield* rloco(singleobj.v));
                                 } else {
@@ -5811,12 +5819,14 @@ export function* launch_obj(otyp, x1, y1, x2, y2, style) {
                         ));
                         (yield* obj_extract_self(otmp2));
                         /* pass off the otrapped flag to the next boulder */
-                        cptr.stI32o(
-                            otmp2,
-                            $obj_otrapped,
-                            (cptr.ldI32o(singleobj.v, $obj_otrapped) & 1)
+                        cptr.stBits(
+                            cptr.add(otmp2, $obj_otrapped),
+                            7,
+                            1,
+                            0,
+                            cptr.ldBits(cptr.add(singleobj.v, $obj_otrapped), 7, 1, 0)
                         );
-                        cptr.stI32o(singleobj.v, $obj_otrapped, 0);
+                        cptr.stBits(cptr.add(singleobj.v, $obj_otrapped), 7, 1, 0, 0);
                         (yield* place_object(singleobj.v, x, y));
                         singleobj.v = otmp2;
                         otmp2 = null;
@@ -5833,22 +5843,13 @@ export function* launch_obj(otyp, x1, y1, x2, y2, style) {
                         set_msg_xy(x, y);
                         (yield* pline_The(__s_boulder_crashes_through_a_door));
                     }
-                    cptr.stBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0,
+                    cptr.stI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags,
                         NHM.D_BROKEN
                     );
                     if (dist)
@@ -5889,7 +5890,7 @@ export function* launch_obj(otyp, x1, y1, x2, y2, style) {
             (yield* tmp_at(-7, 0));
             launch_drop_spot(null, 0, 0);
             if (!used_up) {
-                cptr.stI32o(singleobj.v, $obj_otrapped, 0);
+                cptr.stBits(cptr.add(singleobj.v, $obj_otrapped), 7, 1, 0, 0);
                 (yield* place_object(singleobj.v, x2, y2));
                 (yield* newsym(x2, y2));
                 return 1;
@@ -6114,8 +6115,8 @@ export function* mintrap(mtmp, mintrapflags) {
     let trap_result = NHC.Trap_Effect_Finished;
 
     if (!trap) {
-        cptr.stI32o(mtmp, $monst_mtrapped, 0);  /* perhaps teleported? */
-    } else if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) {
+        cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);  /* perhaps teleported? */
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0)) {
         if (!(cptr.ldI32o(trap, $trap_tseen) & 1) &&
                 ((cptr.ld1uo(
                     cptr.ldPtro(
@@ -6141,7 +6142,7 @@ export function* mintrap(mtmp, mintrapflags) {
             if (sobj_at(NHC.BOULDER, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) &&
                     is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31))) {
                 if (!rn2(2)) {
-                    cptr.stI32o(mtmp, $monst_mtrapped, 0);
+                    cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
                     if (canseemon(mtmp))
                         (yield* pline_mon(mtmp, __s_s_pulls_free, (yield* Monnam(mtmp))));
                     (yield* fill_pit(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
@@ -6163,7 +6164,7 @@ export function* mintrap(mtmp, mintrapflags) {
                             (yield* trapname((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0, 0))
                         ));
                 }
-                cptr.stI32o(mtmp, $monst_mtrapped, 0);
+                cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
             }
         } else if (((cptr.ldU64o((mptr), $permonst_mflags1) & 2147483648n) != 0n)) {
             if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP) {
@@ -6171,7 +6172,7 @@ export function* mintrap(mtmp, mintrapflags) {
                     (yield* pline_mon(mtmp, __s_s_eats_a_bear_trap, (yield* Monnam(mtmp))));
                 (yield* deltrap(trap));
                 cptr.stI32o(mtmp, $monst_meating, 5);
-                cptr.stI32o(mtmp, $monst_mtrapped, 0);
+                cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
             } else if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.SPIKED_PIT) {
                 if (canseemon(mtmp))
                     (yield* pline_mon(mtmp, __s_s_munches_on_some_spikes, (yield* Monnam(mtmp))));
@@ -6179,7 +6180,7 @@ export function* mintrap(mtmp, mintrapflags) {
                 cptr.stI32o(mtmp, $monst_meating, 5);
             }
         }
-        trap_result = (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+        trap_result = cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
                 ? NHC.Trap_Caught_Mon
                 : NHC.Trap_Effect_Finished;
     } else {
@@ -6233,7 +6234,7 @@ export function* mintrap(mtmp, mintrapflags) {
            zaps wand of locking or spell of wizard lock at spot triggering
            the trap and trapping mtmp there) */
         if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) &&
-                (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0) {
+                cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0) {
             let alreadyspotted = schar(canspotmon(mtmp));
 
             (yield* maybe_unhide_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
@@ -7106,10 +7107,10 @@ function* domagictrap() {
                 }
             case 20:
                 {
-                    let pseudo = cptr.alloc(216);
+                    let pseudo = cptr.alloc(112);
                     let save_conf = HConfusion();
 
-                    cptr.memcpy(pseudo, cg, 216);  /* force 'uncursed' and zero out oextra */
+                    cptr.memcpy(pseudo, cg, 112);  /* force 'uncursed' and zero out oextra */
                     /* used to be SCR_REMOVE_CURSE but that could cause seffects()
                        to have hero discover scroll of remove curse */
                     cptr.stI16o(pseudo, $obj_otyp, NHC.SPE_REMOVE_CURSE);
@@ -7309,7 +7310,7 @@ export function* lava_damage(obj, x, y) {
             cptr.ld1uo2(objects, otyp, $sizeof_objclass, $objclass_oc_oprop) != NHC.FIRE_RES &&
             otyp != NHC.WAN_FIRE &&
             otyp != NHC.FIRE_HORN &&
-            !(cptr.ldI32o(obj, $obj_oerodeproof) & 1) &&
+            !cptr.ldBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0) &&
             !(cptr.ldPtro((obj), $obj_cobj) !== null)) {
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
             NHM.IN_SIGHT) !=
@@ -7357,7 +7358,7 @@ export function* acid_damage(obj) {
             inventory_resistance_check(NHM.AD_ACID))
         return;
 
-    if ((cptr.ldI32o(obj, $obj_greased) & 1)) {
+    if (cptr.ldBits(cptr.add(obj, $obj_greased), 1, 1, 0)) {
         (yield* grease_protect(obj, null, victim));
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS &&
             cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_BLANK_PAPER) {
@@ -7372,7 +7373,7 @@ export function* acid_damage(obj) {
         }
         cptr.stI16o(obj, $obj_otyp, NHC.SCR_BLANK_PAPER);
         cptr.st1o(obj, $obj_spe, 0);
-        cptr.stI32o(obj, $obj_dknown, 0);
+        cptr.stBits(cptr.add(obj, $obj_dknown), 1, 1, 0, 0);
     } else
         (yield* erode_obj(obj, null, NHM.ERODE_CORRODE, 5));
 }
@@ -7392,9 +7393,9 @@ function* pot_acid_damage(obj, in_invent, described) {
     exploded = 0;
 
     if (Blind() && !in_invent)
-        cptr.stI32o(obj, $obj_dknown, 0);
+        cptr.stBits(cptr.add(obj, $obj_dknown), 1, 1, 0, 0);
     if (cptr.ld1so(ga, $instance_globals_a_acid_ctx + $h2o_ctx_ctx_valid))
-        exploded = schar((((cptr.ldI32o(obj, $obj_dknown) & 1) | 0
+        exploded = schar(((cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0
                 ? cptr.ldI32o(ga, $instance_globals_a_acid_ctx)
                 : cptr.ldI32o(ga, $instance_globals_a_acid_ctx + $h2o_ctx_unk_boom)) > 0));
     if (described) {
@@ -7427,7 +7428,7 @@ function* pot_acid_damage(obj, in_invent, described) {
         ));
     }
     if (cptr.ld1so(ga, $instance_globals_a_acid_ctx + $h2o_ctx_ctx_valid)) {
-        if ((cptr.ldI32o(obj, $obj_dknown) & 1))
+        if (cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0))
             (cptr.stI32o(
                 ga,
                 $instance_globals_a_acid_ctx,
@@ -7476,9 +7477,9 @@ export function* water_damage(obj, ostr, force) {
            final spe is 1..7 and always greater than its starting value */
         (yield* wet_a_towel(obj, -rnd((7 - cptr.ld1so(obj, $obj_spe)) | 0), 1));
         return NHM.ER_NOTHING;
-    } else if ((cptr.ldI32o(obj, $obj_greased) & 1)) {
+    } else if (cptr.ldBits(cptr.add(obj, $obj_greased), 1, 1, 0)) {
         if (!rn2(2)) {
-            cptr.stI32o(obj, $obj_greased, 0);
+            cptr.stBits(cptr.add(obj, $obj_greased), 1, 1, 0, 0);
             if (in_invent) {
                 (yield* pline_The(__s_grease_on_s_washes_off, (yield* yname(obj))));
                 described = 1;  /* used to modify potion feedback */
@@ -7492,7 +7493,8 @@ export function* water_damage(obj, ostr, force) {
         }
         return NHM.ER_GREASED;
     } else if (Is_container(obj) &&
-            (!Waterproof_container(obj) || ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 && !rn2(3)))) {
+            (!Waterproof_container(obj) ||
+                (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 && !rn2(3)))) {
         if (in_invent) {
             (yield* pline(__s_some_s_gets_into_your_s, hliquid(__s_water), ostr));
             cptr.st1o(gm, $instance_globals_m_mentioned_water, schar((!Hallucination())));
@@ -7525,7 +7527,7 @@ export function* water_damage(obj, ostr, force) {
             (yield* Your(__s_s_s__4, ostr, (yield* vtense(ostr, __s_fade))));
 
         cptr.stI16o(obj, $obj_otyp, NHC.SCR_BLANK_PAPER);
-        cptr.stI32o(obj, $obj_dknown, 0);
+        cptr.stBits(cptr.add(obj, $obj_dknown), 1, 1, 0, 0);
         cptr.st1o(obj, $obj_spe, 0);
         if (in_invent)
             (yield* update_inventory());
@@ -7560,7 +7562,7 @@ export function* water_damage(obj, ostr, force) {
            on since that replaces it with new book and studied count of 0 */
         if (cptr.ldI32o(obj, $obj_usecount))
             cptr.stI32o(obj, $obj_usecount, rn2(cptr.ldI32o(obj, $obj_usecount)));
-        cptr.stI32o(obj, $obj_dknown, 0);
+        cptr.stBits(cptr.add(obj, $obj_dknown), 1, 1, 0, 0);
         /* blanking a novel is more involved than blanking a spellbook */
         if (otyp == NHC.SPE_NOVEL)
             (yield* blank_novel(obj));
@@ -7571,14 +7573,20 @@ export function* water_damage(obj, ostr, force) {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_ACID) {
             (yield* pot_acid_damage(obj, in_invent, described));
             return NHM.ER_DESTROYED;
-        } else if ((cptr.ldI32o(obj, $obj_oeroded) & 3)) {
+        } else if (cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0)) {
             if (in_invent)
                 (yield* Your(__s_s_s_further, ostr, (yield* vtense(ostr, __s_dilute))));
 
             cptr.stI16o(obj, $obj_otyp, NHC.POT_WATER);
-            cptr.stI32o(obj, $obj_dknown, 0);
-            cptr.stI32o(obj, $obj_blessed, cptr.stI32o(obj, $obj_cursed, 0));
-            cptr.stI32o(obj, $obj_oeroded, 0);
+            cptr.stBits(cptr.add(obj, $obj_dknown), 1, 1, 0, 0);
+            cptr.stBits(
+                cptr.add(obj, $obj_blessed),
+                1,
+                1,
+                0,
+                cptr.stBits(cptr.add(obj, $obj_cursed), 0, 1, 0, 0)
+            );
+            cptr.stBits(cptr.add(obj, $obj_oeroded), 0, 2, 0, 0);
             if (in_invent)
                 (yield* update_inventory());
             return NHM.ER_DAMAGED;
@@ -7586,7 +7594,13 @@ export function* water_damage(obj, ostr, force) {
             if (in_invent)
                 (yield* Your(__s_s_s__4, ostr, (yield* vtense(ostr, __s_dilute))));
 
-            (cptr.stI32o(obj, $obj_oeroded, cptr.ldI32o(obj, $obj_oeroded) + 1)) - (1);
+            (cptr.stBits(
+                cptr.add(obj, $obj_oeroded),
+                0,
+                2,
+                0,
+                cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) + 1
+            )) - (1);
             if (in_invent)
                 (yield* update_inventory());
             return NHM.ER_DAMAGED;
@@ -7669,7 +7683,7 @@ function* emergency_disrobe(lostsome) {
                  * of being taken off or stolen.
                  */
                 if (!((cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE &&
-                    (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) ||
+                    cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0) ||
                         cptr.eq(obj, uamul.v) ||
                         cptr.eq(obj, uleft.v) ||
                         cptr.eq(obj, uright.v) ||
@@ -7679,12 +7693,12 @@ function* emergency_disrobe(lostsome) {
                         cptr.eq(obj, uarmg.v) ||
                         cptr.eq(obj, uarmf.v) ||
                         cptr.eq(obj, uarmu.v) ||
-                        ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 &&
+                        (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 &&
                             (cptr.eq(obj, uarmh.v) || cptr.eq(obj, uarms.v))) ||
                         (yield* welded(obj)) ||
                         cptr.ldI32o(obj, $obj_o_id) ==
                             cptr.ldI32o(gs, $instance_globals_s_stealoid) ||
-                        (cptr.ldI32o(obj, $obj_in_use) & 1) | 0))
+                        cptr.ldBits(cptr.add(obj, $obj_in_use), 2, 1, 0) | 0))
                     otmp = obj;
                 /* reached the mark and found some stuff to drop? */
                 if (--i < 0 && otmp)
@@ -8278,7 +8292,7 @@ export function* cnv_trap_obj(otyp, cnt, ttmp, bury_it) {
     cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
     /* Only dart traps are capable of being poisonous */
     if (otyp != NHC.DART)
-        cptr.stI32o(otmp, $obj_otrapped, 0);
+        cptr.stBits(cptr.add(otmp, $obj_otrapped), 7, 1, 0, 0);
     (yield* place_object(otmp, cptr.ldI16o(ttmp, $trap_tx), cptr.ldI16o(ttmp, $trap_ty)));
     if (bury_it) {
         /* magical digging first disarms this trap, then will unearth it */
@@ -8303,8 +8317,8 @@ export function* cnv_trap_obj(otyp, cnt, ttmp, bury_it) {
         $instance_globals_saved_l_level + $dlevel_t_monsters
     ))) !==
         null) &&
-            (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
-        cptr.stI32o(mtmp, $monst_mtrapped, 0);
+            cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0)
+        cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
     (yield* deltrap(ttmp));
 }
 
@@ -8413,7 +8427,7 @@ function* try_disarm(ttmp, force_failure) {
     let holdingtrap = schar((ttype == NHC.BEAR_TRAP || ttype == NHC.WEB ? 1 : 0));
 
     /* Test for monster first, monsters are displayed instead of trap. */
-    if (mtmp && (!(cptr.ldI32o(mtmp, $monst_mtrapped) & 1) || !holdingtrap)) {
+    if (mtmp && (!cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) || !holdingtrap)) {
         (yield* pline(__s_s_is_in_the_way, (yield* Monnam(mtmp))));
         return 0;
     }
@@ -8490,7 +8504,7 @@ function* try_disarm(ttmp, force_failure) {
                             (yield* dismount_steed(NHC.DISMOUNT_FELL));
                         }
                     }
-                    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1))
+                    if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0))
                         (yield* pline(__s_s_remains_entangled, (yield* Monnam(mtmp))));
                 }
             } else if (under_u) {
@@ -8518,15 +8532,15 @@ function* try_disarm(ttmp, force_failure) {
 function* reward_untrap(ttmp, mtmp) {
     if (!(cptr.ldI32o(ttmp, $trap_madeby_u) & 1)) {
         if (rnl(10) < 8 &&
-                !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) &&
                 !helpless(mtmp) &&
-                !(cptr.ldI32o(mtmp, $monst_mfrozen) & 127) &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) &&
                 !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) !=
                     0n) &&
                 !((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_geno) & NHM.G_UNIQ) !=
                     0) &&
                 cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_HUMAN) {
-            cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
             set_malign(mtmp);  /* reset alignment */
             (yield* pline(__s_s_is_grateful, (yield* Monnam(mtmp))));
         }
@@ -8568,7 +8582,7 @@ function* disarm_holdingtrap(ttmp) {
         $instance_globals_saved_l_level + $dlevel_t_monsters
     ))) !==
             null) {
-        cptr.stI32o(mtmp, $monst_mtrapped, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
         (yield* You(
             __s_extract_s_from_s_s,
             (yield* mon_nam(mtmp)),
@@ -8637,7 +8651,7 @@ function unsqueak_ok(obj) {
         return NHC.GETOBJ_SUGGEST;
 
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL &&
-            (cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
+            cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0 &&
             (cptr.ldI32o2(objects, NHC.POT_OIL, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0)
         return NHC.GETOBJ_SUGGEST;
 
@@ -8661,8 +8675,9 @@ function* disarm_squeaky_board(ttmp) {
     if (!obj)
         return 0;
 
-    bad_tool = schar(((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ||
-        ((cptr.ldI16o(obj, $obj_otyp) != NHC.POT_OIL || (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0) &&
+    bad_tool = schar((cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 ||
+        ((cptr.ldI16o(obj, $obj_otyp) != NHC.POT_OIL ||
+            cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0) &&
             (cptr.ldI16o(obj, $obj_otyp) != NHC.CAN_OF_GREASE || !cptr.ld1so(obj, $obj_spe)))
             ? 1
             : 0));
@@ -8725,13 +8740,13 @@ function* try_lift(mtmp, ttmp, xtra_wt, stuff) {
             stuff ? __s_carrying_too_much : __s_too_heavy
         ));
         if (!(cptr.ldI32o(ttmp, $trap_madeby_u) & 1) &&
-                !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) &&
-                (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0 &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) &&
+                cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0) | 0 &&
                 !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) !=
                     0n) &&
                 cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_HUMAN &&
                 rnl(10) < 3) {
-            cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
             set_malign(mtmp);  /* reset alignment */
             (yield* pline(__s_s_thinks_it_was_nice_of_you_to_try, (yield* Monnam(mtmp))));
         }
@@ -8761,7 +8776,7 @@ function* help_monster_out(mtmp, ttmp) {
      *
      * Test the monster first - monsters are displayed before traps.
      */
-    if (!(cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) {
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0)) {
         (yield* pline(__s_s_isn_t_trapped, (yield* Monnam(mtmp))));
         return 0;
     }
@@ -8795,8 +8810,8 @@ function* help_monster_out(mtmp, ttmp) {
     /* need to do cockatrice check first if sleeping or paralyzed */
     if (uprob) {
         (yield* You(__s_try_to_grab_s_but_cannot_get_a_firm, (yield* mon_nam(mtmp))));
-        if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1)) {
-            cptr.stI32o(mtmp, $monst_msleeping, 0);
+        if (cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0)) {
+            cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
             (yield* pline(__s_s_awakens, (yield* Monnam(mtmp))));
         }
         return 1;
@@ -8804,14 +8819,14 @@ function* help_monster_out(mtmp, ttmp) {
 
     (yield* You(__s_reach_out_your_s_and_grab_s, (yield* makeplural((yield* body_part(NHC.ARM)))), (yield* mon_nam(mtmp))));
 
-    if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1)) {
-        cptr.stI32o(mtmp, $monst_msleeping, 0);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0)) {
+        cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
         (yield* pline(__s_s_awakens, (yield* Monnam(mtmp))));
-    } else if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0 &&
-            !rn2((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0)) {
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) | 0 &&
+            !rn2(cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) | 0)) {
         /* After such manhandling, perhaps the effect wears off */
-        cptr.stI32o(mtmp, $monst_mcanmove, 1);
-        cptr.stI32o(mtmp, $monst_mfrozen, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0);
         (yield* pline(__s_s_stirs, (yield* Monnam(mtmp))));
     }
 
@@ -8830,7 +8845,7 @@ function* help_monster_out(mtmp, ttmp) {
     }
 
     (yield* You(__s_pull_s_out_of_the_pit, (yield* mon_nam(mtmp))));
-    cptr.stI32o(mtmp, $monst_mtrapped, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
     (yield* reward_untrap(ttmp, mtmp));
     (yield* fill_pit(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
     return 1;
@@ -8838,7 +8853,7 @@ function* help_monster_out(mtmp, ttmp) {
 
 /** C ref: trap.c:5794 — @param {CPtr<struct obj>} box @param {CInt} force @param {CInt} confused */
 function* disarm_box(box, force, confused) {
-    if ((cptr.ldI32o(box, $obj_otrapped) & 1)) {
+    if (cptr.ldBits(cptr.add(box, $obj_otrapped), 7, 1, 0)) {
         let ch = ((acurr(NHC.A_DEX)) + cptr.ldI32o(u, $you_ulevel)) | 0;
 
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE))
@@ -8849,30 +8864,31 @@ function* disarm_box(box, force, confused) {
             /* 'box' might be gone now */
         } else {
             (yield* You(__s_disarm_it));
-            cptr.stI32o(box, $obj_otrapped, 0);
-            cptr.stI32o(box, $obj_tknown, 1);
+            cptr.stBits(cptr.add(box, $obj_otrapped), 7, 1, 0, 0);
+            cptr.stBits(cptr.add(box, $obj_tknown), 6, 1, 0, 1);
             (yield* more_experienced(8, 0));
             (yield* newexplevel());
         }
         (yield* exercise(NHC.A_DEX, 1));
     } else {
         (yield* pline(__s_that_s_was_not_trapped, (yield* xname(box))));
-        cptr.stI32o(box, $obj_tknown, 0);
+        cptr.stBits(cptr.add(box, $obj_tknown), 6, 1, 0, 0);
     }
 }
 
 /* check a particular container for a trap and optionally disarm it */
 /** C ref: trap.c:5821 — @param {CPtr<struct obj>} box @param {CInt} force @param {CInt} confused */
 function* untrap_box(box, force, confused) {
-    if (((cptr.ldI32o(box, $obj_otrapped) & 1) | 0 &&
+    if ((cptr.ldBits(cptr.add(box, $obj_otrapped), 7, 1, 0) | 0 &&
         (force || (!confused && rn2((31 - cptr.ldI32o(u, $you_ulevel)) | 0) < 10))) ||
-            (cptr.ldI32o(box, $obj_tknown) & 1) | 0 ||
+            cptr.ldBits(cptr.add(box, $obj_tknown), 6, 1, 0) | 0 ||
             (!force && confused && !rn2(3))) {
-        if (!((cptr.ldI32o(box, $obj_tknown) & 1) | 0 && (cptr.ldI32o(box, $obj_dknown) & 1) | 0))
+        if (!(cptr.ldBits(cptr.add(box, $obj_tknown), 6, 1, 0) | 0 &&
+                cptr.ldBits(cptr.add(box, $obj_dknown), 1, 1, 0) | 0))
             (yield* You(__s_find_a_trap_on_s, (yield* the((yield* xname(box))))));
         else
             (yield* pline(__s_there_s_a_trap_on_s, (yield* the((yield* xname(box))))));
-        cptr.stI32o(box, $obj_tknown, 1);
+        cptr.stBits(cptr.add(box, $obj_tknown), 6, 1, 0, 1);
         (yield* observe_object(box));
         if (!confused)
             (yield* exercise(NHC.A_WIS, 1));
@@ -9103,8 +9119,8 @@ export function* untrap(force, rx, ry, container) {
             ) {
                 if (!Is_box(otmp))
                     continue;
-                if ((cptr.ldI32o(otmp, $obj_tknown) & 1) | 0 &&
-                        (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0)
+                if (cptr.ldBits(cptr.add(otmp, $obj_tknown), 6, 1, 0) | 0 &&
+                        cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0) | 0)
                     void (yield* safe_qbuf(
                         cptr.decay(qbuf),
                         __s_disarm_this,
@@ -9128,8 +9144,8 @@ export function* untrap(force, rx, ry, container) {
                     case 113:
                         return 0;
                     case 121:
-                        if ((cptr.ldI32o(otmp, $obj_tknown) & 1) | 0 &&
-                                (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0)
+                        if (cptr.ldBits(cptr.add(otmp, $obj_tknown), 6, 1, 0) | 0 &&
+                                cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0) | 0)
                             (yield* disarm_box(otmp, force, confused));
                         else
                             (yield* untrap_box(otmp, force, confused));
@@ -9173,19 +9189,15 @@ export function* untrap(force, rx, ry, container) {
         return 0;
     }
 
-    switch (cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0
-    ) |
+    switch ((cptr.ldI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) &
+        31) |
             0) {
         case NHM.D_NODOOR:
             (yield* You(__s_s_no_door_there, Blind() ? __s_feel : __s_see));
@@ -9198,19 +9210,15 @@ export function* untrap(force, rx, ry, container) {
             return 0;
     }
 
-    if ((((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0
-    ) |
+    if (((((cptr.ldI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) &
+        31) |
         0) &
         NHM.D_TRAPPED) !=
         0 &&
@@ -9220,19 +9228,15 @@ export function* untrap(force, rx, ry, container) {
         (yield* exercise(NHC.A_WIS, 1));
         if ((yield* yn_function(__s_disarm_it__2, cptr.decay(ynqchars), 113, 1)) != 121)
             return 1;
-        if ((cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0
-        ) |
+        if (((cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) &
+            31) |
             0) &
                 NHM.D_TRAPPED) {
             ch = (15 +
@@ -9246,22 +9250,13 @@ export function* untrap(force, rx, ry, container) {
                         rnd((75 + (((yield* level_difficulty()) / 2) | 0)) | 0) > ch)) {
                 (yield* You(__s_set_it_off));
                 (yield* b_trapped(__s_door, NHC.FINGER));
-                cptr.stBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0,
+                cptr.stI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
                     NHM.D_NODOOR
                 );
                 unblock_point(x, y);
@@ -9271,38 +9266,20 @@ export function* untrap(force, rx, ry, container) {
                     (yield* add_damage(x, y, 0n));
             } else {
                 (yield* You(__s_disarm_it));
-                cptr.stBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0,
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
+                cptr.stI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
+                    cptr.ldI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
                     ) & -17
                 );
                 (yield* more_experienced(8, 0));
@@ -9442,9 +9419,9 @@ export function* openholdingtrap(mon, noticed) {
         if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc))
             (yield* vision_recalc(0));
     } else {
-        if (!(cptr.ldI32o(mon, $monst_mtrapped) & 1))
+        if (!cptr.ldBits(cptr.add(mon, $monst_mtrapped), 2, 1, 0))
             return 0;
-        cptr.stI32o(mon, $monst_mtrapped, 0);
+        cptr.stBits(cptr.add(mon, $monst_mtrapped), 2, 1, 0, 0);
         if (canspotmon(mon)) {
             cptr.st1(noticed, 1);
             (yield* pline(__s_s_is_released_from_s_s, (yield* Monnam(mon)), which, trapdescr));
@@ -9516,7 +9493,7 @@ export function* closeholdingtrap(mon, noticed) {
         (yield* dotrap(t, (dotrapflags | NHM.FORCETRAP) >>> 0));
         result = schar((cptr.ldI32o(u, $you_utrap) != 0));
     } else {
-        if ((cptr.ldI32o(mon, $monst_mtrapped) & 1))
+        if (cptr.ldBits(cptr.add(mon, $monst_mtrapped), 2, 1, 0))
             return 0;  /* already trapped */
         /* you notice it if you see the trap close/tremble/whatever
            or if you sense the monster who becomes trapped */
@@ -9580,7 +9557,7 @@ export function* openfallingtrap(mon, trapdoor_only, noticed) {
         (yield* dotrap(t, NHM.FORCETRAP));
         result = schar((cptr.ldI32o(u, $you_utrap) != 0));
     } else {
-        if ((cptr.ldI32o(mon, $monst_mtrapped) & 1))
+        if (cptr.ldBits(cptr.add(mon, $monst_mtrapped), 2, 1, 0))
             return 0;  /* already trapped */
         /* you notice it if you see the trap close/tremble/whatever
            or if you sense the monster who becomes trapped */
@@ -9628,8 +9605,8 @@ export function* chest_trap(obj, bodypart, disarm) {
         cptr.stI16o(obj, $obj_ox, cptr.ldI16(cc)),
                 cptr.stI16o(obj, $obj_oy, cptr.ldI16o(cc, $nhcoord_y));
 
-    cptr.stI32o(otmp, $obj_tknown, 0);  /* for xname(); will be set to 1 below */
-    cptr.stI32o(otmp, $obj_otrapped, 0);
+    cptr.stBits(cptr.add(otmp, $obj_tknown), 6, 1, 0, 0);  /* for xname(); will be set to 1 below */
+    cptr.stBits(cptr.add(otmp, $obj_otrapped), 7, 1, 0, 0);
     (yield* You(disarm ? __s_set_it_off : __s_trigger_a_trap));
     (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
     if (Luck() > -13 && rn2((13 + Luck()) | 0) > 7) {
@@ -9700,7 +9677,7 @@ export function* chest_trap(obj, bodypart, disarm) {
                             obj,
                             ox,
                             oy,
-                            schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)),
+                            schar(cptr.ldBits(cptr.add(shkp, $monst_mpeaceful), 1, 1, 0)),
                             1
                         ));
                     (yield* delete_contents(obj));
@@ -9742,7 +9719,7 @@ export function* chest_trap(obj, bodypart, disarm) {
                                 otmp,
                                 cptr.ldI16o(otmp, $obj_ox),
                                 cptr.ldI16o(otmp, $obj_oy),
-                                schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)),
+                                schar(cptr.ldBits(cptr.add(shkp, $monst_mpeaceful), 1, 1, 0)),
                                 1
                             ));
                         if (cptr.eq(otmp, obj))
@@ -9874,7 +9851,7 @@ export function* chest_trap(obj, bodypart, disarm) {
         (yield* bot());  /* to get immediate botl re-display */
     }
 
-    cptr.stI32o(obj, $obj_tknown, 1);  /* hero knows chest is no longer trapped */
+    cptr.stBits(cptr.add(obj, $obj_tknown), 6, 1, 0, 1);  /* hero knows chest is no longer trapped */
     return 0;
 }
 
@@ -10070,7 +10047,7 @@ export function* delfloortrap(ttmp) {
             $instance_globals_saved_l_level + $dlevel_t_monsters
         ))) !==
                 null) {
-            cptr.stI32o(mtmp, $monst_mtrapped, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
         }
         (yield* deltrap(ttmp));
         return 1;
@@ -10284,7 +10261,7 @@ export function* lava_effects() {
         if (!usurvive) {
             for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = nextobj) {
                 nextobj = cptr.ldPtr(obj);
-                if ((cptr.ldI32o(obj, $obj_in_use) & 1)) {
+                if (cptr.ldBits(cptr.add(obj, $obj_in_use), 2, 1, 0)) {
                     /* one item can be protected from burning up [accommodates
                        steal(AMULET_OF_FLYING) -> remove_worn_item() -> fall
                        into lava (which happens before item is transferred
@@ -10293,7 +10270,7 @@ export function* lava_effects() {
                        perform hangup save if that occurs) */
                     if (!protect_oid) {
                         protect_oid = cptr.ldI32o(obj, $obj_o_id);
-                        cptr.stI32o(obj, $obj_in_use, 0);
+                        cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
                     } else {
                         (yield* impossible(
                             __s_lava_effects_s_u_is_already_in_use_so,
@@ -10315,7 +10292,7 @@ export function* lava_effects() {
                     0) <=
                     NHC.WOOD) ||
                     cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS) &&
-                        !(cptr.ldI32o(obj, $obj_oerodeproof) & 1) &&
+                        !cptr.ldBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0) &&
                         cptr.ld1uo2(
                             objects,
                             cptr.ldI16o(obj, $obj_otyp),
@@ -10326,7 +10303,7 @@ export function* lava_effects() {
                         cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_FIRE &&
                         cptr.ldI16o(obj, $obj_otyp) != NHC.SPE_FIREBALL &&
                         !obj_resists(obj, 0, 0))
-                    cptr.stI32o(obj, $obj_in_use, 1);
+                    cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 1);
             }
         }
 
@@ -10337,7 +10314,7 @@ export function* lava_effects() {
          * thing to come into contact with lava makes sense.)
          */
         if (uarmf.v &&
-                ((cptr.ldI32o(uarmf.v, $obj_in_use) & 1) | 0 ||
+                (cptr.ldBits(cptr.add(uarmf.v, $obj_in_use), 2, 1, 0) | 0 ||
                     ((((cptr.ldI32o2(
                         objects,
                         cptr.ldI16o(uarmf.v, $obj_otyp),
@@ -10347,7 +10324,7 @@ export function* lava_effects() {
                         31) |
                         0) <=
                         NHC.WOOD) &&
-                        !(cptr.ldI32o(uarmf.v, $obj_oerodeproof) & 1)))) {
+                        !cptr.ldBits(cptr.add(uarmf.v, $obj_oerodeproof), 4, 1, 0)))) {
             obj = uarmf.v;
             (yield* pline(__s_s_into_flame, (yield* Yobjnam2(obj, __s_burst))));
             ++burnmesgcount;
@@ -10416,7 +10393,7 @@ export function* lava_effects() {
                 obj2 = cptr.ldPtr(obj);
                 if (cptr.ldI32o(obj, $obj_o_id) == protect_oid) {
                     /* skip protected item; caller expects to retain access */
-                    cptr.stI32o(obj, $obj_in_use, 1);  /* was cleared when setting protect_oid */
+                    cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 1);  /* was cleared when setting protect_oid */
                 } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
                     if (usurvive && !Blind())
                         (yield* pline(
@@ -10424,7 +10401,7 @@ export function* lava_effects() {
                             (yield* The((yield* xname(obj)))),
                             hcolor(__s_dark_red)
                         ));
-                } else if ((cptr.ldI32o(obj, $obj_in_use) & 1)) {
+                } else if (cptr.ldBits(cptr.add(obj, $obj_in_use), 2, 1, 0)) {
                     if (cptr.ldI64o(obj, $obj_owornmask)) {
                         if (usurvive) {
                             (yield* pline(__s_s_into_flame, (yield* Yobjnam2(obj, __s_burst))));
@@ -10815,7 +10792,8 @@ export function* ignite_items(objchn) {
     for (obj = objchn; obj; obj = bynexthere ? cptr.ldPtro(obj, $obj_v) : nextobj) {
         nextobj = cptr.ldPtr(obj);
         /* ignitable items like lamps and candles will catch fire */
-        if (!(cptr.ldI32o(obj, $obj_lamplit) & 1) && !(cptr.ldI32o(obj, $obj_in_use) & 1))
+        if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) &&
+                !cptr.ldBits(cptr.add(obj, $obj_in_use), 2, 1, 0))
             (yield* catch_lit(obj));
     }
 }
@@ -10836,8 +10814,8 @@ export function* trap_ice_effects(x, y, ice_is_melting) {
             $instance_globals_saved_l_level + $dlevel_t_monsters
         ))) !==
             null) &&
-                (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
-            cptr.stI32o(mtmp, $monst_mtrapped, 0);
+                cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0)
+            cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
         if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.LANDMINE ||
                 ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP) {
             /* landmine or bear trap set on top of the ice falls

@@ -590,7 +590,7 @@ export function Boots_on() {
             break;
         case NHC.LEVITATION_BOOTS:
             if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n)) {
-                cptr.stI32o(uarmf.v, $obj_known, 1);
+                cptr.stBits(cptr.add(uarmf.v, $obj_known), 0, 1, 0, 1);
                 cptr.st1(disp, 1);  /* status hilites might mark AC changed */
                 discover_object((cptr.ldI16o(uarmf.v, $obj_otyp)), 1, 1, 1);
                 float_up();
@@ -608,8 +608,8 @@ export function Boots_on() {
             );
     }
     /* uarmf could be Null here (levitation boots put on over a sink) */
-    if (uarmf.v && !(cptr.ldI32o(uarmf.v, $obj_known) & 1)) {
-        cptr.stI32o(uarmf.v, $obj_known, 1);  /* boots' +/- evident because of status line AC */
+    if (uarmf.v && !cptr.ldBits(cptr.add(uarmf.v, $obj_known), 0, 1, 0)) {
+        cptr.stBits(cptr.add(uarmf.v, $obj_known), 0, 1, 0, 1);  /* boots' +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -765,8 +765,8 @@ function Cloak_on() {
                 cptr.ldI16o(uarmc.v, $obj_otyp)
             );
     }
-    if (uarmc.v && !(cptr.ldI32o(uarmc.v, $obj_known) & 1)) {
-        cptr.stI32o(uarmc.v, $obj_known, 1);  /* cloak's +/- evident because of status line AC */
+    if (uarmc.v && !cptr.ldBits(cptr.add(uarmc.v, $obj_known), 0, 1, 0)) {
+        cptr.stBits(cptr.add(uarmc.v, $obj_known), 0, 1, 0, 1);  /* cloak's +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -873,7 +873,7 @@ function Helmet_on() {
             discover_object((cptr.ldI16o(uarmh.v, $obj_otyp)), 1, 1, 1);
             break;
         case NHC.HELM_OF_OPPOSITE_ALIGNMENT:
-            cptr.stI32o(uarmh.v, $obj_known, 1);  /* do this here because uarmh could get cleared */
+            cptr.stBits(cptr.add(uarmh.v, $obj_known), 0, 1, 0, 1);  /* do this here because uarmh could get cleared */
             /* changing alignment can toggle off active artifact properties,
                including levitation; uarmh could get dropped or destroyed here
                by hero falling onto a polymorph trap or into water (emergency
@@ -888,7 +888,7 @@ function Helmet_on() {
             /* makeknown(HELM_OF_OPPOSITE_ALIGNMENT); -- below, after Tobjnam() */
             ;
         case NHC.DUNCE_CAP:
-            if (uarmh.v && !(cptr.ldI32o(uarmh.v, $obj_cursed) & 1)) {
+            if (uarmh.v && !cptr.ldBits(cptr.add(uarmh.v, $obj_cursed), 0, 1, 0)) {
                 if (Blind())
                     pline(__s_s_for_a_moment, Tobjnam(uarmh.v, __s_vibrate));
                 else
@@ -904,7 +904,7 @@ function Helmet_on() {
                     set_bknown(uarmh.v, 0);  /* lose bknown if previously set */
                 else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
                     set_bknown(uarmh.v, 1);  /* (bknown should already be set) */
-                else if ((cptr.ldI32o(uarmh.v, $obj_bknown) & 1))
+                else if (cptr.ldBits(cptr.add(uarmh.v, $obj_bknown), 2, 1, 0))
                     update_inventory();  /* keep bknown as-is; display the curse */
             }
             cptr.st1(disp, 1);  /* reveal new alignment or INT & WIS */
@@ -933,8 +933,8 @@ function Helmet_on() {
             );
     }
     /* uarmh could be Null due to uchangealign() */
-    if (uarmh.v && !(cptr.ldI32o(uarmh.v, $obj_known) & 1)) {
-        cptr.stI32o(uarmh.v, $obj_known, 1);  /* helmet's +/- evident because of status line AC */
+    if (uarmh.v && !cptr.ldBits(cptr.add(uarmh.v, $obj_known), 0, 1, 0)) {
+        cptr.stBits(cptr.add(uarmh.v, $obj_known), 0, 1, 0, 1);  /* helmet's +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -1045,8 +1045,8 @@ function Gloves_on() {
                 cptr.ldI16o(uarmg.v, $obj_otyp)
             );
     }
-    if (!(cptr.ldI32o(uarmg.v, $obj_known) & 1)) {
-        cptr.stI32o(uarmg.v, $obj_known, 1);  /* gloves' +/- evident because of status line AC */
+    if (!cptr.ldBits(cptr.add(uarmg.v, $obj_known), 0, 1, 0)) {
+        cptr.stBits(cptr.add(uarmg.v, $obj_known), 0, 1, 0, 1);  /* gloves' +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -1119,7 +1119,7 @@ export function Gloves_off() {
         $you_uprops
     ) & -17n;
     let on_purpose = schar((!cptr.ld1so(svc, $context_info_mon_moving) &&
-        !(cptr.ldI32o(uarmg.v, $obj_in_use) & 1)
+        !cptr.ldBits(cptr.add(uarmg.v, $obj_in_use), 2, 1, 0)
             ? 1
             : 0));
 
@@ -1210,8 +1210,8 @@ function Shield_on() {
                 cptr.ldI16o(uarms.v, $obj_otyp)
             );
     }
-    if (!(cptr.ldI32o(uarms.v, $obj_known) & 1)) {
-        cptr.stI32o(uarms.v, $obj_known, 1);  /* shield's +/- evident because of status line AC */
+    if (!cptr.ldBits(cptr.add(uarms.v, $obj_known), 0, 1, 0)) {
+        cptr.stBits(cptr.add(uarms.v, $obj_known), 0, 1, 0, 1);  /* shield's +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -1261,8 +1261,8 @@ function Shirt_on() {
                 cptr.ldI16o(uarmu.v, $obj_otyp)
             );
     }
-    if (!(cptr.ldI32o(uarmu.v, $obj_known) & 1)) {
-        cptr.stI32o(uarmu.v, $obj_known, 1);  /* shirt's +/- evident because of status line AC */
+    if (!cptr.ldBits(cptr.add(uarmu.v, $obj_known), 0, 1, 0)) {
+        cptr.stBits(cptr.add(uarmu.v, $obj_known), 0, 1, 0, 1);  /* shirt's +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -1470,14 +1470,14 @@ function dragon_armor_handling(otmp, puton, on_purpose) {
 function Armor_on() {
     if (!uarm.v)
         return 0;
-    if (!(cptr.ldI32o(uarm.v, $obj_known) & 1)) {
-        cptr.stI32o(uarm.v, $obj_known, 1);  /* suit's +/- evident because of status line AC */
+    if (!cptr.ldBits(cptr.add(uarm.v, $obj_known), 0, 1, 0)) {
+        cptr.stBits(cptr.add(uarm.v, $obj_known), 0, 1, 0, 1);  /* suit's +/- evident because of status line AC */
         update_inventory();
     }
     dragon_armor_handling(uarm.v, 1, 1);
     /* gold DSM requires extra handling since it emits light when worn;
        do that after the special armor handling */
-    if (artifact_light(uarm.v) && !(cptr.ldI32o(uarm.v, $obj_lamplit) & 1)) {
+    if (artifact_light(uarm.v) && !cptr.ldBits(cptr.add(uarm.v, $obj_lamplit), 7, 1, 0)) {
         begin_burn(uarm.v, 0);
         if (!Blind())
             pline(
@@ -1494,7 +1494,7 @@ function Armor_on() {
 export function Armor_off() {
     let otmp = uarm.v;
     let was_arti_light = schar((otmp &&
-        (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 &&
+        cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0) | 0 &&
         artifact_light(otmp)
             ? 1
             : 0));
@@ -1527,7 +1527,7 @@ export function Armor_off() {
 export function Armor_gone() {
     let otmp = uarm.v;
     let was_arti_light = schar((otmp &&
-        (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 &&
+        cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0) | 0 &&
         artifact_light(otmp)
             ? 1
             : 0));
@@ -1631,7 +1631,8 @@ function Amulet_on(amul) {
                        changed the character's base sex */
                     You(__s_don_t_feel_like_yourself);
                     /* checking dknown is redundant--amulets always have dknown set */
-                    call_it = schar((((cptr.ldI32o(uamul.v, $obj_dknown) & 1) | 0) != 0));
+                    call_it = schar(((cptr.ldBits(cptr.add(uamul.v, $obj_dknown), 1, 1, 0) |
+                            0) != 0));
                 }
                 livelog_newform(0, orig_sex, new_sex);
                 pline_The(__s_amulet_disintegrates);
@@ -1880,16 +1881,16 @@ function learnring(ring, observed) {
            otherwise if we have seen this ring, discover its type */
         if ((cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_name_known) & 1))
             observe_object(ring);
-        else if ((cptr.ldI32o(ring, $obj_dknown) & 1))
+        else if (cptr.ldBits(cptr.add(ring, $obj_dknown), 1, 1, 0))
             discover_object((ringtype), 1, 1, 1);
     }
 
     /* make enchantment of charged ring known (might be +0) and update
        perm invent window if we've seen this ring and know its type */
-    if ((cptr.ldI32o(ring, $obj_dknown) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(ring, $obj_dknown), 1, 1, 0) | 0 &&
             (cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) {
         if ((cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_charged) & 1))
-            cptr.stI32o(ring, $obj_known, 1);
+            cptr.stBits(cptr.add(ring, $obj_known), 0, 1, 0, 1);
         update_inventory();
     }
 }
@@ -2660,7 +2661,9 @@ export function cursed(otmp) {
         return 0;
     }
     /* Curses, like chickens, come home to roost. */
-    if ((cptr.eq(otmp, uwep.v)) ? welded(otmp) : (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
+    if ((cptr.eq(otmp, uwep.v))
+            ? welded(otmp)
+            : cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0) {
         let use_plural = schar((is_boots(otmp) ||
             is_gloves(otmp) ||
             cptr.ldI16o(otmp, $obj_otyp) == NHC.LENSES ||
@@ -2670,7 +2673,7 @@ export function cursed(otmp) {
 
         /* might be trying again after applying grease to hands */
         if (Glib() &&
-                (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0 &&
+                cptr.ldBits(cptr.add(otmp, $obj_bknown), 2, 1, 0) | 0 &&
                 (uarmg.v
                     ? (cptr.eq(otmp, uwep.v))
                     : ((cptr.ldI64o(otmp, $obj_owornmask) & 393472n) != 0n)))
@@ -3192,15 +3195,15 @@ function accessory_or_armor_on(obj) {
                 Your(__s_s_are_too_slippery_to_remove_so_you, gloves_simple_name(uarmg.v));
                 return NHM.ECMD_TIME;  /* always uses move */
             }
-            if (uarmg.v && (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0) {
-                res = !(cptr.ldI32o(uarmg.v, $obj_bknown) & 1);
+            if (uarmg.v && cptr.ldBits(cptr.add(uarmg.v, $obj_cursed), 0, 1, 0) | 0) {
+                res = !cptr.ldBits(cptr.add(uarmg.v, $obj_bknown), 2, 1, 0);
                 set_bknown(uarmg.v, 1);
                 You(__s_cannot_remove_your_s_to_put_on_the_ring, cptr.decay(c_gloves));
                 /* uses move iff we learned gloves are cursed */
                 return res ? NHM.ECMD_TIME : NHM.ECMD_OK;
             }
             if (uwep.v) {
-                res = !(cptr.ldI32o(uwep.v, $obj_bknown) & 1);  /* check this before calling welded() */
+                res = !cptr.ldBits(cptr.add(uwep.v, $obj_bknown), 2, 1, 0);  /* check this before calling welded() */
                 if (((mask.v == 262144n && URIGHTY()) ||
                     (mask.v == 131072n && ULEFTY()) ||
                     bimanual(uwep.v)) &&
@@ -3472,12 +3475,12 @@ export function glibr() {
     let hand;
 
     leftfall = schar((uleft.v &&
-        !(cptr.ldI32o(uleft.v, $obj_cursed) & 1) &&
+        !cptr.ldBits(cptr.add(uleft.v, $obj_cursed), 0, 1, 0) &&
         (!uwep.v || !(welded(uwep.v) && ULEFTY()) || !bimanual(uwep.v))
             ? 1
             : 0));
     rightfall = schar((uright.v &&
-        !(cptr.ldI32o(uright.v, $obj_cursed) & 1) &&
+        !cptr.ldBits(cptr.add(uright.v, $obj_cursed), 0, 1, 0) &&
         (!uwep.v || !(welded(uwep.v) && URIGHTY()) || !bimanual(uwep.v))
             ? 1
             : 0));
@@ -3653,7 +3656,7 @@ export function stuck_ring(ring, otyp) {
             24576n) &&
                 uamul.v &&
                 cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_UNCHANGING &&
-                (cptr.ldI32o(uamul.v, $obj_cursed) & 1) | 0)
+                cptr.ldBits(cptr.add(uamul.v, $obj_cursed), 0, 1, 0) | 0)
             return uamul.v;
         if (welded(uwep.v) &&
                 ((cptr.eq(
@@ -3664,9 +3667,9 @@ export function stuck_ring(ring, otyp) {
                 )) ||
                     bimanual(uwep.v)))
             return uwep.v;
-        if (uarmg.v && (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
+        if (uarmg.v && cptr.ldBits(cptr.add(uarmg.v, $obj_cursed), 0, 1, 0) | 0)
             return uarmg.v;
-        if ((cptr.ldI32o(ring, $obj_cursed) & 1))
+        if (cptr.ldBits(cptr.add(ring, $obj_cursed), 0, 1, 0))
             return ring;
         /* normally outermost layer is processed first, but slippery gloves
            wears off quickly so uncurse ring itself before handling those */
@@ -3696,7 +3699,7 @@ function select_off(otmp) {
 
     /* special ring checks */
     if (cptr.eq(otmp, uright.v) || cptr.eq(otmp, uleft.v)) {
-        let glibdummy = cptr.alloc(216);
+        let glibdummy = cptr.alloc(112);
 
         if (((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
@@ -3707,7 +3710,7 @@ function select_off(otmp) {
             pline_The(__s_ring_is_stuck);
             return 0;
         }
-        cptr.memcpy(glibdummy, cg, 216);
+        cptr.memcpy(glibdummy, cg, 112);
         why = null;  /* the item which prevents ring removal */
         if (welded(uwep.v) &&
                 ((cptr.eq(
@@ -3719,7 +3722,8 @@ function select_off(otmp) {
                     bimanual(uwep.v))) {
             void cptr.sprintf(cptr.decay(buf), __s_free_a_weapon_s, body_part(NHC.HAND));
             why = uwep.v;
-        } else if (uarmg.v && ((cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0 || Glib())) {
+        } else if (uarmg.v &&
+                (cptr.ldBits(cptr.add(uarmg.v, $obj_cursed), 0, 1, 0) | 0 || Glib())) {
             void cptr.sprintf(
                 cptr.decay(buf),
                 __s_take_off_your_s_s,
@@ -3747,7 +3751,7 @@ function select_off(otmp) {
         } else if (Glib()) {
             pline(
                 __s_s_s_are_too_slippery_to_take_off,
-                (cptr.ldI32o(uarmg.v, $obj_unpaid) & 1) | 0 ? __s_the : __s_your,
+                cptr.ldBits(cptr.add(uarmg.v, $obj_unpaid), 2, 1, 0) | 0 ? __s_the : __s_your,
                 gloves_simple_name(uarmg.v)
             );
             return 0;
@@ -3772,10 +3776,12 @@ function select_off(otmp) {
     /* special suit and shirt checks */
     if (cptr.eq(otmp, uarm.v) || cptr.eq(otmp, uarmu.v)) {
         why = null;  /* the item which prevents disrobing */
-        if (uarmc.v && (cptr.ldI32o(uarmc.v, $obj_cursed) & 1) | 0) {
+        if (uarmc.v && cptr.ldBits(cptr.add(uarmc.v, $obj_cursed), 0, 1, 0) | 0) {
             void cptr.sprintf(cptr.decay(buf), __s_remove_your_s, cloak_simple_name(uarmc.v));
             why = uarmc.v;
-        } else if (cptr.eq(otmp, uarmu.v) && uarm.v && (cptr.ldI32o(uarm.v, $obj_cursed) & 1) | 0) {
+        } else if (cptr.eq(otmp, uarmu.v) &&
+                uarm.v &&
+                cptr.ldBits(cptr.add(uarm.v, $obj_cursed), 0, 1, 0) | 0) {
             void cptr.sprintf(cptr.decay(buf), __s_remove_your_s, cptr.decay(c_suit));
             why = uarm.v;
         } else if (welded(uwep.v) && bimanual(uwep.v)) {
@@ -4175,7 +4181,7 @@ export function remarm_swapwep() {
     if (cptr.ldI32(cq) != NHC.CMDQ_KEY || cptr.ld1so(cq, $_cmd_queue_key) != 45 || !uswapwep.v)
         return NHM.ECMD_FAIL;
 
-    oldbknown = (cptr.ldI32o(uswapwep.v, $obj_bknown) & 1);
+    oldbknown = cptr.ldBits(cptr.add(uswapwep.v, $obj_bknown), 2, 1, 0);
     reset_remarm();
     cptr.stI64o(
         svc,
@@ -4183,7 +4189,7 @@ export function remarm_swapwep() {
         cptr.stI64o(svc, $context_info_takeoff, 1024n)
     );
     void do_takeoff();
-    return (!uswapwep.v || (cptr.ldI32o(uswapwep.v, $obj_bknown) & 1) != oldbknown)
+    return (!uswapwep.v || cptr.ldBits(cptr.add(uswapwep.v, $obj_bknown), 2, 1, 0) != oldbknown)
             ? NHM.ECMD_TIME
             : NHM.ECMD_OK;
 }
@@ -4307,7 +4313,7 @@ function maybe_destroy_armor(armor, atmp, resisted) {
     if ((armor !== null) &&
             (!atmp || cptr.eq(atmp, armor)) &&
             ((cptr.st1(resisted, obj_resists(armor, 0, 90))) == 0)) {
-        cptr.stI32o(armor, $obj_in_use, 1);
+        cptr.stBits(cptr.add(armor, $obj_in_use), 2, 1, 0, 1);
         return armor;
     }
     return null;
@@ -4336,7 +4342,7 @@ export function disintegrate_arm(atmp) {
 
         /* for gold DSM, we don't want Armor_gone() to report that it
            stops shining _after_ we've been told that it is destroyed */
-        if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
+        if (cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0))
             end_burn(otmp, 0);
         urgent_pline(
             __s_your_s_s_to_dust_and_s_to_the_s,
@@ -4430,7 +4436,7 @@ export function destroy_arm() {
 
         if (erosion_matters(otmp) &&
                 is_damageable(otmp) &&
-                !(cptr.ldI32o(otmp, $obj_oerodeproof) & 1)) {
+                !cptr.ldBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0)) {
             let erosion = obj_erode_type(otmp);
 
             if (erosion != -1) {
@@ -4513,8 +4519,8 @@ export function inaccessible_equipment(obj, verb, only_if_known_cursed) {
     if (cptr.eq(obj, uarm.v) &&
             uarmc.v &&
             (anycovering ||
-                ((cptr.ldI32o((uarmc.v), $obj_cursed) & 1) | 0 &&
-                    (cptr.ldI32o((uarmc.v), $obj_bknown) & 1) | 0))) {
+                (cptr.ldBits(cptr.add((uarmc.v), $obj_cursed), 0, 1, 0) | 0 &&
+                    cptr.ldBits(cptr.add((uarmc.v), $obj_bknown), 2, 1, 0) | 0))) {
         if (verb) {
             void cptr.strcpy(cptr.decay(buf), yname(uarmc.v));
             You(
@@ -4530,12 +4536,12 @@ export function inaccessible_equipment(obj, verb, only_if_known_cursed) {
     if (cptr.eq(obj, uarmu.v) &&
             ((uarm.v &&
                 (anycovering ||
-                    ((cptr.ldI32o((uarm.v), $obj_cursed) & 1) | 0 &&
-                        (cptr.ldI32o((uarm.v), $obj_bknown) & 1) | 0))) ||
+                    (cptr.ldBits(cptr.add((uarm.v), $obj_cursed), 0, 1, 0) | 0 &&
+                        cptr.ldBits(cptr.add((uarm.v), $obj_bknown), 2, 1, 0) | 0))) ||
                 (uarmc.v &&
                     (anycovering ||
-                        ((cptr.ldI32o((uarmc.v), $obj_cursed) & 1) | 0 &&
-                            (cptr.ldI32o((uarmc.v), $obj_bknown) & 1) | 0))))) {
+                        (cptr.ldBits(cptr.add((uarmc.v), $obj_cursed), 0, 1, 0) | 0 &&
+                            cptr.ldBits(cptr.add((uarmc.v), $obj_bknown), 2, 1, 0) | 0))))) {
         if (verb) {
             let cloaktmp = new Uint8Array(128);
             let suittmp = new Uint8Array(128);
@@ -4571,8 +4577,8 @@ export function inaccessible_equipment(obj, verb, only_if_known_cursed) {
     if ((cptr.eq(obj, uleft.v) || cptr.eq(obj, uright.v)) &&
             uarmg.v &&
             (anycovering ||
-                ((cptr.ldI32o((uarmg.v), $obj_cursed) & 1) | 0 &&
-                    (cptr.ldI32o((uarmg.v), $obj_bknown) & 1) | 0))) {
+                (cptr.ldBits(cptr.add((uarmg.v), $obj_cursed), 0, 1, 0) | 0 &&
+                    cptr.ldBits(cptr.add((uarmg.v), $obj_bknown), 2, 1, 0) | 0))) {
         if (verb) {
             void cptr.strcpy(cptr.decay(buf), yname(uarmg.v));
             You(

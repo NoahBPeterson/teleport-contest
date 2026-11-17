@@ -1501,8 +1501,8 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
         $instance_globals_saved_l_level + $dlevel_t_monsters
     ))) !==
         null) &&
-            (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
-        cptr.stI32o(mtmp, $monst_mtrapped, 0);
+            cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0)
+        cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
     maybe_unhide_at(sx, sy);
     if (lostgoods)
         credit_report(shkp, 1, 0);
@@ -1531,12 +1531,12 @@ export function splatter_burning_oil(x, y, diluted_oil) {
    possibly killing the hero and attempting to save bones */
 /** C ref: explode.c:974 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 export function explode_oil(obj, x, y) {
-    let diluted_oil = schar((cptr.ldI32o(obj, $obj_oeroded) & 3));
+    let diluted_oil = schar(cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0));
 
-    if (!(cptr.ldI32o(obj, $obj_lamplit) & 1))
+    if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0))
         impossible(__s_exploding_unlit_oil);
     end_burn(obj, 1);
-    cptr.stI32o(obj, $obj_how_lost, NHM.LOST_EXPLODING);
+    cptr.stBits(cptr.add(obj, $obj_how_lost), 0, 3, 0, NHM.LOST_EXPLODING);
     splatter_burning_oil(x, y, diluted_oil);
 }
 

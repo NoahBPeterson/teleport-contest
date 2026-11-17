@@ -474,7 +474,8 @@ export function* goodpos(x, y, mtmp, gpflags) {
          * != x || mtmp->my != y, we'd miss the case where we're called
          * to place the worm segment and the worm's head is at x,y.
          */
-        if (mtmp2 && (!cptr.eq(mtmp2, mtmp) || (cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0))
+        if (mtmp2 &&
+                (!cptr.eq(mtmp2, mtmp) || cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0) | 0))
             return 0;
 
         mdat = cptr.ldPtro(mtmp, $monst_data);
@@ -600,7 +601,7 @@ export function* goodpos(x, y, mtmp, gpflags) {
                                     )
                                 )))) &&
                         uarmf.v &&
-                        (cptr.ldI32o(uarmf.v, $obj_oerodeproof) & 1) | 0) ||
+                        cptr.ldBits(cptr.add(uarmf.v, $obj_oerodeproof), 4, 1, 0) | 0) ||
                     (Upolyd() &&
                         likes_lava(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
                         ? 1
@@ -693,7 +694,7 @@ export function* enexto_core(cc, xx, yy, mdat, entflags) {
     let i;
     let nearcandyct;
     let allcandyct;
-    let fakemon = cptr.alloc(320);  /* dummy monster */
+    let fakemon = cptr.alloc(192);  /* dummy monster */
     let allow_xx_yy = schar(((BigInt(entflags >>> 0) & 2097152n) != 0n));
     /* note: GP_ALLOW_XY isn't used by goodpos(); old enext_core() used to
        mask it off to hide it from goodpos but that isn't required and we
@@ -710,7 +711,7 @@ export function* enexto_core(cc, xx, yy, mdat, entflags) {
         /* default to player's original monster type */
         mdat = cptr.add(mons, cptr.ldI32o(u, $you_umonster), $sizeof_permonst);
     }
-    cptr.memcpy(fakemon, cptr.add(cg, $const_globals_zeromonst), 320);
+    cptr.memcpy(fakemon, cptr.add(cg, $const_globals_zeromonst), 192);
     set_mon_data(fakemon, mdat);  /* set up for goodpos() */
 
     /* gather candidate coordinates within 3 steps, those 1 step away in
@@ -1274,7 +1275,7 @@ export function* teleport_pet(mtmp, force_it) {
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
         return 0;
 
-    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0)) {
         otmp = get_mleash(mtmp);
         if (!otmp) {
             (yield* impossible(__s_s_is_leashed_without_a_leash, (yield* Monnam(mtmp))));
@@ -1283,7 +1284,7 @@ export function* teleport_pet(mtmp, force_it) {
                 return 1;
             }
         }
-        if ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && !force_it) {
+        if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0 && !force_it) {
             (yield* yelp(mtmp));
             return 0;
         } else {
@@ -1359,7 +1360,8 @@ export function* scrolltele(scroll) {
         if (!wizard() || (yield* yn_function(__s_override, cptr.decay(ynchars), 110, 1)) != 121)
             return;
     }
-    if (((Teleport_control() || (scroll && (cptr.ldI32o(scroll, $obj_blessed) & 1) | 0)) &&
+    if (((Teleport_control() ||
+        (scroll && cptr.ldBits(cptr.add(scroll, $obj_blessed), 1, 1, 0) | 0)) &&
         !HStun()) ||
             wizard()) {
         if (unconscious()) {
@@ -2414,40 +2416,32 @@ function* rloc_pos_ok(x, y, mtmp) {
         /* [try to] prevent a shopkeeper or temple priest from being
            sent out of his room (caller might resort to goodpos() if
            we report failure here, so this isn't full prevention) */
-        if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && (yield* inhishop(mtmp))) {
-            if ((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_roomno
-                ),
-                0,
-                6,
-                0
-            ) |
+        if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 && (yield* inhishop(mtmp))) {
+            if (((cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_roomno
+            ) &
+                63) |
                 0) !=
                     uchar(cptr.ld1so(
                         (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
                         $eshk_shoproom
                     )))
                 return 0;
-        } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 && (yield* inhistemple(mtmp))) {
-            if ((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_roomno
-                ),
-                0,
-                6,
-                0
-            ) |
+        } else if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 && (yield* inhistemple(mtmp))) {
+            if (((cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_roomno
+            ) &
+                63) |
                 0) !=
                     uchar(cptr.ld1so(
                         (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)),
@@ -2482,7 +2476,10 @@ function* rloc_pos_ok(x, y, mtmp) {
 function* rloc_to_core(mtmp, x, y, rlocflags) {
     let oldx = cptr.ldI16o(mtmp, $monst_mx);
     let oldy = cptr.ldI16o(mtmp, $monst_my);
-    let resident_shk = schar(((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && (yield* inhishop(mtmp)) ? 1 : 0));
+    let resident_shk = schar((cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 &&
+        (yield* inhishop(mtmp))
+            ? 1
+            : 0));
     let preventmsg = schar((((rlocflags & NHM.RLOC_NOMSG) >>> 0) != 0));
     let vanishmsg = schar((((rlocflags & NHM.RLOC_MSG) >>> 0) != 0));
     let appearmsg = schar(((cptr.ldU64o(mtmp, $monst_mstrategy) & 2147483648n) != 0n));
@@ -2525,7 +2522,7 @@ function* rloc_to_core(mtmp, x, y, rlocflags) {
             appearmsg = 0;
         }
 
-        if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
+        if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0)) {
             (yield* remove_worm(mtmp));
         } else {
             cptr.stPtro3(
@@ -2545,7 +2542,7 @@ function* rloc_to_core(mtmp, x, y, rlocflags) {
     (yield* place_monster(mtmp, x, y));  /* put monster down */
     (yield* update_monster_region(mtmp));
 
-    if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0))
         (yield* place_worm_tail_randomly(mtmp, x, y));
 
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
@@ -2636,11 +2633,13 @@ function* rloc_to_core(mtmp, x, y, rlocflags) {
     if (cptr.ldPtro(mtmp, $monst_minvent) && !(yield* costly_spot(x, y))) {
         let otmp;
         let shkp = (yield* find_objowner(cptr.ldPtro(mtmp, $monst_minvent), oldx, oldy));
-        let peaceful = schar((!shkp || (cptr.ldI32o(shkp, $monst_mpeaceful) & 1) | 0 ? 1 : 0));
+        let peaceful = schar((!shkp || cptr.ldBits(cptr.add(shkp, $monst_mpeaceful), 1, 1, 0) | 0
+                ? 1
+                : 0));
 
         for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp)) {
-            if ((cptr.ldI32o(otmp, $obj_no_charge) & 1))
-                cptr.stI32o(otmp, $obj_no_charge, 0);
+            if (cptr.ldBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0))
+                cptr.stBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0, 0);
             else if (shkp && (yield* onshopbill(otmp, shkp, 1)))
                 (yield* stolen_value(otmp, oldx, oldy, peaceful, 0));
         }
@@ -2651,7 +2650,8 @@ function* rloc_to_core(mtmp, x, y, rlocflags) {
         void (yield* dochugw(mtmp, 0));
 
     /* trapped monster teleported away */
-    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 && !(cptr.ldI32o(mtmp, $monst_wormno) & 31))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0 &&
+            !cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0))
         void (yield* mintrap(mtmp, NHM.NO_TRAP_FLAGS));
 }
 
@@ -2709,7 +2709,8 @@ export function* rloc(mtmp, rlocflags) {
             return 1;
         }
 
-        if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && cptr.ldI16o(mtmp, $monst_mx)) {
+        if (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 &&
+                cptr.ldI16o(mtmp, $monst_mx)) {
             let stway;
 
             if (!(yield* In_W_tower(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz)))) {
@@ -3066,7 +3067,7 @@ export function* mlevel_tele_trap(mtmp, trap, force_it, in_sight) {
         if (is_xport(tt) &&
                 !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
                     67108864n) != 0n))
-            cptr.stI32o(mtmp, $monst_mconf, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0, 1);
         (yield* migrate_to_level(mtmp, ledger_no(tolevel), i16(migrate_typ), null));
         return NHC.Trap_Moved_Mon;  /* no longer on this level */
     }
@@ -3164,7 +3165,7 @@ export function* rloco(obj) {
          * if it arrives outside the shop, treat this as a theft.
          * Billing routines deal with obj->no_charge.
          */
-        if (objinshop || ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 && onboundary)) {
+        if (objinshop || (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0 && onboundary)) {
             let h = cptr.ld1s((yield* in_rooms(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.SHOPBASE)));
             let oo = cptr.ld1s((yield* in_rooms(otx, oty, 0)));
             let hinshop = schar((h &&
@@ -3176,13 +3177,13 @@ export function* rloco(obj) {
                     : 0));
 
             if (hinshop && (yield* costly_spot(tx, ty)) && oo && cptr.strchr((yield* in_rooms(tx, ty, 0)), oo)) {
-                if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
+                if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
                     (yield* subfrombill(obj, shkp));
             } else if (hinshop &&
                     (yield* costly_adjacent(shkp, tx, ty)) &&
                     oo &&
                     cptr.strchr((yield* in_rooms(tx, ty, 0)), oo)) {
-                if (!(cptr.ldI32o(obj, $obj_unpaid) & 1))
+                if (!cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
                     (yield* addtobill(obj, 0, 0, 0));
             } else {
                 void (yield* stolen_value(obj, otx, oty, 0, 0));
@@ -3315,7 +3316,7 @@ export function* u_teleport_mon(mtmp, give_feedback) {
         if (give_feedback)
             (yield* pline(__s_a_mysterious_force_prevents_you, (yield* mon_nam(mtmp))));
         return 0;
-    } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 &&
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 &&
             cptr.ld1s((yield* in_rooms(
                 cptr.ldI16o(mtmp, $monst_mx),
                 cptr.ldI16o(mtmp, $monst_my),

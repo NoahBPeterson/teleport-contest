@@ -779,23 +779,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                     $instance_globals_saved_l_level + $rm_typ
                 )) ==
                     NHC.DOOR) &&
-                    ((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
-                    ) |
+                    (((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) &
+                        31) |
                         0) &
                         12))) ||
                     (((cptr.ld1so3(
@@ -816,23 +808,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                             $instance_globals_saved_l_level + $rm_typ
                         )) ==
                             NHC.DOOR) &&
-                            ((cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(svl, $instance_globals_saved_l_level),
-                                            cptr.ldI16(chainx),
-                                            $sizeof_rm_x21
-                                        ),
-                                        cptr.ldI16(chainy),
-                                        $sizeof_rm
-                                    ),
-                                    $rm_flags
-                                ),
-                                0,
-                                5,
-                                0
-                            ) |
+                            (((cptr.ldI32o3(
+                                svl,
+                                cptr.ldI16(chainx),
+                                $sizeof_rm_x21,
+                                cptr.ldI16(chainy),
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) &
+                                31) |
                                 0) &
                                 12))) ||
                     (((cptr.ld1so3(
@@ -853,23 +837,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                             $instance_globals_saved_l_level + $rm_typ
                         )) ==
                             NHC.DOOR) &&
-                            ((cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(svl, $instance_globals_saved_l_level),
-                                            cptr.ldI16o(uball.v, $obj_ox),
-                                            $sizeof_rm_x21
-                                        ),
-                                        cptr.ldI16o(uball.v, $obj_oy),
-                                        $sizeof_rm
-                                    ),
-                                    $rm_flags
-                                ),
-                                0,
-                                5,
-                                0
-                            ) |
+                            (((cptr.ldI32o3(
+                                svl,
+                                cptr.ldI16o(uball.v, $obj_ox),
+                                $sizeof_rm_x21,
+                                cptr.ldI16o(uball.v, $obj_oy),
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) &
+                                31) |
                                 0) & 12))))
                 already_in_rock = 1;
             else
@@ -897,23 +873,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                             $instance_globals_saved_l_level + $rm_typ
                         )) ==
                             NHC.DOOR) &&
-                            ((cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(svl, $instance_globals_saved_l_level),
-                                            cptr.ldI16(chainx),
-                                            $sizeof_rm_x21
-                                        ),
-                                        cptr.ldI16(chainy),
-                                        $sizeof_rm
-                                    ),
-                                    $rm_flags
-                                ),
-                                0,
-                                5,
-                                0
-                            ) |
+                            (((cptr.ldI32o3(
+                                svl,
+                                cptr.ldI16(chainx),
+                                $sizeof_rm_x21,
+                                cptr.ldI16(chainy),
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) &
+                                31) |
                                 0) &
                                 12))) &&
                             !already_in_rock)
@@ -976,23 +944,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                                 $instance_globals_saved_l_level + $rm_typ
                             )) ==
                                 NHC.DOOR) &&
-                                ((cptr.ldBits(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(
-                                                cptr.add(svl, $instance_globals_saved_l_level),
-                                                tempx,
-                                                $sizeof_rm_x21
-                                            ),
-                                            tempy,
-                                            $sizeof_rm
-                                        ),
-                                        $rm_flags
-                                    ),
-                                    0,
-                                    5,
-                                    0
-                                ) |
+                                (((cptr.ldI32o3(
+                                    svl,
+                                    tempx,
+                                    $sizeof_rm_x21,
+                                    tempy,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_flags
+                                ) &
+                                    31) |
                                     0) &
                                     12))) &&
                                 !(((cptr.ld1so3(
@@ -1013,26 +973,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                                         $instance_globals_saved_l_level + $rm_typ
                                     )) ==
                                         NHC.DOOR) &&
-                                        ((cptr.ldBits(
-                                            cptr.add(
-                                                cptr.add(
-                                                    cptr.add(
-                                                        cptr.add(
-                                                            svl,
-                                                            $instance_globals_saved_l_level
-                                                        ),
-                                                        tempx2,
-                                                        $sizeof_rm_x21
-                                                    ),
-                                                    tempy2,
-                                                    $sizeof_rm
-                                                ),
-                                                $rm_flags
-                                            ),
-                                            0,
-                                            5,
-                                            0
-                                        ) |
+                                        (((cptr.ldI32o3(
+                                            svl,
+                                            tempx2,
+                                            $sizeof_rm_x21,
+                                            tempy2,
+                                            $sizeof_rm,
+                                            $instance_globals_saved_l_level + $rm_flags
+                                        ) &
+                                            31) |
                                             0) &
                                             12))) &&
                                 !already_in_rock) {
@@ -1110,23 +1059,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                                 $instance_globals_saved_l_level + $rm_typ
                             )) ==
                                 NHC.DOOR) &&
-                                ((cptr.ldBits(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(
-                                                cptr.add(svl, $instance_globals_saved_l_level),
-                                                tempx,
-                                                $sizeof_rm_x21
-                                            ),
-                                            tempy,
-                                            $sizeof_rm
-                                        ),
-                                        $rm_flags
-                                    ),
-                                    0,
-                                    5,
-                                    0
-                                ) |
+                                (((cptr.ldI32o3(
+                                    svl,
+                                    tempx,
+                                    $sizeof_rm_x21,
+                                    tempy,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_flags
+                                ) &
+                                    31) |
                                     0) &
                                     12))) &&
                                 (((cptr.ld1so3(
@@ -1147,26 +1088,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                                         $instance_globals_saved_l_level + $rm_typ
                                     )) ==
                                         NHC.DOOR) &&
-                                        ((cptr.ldBits(
-                                            cptr.add(
-                                                cptr.add(
-                                                    cptr.add(
-                                                        cptr.add(
-                                                            svl,
-                                                            $instance_globals_saved_l_level
-                                                        ),
-                                                        tempx2,
-                                                        $sizeof_rm_x21
-                                                    ),
-                                                    tempy2,
-                                                    $sizeof_rm
-                                                ),
-                                                $rm_flags
-                                            ),
-                                            0,
-                                            5,
-                                            0
-                                        ) |
+                                        (((cptr.ldI32o3(
+                                            svl,
+                                            tempx2,
+                                            $sizeof_rm_x21,
+                                            tempy2,
+                                            $sizeof_rm,
+                                            $instance_globals_saved_l_level + $rm_flags
+                                        ) &
+                                            31) |
                                             0) &
                                             12))) &&
                                 !already_in_rock) {
@@ -1234,23 +1164,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                                 $instance_globals_saved_l_level + $rm_typ
                             )) ==
                                 NHC.DOOR) &&
-                                ((cptr.ldBits(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(
-                                                cptr.add(svl, $instance_globals_saved_l_level),
-                                                tempx,
-                                                $sizeof_rm_x21
-                                            ),
-                                            tempy,
-                                            $sizeof_rm
-                                        ),
-                                        $rm_flags
-                                    ),
-                                    0,
-                                    5,
-                                    0
-                                ) |
+                                (((cptr.ldI32o3(
+                                    svl,
+                                    tempx,
+                                    $sizeof_rm_x21,
+                                    tempy,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_flags
+                                ) &
+                                    31) |
                                     0) &
                                     12))) &&
                                 (((cptr.ld1so3(
@@ -1271,26 +1193,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                                         $instance_globals_saved_l_level + $rm_typ
                                     )) ==
                                         NHC.DOOR) &&
-                                        ((cptr.ldBits(
-                                            cptr.add(
-                                                cptr.add(
-                                                    cptr.add(
-                                                        cptr.add(
-                                                            svl,
-                                                            $instance_globals_saved_l_level
-                                                        ),
-                                                        tempx2,
-                                                        $sizeof_rm_x21
-                                                    ),
-                                                    tempy2,
-                                                    $sizeof_rm
-                                                ),
-                                                $rm_flags
-                                            ),
-                                            0,
-                                            5,
-                                            0
-                                        ) |
+                                        (((cptr.ldI32o3(
+                                            svl,
+                                            tempx2,
+                                            $sizeof_rm_x21,
+                                            tempy2,
+                                            $sizeof_rm,
+                                            $instance_globals_saved_l_level + $rm_flags
+                                        ) &
+                                            31) |
                                             0) &
                                             12))) &&
                                 !already_in_rock) {
@@ -1375,23 +1286,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                             $instance_globals_saved_l_level + $rm_typ
                         )) ==
                             NHC.DOOR) &&
-                            ((cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(svl, $instance_globals_saved_l_level),
-                                            cptr.ldI16(chainx),
-                                            $sizeof_rm_x21
-                                        ),
-                                        cptr.ldI16(chainy),
-                                        $sizeof_rm
-                                    ),
-                                    $rm_flags
-                                ),
-                                0,
-                                5,
-                                0
-                            ) |
+                            (((cptr.ldI32o3(
+                                svl,
+                                cptr.ldI16(chainx),
+                                $sizeof_rm_x21,
+                                cptr.ldI16(chainy),
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) &
+                                31) |
                                 0) &
                                 12))) &&
                             !already_in_rock)
@@ -1441,23 +1344,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                                 $instance_globals_saved_l_level + $rm_typ
                             )) ==
                                 NHC.DOOR) &&
-                                ((cptr.ldBits(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(
-                                                cptr.add(svl, $instance_globals_saved_l_level),
-                                                cptr.ldI16(chainx),
-                                                $sizeof_rm_x21
-                                            ),
-                                            cptr.ldI16(chainy),
-                                            $sizeof_rm
-                                        ),
-                                        $rm_flags
-                                    ),
-                                    0,
-                                    5,
-                                    0
-                                ) |
+                                (((cptr.ldI32o3(
+                                    svl,
+                                    cptr.ldI16(chainx),
+                                    $sizeof_rm_x21,
+                                    cptr.ldI16(chainy),
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_flags
+                                ) &
+                                    31) |
                                     0) &
                                     12))) &&
                                 !already_in_rock)
@@ -1671,23 +1566,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                         $instance_globals_saved_l_level + $rm_typ
                     )) ==
                         NHC.DOOR) &&
-                        ((cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        newchainx,
-                                        $sizeof_rm_x21
-                                    ),
-                                    newchainy,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
-                        ) |
+                        (((cptr.ldI32o3(
+                            svl,
+                            newchainx,
+                            $sizeof_rm_x21,
+                            newchainy,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) &
+                            31) |
                             0) &
                             12)))) {
             newchainx = i16(((((x + cptr.ldI16o(uchain.v, $obj_ox)) | 0) / 2) | 0));
@@ -1710,23 +1597,15 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                         $instance_globals_saved_l_level + $rm_typ
                     )) ==
                         NHC.DOOR) &&
-                        ((cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        newchainx,
-                                        $sizeof_rm_x21
-                                    ),
-                                    newchainy,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
-                        ) |
+                        (((cptr.ldI32o3(
+                            svl,
+                            newchainx,
+                            $sizeof_rm_x21,
+                            newchainy,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) &
+                            31) |
                             0) &
                             12)))) {
                 /* don't let chain move to inaccessible location */

@@ -953,7 +953,7 @@ export function* historical_sfi_mkroom(nhfp, d_mkroom, myname) {
  */
 export function* historical_sfo_monst(nhfp, d_monst, myname) {
     norm_ptrs_monst(d_monst);
-    (yield* bwrite(cptr.ldI32(nhfp), d_monst, 320));
+    (yield* bwrite(cptr.ldI32(nhfp), d_monst, 192));
 }
 
 /**
@@ -966,7 +966,7 @@ export function* historical_sfi_monst(nhfp, d_monst, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    (yield* mread(cptr.ldI32(nhfp), d_monst, 320));
+    (yield* mread(cptr.ldI32(nhfp), d_monst, 192));
     norm_ptrs_monst(d_monst);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -1007,7 +1007,7 @@ export function* historical_sfi_mvitals(nhfp, d_mvitals, myname) {
  */
 export function* historical_sfo_obj(nhfp, d_obj, myname) {
     norm_ptrs_obj(d_obj);
-    (yield* bwrite(cptr.ldI32(nhfp), d_obj, 216));
+    (yield* bwrite(cptr.ldI32(nhfp), d_obj, 112));
 }
 
 /**
@@ -1020,7 +1020,7 @@ export function* historical_sfi_obj(nhfp, d_obj, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    (yield* mread(cptr.ldI32(nhfp), d_obj, 216));
+    (yield* mread(cptr.ldI32(nhfp), d_obj, 112));
     norm_ptrs_obj(d_obj);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -1088,7 +1088,7 @@ export function* historical_sfi_q_score(nhfp, d_q_score, myname) {
  */
 export function* historical_sfo_rm(nhfp, d_rm, myname) {
     norm_ptrs_rm(d_rm);
-    (yield* bwrite(cptr.ldI32(nhfp), d_rm, 8));
+    (yield* bwrite(cptr.ldI32(nhfp), d_rm, 36));
 }
 
 /**
@@ -1101,7 +1101,7 @@ export function* historical_sfi_rm(nhfp, d_rm, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    (yield* mread(cptr.ldI32(nhfp), d_rm, 8));
+    (yield* mread(cptr.ldI32(nhfp), d_rm, 36));
     norm_ptrs_rm(d_rm);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);

@@ -4606,19 +4606,15 @@ export function update_lastseentyp(x, y) {
     );
 
     if (ltyp == NHC.DRAWBRIDGE_UP)
-        ltyp = db_under_typ(cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0
-        ) | 0);
+        ltyp = db_under_typ((cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) &
+                31) | 0);
     if ((mtmp = (cptr.ldPtro3(
         svl,
         x,

@@ -1686,9 +1686,9 @@ export function* inside_gas_cloud(p1, p2) {
                 (yield* setmangry(mtmp, 1));
             if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) ==
                 0n) &&
-                    (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0) {
-                cptr.stI32o(mtmp, $monst_mblinded, 1);
-                cptr.stI32o(mtmp, $monst_mcansee, 0);
+                    cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0) | 0) {
+                cptr.stBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0, 1);
+                cptr.stBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0, 0);
             }
             if ((yield* Resists_Elem(mtmp, NHC.POISON_RES)))
                 return 0;

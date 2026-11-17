@@ -337,7 +337,7 @@ function dowaternymph() {
             You(__s_attract_s, a_monnam(mtmp));
         else
             You_hear(__s_a_seductive_voice);
-        cptr.stI32o(mtmp, $monst_msleeping, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
         if (t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
             void mintrap(mtmp, NHM.NO_TRAP_FLAGS);
     } else if (!Blind()) {
@@ -393,18 +393,13 @@ function gush(x, y, poolcnt) {
 
     /* Put a pool at x, y */
     set_levltyp(x, y, NHC.POOL);
-    cptr.stBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0,
+    cptr.stI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags,
         0
     );
     /* No kelp! */
@@ -441,38 +436,20 @@ function dofindgem() {
         0,
         0
     );
-    cptr.stBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16(u),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16o(u, $you_uy),
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0,
-        cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(svl, $instance_globals_saved_l_level),
-                        cptr.ldI16(u),
-                        $sizeof_rm_x21
-                    ),
-                    cptr.ldI16o(u, $you_uy),
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0
+    cptr.stI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags,
+        cptr.ldI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
         ) |
             NHM.F_LOOTED
     );
@@ -494,7 +471,7 @@ function watchman_warn_fountain(mtmp) {
             ) &
                 NHM.COULD_SEE) !=
                 0) &&
-            (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
+            cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0) {
         if (!Deaf()) {
             pline(__s_s_yells, Amonnam(mtmp));
             verbalize(__s_hey_stop_using_that_fountain);
@@ -535,76 +512,46 @@ export function dryup(x, y, isyou) {
     )) ==
         NHC.FOUNTAIN) &&
             (!rn2(3) ||
-                ((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                (((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                     NHM.F_WARNED))) {
         if (isyou &&
                 in_town(x, y) &&
-                !((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                !(((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                     NHM.F_WARNED)) {
             let mtmp;
 
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
+            cptr.stI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
+                cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
                 ) |
                     NHM.F_WARNED
             );
@@ -633,32 +580,22 @@ export function dryup(x, y, isyou) {
         }
         /* replace the fountain with ordinary floor */
         set_levltyp(x, y, NHC.ROOM);  /* updates level.flags.nfountains */
-        cptr.stBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0,
+        cptr.stI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
             0
         );
-        cptr.stBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_horizontal
-            ),
-            5,
-            1,
-            0,
+        cptr.stI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_horizontal,
             0
         );
         /* The location is seen if the hero/monster is invisible
@@ -673,23 +610,15 @@ export function dryup(x, y, isyou) {
 /** C ref: fountain.c:243 */
 export function drinkfountain() {
     /* What happens when you drink from a fountain? */
-    let mgkftn = schar(((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16(u),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16o(u, $you_uy),
-                $sizeof_rm
-            ),
-            $rm_horizontal
-        ),
-        5,
-        1,
-        0
-    ) |
+    let mgkftn = schar((((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_horizontal
+    ) &
+        1) |
             0) == 1));
     let fate = rnd(30);
 
@@ -721,22 +650,13 @@ export function drinkfountain() {
         display_nhwindow()(WIN_MESSAGE.v, 0);
         pline(__s_a_wisp_of_vapor_escapes_the_fountain);
         exercise(NHC.A_WIS, 1);
-        cptr.stBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(svl, $instance_globals_saved_l_level),
-                        cptr.ldI16(u),
-                        $sizeof_rm_x21
-                    ),
-                    cptr.ldI16o(u, $you_uy),
-                    $sizeof_rm
-                ),
-                $rm_horizontal
-            ),
-            5,
-            1,
-            0,
+        cptr.stI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_horizontal,
             0
         );
         return;
@@ -791,7 +711,7 @@ export function drinkfountain() {
                     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = nextobj) {
                         nextobj = cptr.ldPtr(obj);
                         if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
-                                !(cptr.ldI32o(obj, $obj_cursed) & 1) &&
+                                !cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) &&
                                 !rn2(5)) {
                             curse(obj);
                             ++buc_changed;
@@ -830,23 +750,15 @@ export function drinkfountain() {
                 exercise(NHC.A_WIS, 1);
                 break;
             case 27:
-                if (!((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21
-                            ),
-                            cptr.ldI16o(u, $you_uy),
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                if (!(((cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                         NHM.F_LOOTED)) {
                     dofindgem();
@@ -916,7 +828,7 @@ export function dipfountain(obj) {
             curse(obj);
             if (cptr.ld1so(obj, $obj_spe) > -6 && !rn2(3))
                 (cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + -1)) - (-1);
-            cptr.stI32o(obj, $obj_oerodeproof, 0);
+            cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, 0);
             exercise(NHC.A_WIS, 0);
             livelog_printf(
                 64n,
@@ -938,8 +850,14 @@ export function dipfountain(obj) {
             obj = oname(obj, artiname(NHC.ART_EXCALIBUR), 272);
             discover_artifact(NHC.ART_EXCALIBUR);
             bless(obj);
-            cptr.stI32o(obj, $obj_oeroded, cptr.stI32o(obj, $obj_oeroded2, 0));
-            cptr.stI32o(obj, $obj_oerodeproof, 1);
+            cptr.stBits(
+                cptr.add(obj, $obj_oeroded),
+                0,
+                2,
+                0,
+                cptr.stBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0, 0)
+            );
+            cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, 1);
             exercise(NHC.A_WIS, 1);
             livelog_printf(
                 64n,
@@ -950,22 +868,13 @@ export function dipfountain(obj) {
         }
         update_inventory();
         set_levltyp(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.ROOM);  /* updates level.flags.nfountains */
-        cptr.stBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(svl, $instance_globals_saved_l_level),
-                        cptr.ldI16(u),
-                        $sizeof_rm_x21
-                    ),
-                    cptr.ldI16o(u, $you_uy),
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0,
+        cptr.stI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
             0
         );
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -986,7 +895,7 @@ export function dipfountain(obj) {
         case 16:
             if (!is_hands &&
                     cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
-                    !(cptr.ldI32o(obj, $obj_cursed) & 1)) {
+                    !cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)) {
                 curse(obj);
             }
             break;
@@ -994,7 +903,7 @@ export function dipfountain(obj) {
         case 18:
         case 19:
         case 20:
-            if (!is_hands && (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
+            if (!is_hands && cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0) {
                 if (!Blind())
                     pline_The(__s_s_glows_for_a_moment, hliquid(__s_water));
                 uncurse(obj);
@@ -1012,23 +921,15 @@ export function dipfountain(obj) {
             dowatersnakes();
             break;
         case 24:
-            if (!((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            if (!(((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                     NHM.F_LOOTED)) {
                 dofindgem();
@@ -1079,38 +980,20 @@ export function dipfountain(obj) {
                         }
                     }
                     You(__s_lost_some_of_your_gold_in_the_fountain);
-                    cptr.stBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0,
-                        cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        cptr.ldI16(u),
-                                        $sizeof_rm_x21
-                                    ),
-                                    cptr.ldI16o(u, $you_uy),
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
+                    cptr.stI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags,
+                        cptr.ldI32o3(
+                            svl,
+                            cptr.ldI16(u),
+                            $sizeof_rm_x21,
+                            cptr.ldI16o(u, $you_uy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
                         ) & -2
                     );
                     ;
@@ -1123,58 +1006,32 @@ export function dipfountain(obj) {
              * surface.  After all, there will have been more people going
              * by.  Just like a shopping mall!  Chris Woodbury  */
 
-            if (((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            if ((((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                     NHM.F_LOOTED))
                 break;
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21
-                            ),
-                            cptr.ldI16o(u, $you_uy),
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
+                cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
                 ) |
                     NHM.F_LOOTED
             );
@@ -1237,58 +1094,38 @@ export function breaksink(x, y) {
         pline_The(__s_pipes_break_water_spurts_out);
     /* updates level.flags.nsinks and level.flags.nfountains */
     set_levltyp(x, y, NHC.FOUNTAIN);
-    cptr.stBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0,
+    cptr.stI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags,
         0
     );
-    cptr.stBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_horizontal
-        ),
-        5,
-        1,
-        0,
+    cptr.stI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_horizontal,
         0
     );
-    cptr.stBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0,
-        cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0
+    cptr.stI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags,
+        cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
         ) |
             NHM.F_LOOTED
     );
@@ -1354,7 +1191,13 @@ export function drinksink() {
                 /* reject water and try again */
                 obfree(otmp, null);
             }
-            cptr.stI32o(otmp, $obj_cursed, cptr.stI32o(otmp, $obj_blessed, 0));
+            cptr.stBits(
+                cptr.add(otmp, $obj_cursed),
+                0,
+                1,
+                0,
+                cptr.stBits(cptr.add(otmp, $obj_blessed), 1, 1, 0, 0)
+            );
             pline(
                 __s_some_s_liquid_flows_from_the_faucet,
                 Blind()
@@ -1377,59 +1220,33 @@ export function drinksink() {
             obfree(otmp, null);
             break;
         case 5:
-            if (!((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            if (!(((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                     NHM.S_LRING)) {
                 You(__s_find_a_ring_in_the_sink);
                 void mkobj_at(NHC.RING_CLASS, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1);
-                cptr.stBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21
-                            ),
-                            cptr.ldI16o(u, $you_uy),
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0,
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
+                cptr.stI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
+                    cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
                     ) |
                         NHM.S_LRING
                 );
@@ -1507,23 +1324,15 @@ export function drinksink() {
 /** C ref: fountain.c:716 — @param {CPtr<struct obj>} obj */
 export function dipsink(obj) {
     let try_call = 0;
-    let not_looted_yet = schar((((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16(u),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16o(u, $you_uy),
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0
-    ) |
+    let not_looted_yet = schar(((((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) &
+        31) |
         0) &
             NHM.S_LRING) == 0));
     let is_hands = schar((cptr.eq(obj, hands_obj) || (uarmg.v && cptr.eq(obj, uarmg.v)) ? 1 : 0));
@@ -1590,23 +1399,15 @@ export function dipsink(obj) {
             try_call = 1;
             break;
         case NHC.POT_OBJECT_DETECTION:
-            if (!((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            if (!(((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                     NHM.S_LRING)) {
                 You(__s_sense_a_ring_lost_down_the_drain);
@@ -1647,7 +1448,7 @@ export function dipsink(obj) {
                 potionbreathe(obj);
             break;
     }
-    if (try_call && (cptr.ldI32o(obj, $obj_dknown) & 1) | 0)
+    if (try_call && cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0)
         trycall(obj);
     useup(obj);
 }
@@ -1669,19 +1470,15 @@ export function sink_backs_up(x, y) {
         );
     pline(__s_s_s, !Deaf() ? __s_flupp : __s_empty, cptr.decay(buf));
 
-    if (!((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0
-    ) |
+    if (!(((cptr.ldI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) &
+        31) |
         0) &
             NHM.S_LRING)) {
         if (!Blind())
@@ -1690,30 +1487,20 @@ export function sink_backs_up(x, y) {
         newsym(x, y);
         exercise(NHC.A_DEX, 1);
         exercise(NHC.A_WIS, 1);  /* a discovery! */
-        cptr.stBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0,
-            cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
+        cptr.stI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
+            cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
             ) |
                 NHM.S_LRING
         );

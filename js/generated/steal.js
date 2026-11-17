@@ -371,7 +371,7 @@ function stealarm() {
                                     cptr.ldI16o(u, $you_uy)
                                 ) > 2)
                             break __lbl_botm;  /* (could just use 'break' here) */
-                        if ((cptr.ldI32o(otmp, $obj_unpaid) & 1))
+                        if (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0))
                             subfrombill(otmp, shop_keeper(cptr.ld1so(u, $you_ushops)));
                         freeinv(otmp);
                         pline(__s_s_steals_s, Monnam(mtmp), doname(otmp));
@@ -418,8 +418,8 @@ export function remove_worn_item(obj, unchain_ball) {
      * and defending the game against deliberate hangup when player sees a
      * message about something undesirable followed by --More--.
      */
-    oldinuse = (cptr.ldI32o(obj, $obj_in_use) & 1);
-    cptr.stI32o(obj, $obj_in_use, 1);
+    oldinuse = cptr.ldBits(cptr.add(obj, $obj_in_use), 2, 1, 0);
+    cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 1);
 
     if (cptr.ldI64o(obj, $obj_owornmask) & 127n) {
         if (cptr.eq(obj, uskin.v)) {
@@ -473,7 +473,7 @@ export function remove_worn_item(obj, unchain_ball) {
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
-    cptr.stI32o(obj, $obj_in_use, oldinuse);
+    cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, oldinuse);
 }
 
 /* during theft of a worn item: remove_worn_item(), prefaced by a message */
@@ -753,7 +753,7 @@ export function steal(mtmp, objnambuf) {
                     (cptr.eq(otmp, uswapwep.v) && !cptr.ld1so(u, $you_twoweap)))
                 ostuck = 0;  /* not really worn; curse doesn't matter */
             else
-                ostuck = schar((((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 &&
+                ostuck = schar(((cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0 &&
                     cptr.ldI64o(otmp, $obj_owornmask)) ||
                     (cptr.eq(
                         otmp,
@@ -803,7 +803,7 @@ export function steal(mtmp, objnambuf) {
         }
         case 26: {
             if (monkey_business &&
-                    (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) { __pc = 28; continue; }
+                    cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0) { __pc = 28; continue; }
             __pc = 27; continue;
         }
         case 28: {
@@ -874,9 +874,9 @@ export function steal(mtmp, objnambuf) {
             { __pc = 32; continue; }
         }
         case 42: {
-            curssv = (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0;
+            curssv = cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0;
 
-            cptr.stI32o(otmp, $obj_cursed, 0);
+            cptr.stBits(cptr.add(otmp, $obj_cursed), 0, 1, 0, 0);
             slowly = (armordelay >= 1 || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n ? 1 : 0);
             if (cptr.ld1so(flags, $flag_female))
                 urgent_pline(
@@ -906,7 +906,7 @@ export function steal(mtmp, objnambuf) {
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_taking_off_clothes);
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
             remove_worn_item(otmp, 1);
-            cptr.stI32o(otmp, $obj_cursed, curssv >>> 0);
+            cptr.stBits(cptr.add(otmp, $obj_cursed), 0, 1, 0, curssv >>> 0);
             if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
                 cptr.stI32o(gs, $instance_globals_s_stealoid, cptr.ldI32o(otmp, $obj_o_id));
                 cptr.stI32o(gs, $instance_globals_s_stealmid, cptr.ldI32o(mtmp, $monst_m_id));
@@ -959,9 +959,9 @@ export function steal(mtmp, objnambuf) {
             /* usually set mavenge bit so knights won't suffer an alignment penalty
                during retaliation; not applicable for removing attached iron ball */
             if (!Conflict() && !(was_punished && !Punished()))
-                cptr.stI32o(mtmp, $monst_mavenge, 1);
+                cptr.stBits(cptr.add(mtmp, $monst_mavenge), 6, 1, 0, 1);
 
-            if ((cptr.ldI32o(otmp, $obj_unpaid) & 1))
+            if (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0))
                 subfrombill(otmp, shop_keeper(cptr.ld1so(u, $you_ushops)));
             freeinv(otmp);
 
@@ -976,7 +976,7 @@ export function steal(mtmp, objnambuf) {
                 touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst))
                     ? 1
                     : 0);
-            cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_STOLEN);
+            cptr.stBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0, NHM.LOST_STOLEN);
             void mpickobj(mtmp, otmp);  /* may free otmp */
             if (could_petrify && !(cptr.ldI64o(mtmp, $monst_misc_worn_check) & 16n)) {
                 minstapetrify(mtmp, 1);
@@ -1023,7 +1023,7 @@ export function mpickobj(mtmp, otmp) {
         cptr.stPtro(gk, $instance_globals_k_kickedobj, null);
     /* an unpaid item can be on the floor; if a monster picks it up, take
        it off the shop bill */
-    if ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) | 0 ||
             ((cptr.ldPtro((otmp), $obj_cobj) !== null) &&
                 count_unpaid(cptr.ldPtro(otmp, $obj_cobj)))) {
         subfrombill(
@@ -1044,7 +1044,7 @@ export function mpickobj(mtmp, otmp) {
     }
     /* for hero owned object on shop floor, mtmp is taking possession
        and if it's eventually dropped in a shop, shk will claim it */
-    cptr.stI32o(otmp, $obj_no_charge, 0);
+    cptr.stBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0, 0);
     /* some object handling is only done if mtmp isn't a pet */
     if (!cptr.ld1so(mtmp, $monst_mtame)) {
         /* if monst is unseen, some info hero knows about this object becomes
@@ -1060,10 +1060,10 @@ export function mpickobj(mtmp, otmp) {
            rather than 'pickup_thrown'; if previously stolen, stays stolen;
            if previously dropped, now forgotten and autopickup will operate
            normally regardless of the setting for 'dropped_nopick' */
-        if (((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) == NHM.LOST_THROWN)
-            cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_STOLEN);
-        else if (((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) == NHM.LOST_DROPPED)
-            cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_NONE);
+        if ((cptr.ldBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0) | 0) == NHM.LOST_THROWN)
+            cptr.stBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0, NHM.LOST_STOLEN);
+        else if ((cptr.ldBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0) | 0) == NHM.LOST_DROPPED)
+            cptr.stBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0, NHM.LOST_NONE);
     }
     /* Must do carrying effects on object prior to add_to_minv() */
     carry_obj_effects(otmp);
@@ -1117,14 +1117,15 @@ export function stealamulet(mtmp) {
         /* If we get here, real and fake have been set up. */
         for (n = 0, obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
             if (cptr.ldI16o(obj, $obj_otyp) == real ||
-                    (cptr.ldI16o(obj, $obj_otyp) == fake && !(cptr.ldI32o(mtmp, $monst_iswiz) & 1)))
+                    (cptr.ldI16o(obj, $obj_otyp) == fake &&
+                        !cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0)))
                 ++n, otmp = obj;
         if (n > 1) {
             n = rnd(n);
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if ((cptr.ldI16o(otmp, $obj_otyp) == real ||
                         (cptr.ldI16o(otmp, $obj_otyp) == fake &&
-                            !(cptr.ldI32o(mtmp, $monst_iswiz) & 1))) && !--n)
+                            !cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0))) && !--n)
                     break;
         }
     }
@@ -1151,7 +1152,7 @@ export function stealamulet(mtmp) {
         /* finally, steal the target item */
         if (cptr.ldI64o(otmp, $obj_owornmask))
             worn_item_removal(mtmp, otmp);
-        if ((cptr.ldI32o(otmp, $obj_unpaid) & 1))
+        if (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0))
             subfrombill(otmp, shop_keeper(cptr.ld1so(u, $you_ushops)));
         freeinv(otmp);
         void cptr.strcpy(cptr.decay(buf), doname(otmp));
@@ -1185,7 +1186,7 @@ export function maybe_absorb_item(mon, obj, ochance, achance) {
     if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
         if (cptr.ldI64o(obj, $obj_owornmask))
             remove_worn_item(obj, 1);
-        if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
+        if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
             subfrombill(obj, shop_keeper(cptr.ld1so(u, $you_ushops)));
         if (((cptr.ld1uo(
             cptr.ldPtro(
@@ -1244,29 +1245,20 @@ export function mdrop_obj(mon, obj, verbosely) {
     if (unwornmask &&
             cptr.ld1so(mon, $monst_mtame) &&
             (unwornmask & 1048576n) != 0n &&
-            !(cptr.ldI32o(obj, $obj_unpaid) & 1) &&
+            !cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) &&
             costly_spot(omx, omy) &&
             cptr.strchr(
                 in_rooms(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.SHOPBASE),
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                omx,
-                                $sizeof_rm_x21
-                            ),
-                            omy,
-                            $sizeof_rm
-                        ),
-                        $rm_roomno
-                    ),
-                    0,
-                    6,
-                    0
-                ) | 0
+                (cptr.ldI32o3(
+                    svl,
+                    omx,
+                    $sizeof_rm_x21,
+                    omy,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_roomno
+                ) & 63) | 0
             )) {
-        cptr.stI32o(obj, $obj_no_charge, 1);
+        cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 1);
     }
     /* obj_no_longer_held(obj); -- done by place_object */
     if (verbosely &&
@@ -1317,7 +1309,7 @@ export function relobj(mtmp, show, is_pet) {
     let omy = cptr.ldI16o(mtmp, $monst_my);
 
     /* vault guard's gold goes away rather than be dropped... */
-    if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0) | 0 &&
             (otmp = findgold(cptr.ldPtro(mtmp, $monst_minvent))) !== null) {
         if (canspotmon(mtmp))
             pline(

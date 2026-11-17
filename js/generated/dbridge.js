@@ -216,23 +216,15 @@ export function is_lava(x, y) {
     if (ltyp == NHC.LAVAPOOL ||
             ltyp == NHC.LAVAWALL ||
             (ltyp == NHC.DRAWBRIDGE_UP &&
-                ((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                (((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                     NHM.DB_UNDER) ==
                     NHM.DB_LAVA))
@@ -264,23 +256,15 @@ export function is_ice(x, y) {
     );
     if (ltyp == NHC.ICE ||
             (ltyp == NHC.DRAWBRIDGE_UP &&
-                ((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                (((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                     NHM.DB_UNDER) ==
                     NHM.DB_ICE))
@@ -319,23 +303,15 @@ export function is_moat(x, y) {
         ))) &&
             (ltyp == NHC.MOAT ||
                 (ltyp == NHC.DRAWBRIDGE_UP &&
-                    ((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
-                    ) |
+                    (((cptr.ldI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) &
+                        31) |
                         0) &
                         NHM.DB_UNDER) ==
                         NHM.DB_MOAT)))
@@ -397,23 +373,15 @@ export function is_drawbridge_wall(x, y) {
                     $instance_globals_saved_l_level + $rm_typ
                 )) ==
                     NHC.DRAWBRIDGE_DOWN) &&
-            ((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            (x + 1) | 0,
-                            $sizeof_rm_x21
-                        ),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            (((cptr.ldI32o3(
+                svl,
+                (x + 1) | 0,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                 NHM.DB_DIR) ==
                 NHM.DB_WEST)
@@ -437,23 +405,15 @@ export function is_drawbridge_wall(x, y) {
                     $instance_globals_saved_l_level + $rm_typ
                 )) ==
                     NHC.DRAWBRIDGE_DOWN) &&
-            ((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            (x - 1) | 0,
-                            $sizeof_rm_x21
-                        ),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            (((cptr.ldI32o3(
+                svl,
+                (x - 1) | 0,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                 NHM.DB_DIR) ==
                 NHM.DB_EAST)
@@ -477,19 +437,15 @@ export function is_drawbridge_wall(x, y) {
                     $instance_globals_saved_l_level + $rm_typ
                 )) ==
                     NHC.DRAWBRIDGE_DOWN) &&
-            ((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        (y - 1) | 0,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            (((cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                (y - 1) | 0,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                 NHM.DB_DIR) ==
                 NHM.DB_SOUTH)
@@ -513,19 +469,15 @@ export function is_drawbridge_wall(x, y) {
                     $instance_globals_saved_l_level + $rm_typ
                 )) ==
                     NHC.DRAWBRIDGE_DOWN) &&
-            ((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        (y + 1) | 0,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            (((cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                (y + 1) | 0,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                 NHM.DB_DIR) ==
                 NHM.DB_NORTH)
@@ -605,23 +557,15 @@ export function find_drawbridge(x, y) {
  */
 /** C ref: dbridge.c:211 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y */
 function get_wall_for_db(x, y) {
-    switch ((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16(x),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16(y),
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0
-    ) |
+    switch (((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(x),
+        $sizeof_rm_x21,
+        cptr.ldI16(y),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) &
+        31) |
         0) &
             NHM.DB_DIR) {
         case NHM.DB_NORTH:
@@ -727,18 +671,13 @@ export function create_drawbridge(x, y, dir, flag) {
             $instance_globals_saved_l_level + $rm_typ,
             NHC.DOOR
         );
-        cptr.stBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2, $sizeof_rm_x21),
-                    y2,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0,
+        cptr.stI32o3(
+            svl,
+            x2,
+            $sizeof_rm_x21,
+            y2,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
             NHM.D_NODOOR
         );
     } else {
@@ -761,88 +700,58 @@ export function create_drawbridge(x, y, dir, flag) {
             NHC.DBWALL
         );
         /* Drawbridges are non-diggable. */
-        cptr.stBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2, $sizeof_rm_x21),
-                    y2,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0,
+        cptr.stI32o3(
+            svl,
+            x2,
+            $sizeof_rm_x21,
+            y2,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
             NHM.W_NONDIGGABLE
         );
     }
-    cptr.stBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_horizontal
-        ),
-        5,
-        1,
-        0,
+    cptr.stI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_horizontal,
         (!horiz) >>> 0
     );
-    cptr.stBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2, $sizeof_rm_x21),
-                y2,
-                $sizeof_rm
-            ),
-            $rm_horizontal
-        ),
-        5,
-        1,
-        0,
+    cptr.stI32o3(
+        svl,
+        x2,
+        $sizeof_rm_x21,
+        y2,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_horizontal,
         horiz
     );
-    cptr.stBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0,
+    cptr.stI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags,
         dir >>> 0
     );
     if (lava)
-        cptr.stBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0,
-            cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
+        cptr.stI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
+            cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
             ) |
                 NHM.DB_LAVA
         );
@@ -898,7 +807,7 @@ function m_to_e(mtmp, x, y, etmp) {
     if (mtmp) {
         cptr.stI32o(etmp, $entity_ex, x);
         cptr.stI32o(etmp, $entity_ey, y);
-        if ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 &&
+        if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0) | 0 &&
                 (x != cptr.ldI16o(mtmp, $monst_mx) || y != cptr.ldI16o(mtmp, $monst_my)))
             cptr.stPtro(
                 etmp,
@@ -1234,19 +1143,19 @@ function e_jumps(etmp) {
                 : 0)
             : (helpless(cptr.ldPtr(etmp)) ||
                 !cptr.ld1so(cptr.ldPtro(etmp, $entity_edata), $permonst_mmove) ||
-                (cptr.ldI32o(cptr.ldPtr(etmp), $monst_wormno) & 31) | 0
+                cptr.ldBits(cptr.add(cptr.ldPtr(etmp), $monst_wormno), 1, 5, 0) | 0
                 ? 1
                 : 0))
         return 0;
 
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))
             ? HConfusion()
-            : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), $monst_mconf) & 1) >>> 0))
+            : BigInt(cptr.ldBits(cptr.add(cptr.ldPtr(etmp), $monst_mconf), 0, 1, 0) >>> 0))
         tmp = (tmp - 2) | 0;
 
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))
             ? HStun()
-            : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), $monst_mstun) & 1) >>> 0))
+            : BigInt(cptr.ldBits(cptr.add(cptr.ldPtr(etmp), $monst_mstun), 7, 1, 0) >>> 0))
         tmp = (tmp - 3) | 0;
 
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
@@ -1668,17 +1577,17 @@ export function close_drawbridge(x, y) {
         $sizeof_rm
     );
     cptr.st1o(lev2, $rm_typ, NHC.DBWALL);
-    switch ((cptr.ldBits(cptr.add(lev1, $rm_flags), 0, 5, 0) | 0) & NHM.DB_DIR) {
+    switch (((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_DIR) {
         case NHM.DB_NORTH:
         case NHM.DB_SOUTH:
-            cptr.stBits(cptr.add(lev2, $rm_horizontal), 5, 1, 0, 1);
+            cptr.stI32o(lev2, $rm_horizontal, 1);
             break;
         case NHM.DB_WEST:
         case NHM.DB_EAST:
-            cptr.stBits(cptr.add(lev2, $rm_horizontal), 5, 1, 0, 0);
+            cptr.stI32o(lev2, $rm_horizontal, 0);
             break;
     }
-    cptr.stBits(cptr.add(lev2, $rm_flags), 0, 5, 0, NHM.W_NONDIGGABLE);
+    cptr.stI32o(lev2, $rm_flags, NHM.W_NONDIGGABLE);
     set_entity(x, y, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity));
     set_entity(
         x2.v,
@@ -1762,7 +1671,7 @@ export function open_drawbridge(x, y) {
         $sizeof_rm
     );
     cptr.st1o(lev2, $rm_typ, NHC.DOOR);
-    cptr.stBits(cptr.add(lev2, $rm_flags), 0, 5, 0, NHM.D_NODOOR);
+    cptr.stI32o(lev2, $rm_flags, NHM.D_NODOOR);
     set_entity(x, y, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity));
     set_entity(
         x2.v,
@@ -1840,10 +1749,10 @@ export function destroy_drawbridge(x, y) {
         y2.v,
         $sizeof_rm
     );
-    if (((cptr.ldBits(cptr.add(lev1, $rm_flags), 0, 5, 0) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT ||
-            ((cptr.ldBits(cptr.add(lev1, $rm_flags), 0, 5, 0) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA) {
+    if ((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT ||
+            (((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA) {
         let otmp2;
-        let lava = schar((((cptr.ldBits(cptr.add(lev1, $rm_flags), 0, 5, 0) | 0) & NHM.DB_UNDER) ==
+        let lava = schar(((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_UNDER) ==
                 NHM.DB_LAVA));
 
         ;  /* Deaf-aware */
@@ -1871,7 +1780,7 @@ export function destroy_drawbridge(x, y) {
                 You_hear(__s_a_loud_splash);  /* Deaf-aware */
         }
         cptr.st1o(lev1, $rm_typ, schar((lava ? NHC.LAVAPOOL : NHC.MOAT)));
-        cptr.stBits(cptr.add(lev1, $rm_flags), 0, 5, 0, 0);
+        cptr.stI32o(lev1, $rm_flags, 0);
         if ((otmp2 = sobj_at(NHC.BOULDER, x, y)) !== null) {
             obj_extract_self(otmp2);
             void flooreffects(otmp2, x, y, __s_fall);
@@ -1889,23 +1798,17 @@ export function destroy_drawbridge(x, y) {
         cptr.st1o(
             lev1,
             $rm_typ,
-            schar((((cptr.ldBits(cptr.add(lev1, $rm_flags), 0, 5, 0) | 0) & NHM.DB_ICE)
-                ? NHC.ICE
-                : NHC.ROOM))
+            schar(((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_ICE) ? NHC.ICE : NHC.ROOM))
         );
-        cptr.stBits(
-            cptr.add(lev1, $rm_flags),
-            0,
-            5,
-            0,
-            (((cptr.ldBits(cptr.add(lev1, $rm_flags), 0, 5, 0) | 0) & NHM.DB_ICE)
-                ? NHM.ICED_MOAT
-                : 0) >>> 0
+        cptr.stI32o(
+            lev1,
+            $rm_flags,
+            ((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_ICE) ? NHM.ICED_MOAT : 0) >>> 0
         );
     }
     wake_nearto(x, y, 500);
     cptr.st1o(lev2, $rm_typ, NHC.DOOR);
-    cptr.stBits(cptr.add(lev2, $rm_flags), 0, 5, 0, NHM.D_NODOOR);
+    cptr.stI32o(lev2, $rm_flags, NHM.D_NODOOR);
     if ((t = t_at(x, y)) !== null)
         deltrap(t);
     if ((t = t_at(x2.v, y2.v)) !== null)

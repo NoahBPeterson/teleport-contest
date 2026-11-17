@@ -486,7 +486,8 @@ one group of families new:
 | base | bc2319e | none | 13120 | 54 | 99.954% | 3006 | 99.9901% |
 | all | eb3e9b6 | all | 13036 | 54 | 99.314% | 3002 | 99.9901% |
 | 1 | 364dd9a | `bits` | 13035 | 53 | 99.307% | 3002 | 99.9901% |
-| 2 | (this) | `bits` for `rm` only | | | | | |
+| 2 | 3e2a629 | `bits` for `rm` only | 13120 | 54 | 99.954% | 3006 | 99.9901% |
+| 3 | (this) | `bits` for `obj`, `monst` | | | | | |
 
 So the bitfield family (packing, `ldBits`/`stBits`, C struct layout) carries the whole loss. On its
 own it also breaks one session that passes on both base and all-new, so some other family is

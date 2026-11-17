@@ -2038,7 +2038,7 @@ export function decl_globals_init() {
     cptr.memcpy(gk, g_init_k, 24);
     cptr.memcpy(gl, g_init_l, 696);
     cptr.memcpy(gm, g_init_m, 384);
-    cptr.memcpy(gn, g_init_n, 152);
+    cptr.memcpy(gn, g_init_n, 176);
     cptr.memcpy(go, g_init_o, 560);
     cptr.memcpy(gp, g_init_p, 536);
     cptr.memcpy(gq, g_init_q, 1);
@@ -2049,7 +2049,7 @@ export function decl_globals_init() {
     cptr.memcpy(gv, g_init_v, 200);
     cptr.memcpy(gw, g_init_w, 192);
     cptr.memcpy(gx, g_init_x, 56);
-    cptr.memcpy(gy, g_init_y, 352);
+    cptr.memcpy(gy, g_init_y, 224);
     cptr.memcpy(gz, g_init_z, 3);
     cptr.memcpy(svb, init_svb, 96);
     cptr.memcpy(svc, init_svc, 720);
@@ -2058,7 +2058,7 @@ export function decl_globals_init() {
     cptr.memcpy(svh, init_svh, 4);
     cptr.memcpy(svi, init_svi, 4);
     cptr.memcpy(svk, init_svk, 272);
-    cptr.memcpy(svl, init_svl, 42680);
+    cptr.memcpy(svl, init_svl, 89720);
     cptr.memcpy(svm, init_svm, 4616);
     cptr.memcpy(svn, init_svn, 52);
     cptr.memcpy(svo, init_svo, 24);

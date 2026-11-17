@@ -414,7 +414,7 @@ export function* finish_quest(obj) {
 
 /** C ref: quest.c:282 — @param {CPtr<struct monst>} mtmp */
 function* chat_with_leader(mtmp) {
-    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) ||
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) ||
             ((cptr.ldI32o(svq, $q_score_pissed_off) & 1)) | 0)
         return;
 
@@ -502,7 +502,7 @@ function* chat_with_leader(mtmp) {
 /** C ref: quest.c:371 — @param {CPtr<struct monst>} mtmp */
 export function* leader_speaks(mtmp) {
     /* maybe you attacked leader? */
-    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0)) {
         if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1))) {
             /* again, don't end it permanently if the leader gets angry
              * since you're going to have to kill him to go questing... :)
@@ -603,7 +603,7 @@ function* prisoner_speaks(mtmp) {
             $monst_mstrategy,
             cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n
         );
-        cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
 
         /* Your god is happy... */
         adjalign(3);

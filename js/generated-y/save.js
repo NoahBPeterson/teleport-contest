@@ -1105,7 +1105,7 @@ function* saveobj(nhfp, otmp) {
     let buflen = cptr.box(0);
     let zerobuf = cptr.box(0);
 
-    buflen.v = 216;
+    buflen.v = 112;
     (yield* sfo_int(nhfp, buflen, __s_obj_obj_length));
     (yield* sfo_obj(nhfp, otmp, __s_obj));
     if (cptr.ldPtro(otmp, $obj_oextra)) {
@@ -1198,7 +1198,7 @@ function* saveobjchn(nhfp, obj_p) {
             cptr.stPtr(otmp, null);  /* nobj saved into otmp2 */
             cptr.stPtro(otmp, $obj_cobj, null);  /* contents handled above */
             cptr.stI16o(otmp, $obj_timed, 0);  /* not timed any more */
-            cptr.stI32o(otmp, $obj_lamplit, 0);  /* caller handled lights */
+            cptr.stBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0, 0);  /* caller handled lights */
             cptr.stI32o(otmp, $obj_corpsenm, 0);
             /* clear 'uball' and 'uchain' pointers if resetting their mask;
                could also do same for other worn items but don't need to */
@@ -1233,8 +1233,8 @@ function* saveobjchn(nhfp, obj_p) {
 function* savemon(nhfp, mtmp) {
     let buflen = cptr.box(0);
 
-    cptr.stI32o(mtmp, $monst_mtemplit, 0);
-    buflen.v = 320;
+    cptr.stBits(cptr.add(mtmp, $monst_mtemplit), 6, 1, 0, 0);
+    buflen.v = 192;
     (yield* sfo_int(nhfp, buflen, __s_monst_monst_length));
     (yield* sfo_monst(nhfp, mtmp, __s_monst));
     if (cptr.ldPtro(mtmp, $monst_mextra)) {
@@ -1344,7 +1344,7 @@ function* savemonchn(nhfp, mtmp) {
                 $monst_mnum,
                 (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx))
             );
-            if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1))
+            if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0))
                 (yield* forget_temple_entry(mtmp));  /* EPRI() */
             (yield* savemon(nhfp, mtmp));
         }

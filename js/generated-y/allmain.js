@@ -1416,22 +1416,22 @@ export function teleport_state_dump() {
             __s_mlvl_d_tame_d_peace_d_flee_d_fleetim_d,
             cptr.ld1uo(mtmp, $monst_m_lev),
             cptr.ld1so(mtmp, $monst_mtame),
-            (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0,
-            (cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0,
-            (cptr.ldI32o(mtmp, $monst_mfleetim) & 127) | 0
+            cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0,
+            cptr.ldBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0) | 0,
+            cptr.ldBits(cptr.add(mtmp, $monst_mfleetim), 0, 7, 0) | 0
         );
         fprintf(
             tp_sdfp,
             __s_sleep_d_canmove_d_conf_d_stun_d,
-            (cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0,
-            (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0,
-            (cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0,
-            (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0
+            cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0) | 0,
+            cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0) | 0,
+            cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0) | 0,
+            cptr.ldBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0) | 0
         );
         fprintf(
             tp_sdfp,
             __s_speed_d_mux_d_muy_d_strat_lu,
-            (cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0,
+            cptr.ldBits(cptr.add(mtmp, $monst_mspeed), 0, 2, 0) | 0,
             cptr.ldI16o(mtmp, $monst_mux),
             cptr.ldI16o(mtmp, $monst_muy),
             cptr.ldU64o(mtmp, $monst_mstrategy)
@@ -1463,18 +1463,18 @@ export function teleport_state_dump() {
         fprintf(
             tp_sdfp,
             __s_buc_d_known_d_dknown_d_bknown_d,
-            (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0
+            cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0
                 ? 2
-                : ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? 1 : 0),
-            (cptr.ldI32o(otmp, $obj_known) & 1) | 0,
-            (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0,
-            (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0
+                : (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0 ? 1 : 0),
+            cptr.ldBits(cptr.add(otmp, $obj_known), 0, 1, 0) | 0,
+            cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0) | 0,
+            cptr.ldBits(cptr.add(otmp, $obj_bknown), 2, 1, 0) | 0
         );
         fprintf(
             tp_sdfp,
             __s_eroded_d_eroded2_d,
-            (cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0,
-            (cptr.ldI32o(otmp, $obj_oeroded2) & 3) | 0
+            cptr.ldBits(cptr.add(otmp, $obj_oeroded), 0, 2, 0) | 0,
+            cptr.ldBits(cptr.add(otmp, $obj_oeroded2), 2, 2, 0) | 0
         );
     }
     fprintf(tp_sdfp, __s_rbrack_rbrace_nl);

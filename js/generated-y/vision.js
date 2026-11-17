@@ -404,7 +404,7 @@ export function* does_block(x, y, lev) {
     if (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) ||
             cptr.ld1so(lev, $rm_typ) == NHC.TREE ||
             (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) &&
-                ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & 28)))
+                (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 28)))
         return 1;
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) != 1) {
         if (cptr.ld1so(lev, $rm_typ) == NHC.CLOUD ||
@@ -432,7 +432,7 @@ export function* does_block(x, y, lev) {
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
     ))) &&
-            (!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) &&
+            (!cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) || See_invisible()) &&
             is_lightblocker_mappear(mon))
         return 1;
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) != 1) {
@@ -488,7 +488,7 @@ export function* vision_reset() {
             y,
             $sizeof_rm
         );
-        for (x = 1; x < NHM.COLNO; x++, lev = cptr.add(lev, NHM.ROWNO, 8))
+        for (x = 1; x < NHM.COLNO; x++, lev = cptr.add(lev, NHM.ROWNO, 36))
             if (block !=
                     (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || (yield* does_block(x, y, lev)) ? 1 : 0)) {
                 if (block) {
@@ -586,23 +586,15 @@ function* get_unused_cs(rows, rmin, rmax) {
  * @param {CPtr<coordxy>} rmax
  */
 function* rogue_vision(next, rmin, rmax) {
-    let rnum = ((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16(u),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16o(u, $you_uy),
-                $sizeof_rm
-            ),
-            $rm_roomno
-        ),
-        0,
-        6,
-        0
-    ) |
+    let rnum = (((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_roomno
+    ) &
+        63) |
         0) -
             NHM.ROOMOFFSET) | 0;  /* no SHARED... */
     let start;
@@ -1208,7 +1200,7 @@ export function* vision_recalc(control) {
             for (
                 col = start;
                 col <= stop;
-                lev = cptr.add(lev, NHM.ROWNO, 8),
+                lev = cptr.add(lev, NHM.ROWNO, 36),
                 sv = cptr.add(sv, cptr.ldI16o(__static_vision_recalc_colbump, ++col, 2))
             ) {
                 let __go_not_in_sight = false;
@@ -1226,7 +1218,7 @@ export function* vision_recalc(control) {
                             (yield* newsym(i16(col), i16(row)));
 
                     } else if ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) &&
-                            (cptr.ldBits(cptr.add(lev, $rm_lit), 6, 1, 0) | 0 ||
+                            ((cptr.ldI32o(lev, $rm_lit) & 1) | 0 ||
                                 (cptr.ld1uo(next_row, col) & NHM.TEMP_LIT))) {
                         /*
                          * We see this position because it is lit.
@@ -1252,7 +1244,7 @@ export function* vision_recalc(control) {
                                 (row + dy) | 0,
                                 $sizeof_rm
                             );
-                            if (cptr.ldBits(cptr.add(flev, $rm_lit), 6, 1, 0) | 0 ||
+                            if ((cptr.ldI32o(flev, $rm_lit) & 1) | 0 ||
                                     cptr.ld1uo(
                                         cptr.ldPtro(next_array.v, (row + dy) | 0, 8),
                                         (col + dx) | 0
@@ -1287,7 +1279,7 @@ export function* vision_recalc(control) {
                                 (yield* newsym(i16(col), i16(row)));
                         }
                     } else if ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) &&
-                            cptr.ldBits(cptr.add(lev, $rm_waslit), 7, 1, 0) | 0) {
+                            (cptr.ldI32o(lev, $rm_waslit) & 1) | 0) {
                         /*
                          * If we make it here, the hero _could see_ the location,
                          * but doesn't see it (location is not lit).
@@ -1295,7 +1287,7 @@ export function* vision_recalc(control) {
                          * The hero can now see that it is not lit, so change waslit
                          * and update the location.
                          */
-                        cptr.stBits(cptr.add(lev, $rm_waslit), 7, 1, 0, 0);  /* remember lit condition */
+                        cptr.stI32o(lev, $rm_waslit, 0);  /* remember lit condition */
                         (yield* newsym(i16(col), i16(row)));
 
                         /*
@@ -2988,7 +2980,7 @@ export function howmonseen(mon) {
     /* normal vision;
        cansee is true for both normal and astral vision,
        but couldsee it not true for astral vision */
-    if (((cptr.ldI32o(mon, $monst_wormno) & 31) | 0
+    if ((cptr.ldBits(cptr.add(mon, $monst_wormno), 1, 5, 0) | 0
         ? worm_known(mon)
         : (((cptr.ld1uo(
             cptr.ldPtro(
@@ -3012,13 +3004,14 @@ export function howmonseen(mon) {
             ? 1
             : 0)) &&
             mon_visible(mon) &&
-            !(cptr.ldI32o(mon, $monst_minvis) & 1))
+            !cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0))
         how_seen |= NHM.MONSEEN_NORMAL;
     /* see invisible */
-    if (useemon && (cptr.ldI32o(mon, $monst_minvis) & 1) | 0)
+    if (useemon && cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) | 0)
         how_seen |= NHM.MONSEEN_SEEINVIS;
     /* infravision */
-    if ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && see_with_infrared(mon))
+    if ((!cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) || See_invisible()) &&
+            see_with_infrared(mon))
         how_seen |= NHM.MONSEEN_INFRAVIS;
     /* telepathy */
     if (tp_sensemon(mon))

@@ -677,7 +677,7 @@ export function mhidden_description(mon, mhid_flags, outbuf) {
             }
         } else if (isyou
                 ? (cptr.ldI32o(u, $you_uundetected) & 1) | 0
-                : (cptr.ldI32o(mon, $monst_mundetected) & 1) | 0) {
+                : cptr.ldBits(cptr.add(mon, $monst_mundetected), 6, 1, 0) | 0) {
             void cptr.strcpy(outbuf, __s_hiding);
             if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 128n) != 0n)) {
                 void cptr.strcat(outbuf, __s_under);
@@ -843,9 +843,11 @@ export function object_from_map(glyph, x, y, obj_p) {
         /* extra fields needed for shop price with doname() formatting */
         cptr.st1o(otmp, $obj_where, NHM.OBJ_FLOOR);
         cptr.stI16o(otmp, $obj_ox, x), cptr.stI16o(otmp, $obj_oy, y);
-        cptr.stI32o(
-            otmp,
-            $obj_no_charge,
+        cptr.stBits(
+            cptr.add(otmp, $obj_no_charge),
+            3,
+            1,
+            0,
             (cptr.ldI16o(otmp, $obj_otyp) == NHC.STRANGE_OBJECT && costly_spot(x, y) ? 1 : 0) >>> 0
         );
     }
@@ -862,7 +864,7 @@ export function object_from_map(glyph, x, y, obj_p) {
     if (fakeobj &&
             mtmp &&
             mimic_obj &&
-            ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 ||
+            (cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0) | 0 ||
                 ((cptr.ld1uo((mtmp), $monst_m_ap_type) & -8) & NHM.M_AP_F_DKNOWN))) {
         cptr.st1o(mtmp, $monst_m_ap_type, cptr.ld1uo(mtmp, $monst_m_ap_type) | NHM.M_AP_F_DKNOWN);
         observe_object(otmp);
@@ -888,7 +890,7 @@ function look_at_object(buf, x, y, glyph) {
             (cptr.ldI16o(otmp.v, $obj_otyp) != NHC.STRANGE_OBJECT)
                 ? distant_name(
                     otmp.v,
-                    (cptr.ldI32o(otmp.v, $obj_dknown) & 1) | 0
+                    cptr.ldBits(cptr.add(otmp.v, $obj_dknown), 1, 1, 0) | 0
                         ? doname_with_price
                         : doname_vague_quan
                 )
@@ -1017,14 +1019,14 @@ function look_at_monster(buf, monbuf, mtmp, x, y) {
         buf,
         __s_s_s_s_s,
         (cptr.ldI16o(mtmp, $monst_mx) != x || cptr.ldI16o(mtmp, $monst_my) != y)
-            ? (((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && accurate)
+            ? ((cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 && accurate)
                 ? __s_tail_of
                 : __s_tail_of_a)
             : __s_empty,
         accurate ? monhealthdescr(mtmp, 1, cptr.decay(healthbuf)) : __s_empty,
         (cptr.ld1so(mtmp, $monst_mtame) && accurate)
             ? __s_tame
-            : (((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && accurate)
+            : ((cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 && accurate)
                 ? __s_peaceful
                 : __s_empty),
         name
@@ -1053,20 +1055,20 @@ function look_at_monster(buf, monbuf, mtmp, x, y) {
     /* if mtmp isn't able to move (other than because it is a type of
        monster that never moves), say so [excerpt from mstatusline() for
        stethoscope or wand of probing] */
-    if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0))
         /* unfortunately mfrozen covers temporary sleep and being busy
            (donning armor, for instance) as well as paralysis */
         void cptr.strcat(buf, __s_can_t_move_paralyzed_or_sleeping_or_busy);
-    else if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1))
+    else if (cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0))
         /* sleeping for an indeterminate duration */
         void cptr.strcat(buf, __s_asleep);
     else if ((cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n) != 0n)
         /* arbitrary reason why it isn't moving */
         void cptr.strcat(buf, __s_meditating);
 
-    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0))
         void cptr.strcat(buf, __s_leashed_to_you);
-    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0 &&
             ((cptr.ld1uo(
                 cptr.ldPtro(
                     cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -1089,7 +1091,7 @@ function look_at_monster(buf, monbuf, mtmp, x, y) {
 
     /* we know the hero sees a monster at this location, but if it's shown
        due to persistent monster detection he might remember something else */
-    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0 ||
             (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ||
             visible_region_at(x, y))
         mhidden_description(mtmp, 11, eos(buf));
@@ -1440,7 +1442,12 @@ function lookat(x, y, buf, monbuf) {
                             (cptr.ldPtro((cptr.ldPtro(u, $you_ustuck)), $monst_data)),
                             $permonst_pmidx
                         ))) +
-                        ((((cptr.ldI32o((cptr.ldPtro(u, $you_ustuck)), $monst_female) & 1) |
+                        (((cptr.ldBits(
+                            cptr.add((cptr.ldPtro(u, $you_ustuck)), $monst_female),
+                            0,
+                            1,
+                            0
+                        ) |
                             0) == 0)
                             ? NHC.GLYPH_MON_MALE_OFF
                             : NHC.GLYPH_MON_FEM_OFF)) |
@@ -1602,23 +1609,15 @@ function lookat(x, y, buf, monbuf) {
             case NHC.S_ndoor:
                 if (is_drawbridge_wall(x, y) >= 0)
                     void cptr.strcpy(buf, __s_open_drawbridge_portcullis);
-                else if (((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                else if ((((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                     -17) ==
                         NHM.D_BROKEN)

@@ -196,22 +196,13 @@ function roguecorr(x, y, dir) {
                     $sizeof_mkroom
                 )
             );
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            fromx,
-                            $sizeof_rm_x21
-                        ),
-                        fromy,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
+            cptr.stI32o3(
+                svl,
+                fromx,
+                $sizeof_rm_x21,
+                fromy,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
                 NHM.D_NODOOR
             );
             fromy++;
@@ -325,22 +316,13 @@ function roguecorr(x, y, dir) {
                     $sizeof_mkroom
                 )
             );
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            tox,
-                            $sizeof_rm_x21
-                        ),
-                        toy,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
+            cptr.stI32o3(
+                svl,
+                tox,
+                $sizeof_rm_x21,
+                toy,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
                 NHM.D_NODOOR
             );
             toy--;
@@ -459,22 +441,13 @@ function roguecorr(x, y, dir) {
                     $sizeof_mkroom
                 )
             );
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            fromx,
-                            $sizeof_rm_x21
-                        ),
-                        fromy,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
+            cptr.stI32o3(
+                svl,
+                fromx,
+                $sizeof_rm_x21,
+                fromy,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
                 NHM.D_NODOOR
             );
             fromx++;
@@ -588,22 +561,13 @@ function roguecorr(x, y, dir) {
                     $sizeof_mkroom
                 )
             );
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            tox,
-                            $sizeof_rm_x21
-                        ),
-                        toy,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
+            cptr.stI32o3(
+                svl,
+                tox,
+                $sizeof_rm_x21,
+                toy,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
                 NHM.D_NODOOR
             );
             tox--;
@@ -1148,7 +1112,7 @@ export function makerogueghost() {
     y = i16(somey(croom));
     if (!(ghost = makemon(cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst), x, y, NHM.NO_MM_FLAGS)))
         return;
-    cptr.stI32o(ghost, $monst_msleeping, 1);
+    cptr.stBits(cptr.add(ghost, $monst_msleeping), 7, 1, 0, 1);
     ghost = christen_monst(ghost, roguename());
     (void (ghost));
 
@@ -1184,19 +1148,19 @@ export function makerogueghost() {
         ghostobj = mksobj_at(NHC.RING_MAIL, x, y, 0, 0);
         cptr.st1o(ghostobj, $obj_spe, schar(rn2(3)));
         if (!rn2(3))
-            cptr.stI32o(ghostobj, $obj_oerodeproof, 1);
+            cptr.stBits(cptr.add(ghostobj, $obj_oerodeproof), 4, 1, 0, 1);
         if (rn2(4))
             curse(ghostobj);
     } else {
         ghostobj = mksobj_at(NHC.PLATE_MAIL, x, y, 0, 0);
         cptr.st1o(ghostobj, $obj_spe, schar(((rnd(5) - 2) | 0)));
         if (!rn2(3))
-            cptr.stI32o(ghostobj, $obj_oerodeproof, 1);
+            cptr.stBits(cptr.add(ghostobj, $obj_oerodeproof), 4, 1, 0, 1);
         if (rn2(4))
             curse(ghostobj);
     }
     if (rn2(2)) {
         ghostobj = mksobj_at(NHC.FAKE_AMULET_OF_YENDOR, x, y, 1, 0);
-        cptr.stI32o(ghostobj, $obj_known, 1);
+        cptr.stBits(cptr.add(ghostobj, $obj_known), 0, 1, 0, 1);
     }
 }

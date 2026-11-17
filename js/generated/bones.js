@@ -199,7 +199,7 @@ function resetobjs(ochain, restore) {
         nobj = cptr.ldPtr(otmp);
         if (cptr.ldPtro(otmp, $obj_cobj))
             resetobjs(cptr.ldPtro(otmp, $obj_cobj), restore);
-        if ((cptr.ldI32o(otmp, $obj_in_use) & 1)) {
+        if (cptr.ldBits(cptr.add(otmp, $obj_in_use), 2, 1, 0)) {
             obj_extract_self(otmp);
             dealloc_obj(otmp);
             continue;
@@ -235,9 +235,11 @@ function resetobjs(ochain, restore) {
                     top = cptr.ldPtro(top, $obj_v)
                 )
                     continue;
-                cptr.stI32o(
-                    otmp,
-                    $obj_no_charge,
+                cptr.stBits(
+                    cptr.add(otmp, $obj_no_charge),
+                    3,
+                    1,
+                    0,
                     (cptr.ld1so(top, $obj_where) == NHM.OBJ_FLOOR &&
                         get_obj_location(top, ox, oy, 0) &&
                         inside_shop(ox.v, oy.v) &&
@@ -260,15 +262,21 @@ function resetobjs(ochain, restore) {
                 $sizeof_objclass,
                 $objclass_oc_uses_known
             ) & 1))
-                cptr.stI32o(otmp, $obj_known, 0);
-            cptr.stI32o(otmp, $obj_dknown, cptr.stI32o(otmp, $obj_bknown, 0));
-            cptr.stI32o(otmp, $obj_rknown, 0);
-            cptr.stI32o(otmp, $obj_lknown, 0);
-            cptr.stI32o(otmp, $obj_cknown, 0);
-            cptr.stI32o(otmp, $obj_tknown, 0);
+                cptr.stBits(cptr.add(otmp, $obj_known), 0, 1, 0, 0);
+            cptr.stBits(
+                cptr.add(otmp, $obj_dknown),
+                1,
+                1,
+                0,
+                cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, 0)
+            );
+            cptr.stBits(cptr.add(otmp, $obj_rknown), 3, 1, 0, 0);
+            cptr.stBits(cptr.add(otmp, $obj_lknown), 5, 1, 0, 0);
+            cptr.stBits(cptr.add(otmp, $obj_cknown), 4, 1, 0, 0);
+            cptr.stBits(cptr.add(otmp, $obj_tknown), 6, 1, 0, 0);
             cptr.st1o(otmp, $obj_invlet, 0);
-            cptr.stI32o(otmp, $obj_no_charge, 0);
-            cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_NONE);
+            cptr.stBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0, 0);
+            cptr.stBits(cptr.add(otmp, $obj_how_lost), 0, 3, 0, NHM.LOST_NONE);
 
             /* strip user-supplied names */
             /* Statue and some corpse names are left intact,
@@ -334,13 +342,13 @@ function resetobjs(ochain, restore) {
                         ))) {
                 /* achievement tracking; in case prize was moved off its
                    original level (which is always a no-bones level) */
-                cptr.stI32o(otmp, $obj_nomerge, 0);
+                cptr.stBits(cptr.add(otmp, $obj_nomerge), 7, 1, 0, 0);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
                 /* no longer the real Amulet */
                 cptr.stI16o(otmp, $obj_otyp, NHC.FAKE_AMULET_OF_YENDOR);
                 curse(otmp);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
-                if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
+                if (cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0))
                     end_burn(otmp, 1);
                 cptr.stI16o(otmp, $obj_otyp, NHC.WAX_CANDLE);
                 cptr.stI64o(otmp, $obj_age, 50n);  /* assume used */
@@ -515,24 +523,16 @@ function fixuporacle(oracle) {
             ))))
         return 0;
 
-    cptr.stI32o(oracle, $monst_mpeaceful, 1);  /* for behavior toward next character */
-    o_ridx = ((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16o(oracle, $monst_mx),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16o(oracle, $monst_my),
-                $sizeof_rm
-            ),
-            $rm_roomno
-        ),
-        0,
-        6,
-        0
-    ) |
+    cptr.stBits(cptr.add(oracle, $monst_mpeaceful), 1, 1, 0, 1);  /* for behavior toward next character */
+    o_ridx = (((cptr.ldI32o3(
+        svl,
+        cptr.ldI16o(oracle, $monst_mx),
+        $sizeof_rm_x21,
+        cptr.ldI16o(oracle, $monst_my),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_roomno
+    ) &
+        63) |
         0) -
             NHM.ROOMOFFSET) | 0;
     if (o_ridx >= 0 && cptr.ld1so2(svr, o_ridx, $sizeof_mkroom, $mkroom_rtype) == NHC.DELPHI)
@@ -574,23 +574,15 @@ function fixuporacle(oracle) {
             cptr.ldPtro(oracle, $monst_data)
         )) {
             rloc_to(oracle, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-            o_ridx = ((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16o(oracle, $monst_mx),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(oracle, $monst_my),
-                        $sizeof_rm
-                    ),
-                    $rm_roomno
-                ),
-                0,
-                6,
-                0
-            ) |
+            o_ridx = (((cptr.ldI32o3(
+                svl,
+                cptr.ldI16o(oracle, $monst_mx),
+                $sizeof_rm_x21,
+                cptr.ldI16o(oracle, $monst_my),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_roomno
+            ) &
+                63) |
                 0) -
                     NHM.ROOMOFFSET) | 0;
         }
@@ -640,7 +632,7 @@ export function can_make_bones() {
 function remove_mon_from_bones(mtmp) {
     let mptr = cptr.ldPtro(mtmp, $monst_data);
 
-    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 ||
             cptr.eq(mptr, cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)) ||
             cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_NEMESIS ||
             cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_LEADER ||
@@ -794,8 +786,8 @@ export function savebones(how, when, corpse) {
             $monst_mhp,
             cptr.stI32o(mtmp, $monst_mhpmax, cptr.ldI32o(u, $you_uhpmax))
         );
-        cptr.stI32o(mtmp, $monst_female, cptr.ld1so(flags, $flag_female));
-        cptr.stI32o(mtmp, $monst_msleeping, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_female), 0, 1, 0, cptr.ld1so(flags, $flag_female));
+        cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 1);
 
         if (!has_ebones(mtmp))
             newebones(mtmp);
@@ -880,7 +872,11 @@ export function savebones(how, when, corpse) {
         /* do not zero out m_ids for bones levels any more */
         cptr.stI64o(mtmp, $monst_mlstmv, 0n);
         if (cptr.ld1so(mtmp, $monst_mtame))
-            cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0)));
+            cptr.st1o(
+                mtmp,
+                $monst_mtame,
+                schar(cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0))
+            );
         /* observations about the current hero won't apply to future game */
         cptr.stU64o(mtmp, $monst_seen_resistance, 0n);
     }
@@ -916,18 +912,13 @@ export function savebones(how, when, corpse) {
                 $instance_globals_saved_l_level + $rm_seenv,
                 0
             );
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_waslit
-                ),
-                7,
-                1,
-                0,
+            cptr.stI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_waslit,
                 0
             );
             cptr.stI32o3(
@@ -1192,7 +1183,7 @@ export function bones_include_name(name) {
 /** C ref: bones.c:784 — @param {CPtr<struct obj>} objchain */
 function set_ghostly_objlist(objchain) {
     while (objchain) {
-        cptr.stI32o(objchain, $obj_ghostly, 1);
+        cptr.stBits(cptr.add(objchain, $obj_ghostly), 5, 1, 0, 1);
         objchain = cptr.ldPtr(objchain);
     }
 }
@@ -1202,7 +1193,7 @@ function set_ghostly_objlist(objchain) {
    cleared. obj->ghostly has no other usage at this time. */
 /** C ref: bones.c:796 — @param {CPtr<struct obj>} obj */
 export function fix_ghostly_obj(obj) {
-    if (!(cptr.ldI32o(obj, $obj_ghostly) & 1))
+    if (!cptr.ldBits(cptr.add(obj, $obj_ghostly), 5, 1, 0))
         return;
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.BOW:
@@ -1219,7 +1210,7 @@ export function fix_ghostly_obj(obj) {
         default:
             break;
     }
-    cptr.stI32o(obj, $obj_ghostly, 0);
+    cptr.stBits(cptr.add(obj, $obj_ghostly), 5, 1, 0, 0);
 }
 
 /** C ref: bones.c:818 — @param {CPtr<struct monst>} mtmp */

@@ -212,9 +212,9 @@ const __s_pct_s = cptr.lit("%s");
 /* wake up monster, possibly scare it */
 /** C ref: music.c:45 — @param {CPtr<struct monst>} mtmp @param {CInt} scary */
 function* awaken_scare(mtmp, scary) {
-    cptr.stI32o(mtmp, $monst_msleeping, 0);
-    cptr.stI32o(mtmp, $monst_mcanmove, 1);
-    cptr.stI32o(mtmp, $monst_mfrozen, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
+    cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0);
     /* may scare some monsters -- waiting monsters excluded */
     if (!((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_geno) & NHM.G_UNIQ) != 0) &&
             (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n) != 0n)
@@ -280,7 +280,7 @@ function* put_monsters_to_sleep(distance) {
         ) <
             distance &&
                 (yield* sleep_monst(mtmp, d(10, 10), NHC.TOOL_CLASS))) {
-            cptr.stI32o(mtmp, $monst_msleeping, 1);  /* 10d10 turns + wake_nearby to rouse */
+            cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 1);  /* 10d10 turns + wake_nearby to rouse */
             (yield* slept_monst(mtmp));
         }
     }
@@ -304,7 +304,7 @@ function* charm_snakes(distance) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
         if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_SNAKE &&
-                (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0 &&
+                cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0) | 0 &&
                 dist2(
                     (cptr.ldI16o((mtmp), $monst_mx)),
                     (cptr.ldI16o((mtmp), $monst_my)),
@@ -312,16 +312,16 @@ function* charm_snakes(distance) {
                     cptr.ldI16o(u, $you_uy)
                 ) <
                     distance) {
-            was_peaceful = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0;
-            cptr.stI32o(mtmp, $monst_mpeaceful, 1);
-            cptr.stI32o(mtmp, $monst_mavenge, 0);
+            was_peaceful = cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0;
+            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mavenge), 6, 1, 0, 0);
             cptr.stU64o(
                 mtmp,
                 $monst_mstrategy,
                 cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n
             );
             could_see_mon = canseemon(mtmp);
-            cptr.stI32o(mtmp, $monst_mundetected, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0, 0);
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
             if (canseemon(mtmp)) {
                 if (!could_see_mon)
@@ -353,7 +353,7 @@ function* calm_nymphs(distance) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
         if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_NYMPH &&
-                (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0 &&
+                cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0) | 0 &&
                 dist2(
                     (cptr.ldI16o((mtmp), $monst_mx)),
                     (cptr.ldI16o((mtmp), $monst_my)),
@@ -361,9 +361,9 @@ function* calm_nymphs(distance) {
                     cptr.ldI16o(u, $you_uy)
                 ) <
                     distance) {
-            cptr.stI32o(mtmp, $monst_msleeping, 0);
-            cptr.stI32o(mtmp, $monst_mpeaceful, 1);
-            cptr.stI32o(mtmp, $monst_mavenge, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mavenge), 6, 1, 0, 0);
             cptr.stU64o(
                 mtmp,
                 $monst_mstrategy,
@@ -403,9 +403,15 @@ export function* awaken_soldiers(bugler) {
                     cptr.add(mons, NHC.PM_GUARD, $sizeof_permonst)
                 )) {
             if (!cptr.ld1so(mtmp, $monst_mtame))
-                cptr.stI32o(mtmp, $monst_mpeaceful, 0);
-            cptr.stI32o(mtmp, $monst_msleeping, cptr.stI32o(mtmp, $monst_mfrozen, 0));
-            cptr.stI32o(mtmp, $monst_mcanmove, 1);
+                cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
+            cptr.stBits(
+                cptr.add(mtmp, $monst_msleeping),
+                7,
+                1,
+                0,
+                cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0)
+            );
+            cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
             cptr.stU64o(
                 mtmp,
                 $monst_mstrategy,
@@ -463,7 +469,7 @@ function* charm_monsters(distance) {
                one; do that even if mtmp resists in order to behave the same
                as a non-cursed scroll of taming or spell of charm monster */
             if (!(yield* resist(mtmp, NHC.TOOL_CLASS, 0, NHM.NOTELL)) ||
-                    (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0)
+                    cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0)
                 void (yield* tamedog(mtmp, null, 1));
         }
     }
@@ -491,7 +497,7 @@ function* do_pit(x, y, tu_pit) {
                 ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __s_below_you : __s_empty
             ));
         if (mtmp)
-            cptr.stI32o(mtmp, $monst_mtrapped, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
         (yield* obj_extract_self(otmp));
         void (yield* flooreffects(otmp, x, y, __s_empty));
         return;
@@ -514,9 +520,9 @@ function* do_pit(x, y, tu_pit) {
     if (mtmp) {
         if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n) &&
                 !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16n) != 0n)) {
-            let m_already_trapped = schar((cptr.ldI32o(mtmp, $monst_mtrapped) & 1));
+            let m_already_trapped = schar(cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0));
 
-            cptr.stI32o(mtmp, $monst_mtrapped, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 1);
             if (!m_already_trapped) {
                 if (((cptr.ld1uo(
                     cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
@@ -689,8 +695,8 @@ function* do_earthquake(force) {
             ))) !==
                     null) {
                 (yield* wakeup(mtmp, 1));  /* peaceful monster will become hostile */
-                if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1)) {
-                    cptr.stI32o(mtmp, $monst_mundetected, 0);
+                if (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0)) {
+                    cptr.stBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0, 0);
                     (yield* newsym(x, y));
                     if (ceiling_hider(cptr.ldPtro(mtmp, $monst_data))) {
                         if (((cptr.ld1uo(
@@ -855,45 +861,28 @@ function* do_earthquake(force) {
                     ;
                 case NHC.DOOR:
                     /* if already doorless, treat like room or corridor */
-                    if ((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
-                    ) |
+                    if (((cptr.ldI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) &
+                        31) |
                         0) ==
                             NHM.D_NODOOR) {
                         (yield* do_pit(x, y, tu_pit));
                         break;
                     }
                     /* wasn't doorless, now it will be */
-                    cptr.stBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    x,
-                                    $sizeof_rm_x21
-                                ),
-                                y,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0,
+                    cptr.stI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags,
                         NHM.D_NODOOR
                     );
                     (yield* recalc_block_point(x, y));
@@ -981,11 +970,11 @@ function* do_improvisation(instr) {
     let damage;
     let mode;
     let do_spec = !(HStun() || HConfusion());
-    let itmp = cptr.alloc(216);
+    let itmp = cptr.alloc(112);
     let mundane = 0;
     let same_old_song = cptr.box(0);
 
-    cptr.memcpy(itmp, instr, 216);
+    cptr.memcpy(itmp, instr, 112);
     cptr.stPtro(itmp, $obj_oextra, null);
 
     /* if won't yield special effect, make sound of mundane counterpart */

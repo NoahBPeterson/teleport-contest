@@ -2200,7 +2200,7 @@ export function* sfi_mkroom(nhfp, d_mkroom, myname) {
  */
 export function* sfo_monst(nhfp, d_monst, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 320n, 1, (yield* complex_dump(d_monst)));
+        sf_log(nhfp, myname, 192n, 1, (yield* complex_dump(d_monst)));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(
             sfoprocs,
@@ -2254,7 +2254,7 @@ export function* sfi_monst(nhfp, d_monst, myname) {
             (yield* sfo_monst(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_monst, myname));
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 320n, 1, (yield* complex_dump(d_monst)));
+            sf_log(nhfp, myname, 192n, 1, (yield* complex_dump(d_monst)));
     }
 }
 
@@ -2332,7 +2332,7 @@ export function* sfi_mvitals(nhfp, d_mvitals, myname) {
  */
 export function* sfo_obj(nhfp, d_obj, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 216n, 1, (yield* complex_dump(d_obj)));
+        sf_log(nhfp, myname, 112n, 1, (yield* complex_dump(d_obj)));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(
             sfoprocs,
@@ -2386,7 +2386,7 @@ export function* sfi_obj(nhfp, d_obj, myname) {
             (yield* sfo_obj(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_obj, myname));
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 216n, 1, (yield* complex_dump(d_obj)));
+            sf_log(nhfp, myname, 112n, 1, (yield* complex_dump(d_obj)));
     }
 }
 
@@ -2530,7 +2530,7 @@ export function* sfi_q_score(nhfp, d_q_score, myname) {
  */
 export function* sfo_rm(nhfp, d_rm, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 8n, 1, (yield* complex_dump(d_rm)));
+        sf_log(nhfp, myname, 36n, 1, (yield* complex_dump(d_rm)));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(
             sfoprocs,
@@ -2584,7 +2584,7 @@ export function* sfi_rm(nhfp, d_rm, myname) {
             (yield* sfo_rm(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_rm, myname));
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 8n, 1, (yield* complex_dump(d_rm)));
+            sf_log(nhfp, myname, 36n, 1, (yield* complex_dump(d_rm)));
     }
 }
 

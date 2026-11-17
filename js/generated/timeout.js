@@ -1973,7 +1973,7 @@ export function hatch_egg(arg, timeout) {
                     /* egg carrying monster might be invisible */
                     mon2 = cptr.ldPtro(egg, $obj_v);
                     if (canseemon(mon2) &&
-                            (!(cptr.ldI32o(mon2, $monst_wormno) & 31) ||
+                            (!cptr.ldBits(cptr.add(mon2, $monst_wormno), 1, 5, 0) ||
                                 ((cptr.ld1uo(
                                     cptr.ldPtro(
                                         cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -2120,7 +2120,7 @@ function slip_or_trip() {
                 ? ((cptr.ldI64o(otmp, $obj_quan) == 1n)
                     ? __s_it
                     : (Hallucination() ? __s_they : __s_them))
-                : (((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 || !Blind())
+                : ((cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0) | 0 || !Blind())
                     ? doname(otmp)
                     : ((otmp2 = sobj_at(NHC.ROCK, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) === null
                         ? cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
@@ -2187,7 +2187,7 @@ function slip_or_trip() {
            unconditionally dismount if fumbling is from a non-ice source */
         if (!on_foot &&
                 ((saddle = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) === null ||
-                    !(cptr.ldI32o(saddle, $obj_cursed) & 1)) &&
+                    !cptr.ldBits(cptr.add(saddle, $obj_cursed), 0, 1, 0)) &&
                 (!ice_only || !rn2(3))) {
             You(__s_lose_your_balance);
             dismount_steed(NHC.DISMOUNT_FELL);
@@ -2229,7 +2229,7 @@ function slip_or_trip() {
             /* mounted; saddle should never end up being Null here;
                don't fall off when it happens to be cursed */
         } else if ((saddle = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) === null ||
-                !(cptr.ldI32o(saddle, $obj_cursed) & 1)) {
+                !cptr.ldBits(cptr.add(saddle, $obj_cursed), 0, 1, 0)) {
             switch (rn2(4)) {
                 case 1:
                     Your(__s_s_slip_out_of_the_stirrups, makeplural(body_part(NHC.FOOT)));
@@ -2666,12 +2666,12 @@ export function begin_burn(obj, already_lit) {
 
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.MAGIC_LAMP:
-            cptr.stI32o(obj, $obj_lamplit, 1);
+            cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 1);
             do_timer = 0;
             break;
         case NHC.POT_OIL:
             turns = cptr.ldI64o(obj, $obj_age);
-            if ((cptr.ldI32o(obj, $obj_oeroded) & 3))
+            if (cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0))
                 turns = (BigInt.asIntN(64, 3n * turns + 2n)) / 4n;
             radius = 1;  /* very dim light */
             break;
@@ -2704,7 +2704,7 @@ export function begin_burn(obj, already_lit) {
         default:
             /* [ALI] Support artifact light sources */
             if (artifact_light(obj)) {
-                cptr.stI32o(obj, $obj_lamplit, 1);
+                cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 1);
                 do_timer = 0;
                 radius = arti_light_radius(obj);
             } else {
@@ -2716,19 +2716,19 @@ export function begin_burn(obj, already_lit) {
 
     if (do_timer) {
         if (start_timer(turns, NHC.TIMER_OBJECT, NHC.BURN_OBJECT, obj_to_any(obj))) {
-            cptr.stI32o(obj, $obj_lamplit, 1);
+            cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 1);
             cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) - turns);
             if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && !already_lit)
                 update_inventory();
         } else {
-            cptr.stI32o(obj, $obj_lamplit, 0);
+            cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 0);
         }
     } else {
         if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && !already_lit)
             update_inventory();
     }
 
-    if ((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && !already_lit) {
+    if (cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0 && !already_lit) {
         let x = cptr.box(0);
         let y = cptr.box(0);
 
@@ -2745,7 +2745,7 @@ export function begin_burn(obj, already_lit) {
  */
 /** C ref: timeout.c:1804 — @param {CPtr<struct obj>} obj @param {CInt} timer_attached */
 export function end_burn(obj, timer_attached) {
-    if (!(cptr.ldI32o(obj, $obj_lamplit) & 1)) {
+    if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0)) {
         impossible(__s_end_burn_obj_s_not_lit, xname(obj));
         return;
     }
@@ -2756,7 +2756,7 @@ export function end_burn(obj, timer_attached) {
     if (!timer_attached) {
         /* [DS] Cleanup explicitly, since timer cleanup won't happen */
         del_light_source(NHC.LS_OBJECT, obj_to_any(obj));
-        cptr.stI32o(obj, $obj_lamplit, 0);
+        cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 0);
         if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_INVENT)
             update_inventory();
     } else if (!stop_timer(NHC.BURN_OBJECT, obj_to_any(obj)))
@@ -2770,7 +2770,7 @@ export function end_burn(obj, timer_attached) {
 function cleanup_burn(arg, expire_time) {
     let obj = cptr.ldPtr(arg);
 
-    if (!(cptr.ldI32o(obj, $obj_lamplit) & 1)) {
+    if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0)) {
         impossible(__s_cleanup_burn_obj_s_not_lit, xname(obj));
         return;
     }
@@ -2783,7 +2783,7 @@ function cleanup_burn(arg, expire_time) {
         cptr.ldI64o(obj, $obj_age) +
             BigInt.asIntN(64, expire_time - cptr.ldI64o(svm, $instance_globals_saved_m_moves))
     );
-    cptr.stI32o(obj, $obj_lamplit, 0);
+    cptr.stBits(cptr.add(obj, $obj_lamplit), 7, 1, 0, 0);
 
     if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_INVENT)
         update_inventory();
@@ -3184,23 +3184,15 @@ export function timer_sanity_check() {
                                     $instance_globals_saved_l_level + $rm_typ
                                 ) ==
                                     NHC.DRAWBRIDGE_DOWN &&
-                                    ((cptr.ldBits(
-                                        cptr.add(
-                                            cptr.add(
-                                                cptr.add(
-                                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                                    x.v,
-                                                    $sizeof_rm_x21
-                                                ),
-                                                y.v,
-                                                $sizeof_rm
-                                            ),
-                                            $rm_flags
-                                        ),
-                                        0,
-                                        5,
-                                        0
-                                    ) |
+                                    (((cptr.ldI32o3(
+                                        svl,
+                                        x.v,
+                                        $sizeof_rm_x21,
+                                        y.v,
+                                        $sizeof_rm,
+                                        $instance_globals_saved_l_level + $rm_flags
+                                    ) &
+                                        31) |
                                         0) &
                                         NHM.DB_UNDER) ==
                                         NHM.DB_ICE))

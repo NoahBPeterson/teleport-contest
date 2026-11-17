@@ -471,11 +471,11 @@ function* makemap_unmakemon(mtmp, migratory) {
     /* vault is going away; get rid of guard who might be in play or
        be parked at <0,0>; for the latter, might already be flagged as
        dead but is being kept around because of the 'isgd' flag */
-    if ((cptr.ldI32o(mtmp, $monst_isgd) & 1)) {
-        cptr.stI32o(mtmp, $monst_isgd, 0);  /* after this, fall through to mongone() */
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0)) {
+        cptr.stBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0, 0);  /* after this, fall through to mongone() */
     } else if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
         return;  /* already set to be discarded */
-    } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 &&
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 &&
             on_level(
                 cptr.add(u, $you_uz),
                 cptr.add(
@@ -533,7 +533,7 @@ export function* makemap_remove_mons() {
         (mtmp = cptr.ldPtr(mprev)) !== null;
     ) {
         if (cptr.ldPtro(mtmp, $monst_mextra) &&
-                (((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 &&
+                ((cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 &&
                     on_level(
                         cptr.add(u, $you_uz),
                         cptr.add(
@@ -541,7 +541,7 @@ export function* makemap_remove_mons() {
                             $eshk_shoplevel
                         )
                     )) ||
-                    ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 &&
+                    (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 &&
                         on_level(
                             cptr.add(u, $you_uz),
                             cptr.add(
@@ -549,7 +549,7 @@ export function* makemap_remove_mons() {
                                 $epri_shrlevel
                             )
                         )) ||
-                    ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 &&
+                    (cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0) | 0 &&
                         on_level(
                             cptr.add(u, $you_uz),
                             cptr.add(
@@ -1189,9 +1189,7 @@ export function* wiz_show_wmodes() {
                 cptr.st1o(
                     cptr.decay(row),
                     x,
-                    schar(((48 +
-                        ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.WM_MASK)) |
-                        0)),
+                    schar(((48 + (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK)) | 0)),
                     1
                 );
             else if (cptr.ld1so(lev, $rm_typ) == NHC.CORR)
@@ -1828,7 +1826,7 @@ const stats_sep = cptr.bytes("---------------------------  ----- -------");
 
 /** C ref: wizcmds.c:1117 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function size_obj(otmp) {
-    let sz = 216;
+    let sz = 112;
 
     if (cptr.ldPtro(otmp, $obj_oextra)) {
         sz = (sz + 32) | 0;
@@ -1989,9 +1987,9 @@ function* contained_stats(win, src, total_count, total_size) {
  * @returns {CInt}
  */
 function size_monst(mtmp, incl_wsegs) {
-    let sz = 320;
+    let sz = 192;
 
-    if ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && incl_wsegs)
+    if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0) | 0 && incl_wsegs)
         sz = (sz + size_wseg(mtmp)) | 0;
 
     if (cptr.ldPtro(mtmp, $monst_mextra)) {
@@ -2530,7 +2528,7 @@ export function* wiz_show_stats() {
 
     total_obj_count.v = (total_obj_size.v = 0n);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(stats_hdr))));
-    void cptr.sprintf(cptr.decay(buf), __s_objects_base_size_ld, 216n);
+    void cptr.sprintf(cptr.decay(buf), __s_objects_base_size_ld, 112n);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     (yield* obj_chain(
         win,
@@ -2599,7 +2597,7 @@ export function* wiz_show_stats() {
 
     total_mon_count.v = (total_mon_size.v = 0n);
     (yield* Y.icall(putstr()(win, 0, __s_empty)));
-    void cptr.sprintf(cptr.decay(buf), __s_monsters_base_size_ld, 320n);
+    void cptr.sprintf(cptr.decay(buf), __s_monsters_base_size_ld, 192n);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     (yield* mon_chain(
         win,

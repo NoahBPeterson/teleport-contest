@@ -1514,7 +1514,13 @@ export function* mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
                 ? __assert_rtn(__s_mk_artifact, __s_artifact_c, 278, __s_otmp_0)
                 : void 0);
         /* prevent erosion from generating */
-        cptr.stI32o(otmp, $obj_oeroded, cptr.stI32o(otmp, $obj_oeroded2, 0));
+        cptr.stBits(
+            cptr.add(otmp, $obj_oeroded),
+            0,
+            2,
+            0,
+            cptr.stBits(cptr.add(otmp, $obj_oeroded2), 2, 2, 0, 0)
+        );
         otmp = (yield* oname(otmp, cptr.ldPtro(a, $artifact_name), NHM.ONAME_NO_FLAGS));
         cptr.st1o(otmp, $obj_oartifact, schar(m));  /* probably already set by this point, but */
         /* set existence and reason for creation bits */
@@ -1541,7 +1547,7 @@ export function* mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
         }  /* otherwise, otmp has not changed; just fallthrough to return it */
     }
     if (otmp && permapoisoned(otmp))
-        cptr.stI32o(otmp, $obj_otrapped, 1);
+        cptr.stBits(cptr.add(otmp, $obj_otrapped), 7, 1, 0, 1);
     return otmp;
 }
 
@@ -3030,7 +3036,7 @@ function* Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         if (youdefend)
             (yield* make_stunned((BigInt.asIntN(64, (HStun() & 16777215n) + 3n)), 0));
         else
-            cptr.stI32o(mdef, $monst_mstun, 1);
+            cptr.stBits(cptr.add(mdef, $monst_mstun), 7, 1, 0, 1);
         /* avoid extra stun message below if we used mb_verb["stun"] above */
         if (attack_indx == NHC.MB_INDEX_STUN)
             do_stun = 0;
@@ -3041,7 +3047,7 @@ function* Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         if (youdefend)
             (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + 4n), 0));
         else
-            cptr.stI32o(mdef, $monst_mconf, 1);
+            cptr.stBits(cptr.add(mdef, $monst_mconf), 0, 1, 0, 1);
     }
 
     /* now give message(s) describing side-effects; Use fakename
@@ -3495,7 +3501,7 @@ function invoke_ok(obj) {
                 1) |
                 0 ||
             (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR &&
-                !(cptr.ldI32o(obj, $obj_known) & 1)))
+                !cptr.ldBits(cptr.add(obj, $obj_known), 0, 1, 0)))
         return NHC.GETOBJ_SUGGEST;
 
     /* synonym for apply, though actually invoking it will do different things
@@ -3529,9 +3535,9 @@ function* nothing_special(obj) {
 
 /** C ref: artifact.c:1769 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_taming(obj) {
-    let pseudo = cptr.alloc(216);
+    let pseudo = cptr.alloc(112);
 
-    cptr.memcpy(pseudo, cg, 216);  /* neither cursed nor blessed, zero oextra too */
+    cptr.memcpy(pseudo, cg, 112);  /* neither cursed nor blessed, zero oextra too */
     cptr.stI16o(pseudo, $obj_otyp, NHC.SCR_TAMING);
     void (yield* seffects(pseudo));
     return NHM.ECMD_TIME;
@@ -3618,12 +3624,12 @@ function* invoke_charge_obj(obj) {
         cptr.stI64o(obj, $obj_age, 0n);
         return NHM.ECMD_CANCEL;
     }
-    b_effect = schar(((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 &&
+    b_effect = schar((cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 &&
         (cptr.ldI16o(oart, $artifact_role) == Role_switch() ||
             cptr.ldI16o(oart, $artifact_role) == NHC.NON_PM)
             ? 1
             : 0));
-    (yield* recharge(otmp, b_effect ? 1 : ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? -1 : 0)));
+    (yield* recharge(otmp, b_effect ? 1 : (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0 ? -1 : 0)));
     (yield* update_inventory());
     return NHM.ECMD_TIME;
 }
@@ -3731,15 +3737,39 @@ function* invoke_create_ammo(obj) {
         (yield* nothing_special(obj));
         return NHM.ECMD_TIME;
     }
-    cptr.stI32o(otmp, $obj_blessed, (cptr.ldI32o(obj, $obj_blessed) & 1));
-    cptr.stI32o(otmp, $obj_cursed, (cptr.ldI32o(obj, $obj_cursed) & 1));
-    cptr.stI32o(otmp, $obj_bknown, (cptr.ldI32o(obj, $obj_bknown) & 1));
-    cptr.stI32o(otmp, $obj_oeroded, cptr.stI32o(otmp, $obj_oeroded2, 0));
-    if ((cptr.ldI32o(obj, $obj_blessed) & 1)) {
+    cptr.stBits(
+        cptr.add(otmp, $obj_blessed),
+        1,
+        1,
+        0,
+        cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0)
+    );
+    cptr.stBits(
+        cptr.add(otmp, $obj_cursed),
+        0,
+        1,
+        0,
+        cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)
+    );
+    cptr.stBits(
+        cptr.add(otmp, $obj_bknown),
+        2,
+        1,
+        0,
+        cptr.ldBits(cptr.add(obj, $obj_bknown), 2, 1, 0)
+    );
+    cptr.stBits(
+        cptr.add(otmp, $obj_oeroded),
+        0,
+        2,
+        0,
+        cptr.stBits(cptr.add(otmp, $obj_oeroded2), 2, 2, 0, 0)
+    );
+    if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0)) {
         if (cptr.ld1so(otmp, $obj_spe) < 0)
             cptr.st1o(otmp, $obj_spe, 0);
         cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt(rnd(10)));
-    } else if ((cptr.ldI32o(obj, $obj_cursed) & 1)) {
+    } else if (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)) {
         if (cptr.ld1so(otmp, $obj_spe) > 0)
             cptr.st1o(otmp, $obj_spe, 0);
     } else
@@ -3794,10 +3824,16 @@ function* invoke_banish(obj) {
         if (is_dlord(cptr.ldPtro(mtmp, $monst_data)))
             chance++;
 
-        cptr.stI32o(
-            mtmp,
-            $monst_msleeping,
-            cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0)))
+        cptr.stBits(
+            cptr.add(mtmp, $monst_msleeping),
+            7,
+            1,
+            0,
+            cptr.st1o(
+                mtmp,
+                $monst_mtame,
+                schar(cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0))
+            )
         );
         if (chance <= 1 || !rn2(chance)) {
             if (!In_hell(cptr.add(u, $you_uz))) {
@@ -3873,49 +3909,32 @@ function* invoke_blinding_ray(obj) {
             (yield* pline(
                 __s_pct_s,
                 ((!Blind() &&
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_lit
-                        ),
-                        6,
-                        1,
-                        0
-                    ) |
+                    (cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_lit
+                    ) &
+                        1) |
                         0 &&
-                    !cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_waslit
-                        ),
-                        7,
-                        1,
-                        0
-                    ))
+                    !(cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_waslit
+                    ) & 1))
                     ? __s_it_is_lit_here_now
                     : cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen))
             ));
         } else {
             let vulnerable = schar((cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN));
-            let damg = (cptr.ldI32o(obj, $obj_blessed) & 1) | 0
+            let damg = cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0
                     ? 15
-                    : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 10 : 5);
+                    : (!cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) ? 10 : 5);
 
             if (vulnerable)
                 void (yield* lightdamage(obj, 1, Math.imul(2, damg)));
@@ -4679,7 +4698,7 @@ function* untouchable(obj, drop_untouchable) {
     beingworn = schar((obj.v &&
         ((cptr.ldI64o(obj.v, $obj_owornmask) & wearmask) != 0n ||
             (cptr.ld1so(obj.v, $obj_oclass) == NHC.TOOL_CLASS &&
-                ((cptr.ldI32o(obj.v, $obj_lamplit) & 1) | 0 ||
+                (cptr.ldBits(cptr.add(obj.v, $obj_lamplit), 7, 1, 0) | 0 ||
                     (cptr.ldI16o(obj.v, $obj_otyp) == NHC.LEASH &&
                         cptr.ldI32o(obj.v, $obj_corpsenm)) ||
                     (Is_container(obj.v) && (cptr.ldPtro((obj.v), $obj_cobj) !== null)))))
@@ -4782,7 +4801,7 @@ export function* retouch_equipment(dropflag) {
 
     if (had_rings != ((!!uleft.v + !!uright.v) | 0) &&
             uarmg.v &&
-            (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
+            cptr.ldBits(cptr.add(uarmg.v, $obj_cursed), 0, 1, 0) | 0)
         (yield* uncurse(uarmg.v));  /* temporary? hack for ring removal plausibility */
     if (had_gloves && !uarmg.v)
         (yield* selftouch(__s_after_losing_your_gloves_you));
@@ -4822,7 +4841,7 @@ function count_surround_traps(x, y) {
                 $sizeof_rm
             );
             if (((cptr.ld1so(levp, $rm_typ)) == NHC.DOOR) &&
-                    ((cptr.ldBits(cptr.add(levp, $rm_flags), 0, 5, 0) | 0) & NHM.D_TRAPPED) != 0) {
+                    (((cptr.ldI32o(levp, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) != 0) {
                 ++ret;
                 continue;
             }
@@ -4838,7 +4857,7 @@ function count_surround_traps(x, y) {
                 o;
                 o = cptr.ldPtro(o, $obj_v)
             )
-                if (Is_container(o) && (cptr.ldI32o(o, $obj_otrapped) & 1) | 0) {
+                if (Is_container(o) && cptr.ldBits(cptr.add(o, $obj_otrapped), 7, 1, 0) | 0) {
                     ++ret;  /* we're counting locations, so just */
                     break;  /* count the first one in a pile     */
                 }
@@ -4901,9 +4920,9 @@ export function is_magic_key(mon, obj) {
                     )
                     ? 1
                     : 0))
-            return schar((!(cptr.ldI32o(obj, $obj_cursed) & 1)));  /* a rogue; non-cursed suffices for magic */
+            return schar((!cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)));  /* a rogue; non-cursed suffices for magic */
         /* not a rogue; key must be blessed to behave as a magic one */
-        return schar((cptr.ldI32o(obj, $obj_blessed) & 1));
+        return schar(cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0));
     }
     return 0;
 }

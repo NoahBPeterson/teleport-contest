@@ -7081,19 +7081,15 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
     if (((typ) == NHC.DOOR)) {
         let key_or_pick;
         let card;
-        let dm = cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                    y,
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0
-        ) | 0;
+        let dm = (cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) &
+                31) | 0;
 
         if ((dm & 12)) {
             mcmd_addmenu(win, NHC.MCMD_OPEN_DOOR, __s_open_the_door), ++K;
@@ -7150,7 +7146,9 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
         void cptr.sprintf(cptr.decay(buf), __s_put_saddle_on_s, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_APPLY_SADDLE, cptr.decay(buf)), ++K;
     }
-    if (mtmp && ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) {
+    if (mtmp &&
+            (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 ||
+                cptr.ld1so(mtmp, $monst_mtame))) {
         void cptr.sprintf(cptr.decay(buf), __s_talk_to_s, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_TALK, cptr.decay(buf)), ++K;
 
@@ -7167,7 +7165,8 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
     }
 
     if ((mtmp &&
-        !((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) ||
+        !(cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 ||
+            cptr.ld1so(mtmp, $monst_mtame))) ||
             ((glyph_at(x, y)) == NHC.GLYPH_INVIS_OFF)) {
         void cptr.sprintf(
             cptr.decay(buf),
@@ -7614,45 +7613,29 @@ function domouseaction() {
             )) ==
                     NHC.DOOR)) {
                 /* slight assistance to player: choose kick/open for them */
-                if ((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                (cptr.ldI16(u) + x) | 0,
-                                $sizeof_rm_x21
-                            ),
-                            (cptr.ldI16o(u, $you_uy) + y) | 0,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                if (((cptr.ldI32o3(
+                    svl,
+                    (cptr.ldI16(u) + x) | 0,
+                    $sizeof_rm_x21,
+                    (cptr.ldI16o(u, $you_uy) + y) | 0,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                         NHM.D_LOCKED) {
                     cmdq_add_ec(NHC.CQ_CANNED, dokick);
                     return NHM.ECMD_OK;
                 }
-                if ((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                (cptr.ldI16(u) + x) | 0,
-                                $sizeof_rm_x21
-                            ),
-                            (cptr.ldI16o(u, $you_uy) + y) | 0,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                if (((cptr.ldI32o3(
+                    svl,
+                    (cptr.ldI16(u) + x) | 0,
+                    $sizeof_rm_x21,
+                    (cptr.ldI16o(u, $you_uy) + y) | 0,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                         NHM.D_CLOSED) {
                     cmdq_add_ec(NHC.CQ_CANNED, doopen);

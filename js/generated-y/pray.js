@@ -647,7 +647,7 @@ function* in_trouble() {
         return 4;
     if (((uarmf.v) &&
         cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.LEVITATION_BOOTS &&
-        (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0) ||
+        cptr.ldBits(cptr.add((uarmf.v), $obj_cursed), 0, 1, 0) | 0) ||
             (yield* stuck_ring(uleft.v, NHC.RIN_LEVITATION)) ||
             (yield* stuck_ring(uright.v, NHC.RIN_LEVITATION)))
         return 3;
@@ -671,10 +671,11 @@ function* in_trouble() {
                     8192n) !=
                     0n) &&
                 (!Unchanging() ||
-                    ((otmp = unchanger()) !== null && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)))
+                    ((otmp = unchanger()) !== null &&
+                        cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0)))
             return 2;
     }
-    if (EBlinded() && (cptr.ldI32o(ublindf.v, $obj_cursed) & 1) | 0)
+    if (EBlinded() && cptr.ldBits(cptr.add(ublindf.v, $obj_cursed), 0, 1, 0) | 0)
         return 1;
 
     /*
@@ -685,10 +686,10 @@ function* in_trouble() {
         return -1;
     if (((uarmg.v) &&
         cptr.ldI16o((uarmg.v), $obj_otyp) == NHC.GAUNTLETS_OF_FUMBLING &&
-        (cptr.ldI32o((uarmg.v), $obj_cursed) & 1) | 0) ||
+        cptr.ldBits(cptr.add((uarmg.v), $obj_cursed), 0, 1, 0) | 0) ||
             ((uarmf.v) &&
                 cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.FUMBLE_BOOTS &&
-                (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0))
+                cptr.ldBits(cptr.add((uarmf.v), $obj_cursed), 0, 1, 0) | 0))
         return -2;
     if ((yield* worst_cursed_item()))
         return -3;
@@ -696,7 +697,7 @@ function* in_trouble() {
         otmp = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n));
         if (((otmp) &&
                 cptr.ldI16o((otmp), $obj_otyp) == NHC.SADDLE &&
-                (cptr.ldI32o((otmp), $obj_cursed) & 1) | 0))
+                cptr.ldBits(cptr.add((otmp), $obj_cursed), 0, 1, 0) | 0))
             return -4;
     }
 
@@ -740,7 +741,7 @@ function* worst_cursed_item() {
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if (((otmp) &&
                     cptr.ldI16o((otmp), $obj_otyp) == NHC.LOADSTONE &&
-                    (cptr.ldI32o((otmp), $obj_cursed) & 1) | 0))
+                    cptr.ldBits(cptr.add((otmp), $obj_cursed), 0, 1, 0) | 0))
                 return otmp;
     }
     /* weapon takes precedence if it is interfering
@@ -748,46 +749,46 @@ function* worst_cursed_item() {
     if ((yield* welded(uwep.v)) && (uright.v || bimanual(uwep.v))) {
         otmp = uwep.v;
         /* gloves come next, due to rings */
-    } else if (uarmg.v && (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0) {
+    } else if (uarmg.v && cptr.ldBits(cptr.add(uarmg.v, $obj_cursed), 0, 1, 0) | 0) {
         otmp = uarmg.v;
         /* then shield due to two handed weapons and spells */
-    } else if (uarms.v && (cptr.ldI32o(uarms.v, $obj_cursed) & 1) | 0) {
+    } else if (uarms.v && cptr.ldBits(cptr.add(uarms.v, $obj_cursed), 0, 1, 0) | 0) {
         otmp = uarms.v;
         /* then cloak due to body armor */
-    } else if (uarmc.v && (cptr.ldI32o(uarmc.v, $obj_cursed) & 1) | 0) {
+    } else if (uarmc.v && cptr.ldBits(cptr.add(uarmc.v, $obj_cursed), 0, 1, 0) | 0) {
         otmp = uarmc.v;
-    } else if (uarm.v && (cptr.ldI32o(uarm.v, $obj_cursed) & 1) | 0) {
+    } else if (uarm.v && cptr.ldBits(cptr.add(uarm.v, $obj_cursed), 0, 1, 0) | 0) {
         otmp = uarm.v;
         /* if worn helmet of opposite alignment is making you an adherent
            of the current god, he/she/it won't uncurse that for you */
     } else if (uarmh.v &&
-            (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0 &&
+            cptr.ldBits(cptr.add(uarmh.v, $obj_cursed), 0, 1, 0) | 0 &&
             cptr.ldI16o(uarmh.v, $obj_otyp) != NHC.HELM_OF_OPPOSITE_ALIGNMENT) {
         otmp = uarmh.v;
-    } else if (uarmf.v && (cptr.ldI32o(uarmf.v, $obj_cursed) & 1) | 0) {
+    } else if (uarmf.v && cptr.ldBits(cptr.add(uarmf.v, $obj_cursed), 0, 1, 0) | 0) {
         otmp = uarmf.v;
-    } else if (uarmu.v && (cptr.ldI32o(uarmu.v, $obj_cursed) & 1) | 0) {
+    } else if (uarmu.v && cptr.ldBits(cptr.add(uarmu.v, $obj_cursed), 0, 1, 0) | 0) {
         otmp = uarmu.v;
-    } else if (uamul.v && (cptr.ldI32o(uamul.v, $obj_cursed) & 1) | 0) {
+    } else if (uamul.v && cptr.ldBits(cptr.add(uamul.v, $obj_cursed), 0, 1, 0) | 0) {
         otmp = uamul.v;
-    } else if (uleft.v && (cptr.ldI32o(uleft.v, $obj_cursed) & 1) | 0) {
+    } else if (uleft.v && cptr.ldBits(cptr.add(uleft.v, $obj_cursed), 0, 1, 0) | 0) {
         otmp = uleft.v;
-    } else if (uright.v && (cptr.ldI32o(uright.v, $obj_cursed) & 1) | 0) {
+    } else if (uright.v && cptr.ldBits(cptr.add(uright.v, $obj_cursed), 0, 1, 0) | 0) {
         otmp = uright.v;
-    } else if (ublindf.v && (cptr.ldI32o(ublindf.v, $obj_cursed) & 1) | 0) {
+    } else if (ublindf.v && cptr.ldBits(cptr.add(ublindf.v, $obj_cursed), 0, 1, 0) | 0) {
         otmp = ublindf.v;  /* must be non-blinding lenses */
         /* if weapon wasn't handled above, do it now */
     } else if ((yield* welded(uwep.v))) {
         otmp = uwep.v;
         /* active secondary weapon even though it isn't welded */
     } else if (uswapwep.v &&
-            (cptr.ldI32o(uswapwep.v, $obj_cursed) & 1) | 0 &&
+            cptr.ldBits(cptr.add(uswapwep.v, $obj_cursed), 0, 1, 0) | 0 &&
             cptr.ld1so(u, $you_twoweap)) {
         otmp = uswapwep.v;
         /* all worn items ought to be handled by now */
     } else {
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
-            if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
+            if (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
                 continue;
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOADSTONE || confers_luck(otmp))
                 break;
@@ -805,7 +806,7 @@ function* fix_curse_trouble(otmp, what) {
     if (cptr.eq(otmp, uarmg.v) && Glib()) {
         (yield* make_glib(0));
         (yield* Your(__s_s_are_no_longer_slippery, (yield* gloves_simple_name(uarmg.v))));
-        if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
+        if (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
             return;
     }
     if (!Blind() || (cptr.eq(otmp, ublindf.v) && Blindfolded_only())) {
@@ -815,7 +816,7 @@ function* fix_curse_trouble(otmp, what) {
             hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber))
         ));
         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OBJ_GLOWS);
-        cptr.stI32o(otmp, $obj_bknown, (!Hallucination()) >>> 0);  /* ok to skip set_bknown() */
+        cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, (!Hallucination()) >>> 0);  /* ok to skip set_bknown() */
     }
     (yield* uncurse(otmp));
     (yield* update_inventory());
@@ -940,7 +941,7 @@ function* fix_worst_trouble(trouble) {
         case 3:
             if (((uarmf.v) &&
                     cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.LEVITATION_BOOTS &&
-                    (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0)) {
+                    cptr.ldBits(cptr.add((uarmf.v), $obj_cursed), 0, 1, 0) | 0)) {
                 otmp = uarmf.v;
             } else if ((otmp = (yield* stuck_ring(uleft.v, NHC.RIN_LEVITATION))) !== null) {
                 if (cptr.eq(otmp, uleft.v))
@@ -968,7 +969,7 @@ function* fix_worst_trouble(trouble) {
                     (yield* Your(__s_shape_becomes_uncertain));
                     (yield* rehumanize());  /* "You return to {normal} form." */
                 } else if ((otmp = unchanger()) !== null &&
-                        (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
+                        cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0) {
                     /* otmp is an amulet of unchanging */
                     (yield* fix_curse_trouble(otmp, what));
                     break;
@@ -1000,11 +1001,11 @@ function* fix_worst_trouble(trouble) {
         case -2:
             if (((uarmg.v) &&
                     cptr.ldI16o((uarmg.v), $obj_otyp) == NHC.GAUNTLETS_OF_FUMBLING &&
-                    (cptr.ldI32o((uarmg.v), $obj_cursed) & 1) | 0))
+                    cptr.ldBits(cptr.add((uarmg.v), $obj_cursed), 0, 1, 0) | 0))
                 otmp = uarmg.v;
             else if (((uarmf.v) &&
                     cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.FUMBLE_BOOTS &&
-                    (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0))
+                    cptr.ldBits(cptr.add((uarmf.v), $obj_cursed), 0, 1, 0) | 0))
                 otmp = uarmf.v;
             (yield* fix_curse_trouble(otmp, what));
             break;
@@ -1318,66 +1319,42 @@ function* angrygods(resp_god) {
                     $instance_globals_saved_l_level + $rm_typ
                 )) ==
                     NHC.ALTAR) &&
-                    (((schar((((((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
-                    ) |
+                    (((schar(((((((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) &
+                        31) |
                         0) &
                         NHM.AM_MASK) &
                         NHM.AM_MASK) == 0)
                         ? -128
-                        : (((((cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        cptr.ldI16(u),
-                                        $sizeof_rm_x21
-                                    ),
-                                    cptr.ldI16o(u, $you_uy),
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
-                        ) |
+                        : ((((((cptr.ldI32o3(
+                            svl,
+                            cptr.ldI16(u),
+                            $sizeof_rm_x21,
+                            cptr.ldI16o(u, $you_uy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) &
+                            31) |
                             0) &
                             NHM.AM_MASK) &
                             NHM.AM_MASK) ==
                             NHM.AM_LAWFUL)
                             ? NHM.A_LAWFUL
-                            : (((((cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(svl, $instance_globals_saved_l_level),
-                                            cptr.ldI16(u),
-                                            $sizeof_rm_x21
-                                        ),
-                                        cptr.ldI16o(u, $you_uy),
-                                        $sizeof_rm
-                                    ),
-                                    $rm_flags
-                                ),
-                                0,
-                                5,
-                                0
-                            ) |
+                            : ((((((cptr.ldI32o3(
+                                svl,
+                                cptr.ldI16(u),
+                                $sizeof_rm_x21,
+                                cptr.ldI16o(u, $you_uy),
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) &
+                                31) |
                                 0) &
                                 NHM.AM_MASK) &
                                 NHM.AM_MASK)) -
@@ -1547,7 +1524,7 @@ function* gcrownu() {
            crowned, but be paranoid about it) */
         void cptr.strcpy(cptr.decay(bbuf), (yield* actualoname(obj)));
         (yield* bless(obj));
-        cptr.stI32o(obj, $obj_bknown, 1);  /* ok to skip set_bknown() */
+        cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 1);  /* ok to skip set_bknown() */
         (yield* observe_object(obj));
         (yield* at_your_feet(upstart((yield* ansimpleoname(obj)))));
         (yield* dropy(obj));
@@ -1655,9 +1632,21 @@ function* gcrownu() {
     /* enhance weapon regardless of alignment or artifact status */
     if (((obj) && (cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj)))) {
         (yield* bless(obj));
-        cptr.stI32o(obj, $obj_oeroded, cptr.stI32o(obj, $obj_oeroded2, 0));
-        cptr.stI32o(obj, $obj_oerodeproof, 1);
-        cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1));  /* ok to skip set_bknown() */
+        cptr.stBits(
+            cptr.add(obj, $obj_oeroded),
+            0,
+            2,
+            0,
+            cptr.stBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0, 0)
+        );
+        cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, 1);
+        cptr.stBits(
+            cptr.add(obj, $obj_bknown),
+            2,
+            1,
+            0,
+            cptr.stBits(cptr.add(obj, $obj_rknown), 3, 1, 0, 1)
+        );  /* ok to skip set_bknown() */
         if (cptr.ld1so(obj, $obj_spe) < 1)
             cptr.st1o(obj, $obj_spe, 1);
         /* acquire skill in this weapon */
@@ -1853,23 +1842,15 @@ function* pleased(g_align) {
             )) ==
                 NHC.ALTAR)
                 ? 3 +
-                    (((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
-                    ) |
+                    ((((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) &
+                        31) |
                         0) &
                         NHM.AM_SHRINE) != 0)
                 : 2)) |
@@ -1932,15 +1913,15 @@ function* pleased(g_align) {
                     let repair_buf = new Uint8Array(256);
 
                     cptr.st1(cptr.decay(repair_buf), 0);
-                    if ((cptr.ldI32o(uwep.v, $obj_oeroded) & 3) | 0 ||
-                            (cptr.ldI32o(uwep.v, $obj_oeroded2) & 3) | 0)
+                    if (cptr.ldBits(cptr.add(uwep.v, $obj_oeroded), 0, 2, 0) | 0 ||
+                            cptr.ldBits(cptr.add(uwep.v, $obj_oeroded2), 2, 2, 0) | 0)
                         void cptr.sprintf(
                             cptr.decay(repair_buf),
                             __s_and_s_now_as_good_as_new,
                             (yield* otense(uwep.v, __s_are))
                         );
 
-                    if ((cptr.ldI32o(uwep.v, $obj_cursed) & 1)) {
+                    if (cptr.ldBits(cptr.add(uwep.v, $obj_cursed), 0, 1, 0)) {
                         if (!Blind()) {
                             (yield* pline(
                                 __s_s_s_s,
@@ -1952,9 +1933,9 @@ function* pleased(g_align) {
                         } else
                             (yield* You_feel(__s_the_power_of_s_over_s, (yield* u_gname()), (yield* yname(uwep.v))));
                         (yield* uncurse(uwep.v));
-                        cptr.stI32o(uwep.v, $obj_bknown, 1);  /* ok to bypass set_bknown() */
+                        cptr.stBits(cptr.add(uwep.v, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
                         cptr.st1(cptr.decay(repair_buf), 0);
-                    } else if (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1)) {
+                    } else if (!cptr.ldBits(cptr.add(uwep.v, $obj_blessed), 1, 1, 0)) {
                         if (!Blind()) {
                             (yield* pline(
                                 __s_s_with_s_aura_s,
@@ -1966,15 +1947,21 @@ function* pleased(g_align) {
                         } else
                             (yield* You_feel(__s_the_blessing_of_s_over_s, (yield* u_gname()), (yield* yname(uwep.v))));
                         (yield* bless(uwep.v));
-                        cptr.stI32o(uwep.v, $obj_bknown, 1);  /* ok to bypass set_bknown() */
+                        cptr.stBits(cptr.add(uwep.v, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
                         cptr.st1(cptr.decay(repair_buf), 0);
                     }
 
                     /* fix any rust/burn/rot damage, but don't protect
                        against future damage */
-                    if ((cptr.ldI32o(uwep.v, $obj_oeroded) & 3) | 0 ||
-                            (cptr.ldI32o(uwep.v, $obj_oeroded2) & 3) | 0) {
-                        cptr.stI32o(uwep.v, $obj_oeroded, cptr.stI32o(uwep.v, $obj_oeroded2, 0));
+                    if (cptr.ldBits(cptr.add(uwep.v, $obj_oeroded), 0, 2, 0) | 0 ||
+                            cptr.ldBits(cptr.add(uwep.v, $obj_oeroded2), 2, 2, 0) | 0) {
+                        cptr.stBits(
+                            cptr.add(uwep.v, $obj_oeroded),
+                            0,
+                            2,
+                            0,
+                            cptr.stBits(cptr.add(uwep.v, $obj_oeroded2), 2, 2, 0, 0)
+                        );
                         /* only give this message if we didn't just bless
                            or uncurse (which has already given a message) */
                         if (cptr.ld1s(cptr.decay(repair_buf)))
@@ -2091,7 +2078,7 @@ function* pleased(g_align) {
                         ));
                     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
                         nextobj = cptr.ldPtr(otmp);
-                        if ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 &&
+                        if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0 &&
                                 (!cptr.eq(otmp, uarmh.v) ||
                                     cptr.ldI16o(uarmh.v, $obj_otyp) !=
                                         NHC.HELM_OF_OPPOSITE_ALIGNMENT)) {
@@ -2102,7 +2089,7 @@ function* pleased(g_align) {
                                     hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber))
                                 ));
                                 cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OBJ_GLOWS);
-                                cptr.stI32o(otmp, $obj_bknown, 1);  /* ok to bypass set_bknown() */
+                                cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
                                 ++any;
                             }
                             (yield* uncurse(otmp));
@@ -2271,11 +2258,11 @@ function* water_prayer(bless_water) {
         /* turn water into (un)holy water */
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_WATER &&
                 (bless_water
-                    ? !(cptr.ldI32o(otmp, $obj_blessed) & 1)
-                    : !(cptr.ldI32o(otmp, $obj_cursed) & 1))) {
-            cptr.stI32o(otmp, $obj_blessed, bless_water);
-            cptr.stI32o(otmp, $obj_cursed, (!bless_water) >>> 0);
-            cptr.stI32o(otmp, $obj_bknown, bc_known);  /* ok to bypass set_bknown() */
+                    ? !cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0)
+                    : !cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))) {
+            cptr.stBits(cptr.add(otmp, $obj_blessed), 1, 1, 0, bless_water);
+            cptr.stBits(cptr.add(otmp, $obj_cursed), 0, 1, 0, (!bless_water) >>> 0);
+            cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, bc_known);  /* ok to bypass set_bknown() */
             changed += cptr.ldI64o(otmp, $obj_quan);
         } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS)
             other = 1;
@@ -2496,15 +2483,15 @@ function* offer_negative_valued(highaltar, altaralign) {
  * @param {CInt} altaralign
  */
 function* offer_fake_amulet(otmp, highaltar, altaralign) {
-    if (!highaltar && !(cptr.ldI32o(otmp, $obj_known) & 1)) {
+    if (!highaltar && !cptr.ldBits(cptr.add(otmp, $obj_known), 0, 1, 0)) {
         (yield* offer_too_soon(altaralign));
         return;
     }
     ;
     (yield* You_hear(__s_a_nearby_thunderclap));
-    if (!(cptr.ldI32o(otmp, $obj_known) & 1)) {
+    if (!cptr.ldBits(cptr.add(otmp, $obj_known), 0, 1, 0)) {
         (yield* You(__s_realize_you_have_made_a_s, Hallucination() ? __s_boo_boo : __s_mistake));
-        cptr.stI32o(otmp, $obj_known, 1);
+        cptr.stBits(cptr.add(otmp, $obj_known), 0, 1, 0, 1);
         change_luck(-1);
     } else {
         /* don't you dare try to fool the gods */
@@ -2555,76 +2542,41 @@ function* offer_different_alignment_altar(otmp, altaralign) {
             (yield* You_feel(__s_the_power_of_s_increase, (yield* u_gname())));
             (yield* exercise(NHC.A_WIS, 1));
             change_luck(1);
-            shrine = schar((((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            shrine = schar(((((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                     NHM.AM_SHRINE) != 0));
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
                 Align2amask(cptr.ld1so(u, $you_ualign))
             );
             if (shrine)
-                cptr.stBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21
-                            ),
-                            cptr.ldI16o(u, $you_uy),
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0,
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
+                cptr.stI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
+                    cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
                     ) |
                         NHM.AM_SHRINE
                 );
@@ -2695,22 +2647,13 @@ function* sacrifice_your_race(otmp, highaltar, altaralign) {
             __s_altar_is_stained_with_s_blood,
             cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj)
         ));
-        cptr.stBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(svl, $instance_globals_saved_l_level),
-                        cptr.ldI16(u),
-                        $sizeof_rm_x21
-                    ),
-                    cptr.ldI16o(u, $you_uy),
-                    $sizeof_rm
-                ),
-                $rm_flags
-            ),
-            0,
-            5,
-            0,
+        cptr.stI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
             NHM.AM_CHAOTIC
         );
         (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* in case Invisible to self */
@@ -2732,22 +2675,13 @@ function* sacrifice_your_race(otmp, highaltar, altaralign) {
                 $instance_globals_saved_l_level + $rm_typ,
                 NHC.ROOM
             );
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
                 0
             );
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -2781,7 +2715,7 @@ function* sacrifice_your_race(otmp, highaltar, altaralign) {
             (yield* You(__s_have_summoned_s, cptr.decay(dbuf)));
             if (sgn(cptr.ld1so(u, $you_ualign)) ==
                     sgn(cptr.ld1so(cptr.ldPtro(dmon, $monst_data), $permonst_maligntyp)))
-                cptr.stI32o(dmon, $monst_mpeaceful, 1);
+                cptr.stBits(cptr.add(dmon, $monst_mpeaceful), 1, 1, 0, 1);
             (yield* You(__s_are_terrified_and_unable_to_move));
             nomul(-3);
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_being_terrified_of_a_demon);
@@ -2832,66 +2766,42 @@ function* bestow_artifact(max_giftvalue) {
         /* mk_artifact() with NULL obj and a_align() arg can return NULL */
         otmp = (yield* mk_artifact(
             null,
-            ((schar((((((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            ((schar(((((((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                 NHM.AM_MASK) &
                 NHM.AM_MASK) == 0)
                 ? -128
-                : (((((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21
-                            ),
-                            cptr.ldI16o(u, $you_uy),
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                : ((((((cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                     NHM.AM_MASK) &
                     NHM.AM_MASK) ==
                     NHM.AM_LAWFUL)
                     ? NHM.A_LAWFUL
-                    : (((((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
-                    ) |
+                    : ((((((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) &
+                        31) |
                         0) &
                         NHM.AM_MASK) &
                         NHM.AM_MASK)) -
@@ -2906,9 +2816,9 @@ function* bestow_artifact(max_giftvalue) {
             (yield* artifact_origin(otmp, 264));
             if (cptr.ld1so(otmp, $obj_spe) < 0)
                 cptr.st1o(otmp, $obj_spe, 0);
-            if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
+            if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
                 (yield* uncurse(otmp));
-            cptr.stI32o(otmp, $obj_oerodeproof, 1);
+            cptr.stBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0, 1);
             void cptr.strcpy(
                 cptr.decay(buf),
                 (Hallucination() ? __s_a_doodad : (Blind() ? __s_an_object : (yield* ansimpleoname(otmp))))
@@ -2964,66 +2874,42 @@ function* sacrifice_value(otmp) {
 export function* dosacrifice() {
     let otmp;
     let highaltar;
-    let altaralign = ((schar((((((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16(u),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16o(u, $you_uy),
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0
-    ) |
+    let altaralign = ((schar(((((((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) &
+        31) |
         0) &
         NHM.AM_MASK) &
         NHM.AM_MASK) == 0)
             ? -128
-            : (((((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            : ((((((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                 NHM.AM_MASK) &
                 NHM.AM_MASK) ==
                 NHM.AM_LAWFUL)
                 ? NHM.A_LAWFUL
-                : (((((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21
-                            ),
-                            cptr.ldI16o(u, $you_uy),
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                : ((((((cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                     NHM.AM_MASK) &
                     NHM.AM_MASK)) -
@@ -3045,23 +2931,15 @@ export function* dosacrifice() {
         (yield* You(__s_are_too_impaired_to_perform_the_rite));
         return NHM.ECMD_OK;
     }
-    highaltar = schar(((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16(u),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16o(u, $you_uy),
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0
-    ) |
+    highaltar = schar((((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) &
+        31) |
         0) &
             NHM.AM_SANCTUM));
 
@@ -3365,66 +3243,42 @@ export function* can_pray(praying) {
             $instance_globals_saved_l_level + $rm_typ
         )) ==
             NHC.ALTAR)
-            ? ((schar((((((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            ? ((schar(((((((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                 NHM.AM_MASK) &
                 NHM.AM_MASK) == 0)
                 ? -128
-                : (((((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21
-                            ),
-                            cptr.ldI16o(u, $you_uy),
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                : ((((((cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                     NHM.AM_MASK) &
                     NHM.AM_MASK) ==
                     NHM.AM_LAWFUL)
                     ? NHM.A_LAWFUL
-                    : (((((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
-                    ) |
+                    : ((((((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) &
+                        31) |
                         0) &
                         NHM.AM_MASK) &
                         NHM.AM_MASK)) -
@@ -3532,10 +3386,15 @@ function* pray_revive() {
                     (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)),
                     $monst_mtame
                 ) &&
-                !(cptr.ldI32o(
-                    (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)),
-                    $monst_isminion
-                ) & 1))
+                !cptr.ldBits(
+                    cptr.add(
+                        (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)),
+                        $monst_isminion
+                    ),
+                    5,
+                    1,
+                    0
+                ))
             break;
 
     if (!otmp)
@@ -3760,19 +3619,19 @@ function* maybe_turn_mon_iter(mtmp) {
                 turn_undead_range)
         return;
 
-    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) &&
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) &&
             (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) ||
                 is_vampshifter(mtmp) ||
                 (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 256n) !=
                     0n) &&
                     (cptr.ldI32o(u, $you_ulevel) > 15)))) {
-        cptr.stI32o(mtmp, $monst_msleeping, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
         if (HConfusion()) {
             if (!turn_undead_msg_cnt++)
                 (yield* pline(__s_unfortunately_your_voice_falters));
-            cptr.stI32o(mtmp, $monst_mflee, 0);
-            cptr.stI32o(mtmp, $monst_mfrozen, 0);
-            cptr.stI32o(mtmp, $monst_mcanmove, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
         } else if (!(yield* resist(mtmp, 0, 0, NHM.TELL))) {
             let xlev = 6;
 
@@ -3800,7 +3659,7 @@ function* maybe_turn_mon_iter(mtmp) {
                 case NHC.S_ZOMBIE:
                     if (cptr.ldI32o(u, $you_ulevel) >= xlev && !(yield* resist(mtmp, 0, 0, NHM.NOTELL))) {
                         if (cptr.ld1so(u, $you_ualign) == -1) {
-                            cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+                            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
                             set_malign(mtmp);
                         } else {
                             (yield* killed(mtmp));
@@ -3948,19 +3807,15 @@ export function altarmask_at(x, y) {
             $instance_globals_saved_l_level + $rm_typ
         )) ==
                 NHC.ALTAR))
-            res = cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) | 0;
+            res = (cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                    31) | 0;
     }
     return res;
 }
@@ -3984,58 +3839,42 @@ export function* a_gname_at(x, y) {
             NHC.ALTAR))
         return null;
 
-    return (yield* align_gname(((schar((((((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0
-    ) |
+    return (yield* align_gname(((schar(((((((cptr.ldI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) &
+        31) |
         0) &
         NHM.AM_MASK) &
         NHM.AM_MASK) == 0)
             ? -128
-            : (((((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            : ((((((cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                 NHM.AM_MASK) &
                 NHM.AM_MASK) ==
                 NHM.AM_LAWFUL)
                 ? NHM.A_LAWFUL
-                : (((((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                : ((((((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                     NHM.AM_MASK) &
                     NHM.AM_MASK)) -
@@ -4171,58 +4010,42 @@ export function align_gtitle(alignment) {
 
 /** C ref: pray.c:2652 — @param {CInt} x @param {CInt} y */
 export function* altar_wrath(x, y) {
-    let altaralign = ((schar((((((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                y,
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0
-    ) |
+    let altaralign = ((schar(((((((cptr.ldI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) &
+        31) |
         0) &
         NHM.AM_MASK) &
         NHM.AM_MASK) == 0)
             ? -128
-            : (((((cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
-                        y,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            ) |
+            : ((((((cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) &
+                31) |
                 0) &
                 NHM.AM_MASK) &
                 NHM.AM_MASK) ==
                 NHM.AM_LAWFUL)
                 ? NHM.A_LAWFUL
-                : (((((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                x,
-                                $sizeof_rm_x21
-                            ),
-                            y,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0
-                ) |
+                : ((((((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) &
+                    31) |
                     0) &
                     NHM.AM_MASK) &
                     NHM.AM_MASK)) -

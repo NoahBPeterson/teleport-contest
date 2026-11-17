@@ -923,7 +923,7 @@ export function del_engr_at(x, y) {
 export function freehand() {
     return (!uwep.v ||
         !welded(uwep.v) ||
-        (!bimanual(uwep.v) && (!uarms.v || !(cptr.ldI32o(uarms.v, $obj_cursed) & 1)))
+        (!bimanual(uwep.v) && (!uarms.v || !cptr.ldBits(cptr.add(uarms.v, $obj_cursed), 0, 1, 0)))
             ? 1
             : 0);
 }
@@ -1338,7 +1338,13 @@ function doengrave_sfx_item(de) {
         case NHC.WAND_CLASS:
             if (zappable(cptr.ldPtro(de, $_doengrave_ctx_otmp))) {
                 check_unpaid(cptr.ldPtro(de, $_doengrave_ctx_otmp));
-                if ((cptr.ldI32o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_cursed) & 1) | 0 &&
+                if (cptr.ldBits(
+                    cptr.add(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_cursed),
+                    0,
+                    1,
+                    0
+                ) |
+                    0 &&
                         !rn2(NHM.WAND_BACKFIRE_CHANCE)) {
                     wand_explode(cptr.ldPtro(de, $_doengrave_ctx_otmp), 0);
                     cptr.stI32o(de, $_doengrave_ctx_ret, NHM.ECMD_TIME);
@@ -1649,23 +1655,15 @@ export function doengrave() {
                     surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
                 );
                 break __lbl_doengr_exit;
-            } else if (!cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_horizontal
-                ),
-                5,
-                1,
-                0
-            )) {
+            } else if (!(cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_horizontal
+            ) &
+                    1)) {
                 /* disturb the grave: summon a ghoul, same as sometimes
                    happens when kicking; sets levl[ux][uy]->disturbed so
                    that it'll only happen once */
@@ -2082,7 +2080,8 @@ function engrave() {
     dulling_wep = schar((carving &&
         stylus &&
         cptr.ld1so(stylus, $obj_oclass) == NHC.WEAPON_CLASS &&
-        (cptr.ldI16o(stylus, $obj_otyp) != NHC.ATHAME || (cptr.ldI32o(stylus, $obj_cursed) & 1) | 0)
+        (cptr.ldI16o(stylus, $obj_otyp) != NHC.ATHAME ||
+            cptr.ldBits(cptr.add(stylus, $obj_cursed), 0, 1, 0) | 0)
             ? 1
             : 0));
     marker = schar((stylus &&
@@ -2184,7 +2183,7 @@ function engrave() {
             obj_extract_self(stylus);
             stylus = hold_another_object(stylus, __s_you_drop_one_s, doname(stylus), (null));
             (void (stylus));
-        } else if (dulled && (cptr.ldI32o(stylus, $obj_known) & 1) | 0) {
+        } else if (dulled && cptr.ldBits(cptr.add(stylus, $obj_known), 0, 1, 0) | 0) {
             /* reflect change in stylus->spe; not needed for splitstack
                since hold_another_object() does this */
             prinv((null), stylus, 1n);
@@ -2658,11 +2657,11 @@ export function disturb_grave(x, y) {
 
     if (!((cptr.ld1so(lev, $rm_typ)) == NHC.GRAVE)) {
         impossible(__s_disturbing_grave_that_isn_t_a_grave_d, cptr.ld1so(lev, $rm_typ));
-    } else if (cptr.ldBits(cptr.add(lev, $rm_horizontal), 5, 1, 0)) {
+    } else if ((cptr.ldI32o(lev, $rm_horizontal) & 1)) {
         impossible(__s_disturbing_already_disturbed_grave);
     } else {
         You(__s_disturb_the_undead);
-        cptr.stBits(cptr.add(lev, $rm_horizontal), 5, 1, 0, 1);
+        cptr.stI32o(lev, $rm_horizontal, 1);
         void makemon(cptr.add(mons, NHC.PM_GHOUL, $sizeof_permonst), x, y, NHM.NO_MM_FLAGS);
         exercise(NHC.A_WIS, 0);
     }

@@ -628,20 +628,21 @@ function* sanity_check_single_mon(mtmp, chk_geno, msg) {
                 ) &
                     NHM.G_GENOD) != 0)
             (yield* impossible(__s_genocided_s_in_play_s, pmname(mptr, Mgender(mtmp)), msg));
-        if (cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
+        if (cptr.ld1so(mtmp, $monst_mtame) &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
             (yield* impossible(__s_tame_s_is_not_peaceful_s, pmname(mptr, Mgender(mtmp)), msg));
     }
-    if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !has_eshk(mtmp))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 && !has_eshk(mtmp))
         (yield* impossible(__s_shk_without_eshk_s, msg));
-    if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 && !has_epri(mtmp))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 && !has_epri(mtmp))
         (yield* impossible(__s_priest_without_epri_s, msg));
-    if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !has_egd(mtmp))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0) | 0 && !has_egd(mtmp))
         (yield* impossible(__s_guard_without_egd_s, msg));
-    if ((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 && !has_emin(mtmp))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0) | 0 && !has_emin(mtmp))
         (yield* impossible(__s_minion_without_emin_s, msg));
     /* guardian angel on astral level is tame but has emin rather than edog */
     if (cptr.ld1so(mtmp, $monst_mtame)) {
-        if (!has_edog(mtmp) && !(cptr.ldI32o(mtmp, $monst_isminion) & 1))
+        if (!has_edog(mtmp) && !cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0))
             (yield* impossible(__s_pet_without_edog_s, msg));
         else
             (yield* pet_sanity_check(mtmp, msg));
@@ -664,8 +665,8 @@ function* sanity_check_single_mon(mtmp, chk_geno, msg) {
             ));
     }
 
-    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) {
-        if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0)) {
+        if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0)) {
             ;  /* TODO: how to check worm in trap? */
         } else if (!t_at(mx, my))
             (yield* impossible(__s_trapped_without_a_trap_s, msg));
@@ -674,19 +675,21 @@ function* sanity_check_single_mon(mtmp, chk_geno, msg) {
        for temporary sleep, and for being busy (usually donning armor);
        code that sets mfrozen needs to also clear mcanmove, otherwise the
        helpless() test will be unreliable */
-    if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0 &&
-            (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0)
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) | 0 &&
+            cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0) | 0)
         (yield* impossible(
             __s_frozen_monster_s_s_is_able_to_move_s,
             cptr.ld1so(mtmp, $monst_mtame)
                 ? __s_tame
-                : ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_peaceful : __s_empty),
+                : (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0
+                    ? __s_peaceful
+                    : __s_empty),
             pmname(mptr, Mgender(mtmp)),
             msg
         ));
 
     /* monster is hiding? */
-    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1)) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0)) {
         let t;
 
         if (!isok(mx, my))
@@ -812,7 +815,7 @@ function* sanity_check_single_mon(mtmp, chk_geno, msg) {
                 !has_ceiling(cptr.add(u, $you_uz)) ? __s_without_ceiling : __s_in_solid_stone,
                 msg
             ));
-        if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 &&
+        if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0 &&
                 (t = t_at(mx, my)) !== null &&
                 !is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)))
             (yield* impossible(__s_hiding_while_trapped_in_a_non_pit_s, msg));
@@ -849,11 +852,11 @@ function* sanity_check_single_mon(mtmp, chk_geno, msg) {
            finishes eating a mimic corpse */
         if (!(is_mimic ||
                 cptr.ldI32o(mtmp, $monst_meating) ||
-                ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 &&
+                (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 &&
                     (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER)))
             (yield* impossible(__s_non_mimic_s_posing_as_s_s, cptr.ldPtro(mptr, NHC.NEUTRAL, 8), what, msg));
     }
-    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0)) {
         if (!get_mleash(mtmp))
             (yield* impossible(
                 __s_monst_u_leashed_but_no_leash_for_s,
@@ -883,11 +886,13 @@ export function* mon_sanity_check() {
     ) {
         /* dead monsters should still have sane data */
         (yield* sanity_check_single_mon(mtmp, 1, __s_fmon));
-        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) && !(cptr.ldI32o(mtmp, $monst_isgd) & 1))
+        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0))
             continue;
 
         x = cptr.ldI16o(mtmp, $monst_mx), y = cptr.ldI16o(mtmp, $monst_my);
-        if (!isok(x, y) && !((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && x == 0 && y == 0)) {
+        if (!isok(x, y) &&
+                !(cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0) | 0 && x == 0 && y == 0)) {
             (yield* impossible(__s_mon_s_claims_to_be_at_d_d, fmt_ptr(mtmp), x, y));
         } else if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))) {
             /* steed is in fmon list but not on the map; its
@@ -899,7 +904,7 @@ export function* mon_sanity_check() {
             mtmp
         )) {
             (yield* impossible(__s_mon_s_at_d_d_is_not_there, fmt_ptr(mtmp), x, y));
-        } else if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
+        } else if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0)) {
             (yield* sanity_check_worm(mtmp));
 
             /* some temp mstate bits can be expected for a mon on fmon, as part of
@@ -1031,7 +1036,7 @@ export function* m_poisongas_ok(mtmp) {
 export function zombie_maker(mon) {
     let pm = cptr.ldPtro(mon, $monst_data);
 
-    if ((cptr.ldI32o(mon, $monst_mcan) & 1))
+    if (cptr.ldBits(cptr.add(mon, $monst_mcan), 4, 1, 0))
         return 0;
 
     switch (cptr.ld1so(pm, $permonst_mlet)) {
@@ -1231,7 +1236,7 @@ function* make_corpse(mtmp, corpseflags) {
     let corpstatflags = corpseflags;
     let burythem = schar((((corpstatflags & NHM.CORPSTAT_BURIED) >>> 0) != 0));
 
-    if ((cptr.ldI32o(mtmp, $monst_female) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0))
         corpstatflags |= NHM.CORPSTAT_FEMALE;
     else if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 262144n) != 0n))
         corpstatflags |= NHM.CORPSTAT_MALE;
@@ -1249,13 +1254,19 @@ function* make_corpse(mtmp, corpseflags) {
         case NHC.PM_YELLOW_DRAGON:
             /* Make dragon scales.  This assumes that the order of the
                dragons is the same as the order of the scales. */
-            if (!rn2((cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0 ? 20 : 3)) {
+            if (!rn2(cptr.ldBits(cptr.add(mtmp, $monst_mrevived), 4, 1, 0) | 0 ? 20 : 3)) {
                 num = (NHC.GRAY_DRAGON_SCALES +
                         (cptr.ldI32o((mdat), $permonst_pmidx)) -
                         NHC.PM_GRAY_DRAGON) | 0;
                 obj.v = (yield* mksobj_at(num, x, y, 0, 0));
                 cptr.st1o(obj.v, $obj_spe, 0);
-                cptr.stI32o(obj.v, $obj_cursed, cptr.stI32o(obj.v, $obj_blessed, 0));
+                cptr.stBits(
+                    cptr.add(obj.v, $obj_cursed),
+                    0,
+                    1,
+                    0,
+                    cptr.stBits(cptr.add(obj.v, $obj_blessed), 1, 1, 0, 0)
+                );
             }
             {
                 if (cptr.ld1uo2(
@@ -1271,7 +1282,7 @@ function* make_corpse(mtmp, corpseflags) {
                     /* preserve the unique traits of some creatures */
                     obj.v = (yield* mkcorpstat(
                         NHC.CORPSE,
-                        ((cptr.ldI32o((mtmp), $monst_isshk) & 1) | 0 ||
+                        (cptr.ldBits(cptr.add((mtmp), $monst_isshk), 4, 1, 0) | 0 ||
                             cptr.ld1so((mtmp), $monst_mtame) ||
                             ((cptr.ldU16o((cptr.ldPtro((mtmp), $monst_data)), $permonst_geno) &
                                 NHM.G_UNIQ) !=
@@ -1301,7 +1312,7 @@ function* make_corpse(mtmp, corpseflags) {
         case NHC.PM_WHITE_UNICORN:
         case NHC.PM_GRAY_UNICORN:
         case NHC.PM_BLACK_UNICORN:
-            if ((cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0 && rn2(2)) {
+            if (cptr.ldBits(cptr.add(mtmp, $monst_mrevived), 4, 1, 0) | 0 && rn2(2)) {
                 if (canseemon(mtmp))
                     (yield* pline_mon(
                         mtmp,
@@ -1310,8 +1321,8 @@ function* make_corpse(mtmp, corpseflags) {
                     ));
             } else {
                 obj.v = (yield* mksobj_at(NHC.UNICORN_HORN, x, y, 1, 0));
-                if (obj.v && (cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0)
-                    cptr.stI32o(obj.v, $obj_obroken, 1);
+                if (obj.v && cptr.ldBits(cptr.add(mtmp, $monst_mrevived), 4, 1, 0) | 0)
+                    cptr.stBits(cptr.add(obj.v, $obj_obroken), 6, 1, 0, 1);
             }
             {
                 if (cptr.ld1uo2(
@@ -1326,7 +1337,7 @@ function* make_corpse(mtmp, corpseflags) {
                     corpstatflags |= NHM.CORPSTAT_INIT;
                     obj.v = (yield* mkcorpstat(
                         NHC.CORPSE,
-                        ((cptr.ldI32o((mtmp), $monst_isshk) & 1) | 0 ||
+                        (cptr.ldBits(cptr.add((mtmp), $monst_isshk), 4, 1, 0) | 0 ||
                             cptr.ld1so((mtmp), $monst_mtame) ||
                             ((cptr.ldU16o((cptr.ldPtro((mtmp), $monst_data)), $permonst_geno) &
                                 NHM.G_UNIQ) !=
@@ -1367,7 +1378,7 @@ function* make_corpse(mtmp, corpseflags) {
                     corpstatflags |= NHM.CORPSTAT_INIT;
                     obj.v = (yield* mkcorpstat(
                         NHC.CORPSE,
-                        ((cptr.ldI32o((mtmp), $monst_isshk) & 1) | 0 ||
+                        (cptr.ldBits(cptr.add((mtmp), $monst_isshk), 4, 1, 0) | 0 ||
                             cptr.ld1so((mtmp), $monst_mtame) ||
                             ((cptr.ldU16o((cptr.ldPtro((mtmp), $monst_data)), $permonst_geno) &
                                 NHM.G_UNIQ) !=
@@ -1549,7 +1560,7 @@ function* make_corpse(mtmp, corpseflags) {
                 corpstatflags |= NHM.CORPSTAT_INIT;
                 obj.v = (yield* mkcorpstat(
                     NHC.CORPSE,
-                    ((cptr.ldI32o((mtmp), $monst_isshk) & 1) | 0 ||
+                    (cptr.ldBits(cptr.add((mtmp), $monst_isshk), 4, 1, 0) | 0 ||
                         cptr.ld1so((mtmp), $monst_mtame) ||
                         ((cptr.ldU16o((cptr.ldPtro((mtmp), $monst_data)), $permonst_geno) &
                             NHM.G_UNIQ) !=
@@ -1916,14 +1927,14 @@ export function mcalcmove(mon, m_moving) {
      *       MFAST's `+ 2' prevents hasted speed 1 from becoming a no-op;
      *       both adjustments have negligible effect on higher speeds.
      */
-    if (((cptr.ldI32o(mon, $monst_mspeed) & 3) | 0) == NHM.MSLOW) {
+    if ((cptr.ldBits(cptr.add(mon, $monst_mspeed), 0, 2, 0) | 0) == NHM.MSLOW) {
         /* slow-monster effects work better against faster monsters: they
            lose 1/3 of their speed below 12 but 2/3 of their speed above */
         if (mmove < NHM.NORMAL_SPEED)
             mmove = (((Math.imul(2, mmove) + 1) | 0) / 3) | 0;
         else
             mmove = (4 + ((mmove / 3) | 0)) | 0;
-    } else if (((cptr.ldI32o(mon, $monst_mspeed) & 3) | 0) == NHM.MFAST)
+    } else if ((cptr.ldBits(cptr.add(mon, $monst_mspeed), 0, 2, 0) | 0) == NHM.MFAST)
         mmove = (((Math.imul(4, mmove) + 2) | 0) / 3) | 0;
 
     if (cptr.eq(mon, cptr.ldPtro(u, $you_usteed)) &&
@@ -1979,15 +1990,33 @@ function* m_calcdistress(mtmp) {
     (yield* were_change(mtmp));
 
     /* gradually time out temporary problems */
-    if ((cptr.ldI32o(mtmp, $monst_mblinded) & 127) | 0 &&
-            !cptr.stI32o(mtmp, $monst_mblinded, cptr.ldI32o(mtmp, $monst_mblinded) + -1))
-        cptr.stI32o(mtmp, $monst_mcansee, 1);
-    if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0 &&
-            !cptr.stI32o(mtmp, $monst_mfrozen, cptr.ldI32o(mtmp, $monst_mfrozen) + -1))
-        cptr.stI32o(mtmp, $monst_mcanmove, 1);
-    if ((cptr.ldI32o(mtmp, $monst_mfleetim) & 127) | 0 &&
-            !cptr.stI32o(mtmp, $monst_mfleetim, cptr.ldI32o(mtmp, $monst_mfleetim) + -1))
-        cptr.stI32o(mtmp, $monst_mflee, 0);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0) | 0 &&
+            !cptr.stBits(
+                cptr.add(mtmp, $monst_mblinded),
+                0,
+                7,
+                0,
+                cptr.ldBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0) + -1
+            ))
+        cptr.stBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0, 1);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) | 0 &&
+            !cptr.stBits(
+                cptr.add(mtmp, $monst_mfrozen),
+                0,
+                7,
+                0,
+                cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) + -1
+            ))
+        cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mfleetim), 0, 7, 0) | 0 &&
+            !cptr.stBits(
+                cptr.add(mtmp, $monst_mfleetim),
+                0,
+                7,
+                0,
+                cptr.ldBits(cptr.add(mtmp, $monst_mfleetim), 0, 7, 0) + -1
+            ))
+        cptr.stBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0, 0);
 
     /* FIXME: mtmp->mlstmv ought to be updated here */
 }
@@ -2008,7 +2037,7 @@ export function* movemon_singlemon(mtmp) {
        off the map too; gd_move() decides whether the temporary
        corridor can be removed and guard discarded (via clearing
        mon->isgd flag so that dmonsfree() will get rid of mon) */
-    if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0) | 0 &&
             !cptr.ldI16o(mtmp, $monst_mx) &&
             !(cptr.ldI64o(mtmp, $monst_mstate) & 4n)) {
         /* parked at <0,0>; eventually isgd should get set to false */
@@ -2053,7 +2082,7 @@ export function* movemon_singlemon(mtmp) {
          * nearby; if they think hero is nearby, leave the flag intact so
          * that it can be checked again on subsequent moves until the hero
          * is perceived to be farther away. */
-        if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ||
+        if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 ||
                 cptr.ld1so(mtmp, $monst_mtame) ||
                 dist2(
                     cptr.ldI16o(mtmp, $monst_mx),
@@ -2070,7 +2099,7 @@ export function* movemon_singlemon(mtmp) {
             oldworn = cptr.ldI64o(mtmp, $monst_misc_worn_check);
             (yield* m_dowear(mtmp, 0));
             if (cptr.ldI64o(mtmp, $monst_misc_worn_check) != oldworn ||
-                    !(cptr.ldI32o(mtmp, $monst_mcanmove) & 1))
+                    !cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0))
                 return 0;  /* is spending this turn equipping */
         }
     }
@@ -2082,11 +2111,11 @@ export function* movemon_singlemon(mtmp) {
         if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE ||
                 (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT)
             return 0;
-        if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1))
+        if (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0))
             return 0;
     } else if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL &&
-            !(cptr.ldI32o(mtmp, $monst_mundetected) & 1) &&
-            ((cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 || !m_next2u(mtmp)) &&
+            !cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) &&
+            (cptr.ldBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0) | 0 || !m_next2u(mtmp)) &&
             !canseemon(mtmp) &&
             !rn2(4)) {
         /* some eels end up stuck in isolated pools, where they
@@ -2098,7 +2127,7 @@ export function* movemon_singlemon(mtmp) {
 
     /* continue if the monster died fighting */
     if (Conflict() &&
-            !(cptr.ldI32o(mtmp, $monst_iswiz) & 1) &&
+            !cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) &&
             ((!Invis() ||
                 ((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags1) & 16777216n) !=
                     0n)) &&
@@ -2301,7 +2330,7 @@ export function* m_consume_obj(mtmp, otmp) {
         }
         if (heal)
             (yield* healmon(mtmp, cptr.ldI32o(mtmp, $monst_mhpmax), 0));
-        if ((eyes || heal) && !(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
+        if ((eyes || heal) && !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0))
             (yield* mcureblindness(mtmp, schar(canseemon(mtmp))));
         if (ispet && deadmimic)
             (yield* quickmimic(mtmp));
@@ -2365,14 +2394,15 @@ export function* meatmetal(mtmp) {
                 NHC.IRON)) ||
                 (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_STRANGULATION ||
                     cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_SLOW_DIGESTION) ||
-                ((cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0 && !(yield* Resists_Elem(mtmp, NHC.POISON_RES))))
+                (cptr.ldBits(cptr.add(otmp, $obj_otrapped), 7, 1, 0) | 0 &&
+                    !(yield* Resists_Elem(mtmp, NHC.POISON_RES))))
             continue;
         if (is_metallic(otmp) && !obj_resists(otmp, 5, 95) && (yield* touch_artifact(otmp, mtmp))) {
             if (cptr.eq(
                 cptr.ldPtro(mtmp, $monst_data),
                 cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)
             ) &&
-                    (cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0) {
+                    cptr.ldBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0) | 0) {
                 if (vis) {
                     /* call distant_name() for its side-effects even when
                        !verbose so won't be printed */
@@ -2381,8 +2411,8 @@ export function* meatmetal(mtmp) {
                         (yield* pline_mon(mtmp, __s_s_eats_s, (yield* Monnam(mtmp)), otmpname));
                 }
                 /* The object's rustproofing is gone now */
-                cptr.stI32o(otmp, $obj_oerodeproof, 0);
-                cptr.stI32o(mtmp, $monst_mstun, 1);
+                cptr.stBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0, 0);
+                cptr.stBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0, 1);
                 if (vis) {
                     /* (see above; format even if it won't be printed) */
                     otmpname = (yield* distant_name(otmp, doname));
@@ -2516,7 +2546,7 @@ export function* meatobj(mtmp) {
                 !(yield* touch_artifact(otmp, mtmp)) ||
                 (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_STRANGULATION ||
                     cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_SLOW_DIGESTION) ||
-                ((cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0 &&
+                (cptr.ldBits(cptr.add(otmp, $obj_otrapped), 7, 1, 0) | 0 &&
                     !(yield* Resists_Elem(mtmp, NHC.POISON_RES))) ||
                 ((ofood(otmp) &&
                     ismnum(cptr.ldI32o(otmp, $obj_corpsenm)) &&
@@ -2561,7 +2591,10 @@ export function* meatobj(mtmp) {
                 /* give this one even if !verbose */
                 if (cptr.ld1so(otmp, $obj_oclass) == NHC.SCROLL_CLASS &&
                         (yield* objdescr_is(otmp, __s_yum_yum)))
-                    (yield* pline(__s_yum_c, (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 ? 33 : 46));
+                    (yield* pline(
+                        __s_yum_c,
+                        cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 ? 33 : 46
+                    ));
             } else {
                 ;
                 if (cptr.ld1so(flags, $flag_verbose))
@@ -2575,7 +2608,7 @@ export function* meatobj(mtmp) {
         }
 
         /* Engulf & devour is instant, so don't set meating */
-        if ((cptr.ldI32o(mtmp, $monst_minvis) & 1))
+        if (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0))
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
     }
 
@@ -2664,7 +2697,7 @@ export function* meatcorpse(mtmp) {
             return !ptr ? 2 : 1;
 
         /* Engulf & devour is instant, so don't set meating */
-        if ((cptr.ldI32o(mtmp, $monst_minvis) & 1))
+        if (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0))
             (yield* newsym(x, y));
 
         return 1;
@@ -2749,8 +2782,8 @@ export function* mon_givit(mtmp, ptr) {
          * Players will just have to live with it if they want to be
          * able to have pets gain intrinsics from eating corpses.
          */
-        if (!(cptr.ldI32o(mtmp, $monst_perminvis) & 1) ||
-                (cptr.ldI32o(mtmp, $monst_invis_blkd) & 1) | 0) {
+        if (!cptr.ldBits(cptr.add(mtmp, $monst_perminvis), 3, 1, 0) ||
+                cptr.ldBits(cptr.add(mtmp, $monst_invis_blkd), 2, 1, 0) | 0) {
             let mtmpbuf = new Uint8Array(256);
 
             void cptr.strcpy(cptr.decay(mtmpbuf), (yield* Monnam(mtmp)));
@@ -2762,12 +2795,12 @@ export function* mon_givit(mtmp, ptr) {
                     cptr.decay(mtmpbuf),
                     !canspotmon(mtmp)
                         ? __s_vanishes
-                        : ((cptr.ldI32o(mtmp, $monst_invis_blkd) & 1) | 0
+                        : (cptr.ldBits(cptr.add(mtmp, $monst_invis_blkd), 2, 1, 0) | 0
                             ? __s_seems_to_flicker
                             : __s_becomes_invisible)
                 ));
         }
-        cptr.stI32o(mtmp, $monst_mstun, 1);  /* no timeout but will eventually wear off */
+        cptr.stBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0, 1);  /* no timeout but will eventually wear off */
         return;
     }
 
@@ -2805,7 +2838,8 @@ export function* mpickgold(mtmp) {
         ) &
             NHM.IN_SIGHT) !=
                 0)) {
-            if (cptr.ld1so(flags, $flag_verbose) && !(cptr.ldI32o(mtmp, $monst_isgd) & 1))
+            if (cptr.ld1so(flags, $flag_verbose) &&
+                    !cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0))
                 (yield* pline_mon(
                     mtmp,
                     __s_s_picks_up_some_s,
@@ -2826,7 +2860,7 @@ export function* mpickstuff(mtmp) {
     let carryamt = 0;
 
     /* prevent shopkeepers from leaving the door of their shop */
-    if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && (yield* inhishop(mtmp)))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 && (yield* inhishop(mtmp)))
         return 0;
 
     /* non-tame monsters normally don't go shopping */
@@ -3075,9 +3109,10 @@ export function* can_carry(mtmp, otmp) {
     /* steeds don't pick up stuff (to avoid shop abuse) */
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
         return 0;
-    if ((cptr.ldI32o(mtmp, $monst_isshk) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0))
         return iquan;  /* no limit */
-    if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !cptr.ld1so(mtmp, $monst_mtame))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 &&
+            !cptr.ld1so(mtmp, $monst_mtame))
         return 0;
     /* otherwise players might find themselves obligated to violate
      * their alignment if the monster takes something they need
@@ -3118,7 +3153,7 @@ export function* mon_allowflags(mtmp) {
         0n) ||
             (cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msize) < NHM.MZ_SMALL))));
     let can_unlock = schar(((can_open && monhaskey(mtmp, 1)) ||
-        (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 ||
+        cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 ||
         is_rider(cptr.ldPtro(mtmp, $monst_data))
             ? 1
             : 0));
@@ -3152,7 +3187,7 @@ export function* mon_allowflags(mtmp) {
 
     if (can_tunnel &&
             ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 64n) != 0n) &&
-            ((!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || Conflict()) &&
+            ((!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) || Conflict()) &&
                 dist2(
                     cptr.ldI16o(mtmp, $monst_mx),
                     cptr.ldI16o(mtmp, $monst_my),
@@ -3163,15 +3198,15 @@ export function* mon_allowflags(mtmp) {
 
     if (cptr.ld1so(mtmp, $monst_mtame))
         allowflags |= 1611268096n;
-    else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
+    else if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
         allowflags |= 1610612736n;
     else
         allowflags |= 262144n;
     if (Conflict() && !resist_conflict(mtmp))
         allowflags |= 262144n;
-    if ((cptr.ldI32o(mtmp, $monst_isshk) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0))
         allowflags |= 1073741824n;
-    if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0))
         allowflags |= 1610612736n;
     if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 8n) != 0n))
         allowflags |= 100663296n;
@@ -3227,7 +3262,7 @@ export function m_in_air(mtmp) {
         is_floater(cptr.ldPtro(mtmp, $monst_data)) ||
         (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16n) != 0n) &&
             has_ceiling(cptr.add(u, $you_uz)) &&
-            (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0)
+            cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0)
             ? 1
             : 0));
 }
@@ -3312,7 +3347,7 @@ export function* mfndpos(mon, data, flag) {
         if (!((cptr.ldU64o((mdat), $permonst_mflags1) & 64n) != 0n)) {
             rockok = (treeok = 1);
         } else if ((mw_tmp = (cptr.ldPtro((mon), $monst_mw))) &&
-                (cptr.ldI32o(mw_tmp, $obj_cursed) & 1) | 0 &&
+                cptr.ldBits(cptr.add(mw_tmp, $obj_cursed), 0, 1, 0) | 0 &&
                 cptr.ldI16o(mon, $monst_weapon_check) == NHC.NO_WEAPON_WANTED) {
             rockok = schar(is_pick(mw_tmp));
             treeok = schar(is_axe(mw_tmp));
@@ -3330,11 +3365,11 @@ export function* mfndpos(mon, data, flag) {
             thrudoor = 1;
     }
     __lbl_nexttry: while (true) {
-        if ((cptr.ldI32o(mon, $monst_mconf) & 1)) {
+        if (cptr.ldBits(cptr.add(mon, $monst_mconf), 0, 1, 0)) {
             flag |= 1966080n;
             flag &= -2097153n;
         }
-        if (!(cptr.ldI32o(mon, $monst_mcansee) & 1))
+        if (!cptr.ldBits(cptr.add(mon, $monst_mcansee), 7, 1, 0))
             flag |= 1073741824n;
         maxx = (((x + 1) | 0) < 79 ? ((x + 1) | 0) : 79);
         maxy = (((y + 1) | 0) < 20 ? ((y + 1) | 0) : 20);
@@ -3360,7 +3395,7 @@ export function* mfndpos(mon, data, flag) {
                         !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) &
                             65536n) !=
                             0n) &&
-                        ((cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0 ||
+                        (cptr.ldBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0) | 0 ||
                             cptr.ld1so(mon, $monst_mtame)) &&
                         (cptr.ld1s((yield* in_rooms(nx, ny, NHC.TEMPLE))) ||
                             cptr.ld1s((yield* in_rooms(nx, ny, NHC.SHOPBASE)))) &&
@@ -3372,23 +3407,15 @@ export function* mfndpos(mon, data, flag) {
                 /* KMH -- Added iron bars */
                 if (ntyp == NHC.IRONBARS &&
                         (!(flag & 268435456n) ||
-                            (((cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(svl, $instance_globals_saved_l_level),
-                                            nx,
-                                            $sizeof_rm_x21
-                                        ),
-                                        ny,
-                                        $sizeof_rm
-                                    ),
-                                    $rm_flags
-                                ),
-                                0,
-                                5,
-                                0
-                            ) |
+                            ((((cptr.ldI32o3(
+                                svl,
+                                nx,
+                                $sizeof_rm_x21,
+                                ny,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) &
+                                31) |
                                 0) &
                                 NHM.W_NONDIGGABLE) &&
                                 (dmgtype(mdat, NHM.AD_RUST) || dmgtype(mdat, NHM.AD_CORR)))))
@@ -3397,43 +3424,27 @@ export function* mfndpos(mon, data, flag) {
                         !((((cptr.ldU64o((mdat), $permonst_mflags1) & 4n) != 0n) || can_fog(mon)) &&
                             !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                                 (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))) &&
-                        ((((cptr.ldBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        nx,
-                                        $sizeof_rm_x21
-                                    ),
-                                    ny,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0
-                        ) |
+                        (((((cptr.ldI32o3(
+                            svl,
+                            nx,
+                            $sizeof_rm_x21,
+                            ny,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) &
+                            31) |
                             0) &
                             NHM.D_CLOSED) &&
                             !(flag & 4194304n)) ||
-                            (((cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(svl, $instance_globals_saved_l_level),
-                                            nx,
-                                            $sizeof_rm_x21
-                                        ),
-                                        ny,
-                                        $sizeof_rm
-                                    ),
-                                    $rm_flags
-                                ),
-                                0,
-                                5,
-                                0
-                            ) |
+                            ((((cptr.ldI32o3(
+                                svl,
+                                nx,
+                                $sizeof_rm_x21,
+                                ny,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) &
+                                31) |
                                 0) &
                                 NHM.D_LOCKED) &&
                                 !(flag & 8388608n))) &&
@@ -3450,43 +3461,27 @@ export function* mfndpos(mon, data, flag) {
                         ny != y &&
                         (nodiag ||
                             (((nowtyp) == NHC.DOOR) &&
-                                ((cptr.ldBits(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(
-                                                cptr.add(svl, $instance_globals_saved_l_level),
-                                                x,
-                                                $sizeof_rm_x21
-                                            ),
-                                            y,
-                                            $sizeof_rm
-                                        ),
-                                        $rm_flags
-                                    ),
-                                    0,
-                                    5,
-                                    0
-                                ) |
+                                (((cptr.ldI32o3(
+                                    svl,
+                                    x,
+                                    $sizeof_rm_x21,
+                                    y,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_flags
+                                ) &
+                                    31) |
                                     0) &
                                     -2)) ||
                             (((ntyp) == NHC.DOOR) &&
-                                ((cptr.ldBits(
-                                    cptr.add(
-                                        cptr.add(
-                                            cptr.add(
-                                                cptr.add(svl, $instance_globals_saved_l_level),
-                                                nx,
-                                                $sizeof_rm_x21
-                                            ),
-                                            ny,
-                                            $sizeof_rm
-                                        ),
-                                        $rm_flags
-                                    ),
-                                    0,
-                                    5,
-                                    0
-                                ) |
+                                (((cptr.ldI32o3(
+                                    svl,
+                                    nx,
+                                    $sizeof_rm_x21,
+                                    ny,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_flags
+                                ) &
+                                    31) |
                                     0) &
                                     -2)) ||
                             ((((nowtyp) == NHC.DOOR) || ((ntyp) == NHC.DOOR)) &&
@@ -3543,7 +3538,7 @@ export function* mfndpos(mon, data, flag) {
                 if ((poolok || is_pool(nx, ny) == wantpool) && (lavaok || !is_lava(nx, ny))) {
                     let dispx;
                     let dispy;
-                    let monseeu = schar(((cptr.ldI32o(mon, $monst_mcansee) & 1) | 0 &&
+                    let monseeu = schar((cptr.ldBits(cptr.add(mon, $monst_mcansee), 7, 1, 0) | 0 &&
                         (!Invis() || ((cptr.ldU64o((mdat), $permonst_mflags1) & 16777216n) != 0n))
                             ? 1
                             : 0));
@@ -3825,8 +3820,8 @@ function* mm_2way_aggression(magr, mdef) {
        them waking up early (e.g. because a zombie decided to attack the
        Wizard of Yendor). */
     if (zombie_maker(magr) && zombie_form(cptr.ldPtro(mdef, $monst_data)) != NHC.NON_PM) {
-        if ((cptr.ldI32o(magr, $monst_mgenmklev) & 1) | 0 &&
-                (cptr.ldI32o(mdef, $monst_mgenmklev) & 1) | 0)
+        if (cptr.ldBits(cptr.add(magr, $monst_mgenmklev), 2, 1, 0) | 0 &&
+                cptr.ldBits(cptr.add(mdef, $monst_mgenmklev), 2, 1, 0) | 0)
             return 0n;
         if (!(((cptr.ldI16o(
             (cptr.add(
@@ -3909,8 +3904,8 @@ function mm_displacement(magr, mdef) {
             !(cptr.ldI16o(magr, $monst_mx) != cptr.ldI16o(mdef, $monst_mx) &&
                 cptr.ldI16o(magr, $monst_my) != cptr.ldI16o(mdef, $monst_my) &&
                 (((cptr.ldI32o((pd), $permonst_pmidx))) == NHC.PM_GRID_BUG)) &&
-            !(cptr.ldI32o(mdef, $monst_mtrapped) & 1) &&
-            (!(cptr.ldI32o(mdef, $monst_wormno) & 31) || !count_wsegs(mdef)) &&
+            !cptr.ldBits(cptr.add(mdef, $monst_mtrapped), 2, 1, 0) &&
+            (!cptr.ldBits(cptr.add(mdef, $monst_wormno), 1, 5, 0) || !count_wsegs(mdef)) &&
             (is_rider(pa) || cptr.ld1uo(pa, $permonst_msize) >= cptr.ld1uo(pd, $permonst_msize)))
         return 4096n;
     return 0n;
@@ -3946,7 +3941,8 @@ export function* dmonsfree() {
         cptr.ldPtr(mtmp);
     ) {
         freetmp = cptr.ldPtr(mtmp);
-        if ((cptr.ldI32o((freetmp), $monst_mhp) < 1) && !(cptr.ldI32o(freetmp, $monst_isgd) & 1)) {
+        if ((cptr.ldI32o((freetmp), $monst_mhp) < 1) &&
+                !cptr.ldBits(cptr.add(freetmp, $monst_isgd), 6, 1, 0)) {
             cptr.stPtr(mtmp, cptr.ldPtr(freetmp));
             cptr.stPtr(freetmp, null);
             (yield* dealloc_monst(freetmp));
@@ -3990,7 +3986,7 @@ export function* replmon(mtmp, mtmp2) {
     /* finish adding its replacement */
     if (!cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
         (yield* place_monster(mtmp2, cptr.ldI16o(mtmp2, $monst_mx), cptr.ldI16o(mtmp2, $monst_my)));
-    if ((cptr.ldI32o(mtmp2, $monst_wormno) & 31))
+    if (cptr.ldBits(cptr.add(mtmp2, $monst_wormno), 1, 5, 0))
         (yield* place_wsegs(mtmp2, mtmp));  /* locations to mtmp2 not mtmp. */
     if (emits_light(cptr.ldPtro(mtmp2, $monst_data))) {
         /* since this is so rare, we don't have any `mon_move_light_source' */
@@ -4010,7 +4006,7 @@ export function* replmon(mtmp, mtmp2) {
         (yield* set_ustuck(mtmp2));
     if (cptr.eq(cptr.ldPtro(u, $you_usteed), mtmp))
         cptr.stPtro(u, $you_usteed, mtmp2);
-    if ((cptr.ldI32o(mtmp2, $monst_isshk) & 1))
+    if (cptr.ldBits(cptr.add(mtmp2, $monst_isshk), 4, 1, 0))
         (yield* replshk(mtmp, mtmp2));
 
     /* discard the old monster */
@@ -4199,7 +4195,7 @@ export function* dealloc_monst(mon) {
         dealloc_mextra(mon);
     /* clear out of date information contained in the about-to-become
        stale memory; see dealloc_obj() */
-    cptr.memcpy(mon, cptr.add(cg, $const_globals_zeromonst), 320);
+    cptr.memcpy(mon, cptr.add(cg, $const_globals_zeromonst), 192);
     cptr.free(mon);
 }
 
@@ -4218,7 +4214,7 @@ function* mon_leaving_level(mon) {
             : 0));
 
     /* to prevent an infinite relobj-flooreffects-hmon-killed loop */
-    cptr.stI32o(mon, $monst_mtrapped, 0);
+    cptr.stBits(cptr.add(mon, $monst_mtrapped), 2, 1, 0, 0);
     (yield* unstuck(mon));  /* mon is not swallowing or holding you nor held by you */
 
     /* vault guard might be at <0,0> */
@@ -4234,7 +4230,7 @@ function* mon_leaving_level(mon) {
                     $instance_globals_saved_l_level + $dlevel_t_monsters
                 )
             )) {
-        if ((cptr.ldI32o(mon, $monst_wormno) & 31))
+        if (cptr.ldBits(cptr.add(mon, $monst_wormno), 1, 5, 0))
             (yield* remove_worm(mon));
         else
             cptr.stPtro3(
@@ -4248,7 +4244,7 @@ function* mon_leaving_level(mon) {
             );
     }
     if (onmap) {
-        cptr.stI32o(mon, $monst_mundetected, 0);  /* for migration; doesn't matter for death */
+        cptr.stBits(cptr.add(mon, $monst_mundetected), 6, 1, 0, 0);  /* for migration; doesn't matter for death */
         /* unhide mimic in case its shape has been blocking line of sight
            or it is accompanying the hero to another level */
         if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_NOTHING &&
@@ -4274,7 +4270,7 @@ function* m_detach(mtmp, mptr, due_to_death) {
     let mx = cptr.ldI16o(mtmp, $monst_mx);
     let my = cptr.ldI16o(mtmp, $monst_my);
 
-    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0))
         (yield* m_unleash(mtmp, 0));
 
     if (mx > 0 && emits_light(mptr))
@@ -4294,7 +4290,7 @@ function* m_detach(mtmp, mptr, due_to_death) {
     cptr.stI32o(mtmp, $monst_mhp, 0);  /* simplify some tests: force mhp to 0 */
     /* death handling for the Wizard needs to take place even if he is
        leaving the dungeon alive rather than dying */
-    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0))
         wizdeadorgone();
     /* foodead() might give quest feedback for foo having died; skip that
        if we're called for mongone() rather than mondead(); saving bones
@@ -4317,9 +4313,9 @@ function* m_detach(mtmp, mptr, due_to_death) {
 
     if (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(gs, $instance_globals_s_stealmid))
         thiefdead();  /* reset theft-in-progress data */
-    if ((cptr.ldI32o(mtmp, $monst_isshk) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0))
         (yield* shkgone(mtmp));
-    if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0))
         (yield* wormgone(mtmp));
     if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
             cptr.ldI16((cptr.add(
@@ -4418,9 +4414,10 @@ function* lifesaved_monster(mtmp) {
             $instance_globals_saved_m_mvitals + $mvitals_mvflags
         ) &
                 NHM.G_GENOD)));
-        cptr.stI32o(mtmp, $monst_mcanmove, 1);
-        cptr.stI32o(mtmp, $monst_mfrozen, 0);
-        if (cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(mtmp, $monst_isminion) & 1)) {
+        cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0);
+        if (cptr.ld1so(mtmp, $monst_mtame) &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0)) {
             (yield* wary_dog(mtmp, schar((!surviver))));
         }
         set_mon_min_mhpmax(mtmp, 10);  /* mtmp->mhpmax=max(mtmp->m_lev+1,10) */
@@ -4499,8 +4496,8 @@ function* vamprises(mtmp) {
                 : __s_suddenly,
             spec_death ? __s_reconstitutes : __s_transforms
         );
-        cptr.stI32o(mtmp, $monst_mcanmove, 1);
-        cptr.stI32o(mtmp, $monst_mfrozen, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0);
         set_mon_min_mhpmax(mtmp, 10);  /* mtmp->mhpmax=max(m_lev+1,10) */
         cptr.stI32o(mtmp, $monst_mhp, cptr.ldI32o(mtmp, $monst_mhpmax));
         /* mtmp==u.ustuck can happen if previously a fog cloud or if
@@ -4542,8 +4539,7 @@ function* vamprises(mtmp) {
                 y,
                 $sizeof_rm
             );
-            let trapped = schar((((cptr.ldBits(cptr.add(door, $rm_flags), 0, 5, 0) | 0) &
-                    NHM.D_TRAPPED) != 0));
+            let trapped = schar(((((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) != 0));
             let seeit = schar(((cptr.ld1uo(
                 cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
                 x
@@ -4568,7 +4564,7 @@ function* vamprises(mtmp) {
                 (yield* pline_The(__s_door_is_smashed_s, trapped ? __s_and_it_explodes : __s_dot));
             set_msg_xy(0, 0);  /* in case none of the messages was delivered */
 
-            cptr.stBits(cptr.add(door, $rm_flags), 0, 5, 0, NHM.D_NODOOR);
+            cptr.stI32o(door, $rm_flags, NHM.D_NODOOR);
             (yield* recalc_block_point(x, y));
             if (trapped) {
                 let trap_killed;
@@ -4608,9 +4604,9 @@ function* logdeadmon(mtmp, mndx) {
         (yield* record_achievement(NHC.ACH_MEDU));  /* also generates a livelog event */
     } else if ((((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_geno) & NHM.G_UNIQ) !=
         0) &&
-        (mndx != NHC.PM_HIGH_CLERIC || !(cptr.ldI32o(mtmp, $monst_mrevived) & 1))) ||
-            ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 &&
-                !(cptr.ldI32o(mtmp, $monst_mrevived) & 1))) {
+        (mndx != NHC.PM_HIGH_CLERIC || !cptr.ldBits(cptr.add(mtmp, $monst_mrevived), 4, 1, 0))) ||
+            (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_mrevived), 4, 1, 0))) {
         let shkdetail = new Uint8Array(128);
         let mkilled;
         let herodidit = schar((!cptr.ld1so(svc, $context_info_mon_moving)));
@@ -4625,7 +4621,7 @@ function* logdeadmon(mtmp, mndx) {
          * shopkeepers either).
          */
         cptr.st1o(cptr.decay(shkdetail), 0, 0, 1);
-        if ((cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
+        if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0)) {
             howmany = 1;
             /* ", the <shoptype> proprietor" needs a trailing comma for
                the alternate phrasing "<shk>, shkdetails, has been killed"
@@ -4646,7 +4642,9 @@ function* logdeadmon(mtmp, mndx) {
                         0,
                     $sizeof_shclass
                 ),
-                (cptr.ldI32o(mtmp, $monst_female) & 1) | 0 ? __s_proprietrix : __s_proprietor,
+                cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0) | 0
+                    ? __s_proprietrix
+                    : __s_proprietor,
                 herodidit ? __s_empty : __s_comma
             );
         } else if (mndx == NHC.PM_HIGH_CLERIC) {
@@ -4669,7 +4667,7 @@ function* logdeadmon(mtmp, mndx) {
                all kills of the Wizard and the Riders are major when
                they're logged but they still don't get logged every time */
             if (howmany == 1 ||
-                    (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 ||
+                    cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 ||
                     is_rider(cptr.ldPtro(mtmp, $monst_data)))
                 llevent_type |= 2n;
             cptr.st1o(cptr.decay(xtra), 0, 0, 1);
@@ -4752,7 +4750,7 @@ export function* mondead(mtmp) {
     /* dead vault guard is actually kept at coordinate <0,0> until
        his temporary corridor to/from the vault has been removed;
        need to do this after life-saving and before m_detach() */
-    if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !(yield* grddead(mtmp)))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0) | 0 && !(yield* grddead(mtmp)))
         return;
 
     mptr = cptr.ldPtro(mtmp, $monst_data);  /* save this for m_detach() */
@@ -4982,11 +4980,11 @@ export function* corpse_chance(mon, magr, was_swallowed) {
 
     if ((((cptr.ld1uo((mdat), $permonst_msize) >= NHM.MZ_LARGE) ||
         cptr.eq(mdat, cptr.add(mons, NHC.PM_LIZARD, $sizeof_permonst))) &&
-        !(cptr.ldI32o(mon, $monst_mcloned) & 1)) ||
+        !cptr.ldBits(cptr.add(mon, $monst_mcloned), 5, 1, 0)) ||
             (cptr.ld1so((mdat), $permonst_mlet) == NHC.S_GOLEM) ||
             is_mplayer(mdat) ||
             is_rider(mdat) ||
-            (cptr.ldI32o(mon, $monst_isshk) & 1) | 0)
+            cptr.ldBits(cptr.add(mon, $monst_isshk), 4, 1, 0) | 0)
         return 1;
     tmp = (2 +
             ((cptr.ldU16o(mdat, $permonst_geno) & NHM.G_FREQ) < 2) +
@@ -5015,7 +5013,7 @@ export function* mongone(mdef) {
 
     /* dead vault guard is actually kept at coordinate <0,0> until
        his temporary corridor to/from the vault has been removed */
-    if ((cptr.ldI32o(mdef, $monst_isgd) & 1) | 0 && !(yield* grddead(mdef)))
+    if (cptr.ldBits(cptr.add(mdef, $monst_isgd), 6, 1, 0) | 0 && !(yield* grddead(mdef)))
         return;
     /* stuck to you? release */
     (yield* unstuck(mdef));
@@ -5051,7 +5049,7 @@ export function* monstone(mdef) {
     if (!(cptr.ldI32o((mdef), $monst_mhp) < 1))
         return;
 
-    cptr.stI32o(mdef, $monst_mtrapped, 0);  /* (see m_detach) */
+    cptr.stBits(cptr.add(mdef, $monst_mtrapped), 2, 1, 0, 0);  /* (see m_detach) */
 
     if (cptr.ld1uo(cptr.ldPtro(mdef, $monst_data), $permonst_msize) > NHM.MZ_TINY ||
             !rn2((2 +
@@ -5068,7 +5066,7 @@ export function* monstone(mdef) {
                     continue;
                 (yield* place_object(obj, x, y));
             } else {
-                if ((cptr.ldI32o(obj, $obj_lamplit) & 1))
+                if (cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0))
                     (yield* end_burn(obj, 1));
                 cptr.stPtr(obj, oldminvent);
                 oldminvent = obj;
@@ -5077,7 +5075,7 @@ export function* monstone(mdef) {
         /* defer statue creation until after inventory removal
            so that saved monster traits won't retain any stale
            item-conferred attributes */
-        if ((cptr.ldI32o(mdef, $monst_female) & 1))
+        if (cptr.ldBits(cptr.add(mdef, $monst_female), 0, 1, 0))
             corpstatflags |= NHM.CORPSTAT_FEMALE;
         else if (!((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags2) &
                 262144n) != 0n))
@@ -5136,7 +5134,7 @@ export function* monkilled(mdef, fltxt, how) {
     let mptr = cptr.ldPtro(mdef, $monst_data);
 
     if (fltxt &&
-            ((cptr.ldI32o(mdef, $monst_wormno) & 31) | 0
+            (cptr.ldBits(cptr.add(mdef, $monst_wormno), 1, 5, 0) | 0
                 ? worm_known(mdef)
                 : ((cptr.ld1uo(
                     cptr.ldPtro(
@@ -5266,7 +5264,7 @@ export function* xkilled(mtmp, xkill_flags) {
     let mndx;
     let x = cptr.ldI16o(mtmp, $monst_mx);
     let y = cptr.ldI16o(mtmp, $monst_my);
-    let museum = cptr.alloc(320);
+    let museum = cptr.alloc(192);
     cptr.memcpy(museum, cptr.add(cg, $const_globals_zeromonst), $sizeof_monst);
     let mdat;
     let otmp;
@@ -5315,7 +5313,7 @@ export function* xkilled(mtmp, xkill_flags) {
             ));
         }
 
-        if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 &&
+        if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0 &&
                 (t = t_at(x, y)) !== null &&
                 is_pit((cptr.ldI32o(t, $trap_ttyp) & 31))) {
             if (sobj_at(NHC.BOULDER, x, y))
@@ -5325,7 +5323,8 @@ export function* xkilled(mtmp, xkill_flags) {
         }
 
         /* your pet knows who just killed it...watch out */
-        if (cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(mtmp, $monst_isminion) & 1))
+        if (cptr.ld1so(mtmp, $monst_mtame) &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0))
             cptr.stI32o(
                 (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
                 $edog_killed_by_u,
@@ -5439,7 +5438,7 @@ export function* xkilled(mtmp, xkill_flags) {
                         NHM.G_NOCORPSE) &&
                     (x != cptr.ldI16(u) || y != cptr.ldI16o(u, $you_uy)) &&
                     cptr.ld1so(mdat, $permonst_mlet) != NHC.S_KOP &&
-                    !(cptr.ldI32o(mtmp, $monst_mcloned) & 1)) {
+                    !cptr.ldBits(cptr.add(mtmp, $monst_mcloned), 5, 1, 0)) {
                 otmp = (yield* mkobj(NHC.RANDOM_CLASS, 1));
                 /* don't create large objects from small monsters */
                 otyp = cptr.ldI16o(otmp, $obj_otyp);
@@ -5490,7 +5489,7 @@ export function* xkilled(mtmp, xkill_flags) {
                         ) &
                             NHM.IN_SIGHT) !=
                             0) &&
-                        !(cptr.ldI32o(mtmp, $monst_minvis) & 1) &&
+                        !cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) &&
                         cptr.ld1so(cadaver, $obj_where) == NHM.OBJ_BURIED &&
                         !nomsg) {
                     (yield* pline(__s_s_corpse_ends_up_buried, (yield* s_suffix((yield* Monnam(mtmp))))));
@@ -5500,7 +5499,7 @@ export function* xkilled(mtmp, xkill_flags) {
 
         if (wasinside) {
             /* spoteffects() can end up clearing level of monsters; grab a copy */
-            cptr.memcpy(museum, mtmp, 320);
+            cptr.memcpy(museum, mtmp, 192);
             cptr.stPtr(museum, null);
             cptr.stPtro(museum, $monst_minvent, null);
             cptr.stPtro(museum, $monst_mextra, null);
@@ -5532,7 +5531,7 @@ export function* xkilled(mtmp, xkill_flags) {
         if (Blind() && !Blind_telepat())
             (yield* see_monsters());  /* Can't sense monsters any more. */
     }
-    if (((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !rn2(2)) ||
+    if ((cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 && !rn2(2)) ||
             cptr.ld1so(mtmp, $monst_mtame))
         change_luck(-1);
     if (is_unicorn(mdat) &&
@@ -5592,7 +5591,7 @@ export function* xkilled(mtmp, xkill_flags) {
             (yield* pline(__s_that_was_probably_a_bad_idea));
         else
             (yield* pline(__s_whoopsie_daisy));
-    } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1)) {
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0)) {
         adjalign((p_coaligned(mtmp)) ? -2 : 2);
         /* cancel divine protection for killing your priest */
         if (p_coaligned(mtmp))
@@ -5632,7 +5631,7 @@ export function* xkilled(mtmp, xkill_flags) {
                 pmname(mdat, Mgender(mtmp))
             ));
         }
-    } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
         adjalign(-5);
 
     /* malign was already adjusted for u.ualign.type and randomization */
@@ -5691,8 +5690,8 @@ export function* vamp_stone(mtmp) {
                         : __s_writhes_on_the),
                 surface(x, y)
             );
-            cptr.stI32o(mtmp, $monst_mcanmove, 1);
-            cptr.stI32o(mtmp, $monst_mfrozen, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0);
             set_mon_min_mhpmax(mtmp, 10);  /* mtmp->mhpmax=max(m_lev+1,10) */
             cptr.stI32o(mtmp, $monst_mhp, cptr.ldI32o(mtmp, $monst_mhpmax));
             /* this can happen if previously a fog cloud */
@@ -5742,8 +5741,8 @@ export function* vamp_stone(mtmp) {
                 NHM.MR_STONE)) {
         /* sandestins are stoning-immune so if hit by stoning damage
            they revert to innate shape rather than become a statue */
-        cptr.stI32o(mtmp, $monst_mcanmove, 1);
-        cptr.stI32o(mtmp, $monst_mfrozen, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0);
         set_mon_min_mhpmax(mtmp, 10);  /* mtmp->mhpmax=max(mtmp->m_lev+1,10) */
         cptr.stI32o(mtmp, $monst_mhp, cptr.ldI32o(mtmp, $monst_mhpmax));
         void (yield* newcham(
@@ -6174,7 +6173,7 @@ export function* m_respond(mtmp) {
         (yield* m_respond_medusa(mtmp));
     /* Erinyes will inform surrounding monsters of your crimes */
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ERINYS, $sizeof_permonst)) &&
-            !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) &&
+            !cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) &&
             ((!Invis() ||
                 ((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags1) & 16777216n) !=
                     0n)) &&
@@ -6207,8 +6206,8 @@ function* qst_guardians_respond() {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1))
             continue;
         if (cptr.eq(cptr.ldPtro(mon, $monst_data), q_guardian) &&
-                (cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0) {
-            cptr.stI32o(mon, $monst_mpeaceful, 0);
+                cptr.ldBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0) | 0) {
+            cptr.stBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0, 0);
             if (canseemon(mon))
                 ++got_mad;
         }
@@ -6239,7 +6238,7 @@ function* peacefuls_respond(mtmp) {
             continue;  /* is no longer peaceful, but be explicit...  */
 
         if (!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n) &&
-                (cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0 &&
+                cptr.ldBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0) | 0 &&
                 ((cptr.ld1uo(
                     cptr.ldPtro(
                         cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -6250,8 +6249,8 @@ function* peacefuls_respond(mtmp) {
                 ) &
                     NHM.COULD_SEE) !=
                     0) &&
-                !(cptr.ldI32o(mon, $monst_msleeping) & 1) &&
-                (cptr.ldI32o(mon, $monst_mcansee) & 1) | 0 &&
+                !cptr.ldBits(cptr.add(mon, $monst_msleeping), 7, 1, 0) &&
+                cptr.ldBits(cptr.add(mon, $monst_mcansee), 7, 1, 0) | 0 &&
                 ((!Invis() ||
                     ((cptr.ldU64o((cptr.ldPtro((mon), $monst_data)), $permonst_mflags1) &
                         16777216n) !=
@@ -6275,8 +6274,8 @@ function* peacefuls_respond(mtmp) {
             cptr.st1o(cptr.decay(buf), 0, 0, 1);
             if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 131072n) !=
                 0n) ||
-                    (cptr.ldI32o(mon, $monst_isshk) & 1) | 0 ||
-                    (cptr.ldI32o(mon, $monst_ispriest) & 1) | 0) {
+                    cptr.ldBits(cptr.add(mon, $monst_isshk), 4, 1, 0) | 0 ||
+                    cptr.ldBits(cptr.add(mon, $monst_ispriest), 7, 1, 0) | 0) {
                 if (is_watch(cptr.ldPtro(mon, $monst_data))) {
                     ;
                     (yield* verbalize(__s_halt_you_re_under_arrest));
@@ -6304,8 +6303,8 @@ function* peacefuls_respond(mtmp) {
                        surprise, but they won't become angry here;
                        quest leader will only get angry if hero attacks
                        own quest guardians */
-                    if ((cptr.ldI32o(mon, $monst_isshk) & 1) | 0 ||
-                            (cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 ||
+                    if (cptr.ldBits(cptr.add(mon, $monst_isshk), 4, 1, 0) | 0 ||
+                            cptr.ldBits(cptr.add(mon, $monst_ispriest), 7, 1, 0) | 0 ||
                             (cptr.eq(
                                 cptr.ldPtro(mon, $monst_data),
                                 cptr.add(mons, (yield* quest_info(NHC.MS_LEADER)), $sizeof_permonst)
@@ -6332,8 +6331,9 @@ function* peacefuls_respond(mtmp) {
                                     $sizeof_permonst
                                 )
                             ))) {
-                        alreadyfleeing = schar(((cptr.ldI32o(mon, $monst_mflee) & 1) | 0 ||
-                            (cptr.ldI32o(mon, $monst_mfleetim) & 127) | 0
+                        alreadyfleeing = schar((cptr.ldBits(cptr.add(mon, $monst_mflee), 7, 1, 0) |
+                            0 ||
+                            cptr.ldBits(cptr.add(mon, $monst_mfleetim), 0, 7, 0) | 0
                                 ? 1
                                 : 0));
                         (yield* monflee(mon, (rn2(50) + 25) | 0, 1, schar((!exclaimed))));
@@ -6355,7 +6355,7 @@ function* peacefuls_respond(mtmp) {
                     if (cptr.ld1so(mon, $monst_mtame)) {
                         ;
                     } else {
-                        cptr.stI32o(mon, $monst_mpeaceful, 0);
+                        cptr.stBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0, 0);
                         cptr.stU64o(
                             mon,
                             $monst_mstrategy,
@@ -6379,8 +6379,8 @@ function* peacefuls_respond(mtmp) {
                             NHC.PLNMSG_GROWL));
                 }
                 if (rn2(6)) {
-                    alreadyfleeing = schar(((cptr.ldI32o(mon, $monst_mflee) & 1) | 0 ||
-                        (cptr.ldI32o(mon, $monst_mfleetim) & 127) | 0
+                    alreadyfleeing = schar((cptr.ldBits(cptr.add(mon, $monst_mflee), 7, 1, 0) | 0 ||
+                        cptr.ldBits(cptr.add(mon, $monst_mfleetim), 0, 7, 0) | 0
                             ? 1
                             : 0));
                     (yield* monflee(mon, (rn2(25) + 15) | 0, 1, schar((!exclaimed))));
@@ -6404,7 +6404,7 @@ export function* setmangry(mtmp, via_attack) {
     if (via_attack &&
             (yield* sengr_at(__s_elbereth, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1)) &&
             ((yield* onscary(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), mtmp)) ||
-                (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0)) {
+                cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0)) {
         (yield* You_feel(__s_like_a_hypocrite));
         /* AIS: Yes, I know alignment penalties and bonuses aren't balanced
            at the moment. This is about correct relative to other "small"
@@ -6427,15 +6427,15 @@ export function* setmangry(mtmp, via_attack) {
         $monst_mstrategy,
         cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n
     );
-    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
         return;
     /* [FIXME: this logic seems wrong; peaceful humanoids gasp or exclaim
        when they see you attack a peaceful monster but they just casually
        look the other way when you attack a pet?] */
     if (cptr.ld1so(mtmp, $monst_mtame))
         return;
-    cptr.stI32o(mtmp, $monst_mpeaceful, 0);
-    if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1)) {
+    cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0)) {
         if (p_coaligned(mtmp))
             adjalign(-5);  /* very bad */
         else
@@ -6443,8 +6443,8 @@ export function* setmangry(mtmp, via_attack) {
     } else
         adjalign(-1);  /* attacking peaceful monsters is bad */
     if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) != 0n) ||
-            (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 ||
-            (cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0) {
+            cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 ||
+            cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0) | 0) {
         if (((cptr.ld1uo(
             cptr.ldPtro(
                 cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -6474,7 +6474,7 @@ export function* setmangry(mtmp, via_attack) {
 /* Indicate via message that a monster has awoken. */
 /** C ref: mon.c:4322 — @param {CPtr<struct monst>} mtmp @param {CInt} interesting */
 export function* wake_msg(mtmp, interesting) {
-    if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && canseemon(mtmp)) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0) | 0 && canseemon(mtmp)) {
         (yield* pline_mon(
             mtmp,
             __s_s_wakes_up_s_s,
@@ -6493,10 +6493,10 @@ export function* wake_msg(mtmp, interesting) {
 /* wake up a monster, possibly making it angry in the process */
 /** C ref: mon.c:4333 — @param {CPtr<struct monst>} mtmp @param {CInt} via_attack */
 export function* wakeup(mtmp, via_attack) {
-    let was_sleeping = schar((cptr.ldI32o(mtmp, $monst_msleeping) & 1));
+    let was_sleeping = schar(cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0));
 
     (yield* wake_msg(mtmp, via_attack));
-    cptr.stI32o(mtmp, $monst_msleeping, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
     if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_NOTHING) {
         /* mimics come out of hiding, but disguised Wizard doesn't
            have to lose his disguise */
@@ -6504,26 +6504,27 @@ export function* wakeup(mtmp, via_attack) {
             (yield* seemimic(mtmp));
     } else if (cptr.ld1so(svc, $context_info_forcefight) &&
             !cptr.ld1so(svc, $context_info_mon_moving) &&
-            (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0) {
-        cptr.stI32o(mtmp, $monst_mundetected, 0);
+            cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0) {
+        cptr.stBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0, 0);
         (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
     }
     (yield* finish_meating(mtmp));
     if (via_attack) {
-        let was_peaceful = schar((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1));
+        let was_peaceful = schar(cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0));
 
         if (was_sleeping)
             (yield* growl(mtmp));
         (yield* setmangry(mtmp, 1));
         if (was_peaceful) {
-            if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 &&
+            if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 &&
                     cptr.ld1s((yield* in_rooms(
                         cptr.ldI16o(mtmp, $monst_mx),
                         cptr.ldI16o(mtmp, $monst_my),
                         NHC.TEMPLE
                     ))))
                 (yield* ghod_hitsu(mtmp));
-            if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !cptr.ld1so(u, $you_ushops))
+            if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 &&
+                    !cptr.ld1so(u, $you_ushops))
                 hot_pursuit(mtmp);
         }
     }
@@ -6564,7 +6565,7 @@ function* wake_nearto_core(x, y, distance, petcall) {
             /* sleep for N turns uses mtmp->mfrozen, but so does paralysis
                so we leave mfrozen monsters alone */
             (yield* wake_msg(mtmp, 0));
-            cptr.stI32o(mtmp, $monst_msleeping, 0);  /* wake indeterminate sleep */
+            cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);  /* wake indeterminate sleep */
             if (!(cptr.ldU16o(cptr.ldPtro(mtmp, $monst_data), $permonst_geno) & NHM.G_UNIQ))
                 cptr.stU64o(
                     mtmp,
@@ -6574,7 +6575,7 @@ function* wake_nearto_core(x, y, distance, petcall) {
             if (cptr.ld1so(svc, $context_info_mon_moving) || !petcall)
                 continue;
             if (cptr.ld1so(mtmp, $monst_mtame)) {
-                if (!(cptr.ldI32o(mtmp, $monst_isminion) & 1))
+                if (!cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0))
                     cptr.stI64o(
                         (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
                         $edog_whistletime,
@@ -6632,13 +6633,13 @@ export function* normal_shape(mon) {
     let mcham = cptr.ldI16o(mon, $monst_cham);
 
     if (ismnum(mcham)) {
-        let mcan = (cptr.ldI32o(mon, $monst_mcan) & 1);
+        let mcan = cptr.ldBits(cptr.add(mon, $monst_mcan), 4, 1, 0);
 
         void (yield* newcham(mon, cptr.add(mons, mcham, $sizeof_permonst), NHM.NC_SHOW_MSG));
         cptr.stI16o(mon, $monst_cham, NHC.NON_PM);
         /* newcham() may uncancel a polymorphing monster; override that */
         if (mcan)
-            cptr.stI32o(mon, $monst_mcan, 1);
+            cptr.stBits(cptr.add(mon, $monst_mcan), 4, 1, 0, 1);
         (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
     }
     if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 4n) != 0n) &&
@@ -6651,7 +6652,7 @@ export function* normal_shape(mon) {
         if (!cptr.ldI32o(mon, $monst_meating)) {
             /* make revealed mimic fall asleep in lieu of shape change */
             if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_MONSTER)
-                cptr.stI32o(mon, $monst_msleeping, 1);
+                cptr.stBits(cptr.add(mon, $monst_msleeping), 7, 1, 0, 1);
             (yield* seemimic(mon));
         } else {
             /* quickmimic: pet is midst of eating a mimic corpse;
@@ -6856,14 +6857,14 @@ export function* rescham() {
 
 /** C ref: mon.c:4627 — @param {CPtr<struct monst>} mtmp */
 function* m_restartcham(mtmp) {
-    if (!(cptr.ldI32o(mtmp, $monst_mcan) & 1))
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0))
         cptr.stI16o(
             mtmp,
             $monst_cham,
             i16(pm_to_cham((cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx))))
         );
     if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_MIMIC &&
-            (cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0) {
+            cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0) | 0) {
         (yield* set_mimic_sym(mtmp));
         (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
     }
@@ -6881,7 +6882,7 @@ export function* restartcham() {
    time the level was saved. */
 /** C ref: mon.c:4649 — @param {CPtr<struct monst>} mon */
 export function* restore_cham(mon) {
-    if (Protection_from_shape_changers() || (cptr.ldI32o(mon, $monst_mcan) & 1) | 0) {
+    if (Protection_from_shape_changers() || cptr.ldBits(cptr.add(mon, $monst_mcan), 4, 1, 0) | 0) {
         /* force chameleon or mimic to revert to its natural shape */
         (yield* normal_shape(mon));
     } else if (cptr.ldI16o(mon, $monst_cham) == NHC.NON_PM) {
@@ -6899,7 +6900,7 @@ export function* restore_cham(mon) {
 function* restrap(mtmp) {
     let t;
 
-    if ((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0) | 0 ||
             (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ||
             ((cptr.ld1uo(
                 cptr.ldPtro(
@@ -6913,7 +6914,7 @@ function* restrap(mtmp) {
                 0) ||
             rn2(3) ||
             cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) ||
-            ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 &&
+            (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0 &&
                 (t = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))) !== null &&
                 !is_pit((cptr.ldI32o(t, $trap_ttyp) & 31))) ||
             (ceiling_hider(cptr.ldPtro(mtmp, $monst_data)) && !has_ceiling(cptr.add(u, $you_uz))) ||
@@ -6921,8 +6922,8 @@ function* restrap(mtmp) {
         return 0;
 
     if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_MIMIC) {
-        if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 ||
-                (cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0) {
+        if (cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0) | 0 ||
+                cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) | 0) {
             /*
              * The mimic needs to be awake to disguise itself
              * as something else.
@@ -6940,7 +6941,7 @@ function* restrap(mtmp) {
         $instance_globals_saved_l_level + $rm_typ
     ) ==
             NHC.ROOM) {
-        cptr.stI32o(mtmp, $monst_mundetected, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0, 1);
         return 1;
     }
 
@@ -6964,8 +6965,8 @@ export function* maybe_unhide_at(x, y) {
         $instance_globals_saved_l_level + $dlevel_t_monsters
     ))) !==
             null) {
-        undetected = schar((cptr.ldI32o(mtmp, $monst_mundetected) & 1));
-        trapped = schar((cptr.ldI32o(mtmp, $monst_mtrapped) & 1));
+        undetected = schar(cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0));
+        trapped = schar(cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0));
     } else if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
         mtmp = cptr.add(gy, $instance_globals_y_youmonst);
         undetected = schar((cptr.ldI32o(u, $you_uundetected) & 1));
@@ -7018,7 +7019,9 @@ export function* hideunder(mtmp) {
 
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
         ;  /* undetected==FALSE; can't hide if holding you or held by you */
-    } else if ((is_u ? cptr.ldI32o(u, $you_utrap) : (cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) ||
+    } else if ((is_u
+        ? cptr.ldI32o(u, $you_utrap)
+        : cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0)) ||
             ((t = t_at(x, y)) !== null && !is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)))) {
         ;
     } else if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL) {
@@ -7092,8 +7095,8 @@ export function* hideunder(mtmp) {
     } else {
         if (seeit)
             seenmon = (yield* y_monnam(mtmp));
-        oldundetctd = schar((((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0) != 0));
-        cptr.stI32o(mtmp, $monst_mundetected, (undetected ? 1 : 0) >>> 0);
+        oldundetctd = schar(((cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0) != 0));
+        cptr.stBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0, (undetected ? 1 : 0) >>> 0);
         /* the "you see" message won't be shown for monster hiding during
            level creation because 'seeit' will be 0 so 'seenmon' and 'seenobj'
            will be Null */
@@ -7123,7 +7126,7 @@ export function* hide_monst(mon) {
 
     if ((((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 256n) != 0n) ||
         hider_under) &&
-            !((cptr.ldI32o(mon, $monst_mundetected) & 1) | 0 ||
+            !(cptr.ldBits(cptr.add(mon, $monst_mundetected), 6, 1, 0) | 0 ||
                 (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK))) {
         let x = cptr.ldI16o(mon, $monst_mx);
         let y = cptr.ldI16o(mon, $monst_my);
@@ -7237,7 +7240,7 @@ function* pick_animal() {
 export function* decide_to_shapeshift(mon) {
     let ptr = null;
     let mndx;
-    let was_female = (cptr.ldI32o(mon, $monst_female) & 1);
+    let was_female = cptr.ldBits(cptr.add(mon, $monst_female), 0, 1, 0);
     let dochng = 0;
 
     if (!is_vampshifter(mon)) {
@@ -7318,7 +7321,7 @@ export function* decide_to_shapeshift(mon) {
                 if (!((cptr.ldU64o((ptr), $permonst_mflags2) & 65536n) != 0n) &&
                         !((cptr.ldU64o((ptr), $permonst_mflags2) & 131072n) != 0n) &&
                         !((cptr.ldU64o((ptr), $permonst_mflags2) & 262144n) != 0n))
-                    cptr.stI32o(mon, $monst_female, was_female);
+                    cptr.stBits(cptr.add(mon, $monst_female), 0, 1, 0, was_female);
             }
         }
     }
@@ -7391,9 +7394,9 @@ function pickvampshape(mon) {
 /* nonshapechangers who warrant special polymorph handling */
 /** C ref: mon.c:4983 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function isspecmon(mon) {
-    return schar(((cptr.ldI32o(mon, $monst_isshk) & 1) | 0 ||
-        (cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 ||
-        (cptr.ldI32o(mon, $monst_isgd) & 1) | 0 ||
+    return schar((cptr.ldBits(cptr.add(mon, $monst_isshk), 4, 1, 0) | 0 ||
+        cptr.ldBits(cptr.add(mon, $monst_ispriest), 7, 1, 0) | 0 ||
+        cptr.ldBits(cptr.add(mon, $monst_isgd), 6, 1, 0) | 0 ||
         cptr.ldI32o(mon, $monst_m_id) == cptr.ldI32o(svq, $q_score_leader_m_id)
             ? 1
             : 0));
@@ -7765,9 +7768,9 @@ function accept_newcham_form(mon, mndx) {
 /** C ref: mon.c:5256 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct permonst>} mdat */
 export function mgender_from_permonst(mtmp, mdat) {
     if (((cptr.ldU64o((mdat), $permonst_mflags2) & 65536n) != 0n)) {
-        cptr.stI32o(mtmp, $monst_female, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_female), 0, 1, 0, 0);
     } else if (((cptr.ldU64o((mdat), $permonst_mflags2) & 131072n) != 0n)) {
-        cptr.stI32o(mtmp, $monst_female, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_female), 0, 1, 0, 1);
     } else if (!((cptr.ldU64o((mdat), $permonst_mflags2) & 262144n) != 0n)) {
         /* usually leave as-is; same chance to change as polymorphing hero;
            vampires use controlled shapechange (from their perspective, even
@@ -7775,7 +7778,13 @@ export function mgender_from_permonst(mtmp, mdat) {
            gender change */
         if (!rn2(10) &&
                 !((cptr.ld1so((mdat), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(mtmp)))
-            cptr.stI32o(mtmp, $monst_female, (!(cptr.ldI32o(mtmp, $monst_female) & 1)) >>> 0);
+            cptr.stBits(
+                cptr.add(mtmp, $monst_female),
+                0,
+                1,
+                0,
+                (!cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0)) >>> 0
+            );
     }
 }
 
@@ -7813,14 +7822,15 @@ export function* newcham(mtmp, mdat, ncflags) {
             return 0;
         /* cancelled shapechangers become uncancelled prior
            to being given a new shape */
-        if ((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 && !Protection_from_shape_changers()) {
+        if (cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0) | 0 &&
+                !Protection_from_shape_changers()) {
             cptr.stI16o(
                 mtmp,
                 $monst_cham,
                 i16(pm_to_cham((cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx))))
             );
             if (cptr.ldI16o(mtmp, $monst_cham) != NHC.NON_PM)
-                cptr.stI32o(mtmp, $monst_mcan, 0);
+                cptr.stBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0, 0);
         }
     }
 
@@ -7913,7 +7923,7 @@ export function* newcham(mtmp, mdat, ncflags) {
             (p = cptr.strstr((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))), __s_the)) !== null)
         cptr.st1(p, 0);
 
-    if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0)) {
         let mx = cptr.ldI16o(mtmp, $monst_mx);
         let my = cptr.ldI16o(mtmp, $monst_my);
 
@@ -7954,7 +7964,7 @@ export function* newcham(mtmp, mdat, ncflags) {
     /* take on the new form... */
     set_mon_data(mtmp, mdat);
 
-    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0)) {
         if (!leashable(mtmp))
             (yield* m_unleash(mtmp, 1));
         else
@@ -7978,16 +7988,18 @@ export function* newcham(mtmp, mdat, ncflags) {
                 monst_to_any(mtmp)
             ));
     }
-    if (!(cptr.ldI32o(mtmp, $monst_perminvis) & 1) || pm_invisible(olddata))
-        cptr.stI32o(mtmp, $monst_perminvis, pm_invisible(mdat) >>> 0);
-    cptr.stI32o(
-        mtmp,
-        $monst_minvis,
-        ((cptr.ldI32o(mtmp, $monst_invis_blkd) & 1) | 0
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_perminvis), 3, 1, 0) || pm_invisible(olddata))
+        cptr.stBits(cptr.add(mtmp, $monst_perminvis), 3, 1, 0, pm_invisible(mdat) >>> 0);
+    cptr.stBits(
+        cptr.add(mtmp, $monst_minvis),
+        1,
+        1,
+        0,
+        (cptr.ldBits(cptr.add(mtmp, $monst_invis_blkd), 2, 1, 0) | 0
             ? 0
-            : (cptr.ldI32o(mtmp, $monst_perminvis) & 1) | 0) >>> 0
+            : cptr.ldBits(cptr.add(mtmp, $monst_perminvis), 3, 1, 0) | 0) >>> 0
     );
-    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0))
         void (yield* hideunder(mtmp));
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
         if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
@@ -8036,12 +8048,12 @@ export function* newcham(mtmp, mdat, ncflags) {
     }
 
     if (cptr.eq(mdat, cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)) &&
-            ((cptr.stI32o(mtmp, $monst_wormno, get_wormno() >>> 0)) | 0) != 0) {
+            ((cptr.stBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0, get_wormno() >>> 0)) | 0) != 0) {
         (yield* initworm(mtmp, rn2(5)));
         (yield* place_worm_tail_randomly(mtmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
     }
 
-    cptr.stI32o(mtmp, $monst_meverseen, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_meverseen), 7, 1, 0, 0);
     (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
 
     if (msg) {
@@ -8136,7 +8148,7 @@ export function* newcham(mtmp, mdat, ncflags) {
             set_apparxy(mtmp);
         /* if hero is on Elbereth or scare monster, mtmp in new form might
            become scared */
-        if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) &&
+        if (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) &&
                 (yield* onscary(cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy), mtmp)) &&
                 monnear(mtmp, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)))
             (yield* monflee(mtmp, ((rn2(9) + 2) | 0), 1, 1));  /* 2..10 turns */
@@ -8329,7 +8341,7 @@ export function* golemeffects(mon, damtype, dam) {
         return;
     }
     if (slow) {
-        if (((cptr.ldI32o(mon, $monst_mspeed) & 3) | 0) != NHM.MSLOW)
+        if ((cptr.ldBits(cptr.add(mon, $monst_mspeed), 0, 2, 0) | 0) != NHM.MSLOW)
             (yield* mon_adjust_speed(mon, -1, null));
     }
     if (heal) {
@@ -8365,20 +8377,26 @@ export function* angry_guards(silent) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
         if (is_watch(cptr.ldPtro(mtmp, $monst_data)) &&
-                (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
+                cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0) {
             ct++;
-            if (canspotmon(mtmp) && (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0) {
+            if (canspotmon(mtmp) && cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0) | 0) {
                 if (m_next2u(mtmp))
                     nct++;
                 else
                     sct++;
             }
-            if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 ||
-                    (cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0) {
+            if (cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0) | 0 ||
+                    cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) | 0) {
                 slct++;
-                cptr.stI32o(mtmp, $monst_msleeping, cptr.stI32o(mtmp, $monst_mfrozen, 0));
+                cptr.stBits(
+                    cptr.add(mtmp, $monst_msleeping),
+                    7,
+                    1,
+                    0,
+                    cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0)
+                );
             }
-            cptr.stI32o(mtmp, $monst_mpeaceful, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
         }
     }
     if (ct) {
@@ -8423,7 +8441,7 @@ export function* angry_guards(silent) {
 /** C ref: mon.c:5763 — @param {CPtr<struct monst>} mtmp */
 function pacify_guard(mtmp) {
     if (is_watch(cptr.ldPtro(mtmp, $monst_data)))
-        cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
 }
 
 /** C ref: mon.c:5770 */
@@ -8681,8 +8699,8 @@ export function* see_monster_closeup(mtmp, photo) {
        on photos; likewise, telepathy allows hero to see hidden monsters
        but doesn't cause them to appear on photos */
     if (photo &&
-            !(cptr.ldI32o(mtmp, $monst_minvis) & 1) &&
-            !(cptr.ldI32o(mtmp, $monst_mundetected) & 1) &&
+            !cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) &&
+            !cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) &&
             ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_NOTHING ||
                 (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER)) {
         if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER)
@@ -8764,7 +8782,8 @@ export function* see_nearby_monsters() {
                 continue;
             /* disguised mimics pass canseemon(); undetected hiders don't */
             if (canseemon(mtmp) ||
-                    ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 && sensemon(mtmp))) {
+                    (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0 &&
+                        sensemon(mtmp))) {
                 cptr.stI16o(gb, $instance_globals_b_bhitpos, x),
                         cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, y);
                 cptr.st1o(
@@ -8826,7 +8845,7 @@ export function* flash_mon(mtmp) {
         (((Hallucination()
             ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))
             : (cptr.ldI32o((cptr.ldPtro((mtmp), $monst_data)), $permonst_pmidx))) +
-            ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0)
+            (((cptr.ldBits(cptr.add((mtmp), $monst_female), 0, 1, 0) | 0) == 0)
                 ? NHC.GLYPH_MON_MALE_OFF
                 : NHC.GLYPH_MON_FEM_OFF)) |
             0),

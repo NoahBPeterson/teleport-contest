@@ -574,72 +574,36 @@ export function* boulder_hits_pool(otmp, rx, ry, pushing) {
             let ttmp = t_at(rx, ry);
 
             if (ltyp == NHC.DRAWBRIDGE_UP) {
-                cptr.stBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                rx,
-                                $sizeof_rm_x21
-                            ),
-                            ry,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0,
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    rx,
-                                    $sizeof_rm_x21
-                                ),
-                                ry,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
+                cptr.stI32o3(
+                    svl,
+                    rx,
+                    $sizeof_rm_x21,
+                    ry,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
+                    cptr.ldI32o3(
+                        svl,
+                        rx,
+                        $sizeof_rm_x21,
+                        ry,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
                     ) & -29
                 );  /* clear lava */
-                cptr.stBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                rx,
-                                $sizeof_rm_x21
-                            ),
-                            ry,
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0,
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    rx,
-                                    $sizeof_rm_x21
-                                ),
-                                ry,
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
+                cptr.stI32o3(
+                    svl,
+                    rx,
+                    $sizeof_rm_x21,
+                    ry,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
+                    cptr.ldI32o3(
+                        svl,
+                        rx,
+                        $sizeof_rm_x21,
+                        ry,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
                     ) |
                         NHM.DB_FLOOR
                 );
@@ -653,22 +617,13 @@ export function* boulder_hits_pool(otmp, rx, ry, pushing) {
                     $instance_globals_saved_l_level + $rm_typ,
                     NHC.ROOM
                 ),
-                        cptr.stBits(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(
-                                        cptr.add(svl, $instance_globals_saved_l_level),
-                                        rx,
-                                        $sizeof_rm_x21
-                                    ),
-                                    ry,
-                                    $sizeof_rm
-                                ),
-                                $rm_flags
-                            ),
-                            0,
-                            5,
-                            0,
+                        cptr.stI32o3(
+                            svl,
+                            rx,
+                            $sizeof_rm_x21,
+                            ry,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags,
                             0
                         );
                 (yield* recalc_block_point(rx, ry));
@@ -837,7 +792,7 @@ export function* flooreffects(obj, x, y, verb) {
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_monsters
             ))) &&
-                (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0) ||
+                cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0) ||
                     (cptr.ldI32o(u, $you_utrap) &&
                         ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))) {
                 if (cptr.ld1s(verb) &&
@@ -899,7 +854,7 @@ export function* flooreffects(obj, x, y, verb) {
                             res = 0;  /* still alive, boulder still intact */
                         (void (res));
                     }
-                    cptr.stI32o(mtmp, $monst_mtrapped, 0);
+                    cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
                 } else {
                     if (!Passes_walls() &&
                             !((cptr.ldU64o(
@@ -998,7 +953,7 @@ export function* flooreffects(obj, x, y, verb) {
              * through the hole" message, so no need to do it here. */
             res = 1;
         }
-    } else if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
+    } else if (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0)) {
         let globbyobj = cptr.box(obj);  /* allow obj to be nonnull arg */
 
         /* Globby things like puddings might stick together */
@@ -1071,7 +1026,7 @@ export function* flooreffects(obj, x, y, verb) {
             ));
         }
 
-        let survival_chance = (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 70 : 50;
+        let survival_chance = cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 ? 70 : 50;
         if (cptr.ld1so(obj, $obj_invlet))
             survival_chance = (survival_chance + Math.imul(Luck(), 2)) | 0;
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL)
@@ -1111,24 +1066,31 @@ export function* doaltarobj(obj) {
             (yield* livelog_printf(32n, __s_eschewed_atheism_by_dropping_s_on_an, (yield* doname(obj))));
     } else {
         /* coins don't have bless/curse status */
-        cptr.stI32o(obj, $obj_blessed, cptr.stI32o(obj, $obj_cursed, 0));
+        cptr.stBits(
+            cptr.add(obj, $obj_blessed),
+            1,
+            1,
+            0,
+            cptr.stBits(cptr.add(obj, $obj_cursed), 0, 1, 0, 0)
+        );
     }
 
-    if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 || (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
+    if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 ||
+            cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0) {
         (yield* There(
             __s_is_s_flash_as_s_s_the_altar,
-            (yield* an(hcolor((cptr.ldI32o(obj, $obj_blessed) & 1) | 0
+            (yield* an(hcolor(cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0
                 ? cptr.ldPtro(c_color_names, $c_color_names_c_amber)
                 : cptr.ldPtr(c_color_names)))),
             (yield* doname(obj)),
             (yield* otense(obj, __s_hit))
         ));
         if (!Hallucination())
-            cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() */
+            cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
     } else {
         (yield* pline(__s_s_s_on_the_altar, (yield* Doname2(obj)), (yield* otense(obj, __s_land))));
         if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS)
-            cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() */
+            cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
     }
 }
 
@@ -1171,41 +1133,24 @@ export function* polymorph_sink() {
             NHC.SINK)
         return;
 
-    sinklooted = schar(((cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16(u),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16o(u, $you_uy),
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0
-    ) |
+    sinklooted = schar((((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) &
+        31) |
             0) != 0));
     /* svl.level.flags.nsinks--; // set_levltyp() will update this */
-    cptr.stBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level),
-                    cptr.ldI16(u),
-                    $sizeof_rm_x21
-                ),
-                cptr.ldI16o(u, $you_uy),
-                $sizeof_rm
-            ),
-            $rm_flags
-        ),
-        0,
-        5,
-        0,
+    cptr.stI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags,
         0
     );
     switch (rn2(4)) {
@@ -1213,57 +1158,30 @@ export function* polymorph_sink() {
         case 0:
             sym = NHC.S_fountain;
             (yield* set_levltyp(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.FOUNTAIN));  /* updates level.flags.nfountains */
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_horizontal
-                ),
-                5,
-                1,
-                0,
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_horizontal,
                 0
             );
             if (sinklooted)
-                cptr.stBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21
-                            ),
-                            cptr.ldI16o(u, $you_uy),
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0,
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(
-                                    cptr.add(svl, $instance_globals_saved_l_level),
-                                    cptr.ldI16(u),
-                                    $sizeof_rm_x21
-                                ),
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm
-                            ),
-                            $rm_flags
-                        ),
-                        0,
-                        5,
-                        0
+                cptr.stI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
+                    cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
                     ) |
                         NHM.F_LOOTED
                 );
@@ -1273,22 +1191,13 @@ export function* polymorph_sink() {
             sym = NHC.S_throne;
             (yield* set_levltyp(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.THRONE));
             if (sinklooted)
-                cptr.stBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(
-                                cptr.add(svl, $instance_globals_saved_l_level),
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21
-                            ),
-                            cptr.ldI16o(u, $you_uy),
-                            $sizeof_rm
-                        ),
-                        $rm_flags
-                    ),
-                    0,
-                    5,
-                    0,
+                cptr.stI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
                     NHM.T_LOOTED
                 );
             break;
@@ -1298,22 +1207,13 @@ export function* polymorph_sink() {
             /* 3.6.3: this used to pass 'rn2(A_LAWFUL + 2) - 1' to
                Align2amask() but that evaluates its argument more than once */
             algn = (rn2(3) - 1) | 0;  /* -1 (A_Cha) or 0 (A_Neu) or +1 (A_Law) */
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
                 ((In_hell(cptr.add(u, $you_uz)) && rn2(3)) ? NHM.AM_NONE : Align2amask(algn))
             );
             break;
@@ -1385,62 +1285,35 @@ function* teleport_sink() {
                     dist2((cx), (cy), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 9)) {
             /* this ends up having set_levltyp() count all sinks and
                fountains on the level twice but that is not a problem */
-            alreadylooted = cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0
-            );
+            alreadylooted = (cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) & 31);
             /* remove old sink */
             (yield* set_levltyp(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.ROOM));  /* was SINK so updates nsinks */
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cptr.ldI16(u),
-                            $sizeof_rm_x21
-                        ),
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
                 0
             );
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
             /* create sink at new position */
             (yield* set_levltyp(cx, cy, NHC.SINK));  /* now SINK so also updates nsinks */
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(svl, $instance_globals_saved_l_level),
-                            cx,
-                            $sizeof_rm_x21
-                        ),
-                        cy,
-                        $sizeof_rm
-                    ),
-                    $rm_flags
-                ),
-                0,
-                5,
-                0,
+            cptr.stI32o3(
+                svl,
+                cx,
+                $sizeof_rm_x21,
+                cy,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
                 (alreadylooted ? 1 : 0) >>> 0
             );
             (yield* newsym(cx, cy));
@@ -1460,19 +1333,19 @@ function* dosinkring(obj) {
     let nosink = 0;
 
     (yield* You(__s_drop_s_down_the_drain, (yield* doname(obj))));
-    cptr.stI32o(obj, $obj_in_use, 1);  /* block free identification via interrupt */
+    cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 1);  /* block free identification via interrupt */
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.RIN_SEARCHING:
             (yield* You(__s_thought_s_got_lost_in_the_sink_but, (yield* yname(obj))));
             {
-                cptr.stI32o(obj, $obj_in_use, 0);
+                cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
                 (yield* dropx(obj));
                 (yield* trycall(obj));
                 return;
             }
         case NHC.RIN_SLOW_DIGESTION:
             (yield* pline_The(__s_ring_is_regurgitated));
-            cptr.stI32o(obj, $obj_in_use, 0);
+            cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
             (yield* dropx(obj));
             (yield* trycall(obj));
             return;
@@ -1646,11 +1519,11 @@ function* dosinkring(obj) {
     }
     if (!rn2(20) && !nosink) {
         (yield* pline_The(__s_sink_backs_up_leaving_s, (yield* doname(obj))));
-        cptr.stI32o(obj, $obj_in_use, 0);
+        cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
         (yield* dropx(obj));
     } else if (!rn2(5)) {
         (yield* freeinv(obj));
-        cptr.stI32o(obj, $obj_in_use, 0);
+        cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
         cptr.stI16o(obj, $obj_ox, cptr.ldI16(u));
         cptr.stI16o(obj, $obj_oy, cptr.ldI16o(u, $you_uy));
         (yield* add_to_buried(obj));
@@ -1687,7 +1560,8 @@ export function* canletgo(obj, word) {
         }
         return 0;
     }
-    if (cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE && (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
+    if (cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE &&
+            cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0) {
         /* getobj() kludge sets corpsenm to user's specified count
            when refusing to split a stack of cursed loadstones */
         if (cptr.ld1s(word)) {
@@ -1815,7 +1689,7 @@ function* drop(obj) {
                 cptr.ld1so(flags, $flag_verbose))
             (yield* You(__s_drop_s, (yield* doname(obj))));
     }
-    cptr.stI32o(obj, $obj_how_lost, NHM.LOST_DROPPED);
+    cptr.stBits(cptr.add(obj, $obj_how_lost), 0, 3, 0, NHM.LOST_DROPPED);
     (yield* dropx(obj));
     return NHM.ECMD_TIME;
 }
@@ -1905,7 +1779,7 @@ function* engulfer_digests_food(obj) {
     ) !==
         null) &&
             (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE ||
-                (cptr.ldI32o(obj, $obj_globby) & 1) | 0 ||
+                cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0) | 0 ||
                 cptr.ldI16o(obj, $obj_otyp) == NHC.MEATBALL ||
                 cptr.ldI16o(obj, $obj_otyp) == NHC.ENORMOUS_MEATBALL ||
                 cptr.ldI16o(obj, $obj_otyp) == NHC.MEAT_RING ||
@@ -1984,12 +1858,12 @@ export function* obj_no_longer_held(obj) {
              * to give each individual crysknife its own separate 10% chance,
              * but we aren't in any position to handle stack splitting here.
              */
-            if (!(cptr.ldI32o(obj, $obj_oerodeproof) & 1) || !rn2(10)) {
+            if (!cptr.ldBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0) || !rn2(10)) {
                 /* if monsters aren't moving, assume player is responsible */
                 if (!cptr.ld1so(svc, $context_info_mon_moving) && !cptr.ldI32(program_state))
                     (yield* costly_alteration(obj, NHC.COST_DEGRD));
                 cptr.stI16o(obj, $obj_otyp, NHC.WORM_TOOTH);
-                cptr.stI32o(obj, $obj_oerodeproof, 0);
+                cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, 0);
             }
             break;
     }
@@ -2046,7 +1920,7 @@ function* menudrop_split(otmp, cnt) {
         if ((yield* welded(otmp))) {
             ;  /* don't split */
         } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOADSTONE &&
-                (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
+                cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0) {
             /* same kludge as getobj(), for canletgo()'s use */
             cptr.stI32o(otmp, $obj_corpsenm, Number(BigInt.asIntN(32, cnt)));  /* don't split */
         } else {
@@ -2193,7 +2067,7 @@ function* menu_drop(retry) {
                     )
                         if (cptr.eq(otmp2, otmp))
                             break;
-                    if (!otmp2 || !(cptr.ldI32o(otmp2, $obj_bypass) & 1))
+                    if (!otmp2 || !cptr.ldBits(cptr.add(otmp2, $obj_bypass), 3, 1, 0))
                         continue;
                     /* found next selected invent item */
                     n_dropped = (n_dropped +
@@ -3535,7 +3409,7 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
             ) {
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                     continue;
-                cptr.stI32o(mtmp, $monst_msleeping, 0);
+                cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
             }
         }
     } else if (In_mines(cptr.add(u, $you_uz))) {

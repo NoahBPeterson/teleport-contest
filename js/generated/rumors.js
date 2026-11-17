@@ -953,7 +953,7 @@ export function doconsult(oracl) {
     if (!oracl) {
         There(__s_is_no_one_here_to_consult);
         return NHM.ECMD_OK;
-    } else if (!(cptr.ldI32o(oracl, $monst_mpeaceful) & 1)) {
+    } else if (!cptr.ldBits(cptr.add(oracl, $monst_mpeaceful), 1, 1, 0)) {
         pline(__s_s_is_in_no_mood_for_consultations, Monnam(oracl));
         return NHM.ECMD_OK;
     } else if (!umoney) {

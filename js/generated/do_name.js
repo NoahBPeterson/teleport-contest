@@ -587,7 +587,7 @@ export function christen_monst(mtmp, name) {
     if (lth)
         void cptr.strcpy((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))), name);
     /* if 'mtmp' is leashed, persistent inventory window needs updating */
-    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0))
         update_inventory();  /* x - leash (attached to Fido) */
     return mtmp;
 }
@@ -609,7 +609,7 @@ function alreadynamed(mtmp, monnambuf, usrbuf) {
     if (!cptr.ld1s(usrbuf)) {
         let name_not_title = schar((has_mgivenname(mtmp) ||
             ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 524288n) != 0n) ||
-            (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0
+            cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0
                 ? 1
                 : 0));
         pline(
@@ -724,12 +724,13 @@ function do_mgivenname() {
                         NHM.IN_SIGHT) !=
                         0) ||
                         see_with_infrared(mtmp)) ||
-                        (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 ||
+                        cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0 ||
                         (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ==
                             NHC.M_AP_FURNITURE ||
                         (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ==
                             NHC.M_AP_OBJECT ||
-                        ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !See_invisible()))))) {
+                        (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) | 0 &&
+                            !See_invisible()))))) {
 
         pline(__s_i_see_no_monster_there);
         return;
@@ -757,10 +758,10 @@ function do_mgivenname() {
      * monster's existing name without assigning a new one.
      */
     if ((cptr.ldU16o(cptr.ldPtro(mtmp, $monst_data), $permonst_geno) & NHM.G_UNIQ) &&
-            !(cptr.ldI32o(mtmp, $monst_ispriest) & 1)) {
+            !cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0)) {
         if (!alreadynamed(mtmp, cptr.decay(monnambuf), cptr.decay(buf)))
             pline(__s_s_doesn_t_like_being_called_names, upstart(cptr.decay(monnambuf)));
-    } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 &&
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 &&
             !(Deaf() ||
                 helpless(mtmp) ||
                 cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
@@ -768,9 +769,9 @@ function do_mgivenname() {
             ;
             verbalize(__s_i_m_s_not_s, shkname(mtmp), cptr.decay(buf));
         }
-    } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 ||
-            (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 ||
-            (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 ||
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 ||
+            cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0) | 0 ||
+            cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 ||
             cptr.eq(
                 cptr.ldPtro(mtmp, $monst_data),
                 cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst)
@@ -943,7 +944,7 @@ export function oname(obj, name, oflgs) {
         if (cptr.eq(obj, uwep.v))
             set_artifact_intrinsic(obj, 1, 256n);
         /* if obj is owned by a shop, increase your bill */
-        if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
+        if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
             alter_cost(obj, 0n);
         if (via_naming) {
             /* violate illiteracy conduct since successfully wrote arti-name */
@@ -1014,7 +1015,7 @@ export function name_ok(obj) {
     if (!obj || cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         return NHC.GETOBJ_EXCLUDE;
 
-    if (!(cptr.ldI32o(obj, $obj_dknown) & 1) ||
+    if (!cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) ||
             cptr.ld1so(obj, $obj_oartifact) ||
             cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_NOVEL)
         return NHC.GETOBJ_DOWNPLAY;
@@ -1033,7 +1034,7 @@ export function call_ok(obj) {
        when something has been named and then becomes discovered, it
        remains a likely candidate until player renames it to <space>
        to remove that no longer needed name */
-    if (!(cptr.ldI32o(obj, $obj_dknown) & 1) ||
+    if (!cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) ||
             ((cptr.ldI32o2(
                 objects,
                 cptr.ldI16o(obj, $obj_otyp),
@@ -1184,7 +1185,7 @@ export function docallcmd() {
                    while blind and the hero can now see */
                 void xname(obj);
 
-                if (!(cptr.ldI32o(obj, $obj_dknown) & 1)) {
+                if (!cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0)) {
                     You(__s_would_never_recognize_another_one);
                 } else {
                     docall(obj);
@@ -1207,25 +1208,31 @@ export function docallcmd() {
 /* for use by safe_qbuf() */
 /** C ref: do_name.c:605 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function docall_xname(obj) {
-    let otemp = cptr.alloc(216);
+    let otemp = cptr.alloc(112);
 
-    cptr.memcpy(otemp, obj, 216);
+    cptr.memcpy(otemp, obj, 112);
     cptr.stPtro(otemp, $obj_oextra, null);
     cptr.stI64o(otemp, $obj_quan, 1n);
     /* in case water is already known, convert "[un]holy water" to "water" */
-    cptr.stI32o(otemp, $obj_blessed, cptr.stI32o(otemp, $obj_cursed, 0));
+    cptr.stBits(
+        cptr.add(otemp, $obj_blessed),
+        1,
+        1,
+        0,
+        cptr.stBits(cptr.add(otemp, $obj_cursed), 0, 1, 0, 0)
+    );
     /* remove attributes that are doname() caliber but get formatted
        by xname(); most of these fixups aren't really needed because the
        relevant type of object isn't callable so won't reach this far */
     if (cptr.ld1so(otemp, $obj_oclass) == NHC.WEAPON_CLASS)
-        cptr.stI32o(otemp, $obj_otrapped, 0);  /* not poisoned */
+        cptr.stBits(cptr.add(otemp, $obj_otrapped), 7, 1, 0, 0);  /* not poisoned */
     else if (cptr.ld1so(otemp, $obj_oclass) == NHC.POTION_CLASS)
-        cptr.stI32o(otemp, $obj_oeroded, 0);  /* not diluted */
+        cptr.stBits(cptr.add(otemp, $obj_oeroded), 0, 2, 0, 0);  /* not diluted */
     else if (cptr.ldI16o(otemp, $obj_otyp) == NHC.TOWEL ||
             cptr.ldI16o(otemp, $obj_otyp) == NHC.STATUE)
         cptr.st1o(otemp, $obj_spe, 0);  /* not wet or historic */
     else if (cptr.ldI16o(otemp, $obj_otyp) == NHC.TIN)
-        cptr.stI32o(otemp, $obj_known, 0);  /* suppress tin type (homemade, &c) and mon type */
+        cptr.stBits(cptr.add(otemp, $obj_known), 0, 1, 0, 0);  /* suppress tin type (homemade, &c) and mon type */
     else if (cptr.ldI16o(otemp, $obj_otyp) == NHC.FIGURINE)
         cptr.stI32o(otemp, $obj_corpsenm, NHC.NON_PM);  /* suppress mon type */
     else if (cptr.ldI16o(otemp, $obj_otyp) == NHC.HEAVY_IRON_BALL)
@@ -1235,7 +1242,7 @@ function docall_xname(obj) {
             cptr.ldI32o2(objects, NHC.HEAVY_IRON_BALL, $sizeof_objclass, $objclass_oc_weight)
         );  /* not "very heavy" */
     else if (cptr.ld1so(otemp, $obj_oclass) == NHC.FOOD_CLASS &&
-            (cptr.ldI32o(otemp, $obj_globby) & 1) | 0)
+            cptr.ldBits(cptr.add(otemp, $obj_globby), 0, 1, 0) | 0)
         cptr.stI32o(otemp, $obj_owt, 120);  /* 6*20, neither a small glob nor a large one */
 
     return an(xname(otemp));
@@ -1248,7 +1255,7 @@ export function docall(obj) {
     let uname_p;
     let had_name = 0;
 
-    if (!(cptr.ldI32o(obj, $obj_dknown) & 1))
+    if (!cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0))
         return;  /* probably blind; Blind || Hallucination for 'fromsink' */
     flush_screen(1);  /* buffered updates might matter to player's response */
 
@@ -1421,7 +1428,7 @@ function namefloorobj() {
             use_plural ? __s_those : __s_that,
             cptr.decay(buf)
         );
-    } else if (!(cptr.ldI32o(obj.v, $obj_dknown) & 1)) {
+    } else if (!cptr.ldBits(cptr.add(obj.v, $obj_dknown), 1, 1, 0)) {
         You(
             __s_don_t_know_s_s_well_enough_to_name_s,
             use_plural ? __s_those__2 : __s_that__2,
@@ -1576,7 +1583,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
         suppress |= NHM.SUPPRESS_INVISIBLE;
     }
     do_hallu = schar((Hallucination() && !(suppress & NHM.SUPPRESS_HALLUCINATION) ? 1 : 0));
-    do_invis = schar(((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 &&
+    do_invis = schar((cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) | 0 &&
         !(suppress & NHM.SUPPRESS_INVISIBLE)
             ? 1
             : 0));
@@ -1618,22 +1625,22 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
     }
 
     /* priests and minions: don't even use this function */
-    if (((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 ||
-        (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0) &&
+    if ((cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 ||
+        cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0) | 0) &&
             !do_mappear) {
         let name;
         let save_prop = EHalluc_resistance();
-        let save_invis = (cptr.ldI32o(mtmp, $monst_minvis) & 1);
+        let save_invis = cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0);
 
         /* when true name is wanted, explicitly block Hallucination */
         if (!do_hallu)
             cptr.stI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops, 1n);
         if (!do_invis)
-            cptr.stI32o(mtmp, $monst_minvis, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0, 0);
         /* EXACT_NAME will force "of <deity>" on the Astral Plane */
         name = priestname(mtmp, article, do_exact, cptr.decay(buf2));
         cptr.stI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops, save_prop);
-        cptr.stI32o(mtmp, $monst_minvis, save_invis);
+        cptr.stBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0, save_invis);
         if (article == NHM.ARTICLE_NONE && !cptr.strncmp(name, __s_the, 4n))
             name = cptr.add(name, 4);
         return cptr.strcpy(buf, name);
@@ -1655,7 +1662,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
      * shopkeeper" or "Asidonhopo the blue dragon".  If hallucinating,
      * none of this applies.
      */
-    if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !do_hallu && !do_mappear) {
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 && !do_hallu && !do_mappear) {
         if (adjective && article == NHM.ARTICLE_THE) {
             /* pathological case: "the angry Asidonhopo the blue dragon"
                sounds silly */
@@ -1731,7 +1738,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
             rank_of(
                 cptr.ld1uo(mtmp, $monst_m_lev),
                 (cptr.ldI32o((mdat), $permonst_pmidx)),
-                schar((cptr.ldI32o(mtmp, $monst_female) & 1))
+                schar(cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0))
             )
         );
         void cptr.strcat(buf, lcase(cptr.decay(pbuf)));
@@ -1951,7 +1958,9 @@ export function distant_monnam(mon, article, outbuf) {
         void cptr.strcpy(outbuf, article == NHM.ARTICLE_THE ? __s_the : __s_empty);
         void cptr.strcat(
             outbuf,
-            (cptr.ldI32o(mon, $monst_female) & 1) | 0 ? __s_high_priestess : __s_high_priest
+            cptr.ldBits(cptr.add(mon, $monst_female), 0, 1, 0) | 0
+                ? __s_high_priestess
+                : __s_high_priest
         );
     } else {
         void cptr.strcpy(outbuf, x_monnam(mon, article, null, 0, 1));
@@ -2086,7 +2095,9 @@ export function minimal_monnam(mon, ckloc) {
             __s_s_s_d_d,
             cptr.ld1so(mon, $monst_mtame)
                 ? __s_tame
-                : ((cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0 ? __s_peaceful : __s_empty),
+                : (cptr.ldBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0) | 0
+                    ? __s_peaceful
+                    : __s_empty),
             mon_pmname(mon),
             cptr.ldI16o(mon, $monst_mx),
             cptr.ldI16o(mon, $monst_my)
@@ -2111,7 +2122,7 @@ export function Mgender(mtmp) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         if (Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female))
             mgender = NHC.FEMALE;
-    } else if ((cptr.ldI32o(mtmp, $monst_female) & 1)) {
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0)) {
         mgender = NHC.FEMALE;
     }
     return mgender;
@@ -2454,7 +2465,7 @@ export function coyotename(mtmp, buf) {
             buf,
             __s_s_s,
             x_monnam(mtmp, NHM.ARTICLE_NONE, null, 0, 1),
-            (cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0
+            cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0) | 0
                 ? cptr.ldPtro(coynames, (22 - 1) | 0, 8)
                 : cptr.ldPtro(coynames, u32mod(cptr.ldI32o(mtmp, $monst_m_id), (22 - 1) >>> 0), 8)
         );

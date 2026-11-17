@@ -1788,7 +1788,7 @@ function wizkit_addinv(obj) {
     /* subset of starting inventory pre-ID */
     observe_object(obj);
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
-        cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() */
+        cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
     /* same criteria as lift_object()'s check for available inventory slot */
     if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
             inv_cnt(0) >= NHC.invlet_basic &&
