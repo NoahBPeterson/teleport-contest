@@ -505,7 +505,7 @@ export function done_in_by(mtmp, how) {
     if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 &&
             !(imitator && !mimicker) &&
             !(cptr.eq(mptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)) &&
-                !cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0))) {
+                !(cptr.ldI32o(mtmp, $monst_ispriest) & 1))) {
         if (!((cptr.ldU64o((mptr), $permonst_mflags2) & 524288n) != 0n))
             void cptr.strcat(cptr.decay(buf), __s_the);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
@@ -515,7 +515,7 @@ export function done_in_by(mtmp, how) {
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     }
     void monhealthdescr(mtmp, 1, eos(cptr.decay(buf)));
-    if (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_minvis) & 1))
         void cptr.strcat(cptr.decay(buf), __s_invisible);
     if (distorted)
         void cptr.strcat(cptr.decay(buf), __s_hallucinogen_distorted);
@@ -561,16 +561,16 @@ export function done_in_by(mtmp, how) {
                 __s_of_s,
                 (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))
             );
-    } else if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0)) {
+    } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
         let shknm = shkname(mtmp);
         let honorific = shkname_is_pname(mtmp)
                 ? __s_empty
-                : (cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0) | 0 ? __s_ms : __s_mr);
+                : ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0 ? __s_ms : __s_mr);
 
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_the_shopkeeper, honorific, shknm);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
-    } else if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 ||
-            cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0) | 0) {
+    } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 ||
+            (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0) {
         /* m_monnam() suppresses "the" prefix plus "invisible", and
            it overrides the effect of Hallucination on priestname() */
         void cptr.strcat(cptr.decay(buf), m_monnam(mtmp));
@@ -1209,23 +1209,13 @@ function artifact_score(list, counting, endwin) {
             } else {
                 discover_object(cptr.ldI16o(otmp, $obj_otyp), 1, 1, 0);
                 /* not observe_object; dead characters don't observe */
-                cptr.stBits(
-                    cptr.add(otmp, $obj_known),
-                    0,
-                    1,
-                    0,
-                    cptr.stBits(
-                        cptr.add(otmp, $obj_dknown),
-                        1,
-                        1,
-                        0,
-                        cptr.stBits(
-                            cptr.add(otmp, $obj_bknown),
-                            2,
-                            1,
-                            0,
-                            cptr.stBits(cptr.add(otmp, $obj_rknown), 3, 1, 0, 1)
-                        )
+                cptr.stI32o(
+                    otmp,
+                    $obj_known,
+                    cptr.stI32o(
+                        otmp,
+                        $obj_dknown,
+                        cptr.stI32o(otmp, $obj_bknown, cptr.stI32o(otmp, $obj_rknown, 1))
                     )
                 );
                 /* assumes artifacts don't have quan > 1 */
@@ -1609,23 +1599,13 @@ function really_done(how) {
             nextobj = cptr.ldPtr(obj);
             discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0);
             /* observe_object not necessary after discover_object */
-            cptr.stBits(
-                cptr.add(obj, $obj_known),
-                0,
-                1,
-                0,
-                cptr.stBits(
-                    cptr.add(obj, $obj_bknown),
-                    2,
-                    1,
-                    0,
-                    cptr.stBits(
-                        cptr.add(obj, $obj_dknown),
-                        1,
-                        1,
-                        0,
-                        cptr.stBits(cptr.add(obj, $obj_rknown), 3, 1, 0, 1)
-                    )
+            cptr.stI32o(
+                obj,
+                $obj_known,
+                cptr.stI32o(
+                    obj,
+                    $obj_bknown,
+                    cptr.stI32o(obj, $obj_dknown, cptr.stI32o(obj, $obj_rknown, 1))
                 )
             );
             set_cknown_lknown(obj);  /* set flags when applicable */
@@ -2034,9 +2014,9 @@ function really_done(how) {
                         typ <= NHC.LAST_REAL_GEM) {
                     otmp = mksobj(typ, 0, 0);
                     discover_object(cptr.ldI16o(otmp, $obj_otyp), 1, 1, 0);
-                    cptr.stBits(cptr.add(otmp, $obj_dknown), 1, 1, 0, 1);  /* seen it (blindness fix) */
+                    cptr.stI32o(otmp, $obj_dknown, 1);  /* seen it (blindness fix) */
                     /* observe_object not necessary after discover_object */
-                    cptr.stBits(cptr.add(otmp, $obj_known), 0, 1, 0, 1);  /* for fake amulets */
+                    cptr.stI32o(otmp, $obj_known, 1);  /* for fake amulets */
                     if (has_oname(otmp))
                         free_oname(otmp);
                     cptr.stI64o(otmp, $obj_quan, count);
@@ -2212,11 +2192,11 @@ export function container_contents(list, identified, all_containers, reportempty
 
     for (box = list; box; box = cptr.ldPtr(box)) {
         if (Is_container(box) || cptr.ldI16o(box, $obj_otyp) == NHC.STATUE) {
-            if (!cptr.ldBits(cptr.add(box, $obj_cknown), 4, 1, 0) ||
-                    (identified && !cptr.ldBits(cptr.add(box, $obj_lknown), 5, 1, 0))) {
-                cptr.stBits(cptr.add(box, $obj_cknown), 4, 1, 0, 1);  /* we're looking at the contents now */
+            if (!(cptr.ldI32o(box, $obj_cknown) & 1) ||
+                    (identified && !(cptr.ldI32o(box, $obj_lknown) & 1))) {
+                cptr.stI32o(box, $obj_cknown, 1);  /* we're looking at the contents now */
                 if (identified)
-                    cptr.stBits(cptr.add(box, $obj_lknown), 5, 1, 0, 1);
+                    cptr.stI32o(box, $obj_lknown, 1);
                 update_inventory();
             }
             if (cptr.ldI16o(box, $obj_otyp) == NHC.BAG_OF_TRICKS) {
@@ -2254,28 +2234,14 @@ export function container_contents(list, identified, all_containers, reportempty
                     ) {
                         if (identified) {
                             discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0);
-                            cptr.stBits(cptr.add(obj, $obj_dknown), 1, 1, 0, 1);  /* observe_object unnecessary */
-                            cptr.stBits(
-                                cptr.add(obj, $obj_known),
-                                0,
-                                1,
-                                0,
-                                cptr.stBits(
-                                    cptr.add(obj, $obj_bknown),
-                                    2,
-                                    1,
-                                    0,
-                                    cptr.stBits(cptr.add(obj, $obj_rknown), 3, 1, 0, 1)
-                                )
+                            cptr.stI32o(obj, $obj_dknown, 1);  /* observe_object unnecessary */
+                            cptr.stI32o(
+                                obj,
+                                $obj_known,
+                                cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1))
                             );
                             if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE)
-                                cptr.stBits(
-                                    cptr.add(obj, $obj_cknown),
-                                    4,
-                                    1,
-                                    0,
-                                    cptr.stBits(cptr.add(obj, $obj_lknown), 5, 1, 0, 1)
-                                );
+                                cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
                         }
                         void cptr.strcpy(cptr.add(cptr.decay(buf), 2, 1), doname_with_price(obj));
                         putstr()(tmpwin, 0, cptr.decay(buf));

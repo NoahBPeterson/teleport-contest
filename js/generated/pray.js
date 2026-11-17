@@ -642,7 +642,7 @@ function in_trouble() {
         return 4;
     if (((uarmf.v) &&
         cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.LEVITATION_BOOTS &&
-        cptr.ldBits(cptr.add((uarmf.v), $obj_cursed), 0, 1, 0) | 0) ||
+        (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0) ||
             stuck_ring(uleft.v, NHC.RIN_LEVITATION) ||
             stuck_ring(uright.v, NHC.RIN_LEVITATION))
         return 3;
@@ -666,11 +666,10 @@ function in_trouble() {
                     8192n) !=
                     0n) &&
                 (!Unchanging() ||
-                    ((otmp = unchanger()) !== null &&
-                        cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0)))
+                    ((otmp = unchanger()) !== null && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)))
             return 2;
     }
-    if (EBlinded() && cptr.ldBits(cptr.add(ublindf.v, $obj_cursed), 0, 1, 0) | 0)
+    if (EBlinded() && (cptr.ldI32o(ublindf.v, $obj_cursed) & 1) | 0)
         return 1;
 
     /*
@@ -681,10 +680,10 @@ function in_trouble() {
         return -1;
     if (((uarmg.v) &&
         cptr.ldI16o((uarmg.v), $obj_otyp) == NHC.GAUNTLETS_OF_FUMBLING &&
-        cptr.ldBits(cptr.add((uarmg.v), $obj_cursed), 0, 1, 0) | 0) ||
+        (cptr.ldI32o((uarmg.v), $obj_cursed) & 1) | 0) ||
             ((uarmf.v) &&
                 cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.FUMBLE_BOOTS &&
-                cptr.ldBits(cptr.add((uarmf.v), $obj_cursed), 0, 1, 0) | 0))
+                (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0))
         return -2;
     if (worst_cursed_item())
         return -3;
@@ -692,7 +691,7 @@ function in_trouble() {
         otmp = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n);
         if (((otmp) &&
                 cptr.ldI16o((otmp), $obj_otyp) == NHC.SADDLE &&
-                cptr.ldBits(cptr.add((otmp), $obj_cursed), 0, 1, 0) | 0))
+                (cptr.ldI32o((otmp), $obj_cursed) & 1) | 0))
             return -4;
     }
 
@@ -736,7 +735,7 @@ function worst_cursed_item() {
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if (((otmp) &&
                     cptr.ldI16o((otmp), $obj_otyp) == NHC.LOADSTONE &&
-                    cptr.ldBits(cptr.add((otmp), $obj_cursed), 0, 1, 0) | 0))
+                    (cptr.ldI32o((otmp), $obj_cursed) & 1) | 0))
                 return otmp;
     }
     /* weapon takes precedence if it is interfering
@@ -744,46 +743,46 @@ function worst_cursed_item() {
     if (welded(uwep.v) && (uright.v || bimanual(uwep.v))) {
         otmp = uwep.v;
         /* gloves come next, due to rings */
-    } else if (uarmg.v && cptr.ldBits(cptr.add(uarmg.v, $obj_cursed), 0, 1, 0) | 0) {
+    } else if (uarmg.v && (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0) {
         otmp = uarmg.v;
         /* then shield due to two handed weapons and spells */
-    } else if (uarms.v && cptr.ldBits(cptr.add(uarms.v, $obj_cursed), 0, 1, 0) | 0) {
+    } else if (uarms.v && (cptr.ldI32o(uarms.v, $obj_cursed) & 1) | 0) {
         otmp = uarms.v;
         /* then cloak due to body armor */
-    } else if (uarmc.v && cptr.ldBits(cptr.add(uarmc.v, $obj_cursed), 0, 1, 0) | 0) {
+    } else if (uarmc.v && (cptr.ldI32o(uarmc.v, $obj_cursed) & 1) | 0) {
         otmp = uarmc.v;
-    } else if (uarm.v && cptr.ldBits(cptr.add(uarm.v, $obj_cursed), 0, 1, 0) | 0) {
+    } else if (uarm.v && (cptr.ldI32o(uarm.v, $obj_cursed) & 1) | 0) {
         otmp = uarm.v;
         /* if worn helmet of opposite alignment is making you an adherent
            of the current god, he/she/it won't uncurse that for you */
     } else if (uarmh.v &&
-            cptr.ldBits(cptr.add(uarmh.v, $obj_cursed), 0, 1, 0) | 0 &&
+            (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0 &&
             cptr.ldI16o(uarmh.v, $obj_otyp) != NHC.HELM_OF_OPPOSITE_ALIGNMENT) {
         otmp = uarmh.v;
-    } else if (uarmf.v && cptr.ldBits(cptr.add(uarmf.v, $obj_cursed), 0, 1, 0) | 0) {
+    } else if (uarmf.v && (cptr.ldI32o(uarmf.v, $obj_cursed) & 1) | 0) {
         otmp = uarmf.v;
-    } else if (uarmu.v && cptr.ldBits(cptr.add(uarmu.v, $obj_cursed), 0, 1, 0) | 0) {
+    } else if (uarmu.v && (cptr.ldI32o(uarmu.v, $obj_cursed) & 1) | 0) {
         otmp = uarmu.v;
-    } else if (uamul.v && cptr.ldBits(cptr.add(uamul.v, $obj_cursed), 0, 1, 0) | 0) {
+    } else if (uamul.v && (cptr.ldI32o(uamul.v, $obj_cursed) & 1) | 0) {
         otmp = uamul.v;
-    } else if (uleft.v && cptr.ldBits(cptr.add(uleft.v, $obj_cursed), 0, 1, 0) | 0) {
+    } else if (uleft.v && (cptr.ldI32o(uleft.v, $obj_cursed) & 1) | 0) {
         otmp = uleft.v;
-    } else if (uright.v && cptr.ldBits(cptr.add(uright.v, $obj_cursed), 0, 1, 0) | 0) {
+    } else if (uright.v && (cptr.ldI32o(uright.v, $obj_cursed) & 1) | 0) {
         otmp = uright.v;
-    } else if (ublindf.v && cptr.ldBits(cptr.add(ublindf.v, $obj_cursed), 0, 1, 0) | 0) {
+    } else if (ublindf.v && (cptr.ldI32o(ublindf.v, $obj_cursed) & 1) | 0) {
         otmp = ublindf.v;  /* must be non-blinding lenses */
         /* if weapon wasn't handled above, do it now */
     } else if (welded(uwep.v)) {
         otmp = uwep.v;
         /* active secondary weapon even though it isn't welded */
     } else if (uswapwep.v &&
-            cptr.ldBits(cptr.add(uswapwep.v, $obj_cursed), 0, 1, 0) | 0 &&
+            (cptr.ldI32o(uswapwep.v, $obj_cursed) & 1) | 0 &&
             cptr.ld1so(u, $you_twoweap)) {
         otmp = uswapwep.v;
         /* all worn items ought to be handled by now */
     } else {
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
-            if (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
+            if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
                 continue;
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOADSTONE || confers_luck(otmp))
                 break;
@@ -801,7 +800,7 @@ function fix_curse_trouble(otmp, what) {
     if (cptr.eq(otmp, uarmg.v) && Glib()) {
         make_glib(0);
         Your(__s_s_are_no_longer_slippery, gloves_simple_name(uarmg.v));
-        if (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
+        if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
             return;
     }
     if (!Blind() || (cptr.eq(otmp, ublindf.v) && Blindfolded_only())) {
@@ -811,7 +810,7 @@ function fix_curse_trouble(otmp, what) {
             hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber))
         );
         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OBJ_GLOWS);
-        cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, (!Hallucination()) >>> 0);  /* ok to skip set_bknown() */
+        cptr.stI32o(otmp, $obj_bknown, (!Hallucination()) >>> 0);  /* ok to skip set_bknown() */
     }
     uncurse(otmp);
     update_inventory();
@@ -936,7 +935,7 @@ function fix_worst_trouble(trouble) {
         case 3:
             if (((uarmf.v) &&
                     cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.LEVITATION_BOOTS &&
-                    cptr.ldBits(cptr.add((uarmf.v), $obj_cursed), 0, 1, 0) | 0)) {
+                    (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0)) {
                 otmp = uarmf.v;
             } else if ((otmp = stuck_ring(uleft.v, NHC.RIN_LEVITATION)) !== null) {
                 if (cptr.eq(otmp, uleft.v))
@@ -964,7 +963,7 @@ function fix_worst_trouble(trouble) {
                     Your(__s_shape_becomes_uncertain);
                     rehumanize();  /* "You return to {normal} form." */
                 } else if ((otmp = unchanger()) !== null &&
-                        cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0) {
+                        (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
                     /* otmp is an amulet of unchanging */
                     fix_curse_trouble(otmp, what);
                     break;
@@ -996,11 +995,11 @@ function fix_worst_trouble(trouble) {
         case -2:
             if (((uarmg.v) &&
                     cptr.ldI16o((uarmg.v), $obj_otyp) == NHC.GAUNTLETS_OF_FUMBLING &&
-                    cptr.ldBits(cptr.add((uarmg.v), $obj_cursed), 0, 1, 0) | 0))
+                    (cptr.ldI32o((uarmg.v), $obj_cursed) & 1) | 0))
                 otmp = uarmg.v;
             else if (((uarmf.v) &&
                     cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.FUMBLE_BOOTS &&
-                    cptr.ldBits(cptr.add((uarmf.v), $obj_cursed), 0, 1, 0) | 0))
+                    (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0))
                 otmp = uarmf.v;
             fix_curse_trouble(otmp, what);
             break;
@@ -1519,7 +1518,7 @@ function gcrownu() {
            crowned, but be paranoid about it) */
         void cptr.strcpy(cptr.decay(bbuf), actualoname(obj));
         bless(obj);
-        cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 1);  /* ok to skip set_bknown() */
+        cptr.stI32o(obj, $obj_bknown, 1);  /* ok to skip set_bknown() */
         observe_object(obj);
         at_your_feet(upstart(ansimpleoname(obj)));
         dropy(obj);
@@ -1627,21 +1626,9 @@ function gcrownu() {
     /* enhance weapon regardless of alignment or artifact status */
     if (((obj) && (cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj)))) {
         bless(obj);
-        cptr.stBits(
-            cptr.add(obj, $obj_oeroded),
-            0,
-            2,
-            0,
-            cptr.stBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0, 0)
-        );
-        cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, 1);
-        cptr.stBits(
-            cptr.add(obj, $obj_bknown),
-            2,
-            1,
-            0,
-            cptr.stBits(cptr.add(obj, $obj_rknown), 3, 1, 0, 1)
-        );  /* ok to skip set_bknown() */
+        cptr.stI32o(obj, $obj_oeroded, cptr.stI32o(obj, $obj_oeroded2, 0));
+        cptr.stI32o(obj, $obj_oerodeproof, 1);
+        cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1));  /* ok to skip set_bknown() */
         if (cptr.ld1so(obj, $obj_spe) < 1)
             cptr.st1o(obj, $obj_spe, 1);
         /* acquire skill in this weapon */
@@ -1908,15 +1895,15 @@ function pleased(g_align) {
                     let repair_buf = new Uint8Array(256);
 
                     cptr.st1(cptr.decay(repair_buf), 0);
-                    if (cptr.ldBits(cptr.add(uwep.v, $obj_oeroded), 0, 2, 0) | 0 ||
-                            cptr.ldBits(cptr.add(uwep.v, $obj_oeroded2), 2, 2, 0) | 0)
+                    if ((cptr.ldI32o(uwep.v, $obj_oeroded) & 3) | 0 ||
+                            (cptr.ldI32o(uwep.v, $obj_oeroded2) & 3) | 0)
                         void cptr.sprintf(
                             cptr.decay(repair_buf),
                             __s_and_s_now_as_good_as_new,
                             otense(uwep.v, __s_are)
                         );
 
-                    if (cptr.ldBits(cptr.add(uwep.v, $obj_cursed), 0, 1, 0)) {
+                    if ((cptr.ldI32o(uwep.v, $obj_cursed) & 1)) {
                         if (!Blind()) {
                             pline(
                                 __s_s_s_s,
@@ -1928,9 +1915,9 @@ function pleased(g_align) {
                         } else
                             You_feel(__s_the_power_of_s_over_s, u_gname(), yname(uwep.v));
                         uncurse(uwep.v);
-                        cptr.stBits(cptr.add(uwep.v, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
+                        cptr.stI32o(uwep.v, $obj_bknown, 1);  /* ok to bypass set_bknown() */
                         cptr.st1(cptr.decay(repair_buf), 0);
-                    } else if (!cptr.ldBits(cptr.add(uwep.v, $obj_blessed), 1, 1, 0)) {
+                    } else if (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1)) {
                         if (!Blind()) {
                             pline(
                                 __s_s_with_s_aura_s,
@@ -1942,21 +1929,15 @@ function pleased(g_align) {
                         } else
                             You_feel(__s_the_blessing_of_s_over_s, u_gname(), yname(uwep.v));
                         bless(uwep.v);
-                        cptr.stBits(cptr.add(uwep.v, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
+                        cptr.stI32o(uwep.v, $obj_bknown, 1);  /* ok to bypass set_bknown() */
                         cptr.st1(cptr.decay(repair_buf), 0);
                     }
 
                     /* fix any rust/burn/rot damage, but don't protect
                        against future damage */
-                    if (cptr.ldBits(cptr.add(uwep.v, $obj_oeroded), 0, 2, 0) | 0 ||
-                            cptr.ldBits(cptr.add(uwep.v, $obj_oeroded2), 2, 2, 0) | 0) {
-                        cptr.stBits(
-                            cptr.add(uwep.v, $obj_oeroded),
-                            0,
-                            2,
-                            0,
-                            cptr.stBits(cptr.add(uwep.v, $obj_oeroded2), 2, 2, 0, 0)
-                        );
+                    if ((cptr.ldI32o(uwep.v, $obj_oeroded) & 3) | 0 ||
+                            (cptr.ldI32o(uwep.v, $obj_oeroded2) & 3) | 0) {
+                        cptr.stI32o(uwep.v, $obj_oeroded, cptr.stI32o(uwep.v, $obj_oeroded2, 0));
                         /* only give this message if we didn't just bless
                            or uncurse (which has already given a message) */
                         if (cptr.ld1s(cptr.decay(repair_buf)))
@@ -2073,7 +2054,7 @@ function pleased(g_align) {
                         );
                     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
                         nextobj = cptr.ldPtr(otmp);
-                        if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0 &&
+                        if ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 &&
                                 (!cptr.eq(otmp, uarmh.v) ||
                                     cptr.ldI16o(uarmh.v, $obj_otyp) !=
                                         NHC.HELM_OF_OPPOSITE_ALIGNMENT)) {
@@ -2084,7 +2065,7 @@ function pleased(g_align) {
                                     hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber))
                                 );
                                 cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OBJ_GLOWS);
-                                cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
+                                cptr.stI32o(otmp, $obj_bknown, 1);  /* ok to bypass set_bknown() */
                                 ++any;
                             }
                             uncurse(otmp);
@@ -2253,11 +2234,11 @@ function water_prayer(bless_water) {
         /* turn water into (un)holy water */
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_WATER &&
                 (bless_water
-                    ? !cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0)
-                    : !cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))) {
-            cptr.stBits(cptr.add(otmp, $obj_blessed), 1, 1, 0, bless_water);
-            cptr.stBits(cptr.add(otmp, $obj_cursed), 0, 1, 0, (!bless_water) >>> 0);
-            cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, bc_known);  /* ok to bypass set_bknown() */
+                    ? !(cptr.ldI32o(otmp, $obj_blessed) & 1)
+                    : !(cptr.ldI32o(otmp, $obj_cursed) & 1))) {
+            cptr.stI32o(otmp, $obj_blessed, bless_water);
+            cptr.stI32o(otmp, $obj_cursed, (!bless_water) >>> 0);
+            cptr.stI32o(otmp, $obj_bknown, bc_known);  /* ok to bypass set_bknown() */
             changed += cptr.ldI64o(otmp, $obj_quan);
         } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS)
             other = 1;
@@ -2478,15 +2459,15 @@ function offer_negative_valued(highaltar, altaralign) {
  * @param {CInt} altaralign
  */
 function offer_fake_amulet(otmp, highaltar, altaralign) {
-    if (!highaltar && !cptr.ldBits(cptr.add(otmp, $obj_known), 0, 1, 0)) {
+    if (!highaltar && !(cptr.ldI32o(otmp, $obj_known) & 1)) {
         offer_too_soon(altaralign);
         return;
     }
     ;
     You_hear(__s_a_nearby_thunderclap);
-    if (!cptr.ldBits(cptr.add(otmp, $obj_known), 0, 1, 0)) {
+    if (!(cptr.ldI32o(otmp, $obj_known) & 1)) {
         You(__s_realize_you_have_made_a_s, Hallucination() ? __s_boo_boo : __s_mistake);
-        cptr.stBits(cptr.add(otmp, $obj_known), 0, 1, 0, 1);
+        cptr.stI32o(otmp, $obj_known, 1);
         change_luck(-1);
     } else {
         /* don't you dare try to fool the gods */
@@ -2710,7 +2691,7 @@ function sacrifice_your_race(otmp, highaltar, altaralign) {
             You(__s_have_summoned_s, cptr.decay(dbuf));
             if (sgn(cptr.ld1so(u, $you_ualign)) ==
                     sgn(cptr.ld1so(cptr.ldPtro(dmon, $monst_data), $permonst_maligntyp)))
-                cptr.stBits(cptr.add(dmon, $monst_mpeaceful), 1, 1, 0, 1);
+                cptr.stI32o(dmon, $monst_mpeaceful, 1);
             You(__s_are_terrified_and_unable_to_move);
             nomul(-3);
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_being_terrified_of_a_demon);
@@ -2811,9 +2792,9 @@ function bestow_artifact(max_giftvalue) {
             artifact_origin(otmp, 264);
             if (cptr.ld1so(otmp, $obj_spe) < 0)
                 cptr.st1o(otmp, $obj_spe, 0);
-            if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
+            if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
                 uncurse(otmp);
-            cptr.stBits(cptr.add(otmp, $obj_oerodeproof), 4, 1, 0, 1);
+            cptr.stI32o(otmp, $obj_oerodeproof, 1);
             void cptr.strcpy(
                 cptr.decay(buf),
                 (Hallucination() ? __s_a_doodad : (Blind() ? __s_an_object : ansimpleoname(otmp)))
@@ -3381,15 +3362,10 @@ function pray_revive() {
                     (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)),
                     $monst_mtame
                 ) &&
-                !cptr.ldBits(
-                    cptr.add(
-                        (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)),
-                        $monst_isminion
-                    ),
-                    5,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o(
+                    (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)),
+                    $monst_isminion
+                ) & 1))
             break;
 
     if (!otmp)
@@ -3614,19 +3590,19 @@ function maybe_turn_mon_iter(mtmp) {
                 turn_undead_range)
         return;
 
-    if (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) &&
+    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) &&
             (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) ||
                 is_vampshifter(mtmp) ||
                 (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 256n) !=
                     0n) &&
                     (cptr.ldI32o(u, $you_ulevel) > 15)))) {
-        cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
+        cptr.stI32o(mtmp, $monst_msleeping, 0);
         if (HConfusion()) {
             if (!turn_undead_msg_cnt++)
                 pline(__s_unfortunately_your_voice_falters);
-            cptr.stBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0, 0);
-            cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0);
-            cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
+            cptr.stI32o(mtmp, $monst_mflee, 0);
+            cptr.stI32o(mtmp, $monst_mfrozen, 0);
+            cptr.stI32o(mtmp, $monst_mcanmove, 1);
         } else if (!resist(mtmp, 0, 0, NHM.TELL)) {
             let xlev = 6;
 
@@ -3654,7 +3630,7 @@ function maybe_turn_mon_iter(mtmp) {
                 case NHC.S_ZOMBIE:
                     if (cptr.ldI32o(u, $you_ulevel) >= xlev && !resist(mtmp, 0, 0, NHM.NOTELL)) {
                         if (cptr.ld1so(u, $you_ualign) == -1) {
-                            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
+                            cptr.stI32o(mtmp, $monst_mpeaceful, 1);
                             set_malign(mtmp);
                         } else {
                             killed(mtmp);
@@ -4118,10 +4094,15 @@ function blocked_boulder(dx, dy) {
 
     if (dx &&
             dy &&
-            (cptr.ldI32o(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-            ) & 1) | 0)
+            cptr.ldBits(
+                cptr.add(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
+                ),
+                7,
+                1,
+                0
+            ) | 0)
         return 1;
     if (!isok(i16(nx), i16(ny)))
         return 1;

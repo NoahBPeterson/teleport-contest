@@ -1684,14 +1684,14 @@ function knows_object(obj, override_pauper) {
    like all gems except the loadstone and luckstone. */
 /** C ref: u_init.c:586 — @param {CInt} sym */
 function knows_class(sym) {
-    let odummy = cptr.alloc(112);
+    let odummy = cptr.alloc(216);
     let o;
     let ct;
 
     if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper))
         return;
 
-    cptr.memcpy(odummy, cg, 112);
+    cptr.memcpy(odummy, cg, 216);
     cptr.st1o(odummy, $obj_oclass, sym);
     o = odummy;  /* for use in various obj.h macros */
 
@@ -2392,35 +2392,20 @@ function ini_inv_adjust_obj(trop, obj) {
             $sizeof_objclass,
             $objclass_oc_uses_known
         ) & 1))
-            cptr.stBits(cptr.add(obj, $obj_known), 0, 1, 0, 1);
+            cptr.stI32o(obj, $obj_known, 1);
         /* not observe_object during startup, that's handled later */
-        cptr.stBits(
-            cptr.add(obj, $obj_dknown),
-            1,
-            1,
-            0,
-            cptr.stBits(
-                cptr.add(obj, $obj_bknown),
-                2,
-                1,
-                0,
-                cptr.stBits(cptr.add(obj, $obj_rknown), 3, 1, 0, 1)
-            )
+        cptr.stI32o(
+            obj,
+            $obj_dknown,
+            cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1))
         );
         if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
-            cptr.stBits(
-                cptr.add(obj, $obj_cknown),
-                4,
-                1,
-                0,
-                cptr.stBits(cptr.add(obj, $obj_lknown), 5, 1, 0, 1)
-            );
-            cptr.stBits(cptr.add(obj, $obj_otrapped), 7, 1, 0, 0);
+            cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
+            cptr.stI32o(obj, $obj_otrapped, 0);
         }
-        cptr.stBits(cptr.add(obj, $obj_cursed), 0, 1, 0, 0);
-        if (cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0) | 0 &&
-                cptr.ld1so(u, $you_ualign) != -1)
-            cptr.stBits(cptr.add(obj, $obj_otrapped), 7, 1, 0, 0);
+        cptr.stI32o(obj, $obj_cursed, 0);
+        if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && cptr.ld1so(u, $you_ualign) != -1)
+            cptr.stI32o(obj, $obj_otrapped, 0);
         if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS ||
                 cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) {
             cptr.stI64o(obj, $obj_quan, trquan(trop));
@@ -2455,7 +2440,7 @@ function ini_inv_adjust_obj(trop, obj) {
                 cptr.st1o(obj, $obj_spe, schar(rne(3)));
         }
         if (cptr.ld1so(trop, $trobj_trbless) != 2)
-            cptr.stBits(cptr.add(obj, $obj_blessed), 1, 1, 0, cptr.ld1so(trop, $trobj_trbless));
+            cptr.stI32o(obj, $obj_blessed, cptr.ld1so(trop, $trobj_trbless));
 
     }
     /* defined after setting otyp+quan + blessedness */
@@ -2476,7 +2461,7 @@ function ini_inv_use_obj(obj) {
         $sizeof_objdescr,
         $objdescr_oc_descr
     )) &&
-            cptr.ldBits(cptr.add(obj, $obj_known), 0, 1, 0) | 0)
+            (cptr.ldI32o(obj, $obj_known) & 1) | 0)
         discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0);
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP)
         discover_object(NHC.POT_OIL, 1, 1, 0);

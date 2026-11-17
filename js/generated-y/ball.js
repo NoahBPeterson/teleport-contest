@@ -1451,12 +1451,12 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
             ) ==
                 NHC.POOL)) ||
             ((t = t_at(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) &&
-                (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) ||
-                    is_hole((cptr.ldI32o(t, $trap_ttyp) & 31))))) {
+                (is_pit(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0)) ||
+                    is_hole(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0))))) {
         if (Levitation()) {
             (yield* You_feel(__s_a_tug_from_the_iron_ball));
             if (t)
-                cptr.stI32o(t, $trap_tseen, 1);
+                cptr.stBits(cptr.add(t, $trap_tseen), 5, 1, 0, 1);
         } else {
             let victim;
 
@@ -1717,8 +1717,8 @@ export function* drop_ball(x, y) {
                 !cptr.ldI32o(u, $you_utrap) &&
                 (is_pool(x, y) ||
                     ((t = t_at(x, y)) &&
-                        (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) ||
-                            is_hole((cptr.ldI32o(t, $trap_ttyp) & 31)))))) {
+                        (is_pit(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0)) ||
+                            is_hole(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0)))))) {
             cptr.stI16(u, x);
             cptr.stI16o(u, $you_uy, y);
         } else {

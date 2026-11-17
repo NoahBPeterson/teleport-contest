@@ -1946,7 +1946,7 @@ export function* polyself(psflags) {
                 $instance_globals_saved_m_mvitals + $mvitals_mvflags
             ) &
                     NHM.G_GENOD)) {
-                was_lit = cptr.ldBits(cptr.add(uarm.v, $obj_lamplit), 7, 1, 0);
+                was_lit = (cptr.ldI32o(uarm.v, $obj_lamplit) & 1);
                 arm_light = artifact_light(uarm.v) ? arti_light_radius(uarm.v) : 0;
 
                 /* allow G_EXTINCT */
@@ -2813,7 +2813,7 @@ function* break_armor() {
                 cancel_don();
             /* for gold DSM, we don't want Armor_gone() to report that it
                stops shining _after_ we've been told that it is destroyed */
-            if (cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0))
+            if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
                 (yield* end_burn(otmp, 0));
 
             (yield* You(__s_break_out_of_your_armor));
@@ -3018,14 +3018,14 @@ function* drop_weapon(alone) {
             if (cptr.ld1so(u, $you_twoweap)) {
                 otmp = uswapwep.v;
                 (yield* uswapwepgone());
-                if (cptr.ldBits(cptr.add(otmp, $obj_in_use), 2, 1, 0))
+                if ((cptr.ldI32o(otmp, $obj_in_use) & 1))
                     updateinv = 0;
                 else if (candropswapwep)
                     (yield* dropx(otmp));
             }
             otmp = uwep.v;
             (yield* uwepgone());
-            if (cptr.ldBits(cptr.add(otmp, $obj_in_use), 2, 1, 0))
+            if ((cptr.ldI32o(otmp, $obj_in_use) & 1))
                 updateinv = 0;
             else if (candropwep)
                 (yield* dropx(otmp));
@@ -3286,7 +3286,7 @@ export function* dospinweb() {
     }
     (yield* exercise(NHC.A_DEX, 1));
     if (ttmp) {
-        switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
+        switch (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) {
             case NHC.PIT:
             case NHC.SPIKED_PIT:
                 (yield* You(__s_spin_a_web_covering_up_the_pit));
@@ -3312,7 +3312,7 @@ export function* dospinweb() {
             case NHC.TRAPDOOR:
                 (yield* You(
                     __s_web_over_the_s,
-                    (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR)
+                    ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.TRAPDOOR)
                         ? __s_trap_door
                         : __s_hole
                 ));
@@ -3339,7 +3339,10 @@ export function* dospinweb() {
                 (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
                 return NHM.ECMD_TIME;
             default:
-                (yield* impossible(__s_webbing_over_trap_type_d, (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0));
+                (yield* impossible(
+                    __s_webbing_over_trap_type_d,
+                    cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0
+                ));
                 return NHM.ECMD_OK;
         }
     } else if (On_stairs(x, y)) {
@@ -3363,7 +3366,7 @@ export function* dospinweb() {
     ttmp = (yield* maketrap(x, y, NHC.WEB));
     if (ttmp) {
         (yield* You(__s_spin_a_web__2));
-        cptr.stI32o(ttmp, $trap_madeby_u, 1);
+        cptr.stBits(cptr.add(ttmp, $trap_madeby_u), 7, 1, 0, 1);
         (yield* feeltrap(ttmp));
         if (cptr.ld1s((yield* in_rooms(x, y, NHC.SHOPBASE))))
             (yield* add_damage(x, y, 30n));
@@ -3461,8 +3464,7 @@ export function* dogaze() {
                         16777216n) !=
                         0n)) {
                 (yield* pline(__s_s_seems_not_to_notice_your_gaze, (yield* Monnam(mtmp))));
-            } else if (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) | 0 &&
-                    !See_invisible()) {
+            } else if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !See_invisible()) {
                 (yield* You_cant(__s_see_where_to_gaze_at_s, (yield* Monnam(mtmp))));
             } else if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ==
                 NHC.M_AP_FURNITURE ||
@@ -3475,7 +3477,7 @@ export function* dogaze() {
                 (yield* You(__s_avoid_gazing_at_s, (yield* y_monnam(mtmp))));
             } else {
                 if (cptr.ld1so(flags, $flag_confirm) &&
-                        cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 &&
+                        (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 &&
                         !HConfusion()) {
                     void cptr.sprintf(
                         cptr.decay(qbuf),
@@ -3488,8 +3490,8 @@ export function* dogaze() {
                 }
                 (yield* setmangry(mtmp, 1));
                 if (helpless(mtmp) ||
-                        cptr.ldBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0) | 0 ||
-                        !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0) ||
+                        (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0 ||
+                        !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) ||
                         !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
                             4096n) ==
                             0n)) {
@@ -3500,11 +3502,11 @@ export function* dogaze() {
                  * gazes at *you*--only medusa gaze gets reflected then.
                  */
                 if (adtyp == NHM.AD_CONF) {
-                    if (!cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0))
+                    if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1))
                         (yield* Your(__s_gaze_confuses_s, (yield* mon_nam(mtmp))));
                     else
                         (yield* pline(__s_s_is_getting_more_and_more_confused, (yield* Monnam(mtmp))));
-                    cptr.stBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0, 1);
+                    cptr.stI32o(mtmp, $monst_mconf, 1);
                 } else if (adtyp == NHM.AD_FIRE) {
                     let dmg = d(2, 6);
                     let orig_dmg = dmg;
@@ -3534,7 +3536,7 @@ export function* dogaze() {
                     cptr.ldPtro(mtmp, $monst_data),
                     cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)
                 ) &&
-                        !cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0)) {
+                        !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
                     if (!Free_action()) {
                         (yield* You(__s_are_frozen_by_s_gaze, (yield* s_suffix((yield* mon_nam(mtmp))))));
                         nomul((cptr.ldI32o(u, $you_ulevel) > 6 || rn2(4))
@@ -3567,7 +3569,7 @@ export function* dogaze() {
                     cptr.ldPtro(mtmp, $monst_data),
                     cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)
                 ) &&
-                        !cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0)) {
+                        !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
                     (yield* pline(__s_gazing_at_the_awake_s_is_not_a_very, (yield* l_monnam(mtmp))));
                     /* as if gazing at a sleeping anything is fruitful... */
                     (yield* urgent_pline(__s_you_turn_to_stone__2));
@@ -3847,12 +3849,12 @@ export function* domindblast() {
             cptr.ldI16o(u, $you_uy)
         ) > 64)
             continue;
-        if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
+        if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             continue;
         if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n))
             continue;
         u_sen = telepathic(cptr.ldPtro(mtmp, $monst_data)) &&
-            !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0)
+            !(cptr.ldI32o(mtmp, $monst_mcansee) & 1)
                 ? 1
                 : 0;
         if (u_sen || (telepathic(cptr.ldPtro(mtmp, $monst_data)) && rn2(2)) || !rn2(10)) {

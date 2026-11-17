@@ -807,7 +807,7 @@ function m_to_e(mtmp, x, y, etmp) {
     if (mtmp) {
         cptr.stI32o(etmp, $entity_ex, x);
         cptr.stI32o(etmp, $entity_ey, y);
-        if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0) | 0 &&
+        if ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 &&
                 (x != cptr.ldI16o(mtmp, $monst_mx) || y != cptr.ldI16o(mtmp, $monst_my)))
             cptr.stPtro(
                 etmp,
@@ -1143,19 +1143,19 @@ function e_jumps(etmp) {
                 : 0)
             : (helpless(cptr.ldPtr(etmp)) ||
                 !cptr.ld1so(cptr.ldPtro(etmp, $entity_edata), $permonst_mmove) ||
-                cptr.ldBits(cptr.add(cptr.ldPtr(etmp), $monst_wormno), 1, 5, 0) | 0
+                (cptr.ldI32o(cptr.ldPtr(etmp), $monst_wormno) & 31) | 0
                 ? 1
                 : 0))
         return 0;
 
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))
             ? HConfusion()
-            : BigInt(cptr.ldBits(cptr.add(cptr.ldPtr(etmp), $monst_mconf), 0, 1, 0) >>> 0))
+            : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), $monst_mconf) & 1) >>> 0))
         tmp = (tmp - 2) | 0;
 
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))
             ? HStun()
-            : BigInt(cptr.ldBits(cptr.add(cptr.ldPtr(etmp), $monst_mstun), 7, 1, 0) >>> 0))
+            : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), $monst_mstun) & 1) >>> 0))
         tmp = (tmp - 3) | 0;
 
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))

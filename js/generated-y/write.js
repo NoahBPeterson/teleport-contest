@@ -218,7 +218,7 @@ export function* dowrite(pen) {
                     ? __s_spellbook
                     : __s_scroll);
         if (Blind()) {
-            if (!cptr.ldBits(cptr.add(paper, $obj_dknown), 1, 1, 0)) {
+            if (!(cptr.ldI32o(paper, $obj_dknown) & 1)) {
                 (yield* You(__s_don_t_know_whether_that_s_is_blank_or, typeword));
                 return NHM.ECMD_OK;
             } else if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
@@ -393,13 +393,10 @@ export function* dowrite(pen) {
         (yield* livelog_printf(32n, __s_became_literate_by_writing_s, (yield* an(typeword))));
 
     new_obj = (yield* mksobj(i, 0, 0));
-    cptr.stBits(
-        cptr.add(new_obj, $obj_bknown),
-        2,
-        1,
-        0,
-        (cptr.ldBits(cptr.add(paper, $obj_bknown), 2, 1, 0) | 0 &&
-            cptr.ldBits(cptr.add(pen, $obj_bknown), 2, 1, 0) | 0
+    cptr.stI32o(
+        new_obj,
+        $obj_bknown,
+        ((cptr.ldI32o(paper, $obj_bknown) & 1) | 0 && (cptr.ldI32o(pen, $obj_bknown) & 1) | 0
             ? 1
             : 0) >>> 0
     );
@@ -544,8 +541,8 @@ export function* dowrite(pen) {
             (yield* new_book_description(cptr.ldI16o(new_obj, $obj_otyp), cptr.decay(namebuf)))
         ));
     }
-    cptr.stBits(cptr.add(new_obj, $obj_blessed), 1, 1, 0, (curseval > 0) >>> 0);
-    cptr.stBits(cptr.add(new_obj, $obj_cursed), 0, 1, 0, (curseval < 0) >>> 0);
+    cptr.stI32o(new_obj, $obj_blessed, (curseval > 0) >>> 0);
+    cptr.stI32o(new_obj, $obj_cursed, (curseval < 0) >>> 0);
     if (cptr.ldI16o(new_obj, $obj_otyp) == NHC.SCR_MAIL)
         /* 0: delivered in-game via external event (or randomly for fake mail);
            1: from bones or wishing; 2: written with marker */
@@ -555,7 +552,7 @@ export function* dowrite(pen) {
        the exception is for being lucky writing an undiscovered scroll,
        where the label associated with the type-name isn't known yet;
        but if writing by description, the description is always known */
-    cptr.stBits(cptr.add(new_obj, $obj_dknown), 1, 1, 0, 0);
+    cptr.stI32o(new_obj, $obj_dknown, 0);
     if ((cptr.ldI32o2(
         objects,
         cptr.ldI16o(new_obj, $obj_otyp),

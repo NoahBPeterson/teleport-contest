@@ -945,10 +945,15 @@ export function Slow_digestion() {
 
 /** C: include/rm.h — the `Sokoban` macro body */
 export function Sokoban() {
-    return (cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-    ) & 1);
+    return cptr.ldBits(
+        cptr.add(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
+        ),
+        7,
+        1,
+        0
+    );
 }
 
 /** C: include/youprop.h — the `Stealth` macro body */

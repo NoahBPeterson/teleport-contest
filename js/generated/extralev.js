@@ -1112,7 +1112,7 @@ export function makerogueghost() {
     y = i16(somey(croom));
     if (!(ghost = makemon(cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst), x, y, NHM.NO_MM_FLAGS)))
         return;
-    cptr.stBits(cptr.add(ghost, $monst_msleeping), 7, 1, 0, 1);
+    cptr.stI32o(ghost, $monst_msleeping, 1);
     ghost = christen_monst(ghost, roguename());
     (void (ghost));
 
@@ -1148,19 +1148,19 @@ export function makerogueghost() {
         ghostobj = mksobj_at(NHC.RING_MAIL, x, y, 0, 0);
         cptr.st1o(ghostobj, $obj_spe, schar(rn2(3)));
         if (!rn2(3))
-            cptr.stBits(cptr.add(ghostobj, $obj_oerodeproof), 4, 1, 0, 1);
+            cptr.stI32o(ghostobj, $obj_oerodeproof, 1);
         if (rn2(4))
             curse(ghostobj);
     } else {
         ghostobj = mksobj_at(NHC.PLATE_MAIL, x, y, 0, 0);
         cptr.st1o(ghostobj, $obj_spe, schar(((rnd(5) - 2) | 0)));
         if (!rn2(3))
-            cptr.stBits(cptr.add(ghostobj, $obj_oerodeproof), 4, 1, 0, 1);
+            cptr.stI32o(ghostobj, $obj_oerodeproof, 1);
         if (rn2(4))
             curse(ghostobj);
     }
     if (rn2(2)) {
         ghostobj = mksobj_at(NHC.FAKE_AMULET_OF_YENDOR, x, y, 1, 0);
-        cptr.stBits(cptr.add(ghostobj, $obj_known), 0, 1, 0, 1);
+        cptr.stI32o(ghostobj, $obj_known, 1);
     }
 }

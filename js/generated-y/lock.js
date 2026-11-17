@@ -304,12 +304,10 @@ function lock_action() {
                 NHM.D_LOCKED))
         return cptr.add(cptr.ldPtro(__static_lock_action_actions, 0, 8), 2);  /* "locking the door" */
     else if (cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box) &&
-            !cptr.ldBits(
-                cptr.add(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_olocked),
-                5,
-                1,
-                0
-            ))
+            !(cptr.ldI32o(
+                cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
+                $obj_olocked
+            ) & 1))
         return cptr.ldI16o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_otyp) ==
             NHC.CHEST
                 ? cptr.add(cptr.ldPtro(__static_lock_action_actions, 1, 8), 2)
@@ -394,12 +392,10 @@ function* picklock() {
        state is adequate (non-cursed for rogues, blessed for others;
        checked when setting up 'xlock') */
     if ((!cptr.ldPtro(gx, $instance_globals_x_xlock)
-        ? cptr.ldBits(
-            cptr.add(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_otrapped),
-            7,
-            1,
-            0
-        ) | 0
+        ? (cptr.ldI32o(
+            cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
+            $obj_otrapped
+        ) & 1) | 0
         : (((cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & 31) | 0) &
             NHM.D_TRAPPED) !=
             0) &&
@@ -410,20 +406,12 @@ function* picklock() {
             (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance) + 20) | 0
         );  /* less effort needed next time */
         if (!cptr.ldPtro(gx, $instance_globals_x_xlock)) {
-            if (!cptr.ldBits(
-                cptr.add(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_tknown),
-                6,
-                1,
-                0
-            ))
+            if (!(cptr.ldI32o(
+                cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
+                $obj_tknown
+            ) & 1))
                 (yield* You(__s_find_a_trap));
-            cptr.stBits(
-                cptr.add(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_tknown),
-                6,
-                1,
-                0,
-                1
-            );
+            cptr.stI32o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_tknown, 1);
         }
         if ((yield* yn_function(__s_do_you_want_to_try_to_disarm_it, cptr.decay(ynchars), 110, 1)) == 121) {
             let what;
@@ -445,24 +433,14 @@ function* picklock() {
                     0) &
                         NHM.D_LOCKED)));
             } else {
-                cptr.stBits(
-                    cptr.add(
-                        cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
-                        $obj_otrapped
-                    ),
-                    7,
-                    1,
-                    0,
+                cptr.stI32o(
+                    cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
+                    $obj_otrapped,
                     0
                 );
-                cptr.stBits(
-                    cptr.add(
-                        cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
-                        $obj_tknown
-                    ),
-                    6,
-                    1,
-                    0,
+                cptr.stI32o(
+                    cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
+                    $obj_tknown,
                     0
                 );
                 what = (cptr.ldI16o(
@@ -472,15 +450,10 @@ function* picklock() {
                     NHC.CHEST)
                         ? __s_chest
                         : __s_box;
-                alreadyunlocked = schar((!cptr.ldBits(
-                    cptr.add(
-                        cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
-                        $obj_olocked
-                    ),
-                    5,
-                    1,
-                    0
-                )));
+                alreadyunlocked = schar((!(cptr.ldI32o(
+                    cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
+                    $obj_olocked
+                ) & 1)));
             }
             (yield* You(
                 __s_succeed_in_disarming_the_trap_the_s_is,
@@ -525,31 +498,20 @@ function* picklock() {
         else
             cptr.stI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags, NHM.D_LOCKED);
     } else {
-        cptr.stBits(
-            cptr.add(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_olocked),
-            5,
-            1,
-            0,
-            (!cptr.ldBits(
-                cptr.add(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_olocked),
-                5,
-                1,
-                0
-            )) >>> 0
+        cptr.stI32o(
+            cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
+            $obj_olocked,
+            (!(cptr.ldI32o(
+                cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
+                $obj_olocked
+            ) &
+                1)) >>> 0
         );
-        cptr.stBits(
-            cptr.add(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_lknown),
-            5,
-            1,
-            0,
-            1
-        );
-        if (cptr.ldBits(
-            cptr.add(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_otrapped),
-            7,
-            1,
-            0
-        ))
+        cptr.stI32o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_lknown, 1);
+        if ((cptr.ldI32o(
+            cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
+            $obj_otrapped
+        ) & 1))
             void (yield* chest_trap(
                 cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
                 NHC.FINGER,
@@ -568,9 +530,9 @@ export function* breakchestlock(box, destroyit) {
         cptr.stPtro(box, $obj_cobj, null);
         (yield* costly_alteration(box, NHC.COST_BRKLCK));
         cptr.stPtro(box, $obj_cobj, hide_contents);
-        cptr.stBits(cptr.add(box, $obj_olocked), 5, 1, 0, 0);
-        cptr.stBits(cptr.add(box, $obj_obroken), 6, 1, 0, 1);
-        cptr.stBits(cptr.add(box, $obj_lknown), 5, 1, 0, 1);
+        cptr.stI32o(box, $obj_olocked, 0);
+        cptr.stI32o(box, $obj_obroken, 1);
+        cptr.stI32o(box, $obj_lknown, 1);
     } else {
         let otmp;
         let shkp = (cptr.ld1so(u, $you_ushops) &&
@@ -578,8 +540,7 @@ export function* breakchestlock(box, destroyit) {
                 ? (yield* shop_keeper(cptr.ld1so(u, $you_ushops)))
                 : null;
         let costly = schar((shkp !== null));
-        let peaceful_shk = schar((costly &&
-            schar(cptr.ldBits(cptr.add(shkp, $monst_mpeaceful), 1, 1, 0))
+        let peaceful_shk = schar((costly && schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1))
                 ? 1
                 : 0));
         let loss = 0n;
@@ -667,7 +628,7 @@ function* forcelock() {
     if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) {
         if (rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0) >
             ((992 - Math.imul(greatest_erosion(uwep.v), 10)) | 0) &&
-                !cptr.ldBits(cptr.add(uwep.v, $obj_cursed), 0, 1, 0) &&
+                !(cptr.ldI32o(uwep.v, $obj_cursed) & 1) &&
                 !obj_resists(uwep.v, 0, 99)) {
             /* for a +0 weapon, probability that it survives an unsuccessful
              * attempt to force the lock is (.992)^50 = .67
@@ -825,7 +786,7 @@ const __static_pick_lock_no_longer = cptr.bytes("Unfortunately, you can no longe
  * @returns {CInt}
  */
 export function* pick_lock(pick, rx, ry, container) {
-    let dummypick = cptr.alloc(112);
+    let dummypick = cptr.alloc(216);
     let picktyp;
     let c;
     let ch;
@@ -837,7 +798,7 @@ export function* pick_lock(pick, rx, ry, container) {
 
     /* 'pick' might be Null [called by do_loot_cont() for AUTOUNLOCK_UNTRAP] */
     if (!pick) {
-        cptr.memcpy(dummypick, cg, 112);
+        cptr.memcpy(dummypick, cg, 216);
         pick = dummypick;  /* pick->otyp will be STRANGE_OBJECT */
     }
     picktyp = cptr.ldI16o(pick, $obj_otyp);
@@ -961,9 +922,9 @@ export function* pick_lock(pick, rx, ry, container) {
                     return -1;
                 }
                 it = 0;
-                if (cptr.ldBits(cptr.add(otmp, $obj_obroken), 6, 1, 0))
+                if ((cptr.ldI32o(otmp, $obj_obroken) & 1))
                     verb = __s_fix;
-                else if (!cptr.ldBits(cptr.add(otmp, $obj_olocked), 5, 1, 0))
+                else if (!(cptr.ldI32o(otmp, $obj_olocked) & 1))
                     verb = __s_lock, it = 1;
                 else if (picktyp != NHC.LOCK_PICK)
                     verb = __s_unlock, it = 1;
@@ -974,8 +935,8 @@ export function* pick_lock(pick, rx, ry, container) {
                         ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0) !=
                             0 &&
                         (yield* could_untrap(0, 1)) &&
-                        (c = cptr.ldBits(cptr.add(otmp, $obj_tknown), 6, 1, 0) | 0
-                            ? (cptr.ldBits(cptr.add(otmp, $obj_otrapped), 7, 1, 0) | 0 ? 121 : 110)
+                        (c = (cptr.ldI32o(otmp, $obj_tknown) & 1) | 0
+                            ? ((cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0 ? 121 : 110)
                             : (yield* yn_function(
                                 (yield* safe_qbuf(
                                     cptr.decay(qbuf),
@@ -1023,7 +984,7 @@ export function* pick_lock(pick, rx, ry, container) {
                         ansimpleoname,
                         __s_a_box
                     ));
-                    cptr.stBits(cptr.add(otmp, $obj_lknown), 5, 1, 0, 1);
+                    cptr.stI32o(otmp, $obj_lknown, 1);
 
                     c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1));
                     if (c == 113)
@@ -1032,11 +993,10 @@ export function* pick_lock(pick, rx, ry, container) {
                         continue;  /* try next box */
                 }
 
-                if (cptr.ldBits(cptr.add(otmp, $obj_obroken), 6, 1, 0)) {
+                if ((cptr.ldI32o(otmp, $obj_obroken) & 1)) {
                     (yield* You_cant(__s_fix_its_broken_lock_with_s, (yield* ansimpleoname(pick))));
                     return -1;
-                } else if (picktyp == NHC.CREDIT_CARD &&
-                        !cptr.ldBits(cptr.add(otmp, $obj_olocked), 5, 1, 0)) {
+                } else if (picktyp == NHC.CREDIT_CARD && !(cptr.ldI32o(otmp, $obj_olocked) & 1)) {
                     /* credit cards are only good for unlocking */
                     (yield* You_cant(__s_do_that_with_s, (yield* an((yield* simple_typename(picktyp))))));
                     return -1;
@@ -1068,7 +1028,7 @@ export function* pick_lock(pick, rx, ry, container) {
                     default:
                         ch = 0;
                 }
-                if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
+                if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
                     ch = (ch / 2) | 0;
 
                 cptr.stPtro(gx, $instance_globals_x_xlock + $xlock_s_box, otmp);
@@ -1115,7 +1075,7 @@ export function* pick_lock(pick, rx, ry, container) {
                 (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_FURNITURE &&
                 (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_OBJECT) {
             if (picktyp == NHC.CREDIT_CARD &&
-                    (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 ||
+                    ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 ||
                         cptr.eq(
                             cptr.ldPtro(mtmp, $monst_data),
                             cptr.add(mons, NHC.PM_ORACLE, $sizeof_permonst)
@@ -1337,21 +1297,19 @@ export function* doforce() {
         otmp = cptr.ldPtro(otmp, $obj_v)
     )
         if (Is_box(otmp)) {
-            if (cptr.ldBits(cptr.add(otmp, $obj_obroken), 6, 1, 0) | 0 ||
-                    !cptr.ldBits(cptr.add(otmp, $obj_olocked), 5, 1, 0)) {
+            if ((cptr.ldI32o(otmp, $obj_obroken) & 1) | 0 ||
+                    !(cptr.ldI32o(otmp, $obj_olocked) & 1)) {
                 /* force doname() to omit known "broken" or "unlocked"
                    prefix so that the message isn't worded redundantly;
                    since we're about to set lknown, there's no need to
                    remember and then reset its current value */
-                cptr.stBits(cptr.add(otmp, $obj_lknown), 5, 1, 0, 0);
+                cptr.stI32o(otmp, $obj_lknown, 0);
                 (yield* There(
                     __s_is_s_here_but_its_lock_is_already_s,
                     (yield* doname(otmp)),
-                    cptr.ldBits(cptr.add(otmp, $obj_obroken), 6, 1, 0) | 0
-                        ? __s_broken
-                        : __s_unlocked
+                    (cptr.ldI32o(otmp, $obj_obroken) & 1) | 0 ? __s_broken : __s_unlocked
                 ));
-                cptr.stBits(cptr.add(otmp, $obj_lknown), 5, 1, 0, 1);
+                cptr.stI32o(otmp, $obj_lknown, 1);
                 continue;
             }
             void (yield* safe_qbuf(
@@ -1363,7 +1321,7 @@ export function* doforce() {
                 ansimpleoname,
                 __s_a_box
             ));
-            cptr.stBits(cptr.add(otmp, $obj_lknown), 5, 1, 0, 1);
+            cptr.stI32o(otmp, $obj_lknown, 1);
 
             c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1));
             if (c == 113)
@@ -1769,31 +1727,31 @@ export function* boxlock(obj, otmp) {
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.WAN_LOCKING:
         case NHC.SPE_WIZARD_LOCK:
-            if (!cptr.ldBits(cptr.add(obj, $obj_olocked), 5, 1, 0)) {
+            if (!(cptr.ldI32o(obj, $obj_olocked) & 1)) {
                 ;
                 (yield* pline(__s_klunk));
-                cptr.stBits(cptr.add(obj, $obj_olocked), 5, 1, 0, 1);
-                cptr.stBits(cptr.add(obj, $obj_obroken), 6, 1, 0, 0);
+                cptr.stI32o(obj, $obj_olocked, 1);
+                cptr.stI32o(obj, $obj_obroken, 0);
                 if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
-                    cptr.stBits(cptr.add(obj, $obj_lknown), 5, 1, 0, 1);
+                    cptr.stI32o(obj, $obj_lknown, 1);
                 else
-                    cptr.stBits(cptr.add(obj, $obj_lknown), 5, 1, 0, 0);
+                    cptr.stI32o(obj, $obj_lknown, 0);
                 res = 1;
             }  /* else already closed and locked */
             break;
         case NHC.WAN_OPENING:
         case NHC.SPE_KNOCK:
-            if (cptr.ldBits(cptr.add(obj, $obj_olocked), 5, 1, 0)) {
+            if ((cptr.ldI32o(obj, $obj_olocked) & 1)) {
                 ;
                 (yield* pline(__s_klick));
-                cptr.stBits(cptr.add(obj, $obj_olocked), 5, 1, 0, 0);
+                cptr.stI32o(obj, $obj_olocked, 0);
                 res = 1;
                 if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
-                    cptr.stBits(cptr.add(obj, $obj_lknown), 5, 1, 0, 1);
+                    cptr.stI32o(obj, $obj_lknown, 1);
                 else
-                    cptr.stBits(cptr.add(obj, $obj_lknown), 5, 1, 0, 0);
+                    cptr.stI32o(obj, $obj_lknown, 0);
             } else
-                cptr.stBits(cptr.add(obj, $obj_obroken), 6, 1, 0, 0);
+                cptr.stI32o(obj, $obj_obroken, 0);
             break;
         case NHC.WAN_POLYMORPH:
         case NHC.SPE_POLYMORPH:
@@ -1827,7 +1785,7 @@ export function* doorlock(otmp, x, y) {
     let dustcloud = __s_a_cloud_of_dust;
     let quickly_dissipates = __s_quickly_dissipates;
     let mysterywand = schar((cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS &&
-        !cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0)
+        !(cptr.ldI32o(otmp, $obj_dknown) & 1)
             ? 1
             : 0));
 

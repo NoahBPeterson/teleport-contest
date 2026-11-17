@@ -755,7 +755,7 @@ function next_shkp(shkp, withbill) {
     for (; shkp; shkp = cptr.ldPtr(shkp)) {
         if ((cptr.ldI32o((shkp), $monst_mhp) < 1))
             continue;
-        if (cptr.ldBits(cptr.add(shkp, $monst_isshk), 4, 1, 0) | 0 &&
+        if ((cptr.ldI32o(shkp, $monst_isshk) & 1) | 0 &&
                 (cptr.ldI32o(
                     (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
                     $eshk_billct
@@ -765,7 +765,7 @@ function next_shkp(shkp, withbill) {
     }
 
     if (shkp) {
-        if ((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)))) {
+        if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
             if (!cptr.ld1so(
                 (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
                 $eshk_surcharge
@@ -796,9 +796,14 @@ export function shkgone(mtmp) {
         discard_damage_owned_by(mtmp);
         cptr.stPtro(sroom, $mkroom_resident, null);
         if (!search_special(-2))
-            cptr.stI32o(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop,
+            cptr.stBits(
+                cptr.add(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
+                ),
+                0,
+                1,
+                0,
                 0
             );
 
@@ -817,7 +822,7 @@ export function shkgone(mtmp) {
                     otmp;
                     otmp = cptr.ldPtro(otmp, $obj_v)
                 )
-                    cptr.stBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0, 0);
+                    cptr.stI32o(otmp, $obj_no_charge, 0);
 
         /* Make sure bill is set only when the
            dead shk is the resident shk. */
@@ -900,7 +905,7 @@ export function restshk(shkp, ghostly) {
         /* savebones guarantees that non-homed shk's will be gone */
         if (ghostly) {
             assign_level(cptr.add(eshkp, $eshk_shoplevel), cptr.add(u, $you_uz));
-            if ((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0))) &&
+            if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) &&
                     strncmpi(cptr.add(eshkp, $eshk_customer), svp, NHM.PL_NSIZ))
                 pacify_shk(shkp, 1);
         }
@@ -913,7 +918,7 @@ function clear_unpaid_obj(shkp, otmp) {
     if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
         clear_unpaid(shkp, cptr.ldPtro(otmp, $obj_cobj));
     if (onbill(otmp, shkp, 1))
-        cptr.stBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0, 0);
+        cptr.stI32o(otmp, $obj_unpaid, 0);
 }
 
 /* clear the unpaid bit on all of the objects in the list */
@@ -930,7 +935,7 @@ function clear_unpaid(shkp, list) {
 function clear_no_charge_obj(shkp, otmp) {
     if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
         clear_no_charge(shkp, cptr.ldPtro(otmp, $obj_cobj));
-    if (cptr.ldBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_no_charge) & 1)) {
         let rm_shkp;
         let rno;
         let x = cptr.box(0);
@@ -984,7 +989,7 @@ function clear_no_charge_obj(shkp, otmp) {
                 )) ===
                     null ||
                 cptr.eq(rm_shkp, shkp))
-            cptr.stBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0, 0);
+            cptr.stI32o(otmp, $obj_no_charge, 0);
     }
 }
 
@@ -1676,7 +1681,7 @@ export function u_entered_shop(enterstring) {
         $mkroom_rtype
     );
 
-    if ((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)))) {
+    if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
         if (!Deaf() &&
                 !(helpless(shkp) ||
                     cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <=
@@ -1839,7 +1844,7 @@ let __static_pick_pick_pickmovetime = 0n; /** C ref: shk.c:929 — long (functio
 export function pick_pick(obj) {
     let shkp;
 
-    if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0 || !is_pick(obj))
+    if ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 || !is_pick(obj))
         return;
     shkp = shop_keeper(cptr.ld1so(u, $you_ushops));
     if (shkp && inhishop(shkp)) {
@@ -2015,7 +2020,7 @@ export function shop_keeper(rmno) {
             : null;
     if (shkp) {
         if (has_eshk(shkp)) {
-            if ((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)))) {
+            if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
                 if (!cptr.ld1so(
                     (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
                     $eshk_surcharge
@@ -2026,7 +2031,7 @@ export function shop_keeper(rmno) {
             /* would have segfaulted on ESHK dereference previously */
             impossible(
                 __s_s_rmno_d_rtype_d_mnum_d_s,
-                cptr.ldBits(cptr.add(shkp, $monst_isshk), 4, 1, 0) | 0
+                (cptr.ldI32o(shkp, $monst_isshk) & 1) | 0
                     ? __s_shopkeeper_career_change
                     : __s_shop_resident_not_shopkeeper,
                 rmno,
@@ -2129,13 +2134,13 @@ function onbill(obj, shkp, silent) {
             bp = cptr.add(bp, 1, 24)
         ) {
             if (cptr.ldI32(bp) == cptr.ldI32o(obj, $obj_o_id)) {
-                if (!cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
+                if (!(cptr.ldI32o(obj, $obj_unpaid) & 1))
                     impossible(__s_onbill_paid_obj_on_bill);
                 return bp;
             }
         }
     }
-    if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0 && !silent)
+    if ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 && !silent)
         impossible(__s_onbill_unpaid_obj_s, !shkp ? __s_without_shopkeeper : __s_not_on_shk_s_bill);
     return null;
 }
@@ -2156,7 +2161,7 @@ export function onshopbill(obj, shkp, silent) {
 /* check whether an object or any of its contents belongs to a shop */
 /** C ref: shk.c:1167 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function is_unpaid(obj) {
-    return schar((cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0 ||
+    return schar(((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ||
         ((cptr.ldPtro((obj), $obj_cobj) !== null) && count_unpaid(cptr.ldPtro(obj, $obj_cobj)))
             ? 1
             : 0));
@@ -2194,7 +2199,7 @@ export function obfree(obj, merge) {
         cptr.stI32o(obj, $obj_corpsenm, 0);
 
     shkp = null;
-    if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0)) {
+    if ((cptr.ldI32o(obj, $obj_unpaid) & 1)) {
         /* look for a shopkeeper who owns this object */
         for (
             shkp = next_shkp(
@@ -2220,10 +2225,10 @@ export function obfree(obj, merge) {
     if ((bp = onbill(obj, shkp, 0)) !== null) {
         if (!merge) {
             cptr.st1o(bp, $bill_x_useup, 1);
-            cptr.stBits(cptr.add(obj, $obj_unpaid), 2, 1, 0, 0);  /* only for doinvbill */
+            cptr.stI32o(obj, $obj_unpaid, 0);  /* only for doinvbill */
             /* for used up glob, put back original weight in case it gets
                formatted ('I x' or itemized billing) with 'wizweight' On */
-            if (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0) | 0 &&
+            if ((cptr.ldI32o(obj, $obj_globby) & 1) | 0 &&
                     !cptr.ldI32o(obj, $obj_owt) &&
                     has_omid(obj))
                 cptr.stI32o(
@@ -2244,11 +2249,11 @@ export function obfree(obj, merge) {
                 cptr.ldI16o(obj, $obj_otyp),
                 cptr.ld1so(obj, $obj_where),
                 cptr.ldI64o(obj, $obj_quan),
-                cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0 ? 1 : 0,
+                (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? 1 : 0,
                 cptr.ldI16o(merge, $obj_otyp),
                 cptr.ld1so(merge, $obj_where),
                 cptr.ldI64o(merge, $obj_quan),
-                cptr.ldBits(cptr.add(merge, $obj_unpaid), 2, 1, 0) | 0 ? 1 : 0
+                (cptr.ldI32o(merge, $obj_unpaid) & 1) | 0 ? 1 : 0
             );
             return;
         } else {
@@ -2366,7 +2371,13 @@ function home_shk(shkp, killkops) {
     );
 
     void mnearto(shkp, x, y, 1, NHM.RLOC_NOMSG);
-    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop, 1);
+    cptr.stBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
+        0,
+        1,
+        0,
+        1
+    );
     if (killkops) {
         kops_gone(1);
         pacify_guards();
@@ -2383,7 +2394,7 @@ function angry_shk_exists() {
         shkp;
         shkp = next_shkp(cptr.ldPtr(shkp), 0)
     )
-        if ((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0))))
+        if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))))
             return 1;
     return 0;
 }
@@ -2391,7 +2402,7 @@ function angry_shk_exists() {
 /* remove previously applied surcharge from all billed items */
 /** C ref: shk.c:1344 — @param {CPtr<struct monst>} shkp @param {CInt} clear_surcharge */
 function pacify_shk(shkp, clear_surcharge) {
-    cptr.stBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0, 1);  /* make peaceful */
+    cptr.stI32o((shkp), $monst_mpeaceful, 1);  /* make peaceful */
     if (clear_surcharge &&
             cptr.ld1so(
                 (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
@@ -2422,7 +2433,7 @@ function pacify_shk(shkp, clear_surcharge) {
 /* add aggravation surcharge to all billed items */
 /** C ref: shk.c:1362 — @param {CPtr<struct monst>} shkp */
 function rile_shk(shkp) {
-    cptr.stBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0, 0);  /* make angry */
+    cptr.stI32o((shkp), $monst_mpeaceful, 0);  /* make angry */
     if (!cptr.ld1so(
         (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
         $eshk_surcharge
@@ -2459,19 +2470,17 @@ function rouse_shk(shkp, verbosely) {
             pline(
                 __s_s_s,
                 Shknam(shkp),
-                cptr.ldBits(cptr.add(shkp, $monst_msleeping), 7, 1, 0) | 0
-                    ? __s_wakes_up
-                    : __s_can_move_again
+                (cptr.ldI32o(shkp, $monst_msleeping) & 1) | 0 ? __s_wakes_up : __s_can_move_again
             );
-        cptr.stBits(cptr.add(shkp, $monst_msleeping), 7, 1, 0, 0);
-        cptr.stBits(cptr.add(shkp, $monst_mfrozen), 0, 7, 0, 0);
-        cptr.stBits(cptr.add(shkp, $monst_mcanmove), 7, 1, 0, 1);
+        cptr.stI32o(shkp, $monst_msleeping, 0);
+        cptr.stI32o(shkp, $monst_mfrozen, 0);
+        cptr.stI32o(shkp, $monst_mcanmove, 1);
     }
 }
 
 /** C ref: shk.c:1395 — @param {CPtr<struct monst>} shkp @param {CInt} silentkops */
 export function make_happy_shk(shkp, silentkops) {
-    let wasmad = schar((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0))));
+    let wasmad = schar((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))));
     let eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
 
     pacify_shk(shkp, 0);
@@ -2530,7 +2539,7 @@ export function make_happy_shoppers(silentkops) {
 
 /** C ref: shk.c:1449 — @param {CPtr<struct monst>} shkp */
 export function hot_pursuit(shkp) {
-    if (!cptr.ldBits(cptr.add(shkp, $monst_isshk), 4, 1, 0))
+    if (!(cptr.ldI32o(shkp, $monst_isshk) & 1))
         return;
 
     rile_shk(shkp);
@@ -2593,9 +2602,7 @@ export function make_angry_shk(shkp, ox, oy) {
     pline(
         __s_s_s__2,
         Shknam(shkp),
-        !(!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)))
-            ? __s_gets_angry
-            : __s_is_furious
+        !(!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ? __s_gets_angry : __s_is_furious
     );
     hot_pursuit(shkp);
 }
@@ -2746,7 +2753,7 @@ function make_itemized_bill(shkp, ibill_p) {
                specific object into ibill[]; find outermost container */
             while (cptr.ld1so(otmp, $obj_where) == NHM.OBJ_CONTAINED) {
                 otmp = cptr.ldPtro(otmp, $obj_v);
-                if (!cptr.ldBits(cptr.add(otmp, $obj_cknown), 4, 1, 0))
+                if (!(cptr.ldI32o(otmp, $obj_cknown) & 1))
                     cknown = 0;
             }
             /* this container might already be in ibill[] if it is unpaid
@@ -2773,7 +2780,7 @@ function make_itemized_bill(shkp, ibill_p) {
             /* include 1 container containing unpaid item(s) */
             quan = 1n;
             cost = unpaid_cost(otmp, NHC.COST_CONTENTS);
-            if (!cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0))
+            if (!(cptr.ldI32o(otmp, $obj_unpaid) & 1))
                 bidx = -1;
             /* an unpaid container without any unpaid contents is classified
                as 'FullyIntact'; a container with unpaid contents will be
@@ -2951,7 +2958,7 @@ export function dopay() {
             sk++;
             if (m_next2u(shkp)) {
                 /* next to an irate shopkeeper? prioritize that */
-                if (nxtm && (!(cptr.ldBits(cptr.add((nxtm), $monst_mpeaceful), 1, 1, 0))))
+                if (nxtm && (!((cptr.ldI32o((nxtm), $monst_mpeaceful) & 1))))
                     continue;
                 nexttosk++;
                 nxtm = shkp;
@@ -3051,7 +3058,7 @@ export function dopay() {
                 There(__s_is_no_one_there_to_receive_your_payment);
                 return NHM.ECMD_OK;
             }
-            if (!cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0)) {
+            if (!(cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
                 pline(__s_s_is_not_interested_in_your_payment, Monnam(mtmp));
                 return NHM.ECMD_OK;
             }
@@ -3085,8 +3092,7 @@ export function dopay() {
         return NHM.ECMD_OK;
     }
 
-    if (!cptr.eq(shkp, resident) &&
-            (cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)) | 0) {
+    if (!cptr.eq(shkp, resident) && ((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)) | 0) {
         umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
         if (!ltmp) {
             You(__s_do_not_owe_s_anything, shkname(shkp));
@@ -3128,7 +3134,7 @@ export function dopay() {
     /* ltmp is still eshkp->robbed here */
     if (!cptr.ldI32o(eshkp, $eshk_billct) && !cptr.ldI64o(eshkp, $eshk_debit)) {
         umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
-        if (!ltmp && (cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)) | 0) {
+        if (!ltmp && ((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)) | 0) {
             You(__s_do_not_owe_s_anything, shkname(shkp));
             if (!umoney)
                 pline(cptr.decay(no_money), stashed_gold ? __s_seem_to__2 : __s_empty);
@@ -3265,7 +3271,7 @@ export function dopay() {
     }
 
     /* {mute shk,deaf hero}-aware thank you message */
-    if (pay_done && !(!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0))) && paid.v) {
+    if (pay_done && !(!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) && paid.v) {
         if (!Deaf() &&
                 !(helpless(shkp) ||
                     cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <=
@@ -3490,7 +3496,7 @@ function update_bill(indx, ibillct, ibill, eshkp, bp, paiditem) {
            from shop bill; if it was used up, remove it from the billobjs
            list and delete it; update shop's bill by moving last bill_p[]
            entry into vacated slot; also update ibill[] indices for that */
-        cptr.stBits(cptr.add(paiditem, $obj_unpaid), 2, 1, 0, 0);  /* clear before maybe deallocating */
+        cptr.stI32o(paiditem, $obj_unpaid, 0);  /* clear before maybe deallocating */
         if (cptr.ld1so(paiditem, $obj_where) == NHM.OBJ_ONBILL) {
             obj_extract_self(paiditem);
             dealloc_obj(paiditem);
@@ -3537,7 +3543,7 @@ function dopayobj(shkp, bp, obj, which, itemize, unseen) {
     let buy;
     let consumed = schar((which == 0));
 
-    if (!cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) &&
+    if (!(cptr.ldI32o(obj, $obj_unpaid) & 1) &&
             !cptr.ld1so(bp, $bill_x_useup) &&
             !((cptr.ldPtro((obj), $obj_cobj) !== null) && unpaid_cost(obj, NHC.COST_CONTENTS))) {
         impossible(__s_paid_object_on_bill);
@@ -3655,7 +3661,7 @@ function buy_container(shkp, indx, ibillct, ibill) {
     let otmp;
     let otop;
     let container = cptr.ldPtro(ibill, indx, $sizeof_Bill);
-    let unpaidcontainer = cptr.ldBits(cptr.add(container, $obj_unpaid), 2, 1, 0);
+    let unpaidcontainer = (cptr.ldI32o(container, $obj_unpaid) & 1);
     let totalcost = cptr.ldI64o2(ibill, indx, $sizeof_Bill, $sortbill_item_cost);
     let sightunseen = schar((cptr.ld1so2(ibill, indx, $sizeof_Bill, $sortbill_item_usedup) ==
         NHC.UndisclosedContainer ||
@@ -3760,21 +3766,9 @@ function buy_container(shkp, indx, ibillct, ibill) {
            "a/an <container> and its contents"; temporarily set
            obj->unpaid to reflect the before-purchase state too */
         if (unpaidcontainer)
-            cptr.stBits(
-                cptr.add(container, $obj_unpaid),
-                2,
-                1,
-                0,
-                cptr.stBits(cptr.add(container, $obj_no_charge), 3, 1, 0, 1)
-            );
+            cptr.stI32o(container, $obj_unpaid, cptr.stI32o(container, $obj_no_charge, 1));
         shk_names_obj(shkp, container, __s_bought_s_for_ld_gold_piece_s_s, totalcost, __s_empty);
-        cptr.stBits(
-            cptr.add(container, $obj_unpaid),
-            2,
-            1,
-            0,
-            cptr.stBits(cptr.add(container, $obj_no_charge), 3, 1, 0, 0)
-        );
+        cptr.stI32o(container, $obj_unpaid, cptr.stI32o(container, $obj_no_charge, 0));
     }
 
     return buycount ? 0 : 2;  /* we don't expect buycount to be 0 */
@@ -3824,9 +3818,7 @@ function reject_purchase(shkp, obj, billed_quan) {
         ;
         verbalize(
             __s_s_for_the_other_s_before_buying_s,
-            (!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)))
-                ? __s_pay
-                : __s_please_pay,
+            (!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ? __s_pay : __s_please_pay,
             simpleonames(obj),
             cptr.decay(which)
         );
@@ -3834,7 +3826,7 @@ function reject_purchase(shkp, obj, billed_quan) {
         pline(
             __s_s_s_s_your_bill_for_the_other_s_first,
             Shknam(shkp),
-            (!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0))) ? __s_angrily : __s_empty,
+            (!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ? __s_angrily : __s_empty,
             ((cptr.ldU64o((cptr.ldPtro(shkp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n)
                 ? __s_motions_to
                 : __s_points_out,
@@ -3947,7 +3939,7 @@ export function paybill(croaked, silently) {
             if (!creditor)
                 creditor = mtmp;
         } else if (cptr.ld1so(eshkp, $eshk_following) ||
-                (!(cptr.ldBits(cptr.add((mtmp), $monst_mpeaceful), 1, 1, 0)))) {
+                (!((cptr.ldI32o((mtmp), $monst_mpeaceful) & 1)))) {
             /* this shopkeeper is antagonistic (others might be too) */
             if (!hostile)
                 hostile = mtmp;
@@ -4015,13 +4007,7 @@ function inherits(shkp, numsk, croaked, silently) {
         /* not strictly consistent; affects messages and prevents next player
            (if bones are saved) from blundering into or being ambushed by an
            invisible shopkeeper */
-        cptr.stBits(
-            cptr.add(shkp, $monst_minvis),
-            1,
-            1,
-            0,
-            cptr.stBits(cptr.add(shkp, $monst_perminvis), 3, 1, 0, 0)
-        );
+        cptr.stI32o(shkp, $monst_minvis, cptr.stI32o(shkp, $monst_perminvis, 0));
 
         /* The simplifying principle is that first-come
            already took everything you had. */
@@ -4072,7 +4058,7 @@ function inherits(shkp, numsk, croaked, silently) {
                 !cptr.ldI32o(eshkp, $eshk_billct) &&
                 !cptr.ldI64o(eshkp, $eshk_robbed) &&
                 !cptr.ldI64o(eshkp, $eshk_debit) &&
-                (cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)) | 0 &&
+                ((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)) | 0 &&
                 !cptr.ld1so(eshkp, $eshk_following) &&
                 cptr.ldI32o(u, $you_ugrave_arise) < NHC.LOW_PM) {
             taken = schar((cptr.ldPtro(gi, $instance_globals_i_invent) !== null));
@@ -4098,7 +4084,7 @@ function inherits(shkp, numsk, croaked, silently) {
         }
 
         if (cptr.ld1so(eshkp, $eshk_following) ||
-                (!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0))) ||
+                (!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ||
                 take) {
             if (!cptr.ldPtro(gi, $instance_globals_i_invent))
                 { __go_skip = true; break __skip_skip; }
@@ -4340,13 +4326,13 @@ export function get_cost_of_shop_item(obj, nochrg) {
         cptr.stI32(
             nochrg,
             (cptr.ld1so(top, $obj_where) == NHM.OBJ_FLOOR &&
-                (cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0) | 0 || freespot)
+                ((cptr.ldI32o(obj, $obj_no_charge) & 1) | 0 || freespot)
                 ? 1
                 : 0)
         );
 
         if ((cptr.ld1so((top), $obj_where) == NHM.OBJ_INVENT)
-                ? cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0
+                ? (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0
                 : !cptr.ldI32(nochrg)) {
             let per_unit_cost = get_cost(obj, shkp);
 
@@ -4362,7 +4348,7 @@ export function get_cost_of_shop_item(obj, nochrg) {
 function get_pricing_units(obj) {
     let units = cptr.ldI64o(obj, $obj_quan);
 
-    if (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0)) {
+    if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
         /* globs must be sold by weight not by volume */
         let unit_weight = BigInt(cptr.ldI32o2(
             objects,
@@ -4387,7 +4373,7 @@ export function oid_price_adjustment(obj, oid) {
     let res = 0;
     let otyp = cptr.ldI16o(obj, $obj_otyp);
 
-    if (!(cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0 &&
+    if (!((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
         (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) &&
             (cptr.ld1so(obj, $obj_oclass) != NHC.GEM_CLASS ||
                 ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) !=
@@ -4420,7 +4406,7 @@ function get_cost(obj, shkp) {
         tmp = 5n;
     /* shopkeeper may notice if the player isn't very knowledgeable -
        especially when gem prices are concerned */
-    if (!cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) ||
+    if (!(cptr.ldI32o(obj, $obj_dknown) & 1) ||
             !(cptr.ldI32o2(
                 objects,
                 cptr.ldI16o(obj, $obj_otyp),
@@ -4591,7 +4577,7 @@ export function contained_cost(obj, shkp, price, usell, unpaid_only) {
 
         if (usell) {
             if (saleable(shkp, otmp) &&
-                    !cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) &&
+                    !(cptr.ldI32o(otmp, $obj_unpaid) & 1) &&
                     cptr.ld1so(otmp, $obj_oclass) != NHC.BALL_CLASS &&
                     !(cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS &&
                         cptr.ldI32o(otmp, $obj_oeaten)) &&
@@ -4613,10 +4599,8 @@ export function contained_cost(obj, shkp, price, usell, unpaid_only) {
                contents of floor containers) inside shop proper;
                items on freespot are implicitly 'no charge' */
             if (on_floor
-                    ? (!cptr.ldBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0) && !freespot ? 1 : 0)
-                    : (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) | 0 || !unpaid_only
-                        ? 1
-                        : 0))
+                    ? (!(cptr.ldI32o(otmp, $obj_no_charge) & 1) && !freespot ? 1 : 0)
+                    : ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 || !unpaid_only ? 1 : 0))
                 price += BigInt.asIntN(64, get_cost(otmp, shkp) * get_pricing_units(otmp));
         }
 
@@ -4643,7 +4627,7 @@ export function contained_gold(obj, even_if_unknown) {
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
             value += cptr.ldI64o(otmp, $obj_quan);
         else if ((cptr.ldPtro((otmp), $obj_cobj) !== null) &&
-                (cptr.ldBits(cptr.add(otmp, $obj_cknown), 4, 1, 0) | 0 || even_if_unknown))
+                ((cptr.ldI32o(otmp, $obj_cknown) & 1) | 0 || even_if_unknown))
             value += contained_gold(otmp, even_if_unknown);
 
     return value;
@@ -4663,8 +4647,8 @@ function dropped_container(obj, shkp, sale) {
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
             continue;
 
-        if (!cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) && !(sale && saleable(shkp, otmp)))
-            cptr.stBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0, 1);
+        if (!(cptr.ldI32o(otmp, $obj_unpaid) & 1) && !(sale && saleable(shkp, otmp)))
+            cptr.stI32o(otmp, $obj_no_charge, 1);
 
         if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
             dropped_container(otmp, shkp, sale);
@@ -4680,8 +4664,8 @@ export function picked_container(obj) {
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
             continue;
 
-        if (cptr.ldBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0))
-            cptr.stBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0, 0);
+        if ((cptr.ldI32o(otmp, $obj_no_charge) & 1))
+            cptr.stI32o(otmp, $obj_no_charge, 0);
 
         if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
             picked_container(otmp);
@@ -4782,7 +4766,7 @@ function set_cost(obj, shkp) {
 
     /* shopkeeper may notice if the player isn't very knowledgeable -
        especially when gem prices are concerned */
-    if (!cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) ||
+    if (!(cptr.ldI32o(obj, $obj_dknown) & 1) ||
             !(cptr.ldI32o2(
                 objects,
                 cptr.ldI16o(obj, $obj_otyp),
@@ -4935,13 +4919,13 @@ export function unpaid_cost(unp_obj, cost_type) {
             }
             if (cost_type == NHC.COST_CONTENTS && (cptr.ldPtro((unp_obj), $obj_cobj) !== null))
                 amt = contained_cost(unp_obj, shkp, amt, 0, 1);
-            if (bp || (!cptr.ldBits(cptr.add(unp_obj, $obj_unpaid), 2, 1, 0) && amt))
+            if (bp || (!(cptr.ldI32o(unp_obj, $obj_unpaid) & 1) && amt))
                 break;
         }
     }
 
     /* onbill() gave no message if unexpected problem occurred */
-    if (!shkp || (cptr.ldBits(cptr.add(unp_obj, $obj_unpaid), 2, 1, 0) | 0 && !bp))
+    if (!shkp || ((cptr.ldI32o(unp_obj, $obj_unpaid) & 1) | 0 && !bp))
         impossible(__s_unpaid_cost_object_wasn_t_on_any_bill);
     return amt;
 }
@@ -4993,7 +4977,7 @@ function add_one_tobill(obj, dummy, shkp) {
     } else
         cptr.st1o(bp, $bill_x_useup, 0);
     cptr.stI64o(bp, $bill_x_price, get_cost(obj, shkp.v));
-    if (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0)) {
+    if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
         /* for globs, the amt charged for quan 1 depends on owt */
         cptr.stI64o(bp, $bill_x_price, cptr.ldI64o(bp, $bill_x_price) * get_pricing_units(obj));
         /* remember the weight this glob had when it was added to bill;
@@ -5002,7 +4986,7 @@ function add_one_tobill(obj, dummy, shkp) {
         cptr.stI32o(cptr.ldPtro((obj), $obj_oextra), $oextra_omid, cptr.ldI32o(obj, $obj_owt));
     }
     (cptr.stI32o(eshkp, $eshk_billct, cptr.ldI32o(eshkp, $eshk_billct) + 1)) - (1);
-    cptr.stBits(cptr.add(obj, $obj_unpaid), 2, 1, 0, 1);
+    cptr.stI32o(obj, $obj_unpaid, 1);
     record_price_quote(
         cptr.ldI16o(obj, $obj_otyp),
         BigInt.asUintN(64, cptr.ldI64o(bp, $bill_x_price)),
@@ -5024,9 +5008,9 @@ function add_to_billobjs(obj) {
     /* if hero drinks a shop-owned potion, it will have been flagged
        in_use by dodrink/dopotion but isn't being used up yet because
        it stays on the bill; only object sanity checking actually cares */
-    cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
+    cptr.stI32o(obj, $obj_in_use, 0);
     /* ... same for bypass by destroy_items */
-    cptr.stBits(cptr.add(obj, $obj_bypass), 3, 1, 0, 0);
+    cptr.stI32o(obj, $obj_bypass, 0);
 }
 
 /* recursive billing of objects within containers. */
@@ -5047,7 +5031,7 @@ function bill_box_content(obj, ininv, dummy, shkp) {
             continue;
 
         /* the "top" box is added in addtobill() */
-        if (!cptr.ldBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0))
+        if (!(cptr.ldI32o(otmp, $obj_no_charge) & 1))
             add_one_tobill(otmp, dummy, shkp);
         if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
             bill_box_content(otmp, ininv, dummy, shkp);
@@ -5066,7 +5050,7 @@ function bill_box_content(obj, ininv, dummy, shkp) {
 function shk_names_obj(shkp, obj, fmt, amt, arg) {
     let obj_name;
     let fmtbuf = new Uint8Array(256);
-    let was_unknown = schar((!cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0)));
+    let was_unknown = schar((!(cptr.ldI32o(obj, $obj_dknown) & 1)));
 
     observe_object(obj);
     /* Use real name for ordinary weapons/armor, and spell-less
@@ -5135,13 +5119,13 @@ export function billable(shkpp, obj, roomno, reset_nocharge) {
         return 0;
     /* outer container might be marked no_charge but still have contents
        which should be charged for; clear no_charge when picking things up */
-    if (cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0)) {
+    if ((cptr.ldI32o(obj, $obj_no_charge) & 1)) {
         if (!(cptr.ldPtro((obj), $obj_cobj) !== null) ||
                 (contained_gold(obj, 1) == 0n &&
                     contained_cost(obj, shkp, 0n, 0, schar((!reset_nocharge))) == 0n))
             shkp = null;  /* not billable */
         if (reset_nocharge && !shkp && cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS) {
-            cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 0);
+            cptr.stI32o(obj, $obj_no_charge, 0);
             if ((cptr.ldPtro((obj), $obj_cobj) !== null))
                 picked_container(obj);  /* clear no_charge */
         }
@@ -5188,13 +5172,13 @@ export function addtobill(obj, ininv, dummy, silent) {
     ltmp = (cltmp = (gltmp = 0n));
     container = schar((cptr.ldPtro((obj), $obj_cobj) !== null));
 
-    if (!cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0)) {
+    if (!(cptr.ldI32o(obj, $obj_no_charge) & 1)) {
         ltmp = get_cost(obj, shkp.v);
-        if (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0))
+        if ((cptr.ldI32o(obj, $obj_globby) & 1))
             ltmp *= get_pricing_units(obj);
     }
-    if (cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0) | 0 && !container) {
-        cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 0);
+    if ((cptr.ldI32o(obj, $obj_no_charge) & 1) | 0 && !container) {
+        cptr.stI32o(obj, $obj_no_charge, 0);
         return;
     }
 
@@ -5216,8 +5200,8 @@ export function addtobill(obj, ininv, dummy, silent) {
                 return;
         }
 
-        if (cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0))
-            cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 0);
+        if ((cptr.ldI32o(obj, $obj_no_charge) & 1))
+            cptr.stI32o(obj, $obj_no_charge, 0);
         contentscount = count_unpaid(cptr.ldPtro(obj, $obj_cobj));
     } else {
         add_one_tobill(obj, dummy, shkp.v);
@@ -5250,7 +5234,7 @@ export function addtobill(obj, ininv, dummy, silent) {
             let save_quan = cptr.ldI64o(obj, $obj_quan);
 
             void cptr.strcpy(cptr.decay(buf), __s_for_you);
-            if ((!(cptr.ldBits(cptr.add((shkp.v), $monst_mpeaceful), 1, 1, 0)))) {
+            if ((!((cptr.ldI32o((shkp.v), $monst_mpeaceful) & 1)))) {
                 void cptr.strcat(cptr.decay(buf), __s_scum);
             } else if (!cptr.ld1so(
                 (cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)),
@@ -5269,11 +5253,11 @@ export function addtobill(obj, ininv, dummy, silent) {
                 currency(ltmp),
                 (save_quan > 1n)
                     ? __s_per
-                    : ((contentscount && !cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
+                    : ((contentscount && !(cptr.ldI32o(obj, $obj_unpaid) & 1))
                         ? __s_for_the_contents_of_this
                         : __s_for_this),
                 xname(obj),
-                (contentscount && cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0)
+                (contentscount && (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
                     ? cptr.decay(and_its_contents)
                     : __s_empty
             );
@@ -5284,11 +5268,11 @@ export function addtobill(obj, ininv, dummy, silent) {
             set_voice(shkp.v, 0, 80, 0);
             pline_The(
                 __s_list_price_of_s_s_s_is_ld_s_s,
-                (contentscount && !cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
+                (contentscount && !(cptr.ldI32o(obj, $obj_unpaid) & 1))
                     ? cptr.decay(the_contents_of)
                     : __s_empty,
                 the(xname(obj)),
-                (contentscount && cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0)
+                (contentscount && (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
                     ? cptr.decay(and_its_contents)
                     : __s_empty,
                 ltmp,
@@ -5375,7 +5359,7 @@ export function splitbill(obj, otmp) {
         $eshk_billct
     ) ==
             NHM.BILLSZ) {
-        cptr.stBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0, 0);
+        cptr.stI32o(otmp, $obj_unpaid, 0);
     } else {
         tmp = cptr.ldI64o(bp, $bill_x_price);
         bp = cptr.add(
@@ -5412,10 +5396,10 @@ function sub_one_frombill(obj, shkp) {
     if ((bp = onbill(obj, shkp, 0)) !== null) {
         let otmp;
 
-        cptr.stBits(cptr.add(obj, $obj_unpaid), 2, 1, 0, 0);
+        cptr.stI32o(obj, $obj_unpaid, 0);
         if (cptr.ldI64o(bp, $bill_x_bquan) > cptr.ldI64o(obj, $obj_quan)) {
-            otmp = alloc(112);
-            cptr.memcpy(otmp, obj, 112);
+            otmp = alloc(216);
+            cptr.memcpy(otmp, obj, 216);
             cptr.stPtro(otmp, $obj_oextra, null);
             cptr.stI32(bp, cptr.stI32o(otmp, $obj_o_id, next_ident()));  /* svc.context.ident++ */
             cptr.st1o(otmp, $obj_where, NHM.OBJ_FREE);
@@ -5441,9 +5425,9 @@ function sub_one_frombill(obj, shkp) {
             24
         );
         return;
-    } else if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0)) {
+    } else if ((cptr.ldI32o(obj, $obj_unpaid) & 1)) {
         impossible(__s_sub_one_frombill_unpaid_object_not_on);
-        cptr.stBits(cptr.add(obj, $obj_unpaid), 2, 1, 0, 0);
+        cptr.stI32o(obj, $obj_unpaid, 0);
     }
 }
 
@@ -5514,8 +5498,8 @@ function stolen_container(obj, shkp, price, ininv) {
         if (billamt)
             price += billamt;
         else if (ininv
-                ? cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) | 0
-                : !cptr.ldBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0))
+                ? (cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0
+                : !(cptr.ldI32o(otmp, $obj_no_charge) & 1))
             price += BigInt.asIntN(64, get_pricing_units(otmp) * get_cost(otmp, shkp.v));
 
         if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
@@ -5555,7 +5539,7 @@ export function stolen_value(obj, x, y, peaceful, silent) {
     }
 
     /* gather information for message(s) prior to manipulating bill */
-    was_unpaid = schar((cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0 ? 1 : 0));
+    was_unpaid = schar(((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? 1 : 0));
     if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
         c_count = count_contents(obj, 1, 0, 1, 0);
         u_count = count_contents(obj, 1, 0, 0, 0);
@@ -5585,7 +5569,7 @@ export function stolen_value(obj, x, y, peaceful, silent) {
     } else {
         if (billamt)
             value += billamt;
-        else if (!cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0))
+        else if (!(cptr.ldI32o(obj, $obj_no_charge) & 1))
             value += BigInt.asIntN(64, get_pricing_units(obj) * get_cost(obj, shkp.v));
 
         if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
@@ -5615,7 +5599,7 @@ export function stolen_value(obj, x, y, peaceful, silent) {
         /* 'peaceful' affects general treatment, but doesn't affect
          * the fact that other code expects that all charges after the
          * shopkeeper is angry are included in robbed, not debit */
-        if ((!(cptr.ldBits(cptr.add((shkp.v), $monst_mpeaceful), 1, 1, 0))))
+        if ((!((cptr.ldI32o((shkp.v), $monst_mpeaceful) & 1))))
             cptr.stI64o(
                 (cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)),
                 $eshk_robbed,
@@ -5796,7 +5780,7 @@ export function sellobj(obj, x, y) {
     if (!costly_spot(x, y))
         return;
 
-    if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0 && !container && !isgold) {
+    if ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 && !container && !isgold) {
         sub_one_frombill(obj, shkp);
         return;
     }
@@ -5809,7 +5793,7 @@ export function sellobj(obj, x, y) {
     }
 
     saleitem = saleable(shkp, obj);
-    if (!isgold && !cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) && saleitem)
+    if (!isgold && !(cptr.ldI32o(obj, $obj_unpaid) & 1) && saleitem)
         ltmp = set_cost(obj, shkp);
 
     offer = BigInt.asIntN(64, ltmp + cltmp);
@@ -5818,7 +5802,7 @@ export function sellobj(obj, x, y) {
     rouse_shk(shkp, 1);  /* wake up sleeping or paralyzed shk */
     eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
 
-    if ((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)))) {
+    if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
         if (!Deaf() &&
                 !(helpless(shkp) ||
                     cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <=
@@ -5840,12 +5824,12 @@ export function sellobj(obj, x, y) {
 
         if (container) {
             dropped_container(obj, shkp, 0);
-            if (!cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
-                cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 1);
+            if (!(cptr.ldI32o(obj, $obj_unpaid) & 1))
+                cptr.stI32o(obj, $obj_no_charge, 1);
             if (unpaid)
                 subfrombill(obj, shkp);
         } else
-            cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 1);
+            cptr.stI32o(obj, $obj_no_charge, 1);
 
         if (!unpaid &&
                 (cptr.ldI32o(gs, $instance_globals_s_sell_how) != NHM.SELL_DONTSELL) &&
@@ -5887,8 +5871,8 @@ export function sellobj(obj, x, y) {
             if (!isgold) {
                 if (container)
                     dropped_container(obj, shkp, 0);
-                if (!cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
-                    cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 1);
+                if (!(cptr.ldI32o(obj, $obj_unpaid) & 1))
+                    cptr.stI32o(obj, $obj_no_charge, 1);
                 subfrombill(obj, shkp);
             }
             return;
@@ -5916,7 +5900,7 @@ export function sellobj(obj, x, y) {
         pline(__s_s_seems_uninterested_s, Shknam(shkp), cgold ? __s_in_the_rest : __s_empty);
         if (container)
             dropped_container(obj, shkp, 0);
-        cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 1);
+        cptr.stI32o(obj, $obj_no_charge, 1);
         return;
     }
 
@@ -5985,8 +5969,8 @@ export function sellobj(obj, x, y) {
                 cptr.st1o(gs, $instance_globals_s_sell_response, 110);
             if (container)
                 dropped_container(obj, shkp, 0);
-            if (!cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
-                cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 1);
+            if (!(cptr.ldI32o(obj, $obj_unpaid) & 1))
+                cptr.stI32o(obj, $obj_no_charge, 1);
             subfrombill(obj, shkp);
         }
     } else {
@@ -6053,7 +6037,7 @@ export function sellobj(obj, x, y) {
                 (cltmp && !ltmp)
                     ? ((yourc == 1n) ? __s_your_item_in : __s_your_items_in)
                     : __s_empty,
-                cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0 ? __s_the : __s_your
+                (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? __s_the : __s_your
             );
             one = schar((!ltmp
                     ? (yourc == 1n)
@@ -6095,8 +6079,8 @@ export function sellobj(obj, x, y) {
             case 110:
                 if (container)
                     dropped_container(obj, shkp, 0);
-                if (!cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
-                    cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 1);
+                if (!(cptr.ldI32o(obj, $obj_unpaid) & 1))
+                    cptr.stI32o(obj, $obj_no_charge, 1);
                 subfrombill(obj, shkp);
                 break;
             case 97:
@@ -6106,8 +6090,8 @@ export function sellobj(obj, x, y) {
             case 121:
                 if (container)
                     dropped_container(obj, shkp, 1);
-                if (!cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) && !saleitem)
-                    cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 1);
+                if (!(cptr.ldI32o(obj, $obj_unpaid) & 1) && !saleitem)
+                    cptr.stI32o(obj, $obj_no_charge, 1);
                 subfrombill(obj, shkp);
                 pay(-offer, shkp);
                 shk_names_obj(
@@ -6332,8 +6316,8 @@ function getprice(obj, shk_buying) {
             break;
         case NHC.POTION_CLASS:
             if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER &&
-                    !cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) &&
-                    !cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0))
+                    !(cptr.ldI32o(obj, $obj_blessed) & 1) &&
+                    !(cptr.ldI32o(obj, $obj_cursed) & 1))
                 tmp = 0n;
             break;
         case NHC.ARMOR_CLASS:
@@ -6508,7 +6492,7 @@ export function add_damage(x, y, cost) {
 /* is shopkeeper impaired, so they cannot act? */
 /** C ref: shk.c:4441 — @param {CPtr<struct monst>} shkp @returns {CInt} */
 function shk_impaired(shkp) {
-    if (!shkp || !cptr.ldBits(cptr.add(shkp, $monst_isshk), 4, 1, 0) || !inhishop(shkp))
+    if (!shkp || !(cptr.ldI32o(shkp, $monst_isshk) & 1) || !inhishop(shkp))
         return 1;
     if (helpless(shkp) ||
             cptr.ld1so(
@@ -6575,7 +6559,7 @@ function repairable_damage(dam, shkp) {
             $instance_globals_saved_l_level + $dlevel_t_monsters
         ))) !==
             null &&
-                cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0)
+                (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
             return 0;
     }
     /* does it belong to shkp? */
@@ -6833,7 +6817,7 @@ function litter_scatter(litter, x, y, shkp) {
                    one that is billing for otmp or decided it was free;
                    control of the item goes to the shk repairing the wall
                    but otmp->no_charge isn't recalculated for new shop */
-                if (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0)) {
+                if ((cptr.ldI32o(otmp, $obj_unpaid) & 1)) {
                     let oshk = shkp;
 
                     /* !costly_spot() happens if otmp is moved from wall
@@ -6846,11 +6830,11 @@ function litter_scatter(litter, x, y, shkp) {
                                     onbill(otmp, oshk, 0)))))
                         subfrombill(otmp, oshk);
                 }
-                if (cptr.ldBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0)) {
+                if ((cptr.ldI32o(otmp, $obj_no_charge) & 1)) {
                     /* not strictly necessary; destination is inside a
                        shop so existing no_charge remains relevant */
                     if (!costly_spot(i16(ix), i16(iy)) && !costly_adjacent(shkp, i16(ix), i16(iy)))
-                        cptr.stBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0, 0);
+                        cptr.stI32o(otmp, $obj_no_charge, 0);
                 }
 
                 remove_object(otmp);
@@ -6904,12 +6888,12 @@ function repair_damage(shkp, tmp_dam, catchup) {
 
     ttmp = t_at(x, y);
     if (ttmp) {
-        switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
+        switch (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) {
             case NHC.LANDMINE:
             case NHC.BEAR_TRAP:
                 /* convert to an object */
                 otmp = mksobj(
-                    (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.LANDMINE)
+                    ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.LANDMINE)
                         ? NHC.LAND_MINE
                         : NHC.BEARTRAP,
                     1,
@@ -6926,7 +6910,7 @@ function repair_damage(shkp, tmp_dam, catchup) {
                                 cptr.ldI16o(shkp, $monst_my)
                             ) <= 2)
                         pline(__s_s_untraps_s, Shknam(shkp), ansimpleoname(otmp));
-                    else if ((cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
+                    else if (cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0 &&
                             ((cptr.ld1uo(
                                 cptr.ldPtro(
                                     cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -6938,7 +6922,7 @@ function repair_damage(shkp, tmp_dam, catchup) {
                                 NHM.IN_SIGHT) != 0))
                         pline(
                             __s_the_s_vanishes,
-                            trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1)
+                            trapname(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0, 1)
                         );
                 }
                 void mpickobj(shkp, otmp);
@@ -6947,7 +6931,7 @@ function repair_damage(shkp, tmp_dam, catchup) {
             case NHC.PIT:
             case NHC.SPIKED_PIT:
                 if (!catchup &&
-                        (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
+                        cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0 &&
                         ((cptr.ld1uo(
                             cptr.ldPtro(
                                 cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -6959,12 +6943,12 @@ function repair_damage(shkp, tmp_dam, catchup) {
                             NHM.IN_SIGHT) != 0))
                     pline(
                         __s_the_s_is_filled_in,
-                        trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1)
+                        trapname(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0, 1)
                     );
                 break;
             default:
                 if (!catchup &&
-                        (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
+                        cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0 &&
                         ((cptr.ld1uo(
                             cptr.ldPtro(
                                 cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -6976,7 +6960,7 @@ function repair_damage(shkp, tmp_dam, catchup) {
                             NHM.IN_SIGHT) != 0))
                     pline(
                         __s_the_s_vanishes,
-                        trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1)
+                        trapname(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0, 1)
                     );
                 break;
         }
@@ -7168,7 +7152,7 @@ export function shk_move(shkp) {
                 cptr.add(mons, NHC.PM_GRID_BUG, $sizeof_permonst)
             ) ||
                 (omx == cptr.ldI16(u) || omy == cptr.ldI16o(u, $you_uy)))) {
-        if ((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0))) ||
+        if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ||
                 (Conflict() && !resist_conflict(shkp))) {
             if (Displaced())
                 Your(__s_displaced_image_doesn_t_fool_s, shkname(shkp));
@@ -7244,9 +7228,9 @@ export function shk_move(shkp) {
             return -1;  /* leave it to m_move */
         gtx = cptr.ldI16(u);
         gty = cptr.ldI16o(u, $you_uy);
-    } else if ((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)))) {
+    } else if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
         /* Move towards the hero if the shopkeeper can see him. */
-        if (cptr.ldBits(cptr.add(shkp, $monst_mcansee), 7, 1, 0) | 0 &&
+        if ((cptr.ldI32o(shkp, $monst_mcansee) & 1) | 0 &&
                 ((!Invis() ||
                     ((cptr.ldU64o((cptr.ldPtro((shkp), $monst_data)), $permonst_mflags1) &
                         16777216n) !=
@@ -7330,7 +7314,7 @@ export function after_shk_move(shkp) {
 /* for use in levl_follower (mondata.c) */
 /** C ref: shk.c:5012 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function is_fshk(mtmp) {
-    return schar((cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 &&
+    return schar(((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 &&
         cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_following)
             ? 1
             : 0));
@@ -7642,7 +7626,7 @@ export function pay_for_damage(dmgstr, cant_mollify) {
     );
 
     /* if the shk is already on the war path, be sure it's all out */
-    if ((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0))) ||
+    if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ||
             cptr.ld1so(
                 (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
                 $eshk_following
@@ -7805,10 +7789,12 @@ export function costly_spot(x, y) {
     let shkp;
     let eshkp;
 
-    if (!(cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
-    ) & 1))
+    if (!cptr.ldBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
+        0,
+        1,
+        0
+    ))
         return 0;
     shkp = shop_keeper(cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE)));
     if (!shkp || !inhishop(shkp))
@@ -7874,7 +7860,7 @@ export function shop_object(x, y) {
     /* note: otmp might have ->no_charge set, but that's ok */
     return (otmp &&
         costly_spot(x, y) &&
-        (cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)) | 0 &&
+        ((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)) | 0 &&
         !(helpless(shkp) ||
             cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL))
             ? otmp
@@ -7905,7 +7891,7 @@ export function price_quote(first_obj) {
     for (otmp = first_obj; otmp; otmp = cptr.ldPtro(otmp, $obj_v)) {
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
             continue;
-        cost = (cptr.ldBits(cptr.add(otmp, $obj_no_charge), 3, 1, 0) | 0 ||
+        cost = ((cptr.ldI32o(otmp, $obj_no_charge) & 1) | 0 ||
             cptr.eq(otmp, uball.v) ||
             cptr.eq(otmp, uchain.v))
                 ? 0n
@@ -7913,7 +7899,7 @@ export function price_quote(first_obj) {
         contentsonly = schar((!cost));
         if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
             cost += contained_cost(otmp, shkp, 0n, 0, 0);
-        if (cptr.ldBits(cptr.add(otmp, $obj_globby), 0, 1, 0))
+        if ((cptr.ldI32o(otmp, $obj_globby) & 1))
             cost *= get_pricing_units(otmp);  /* always quan 1, vary by wt */
         if (!cost) {
             void cptr.strcpy(cptr.decay(price), __s_no_charge);
@@ -8042,7 +8028,7 @@ export function shk_chat(shkp) {
     let eshk;
     let shkmoney;
 
-    if (!cptr.ldBits(cptr.add(shkp, $monst_isshk), 4, 1, 0)) {
+    if (!(cptr.ldI32o(shkp, $monst_isshk) & 1)) {
         /* The monster type is shopkeeper, but this monster is
            not actually a shk, which could happen if someone
            wishes for a shopkeeper statue and then animates it.
@@ -8055,7 +8041,7 @@ export function shk_chat(shkp) {
     }
 
     eshk = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
-    if ((!(cptr.ldBits(cptr.add((shkp), $monst_mpeaceful), 1, 1, 0)))) {
+    if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
         pline(
             __s_s_s_how_much_s_dislikes_s_customers,
             Shknam(shkp),
@@ -8289,7 +8275,7 @@ export function check_unpaid_usage(otmp, altusage) {
     let buf = new Uint8Array(256);
     let tmp;
 
-    if (!cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) ||
+    if (!(cptr.ldI32o(otmp, $obj_unpaid) & 1) ||
             !cptr.ld1so(u, $you_ushops) ||
             (cptr.ld1so(otmp, $obj_spe) <= 0 &&
                 (cptr.ldI32o2(
@@ -8605,9 +8591,9 @@ function shk_owns(buf, obj) {
     let y = cptr.box(0);
 
     if (get_obj_location(obj, x, y, 0) &&
-            (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0 ||
+            ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ||
                 (cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR &&
-                    !cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0) &&
+                    !(cptr.ldI32o(obj, $obj_no_charge) & 1) &&
                     costly_spot(x.v, y.v)))) {
         shkp = shop_keeper(inside_shop(x.v, y.v));
         return cptr.strcpy(
@@ -8712,13 +8698,13 @@ export function globby_bill_fixup(obj_absorber, obj_absorbed) {
     let per_unit_cost;
     let floor_absorber = schar((cptr.ld1so(obj_absorber, $obj_where) == NHM.OBJ_FLOOR));
 
-    if (!cptr.ldBits(cptr.add(obj_absorber, $obj_globby), 0, 1, 0))
+    if (!(cptr.ldI32o(obj_absorber, $obj_globby) & 1))
         impossible(__s_globby_bill_fixup_called_for_non_globby);
 
     if (floor_absorber) {
         x = cptr.ldI16o(obj_absorber, $obj_ox), y = cptr.ldI16o(obj_absorber, $obj_oy);
     }
-    if (cptr.ldBits(cptr.add(obj_absorber, $obj_unpaid), 2, 1, 0)) {
+    if ((cptr.ldI32o(obj_absorber, $obj_unpaid) & 1)) {
         /* look for a shopkeeper who owns this object */
         for (
             shkp.v = next_shkp(
@@ -8730,7 +8716,7 @@ export function globby_bill_fixup(obj_absorber, obj_absorbed) {
         )
             if (onbill(obj_absorber, shkp.v, 1))
                 break;
-    } else if (cptr.ldBits(cptr.add(obj_absorbed, $obj_unpaid), 2, 1, 0)) {
+    } else if ((cptr.ldI32o(obj_absorbed, $obj_unpaid) & 1)) {
         if (cptr.ld1so(obj_absorbed, $obj_where) == NHM.OBJ_FREE &&
                 floor_absorber &&
                 costly_spot(i16(x), i16(y))) {
@@ -8751,7 +8737,7 @@ export function globby_bill_fixup(obj_absorber, obj_absorbed) {
      * Scenario 1. Shop-owned glob absorbing into shop-owned glob
      **************************************************************/
     if (bp &&
-            (!cptr.ldBits(cptr.add(obj_absorber, $obj_no_charge), 3, 1, 0) ||
+            (!(cptr.ldI32o(obj_absorber, $obj_no_charge) & 1) ||
                 billable(shkp, obj_absorber, cptr.ld1so(eshkp, $eshk_shoproom), 0))) {
         /* the glob being absorbed has a billing record */
         amount = cptr.ldI64o(bp, $bill_x_price);
@@ -8779,7 +8765,7 @@ export function globby_bill_fixup(obj_absorber, obj_absorbed) {
     /**************************************************************
      * Scenario 2. Player-owned glob absorbing into shop-owned glob
      **************************************************************/
-    if (!bp_absorber && !bp && !cptr.ldBits(cptr.add(obj_absorber, $obj_no_charge), 3, 1, 0)) {
+    if (!bp_absorber && !bp && !(cptr.ldI32o(obj_absorber, $obj_no_charge) & 1)) {
         /* there are no billing records */
         amount = BigInt.asIntN(64, get_pricing_units(obj_absorbed) * per_unit_cost);
         if (saleable(shkp.v, obj_absorbed)) {
@@ -8839,7 +8825,7 @@ export function globby_bill_fixup(obj_absorber, obj_absorbed) {
      * Scenario 3. shop_owned glob merging into player_owned glob
      **************************************************************/
     if (bp &&
-            (cptr.ldBits(cptr.add(obj_absorber, $obj_no_charge), 3, 1, 0) | 0 ||
+            ((cptr.ldI32o(obj_absorber, $obj_no_charge) & 1) | 0 ||
                 (floor_absorber && !costly_spot(i16(x), i16(y))))) {
         amount = cptr.ldI64o(bp, $bill_x_price);
         bill_dummy_object(obj_absorbed);
@@ -8849,12 +8835,10 @@ export function globby_bill_fixup(obj_absorber, obj_absorbed) {
             amount,
             currency(amount),
             obj_typename(cptr.ldI16o(obj_absorbed, $obj_otyp)),
-            (!(cptr.ldBits(cptr.add((shkp.v), $monst_mpeaceful), 1, 1, 0)))
+            (!((cptr.ldI32o((shkp.v), $monst_mpeaceful) & 1)))
                 ? __s_had_the_audacity_to_mix
                 : __s_just_mixed,
-            (!(cptr.ldBits(cptr.add((shkp.v), $monst_mpeaceful), 1, 1, 0)))
-                ? __s_stinking_batch
-                : __s_s_dot
+            (!((cptr.ldI32o((shkp.v), $monst_mpeaceful) & 1))) ? __s_stinking_batch : __s_s_dot
         );
         return;
     }
@@ -8868,7 +8852,7 @@ export function globby_bill_fixup(obj_absorber, obj_absorbed) {
 /* Shopkeeper bills for use of a land mine or bear trap they own */
 /** C ref: shk.c:6101 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y */
 export function use_unpaid_trapobj(otmp, x, y) {
-    if (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0)) {
+    if ((cptr.ldI32o(otmp, $obj_unpaid) & 1)) {
         if (!Deaf()) {
             let shkp = find_objowner(otmp, x, y);
 

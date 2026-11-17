@@ -779,11 +779,11 @@ export function* flooreffects(obj, x, y, verb) {
         res = 1;
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER &&
             (t = t_at(x, y)) !== null &&
-            (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) ||
-                is_hole((cptr.ldI32o(t, $trap_ttyp) & 31)))) {
+            (is_pit(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0)) ||
+                is_hole(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0)))) {
         __lbl_deletedwithboulder: {
-            ttyp = (cptr.ldI32o(t, $trap_ttyp) & 31) | 0;
-            tseen = schar(((cptr.ldI32o(t, $trap_tseen) & 1) | 0 ? 1 : 0));
+            ttyp = cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0;
+            tseen = schar((cptr.ldBits(cptr.add(t, $trap_tseen), 5, 1, 0) | 0 ? 1 : 0));
             if (((mtmp = (cptr.ldPtro3(
                 svl,
                 x,
@@ -792,7 +792,7 @@ export function* flooreffects(obj, x, y, verb) {
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_monsters
             ))) &&
-                cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0) ||
+                (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0) ||
                     (cptr.ldI32o(u, $you_utrap) &&
                         ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))) {
                 if (cptr.ld1s(verb) &&
@@ -854,7 +854,7 @@ export function* flooreffects(obj, x, y, verb) {
                             res = 0;  /* still alive, boulder still intact */
                         (void (res));
                     }
-                    cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
+                    cptr.stI32o(mtmp, $monst_mtrapped, 0);
                 } else {
                     if (!Passes_walls() &&
                             !((cptr.ldU64o(
@@ -932,7 +932,7 @@ export function* flooreffects(obj, x, y, verb) {
     } else if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
             (t = t_at(x, y)) !== null &&
             (uteetering_at_seen_pit(t) || uescaped_shaft(t))) {
-        if (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31))) {
+        if (is_pit(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0))) {
             if (Blind() && !Deaf()) {
                 ;
                 (yield* You_hear(__s_s_tumble_downwards, (yield* the((yield* xname(obj))))));
@@ -942,7 +942,7 @@ export function* flooreffects(obj, x, y, verb) {
                     (yield* Tobjnam(obj, __s_tumble)),
                     cptr.ldPtro2(
                         c_common_strings,
-                        (cptr.ldI32o(t, $trap_madeby_u) & 1),
+                        cptr.ldBits(cptr.add(t, $trap_madeby_u), 7, 1, 0),
                         8,
                         $c_common_strings_c_the_your
                     )
@@ -953,7 +953,7 @@ export function* flooreffects(obj, x, y, verb) {
              * through the hole" message, so no need to do it here. */
             res = 1;
         }
-    } else if (cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0)) {
+    } else if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
         let globbyobj = cptr.box(obj);  /* allow obj to be nonnull arg */
 
         /* Globby things like puddings might stick together */
@@ -1026,7 +1026,7 @@ export function* flooreffects(obj, x, y, verb) {
             ));
         }
 
-        let survival_chance = cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 ? 70 : 50;
+        let survival_chance = (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 70 : 50;
         if (cptr.ld1so(obj, $obj_invlet))
             survival_chance = (survival_chance + Math.imul(Luck(), 2)) | 0;
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL)
@@ -1066,31 +1066,24 @@ export function* doaltarobj(obj) {
             (yield* livelog_printf(32n, __s_eschewed_atheism_by_dropping_s_on_an, (yield* doname(obj))));
     } else {
         /* coins don't have bless/curse status */
-        cptr.stBits(
-            cptr.add(obj, $obj_blessed),
-            1,
-            1,
-            0,
-            cptr.stBits(cptr.add(obj, $obj_cursed), 0, 1, 0, 0)
-        );
+        cptr.stI32o(obj, $obj_blessed, cptr.stI32o(obj, $obj_cursed, 0));
     }
 
-    if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 ||
-            cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0) {
+    if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 || (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
         (yield* There(
             __s_is_s_flash_as_s_s_the_altar,
-            (yield* an(hcolor(cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0
+            (yield* an(hcolor((cptr.ldI32o(obj, $obj_blessed) & 1) | 0
                 ? cptr.ldPtro(c_color_names, $c_color_names_c_amber)
                 : cptr.ldPtr(c_color_names)))),
             (yield* doname(obj)),
             (yield* otense(obj, __s_hit))
         ));
         if (!Hallucination())
-            cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
+            cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() */
     } else {
         (yield* pline(__s_s_s_on_the_altar, (yield* Doname2(obj)), (yield* otense(obj, __s_land))));
         if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS)
-            cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
+            cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() */
     }
 }
 
@@ -1333,19 +1326,19 @@ function* dosinkring(obj) {
     let nosink = 0;
 
     (yield* You(__s_drop_s_down_the_drain, (yield* doname(obj))));
-    cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 1);  /* block free identification via interrupt */
+    cptr.stI32o(obj, $obj_in_use, 1);  /* block free identification via interrupt */
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.RIN_SEARCHING:
             (yield* You(__s_thought_s_got_lost_in_the_sink_but, (yield* yname(obj))));
             {
-                cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
+                cptr.stI32o(obj, $obj_in_use, 0);
                 (yield* dropx(obj));
                 (yield* trycall(obj));
                 return;
             }
         case NHC.RIN_SLOW_DIGESTION:
             (yield* pline_The(__s_ring_is_regurgitated));
-            cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
+            cptr.stI32o(obj, $obj_in_use, 0);
             (yield* dropx(obj));
             (yield* trycall(obj));
             return;
@@ -1519,11 +1512,11 @@ function* dosinkring(obj) {
     }
     if (!rn2(20) && !nosink) {
         (yield* pline_The(__s_sink_backs_up_leaving_s, (yield* doname(obj))));
-        cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
+        cptr.stI32o(obj, $obj_in_use, 0);
         (yield* dropx(obj));
     } else if (!rn2(5)) {
         (yield* freeinv(obj));
-        cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 0);
+        cptr.stI32o(obj, $obj_in_use, 0);
         cptr.stI16o(obj, $obj_ox, cptr.ldI16(u));
         cptr.stI16o(obj, $obj_oy, cptr.ldI16o(u, $you_uy));
         (yield* add_to_buried(obj));
@@ -1560,8 +1553,7 @@ export function* canletgo(obj, word) {
         }
         return 0;
     }
-    if (cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE &&
-            cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0) {
+    if (cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE && (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
         /* getobj() kludge sets corpsenm to user's specified count
            when refusing to split a stack of cursed loadstones */
         if (cptr.ld1s(word)) {
@@ -1689,7 +1681,7 @@ function* drop(obj) {
                 cptr.ld1so(flags, $flag_verbose))
             (yield* You(__s_drop_s, (yield* doname(obj))));
     }
-    cptr.stBits(cptr.add(obj, $obj_how_lost), 0, 3, 0, NHM.LOST_DROPPED);
+    cptr.stI32o(obj, $obj_how_lost, NHM.LOST_DROPPED);
     (yield* dropx(obj));
     return NHM.ECMD_TIME;
 }
@@ -1752,10 +1744,12 @@ export function* dropz(obj, with_impact) {
         (yield* impact_disturbs_zombies(obj, with_impact));
         if (cptr.eq(obj, uball.v))
             (yield* drop_ball(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-        else if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
-        ) & 1))
+        else if (cptr.ldBits(
+            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
+            0,
+            1,
+            0
+        ))
             (yield* sellobj(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         (yield* stackobj(obj));
         if (Blind() && Levitation())
@@ -1779,7 +1773,7 @@ function* engulfer_digests_food(obj) {
     ) !==
         null) &&
             (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE ||
-                cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0) | 0 ||
+                (cptr.ldI32o(obj, $obj_globby) & 1) | 0 ||
                 cptr.ldI16o(obj, $obj_otyp) == NHC.MEATBALL ||
                 cptr.ldI16o(obj, $obj_otyp) == NHC.ENORMOUS_MEATBALL ||
                 cptr.ldI16o(obj, $obj_otyp) == NHC.MEAT_RING ||
@@ -1858,12 +1852,12 @@ export function* obj_no_longer_held(obj) {
              * to give each individual crysknife its own separate 10% chance,
              * but we aren't in any position to handle stack splitting here.
              */
-            if (!cptr.ldBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0) || !rn2(10)) {
+            if (!(cptr.ldI32o(obj, $obj_oerodeproof) & 1) || !rn2(10)) {
                 /* if monsters aren't moving, assume player is responsible */
                 if (!cptr.ld1so(svc, $context_info_mon_moving) && !cptr.ldI32(program_state))
                     (yield* costly_alteration(obj, NHC.COST_DEGRD));
                 cptr.stI16o(obj, $obj_otyp, NHC.WORM_TOOTH);
-                cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, 0);
+                cptr.stI32o(obj, $obj_oerodeproof, 0);
             }
             break;
     }
@@ -1920,7 +1914,7 @@ function* menudrop_split(otmp, cnt) {
         if ((yield* welded(otmp))) {
             ;  /* don't split */
         } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOADSTONE &&
-                cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0) {
+                (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
             /* same kludge as getobj(), for canletgo()'s use */
             cptr.stI32o(otmp, $obj_corpsenm, Number(BigInt.asIntN(32, cnt)));  /* don't split */
         } else {
@@ -2067,7 +2061,7 @@ function* menu_drop(retry) {
                     )
                         if (cptr.eq(otmp2, otmp))
                             break;
-                    if (!otmp2 || !cptr.ldBits(cptr.add(otmp2, $obj_bypass), 3, 1, 0))
+                    if (!otmp2 || !(cptr.ldI32o(otmp2, $obj_bypass) & 1))
                         continue;
                     /* found next selected invent item */
                     n_dropped = (n_dropped +
@@ -2271,9 +2265,9 @@ export function* dodown() {
             (yield* dotrap(trap, NHM.TOOKPLUNGE));
             return NHM.ECMD_TIME;
         } else if (!trap ||
-                !is_hole((cptr.ldI32o(trap, $trap_ttyp) & 31)) ||
+                !is_hole(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0)) ||
                 !Can_fall_thru(cptr.add(u, $you_uz)) ||
-                !(cptr.ldI32o(trap, $trap_tseen) & 1)) {
+                !cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0)) {
             if (cptr.ld1so(flags, $flag_autodig) &&
                     !cptr.ld1so(svc, $context_info_nopick) &&
                     uwep.v &&
@@ -2282,7 +2276,9 @@ export function* dodown() {
             } else {
                 (yield* You_cant(
                     __s_go_down_here_s,
-                    (trap && ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE)
+                    (trap &&
+                        (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) ==
+                            NHC.VIBRATING_SQUARE)
                         ? __s_yet
                         : __s_empty
                 ));
@@ -2309,7 +2305,7 @@ export function* dodown() {
     }
 
     if (trap) {
-        let down_or_thru = ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.HOLE
+        let down_or_thru = (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.HOLE
                 ? __s_down
                 : __s_through;
         let actn = u_locomotion(__s_jump);
@@ -2343,7 +2339,9 @@ export function* dodown() {
             __s_s_s_the_s,
             actn,
             down_or_thru,
-            ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.HOLE ? __s_hole : __s_trap_door
+            (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.HOLE
+                ? __s_hole
+                : __s_trap_door
         ));
     }
     if (trap &&
@@ -3053,7 +3051,7 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
         let ttrap;
 
         for (ttrap = cptr.ldPtr(gf); ttrap; ttrap = cptr.ldPtr(ttrap))
-            if (((cptr.ldI32o(ttrap, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
+            if ((cptr.ldBits(cptr.add(ttrap, $trap_ttyp), 0, 5, 0) | 0) == NHC.MAGIC_PORTAL)
                 break;
 
         if (!ttrap) {
@@ -3264,10 +3262,12 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
                     )
                 ))))
         (yield* movebubbles());
-    else if ((cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles
-    ) & 1))
+    else if (cptr.ldBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles),
+        1,
+        1,
+        0
+    ))
         (yield* fumaroles());
 
     /* Reset the screen. */
@@ -3409,7 +3409,7 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
             ) {
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                     continue;
-                cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
+                cptr.stI32o(mtmp, $monst_msleeping, 0);
             }
         }
     } else if (In_mines(cptr.add(u, $you_uz))) {
@@ -3466,7 +3466,7 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
                 (yield* at_dgn_entrance(__s_the_quest)) &&
                 !((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 ||
                     (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 ||
-                    (cptr.ldI32o(svq, $q_score_leader_is_dead) & 1) | 0)) {
+                    cptr.ldBits(cptr.add(svq, $q_score_leader_is_dead), 3, 1, 0) | 0)) {
             /* [TODO: copy of same TODO below; if an achievement for
                receiving quest call from leader gets added, that should
                come after logging new level entry] */
@@ -3887,7 +3887,7 @@ export function* revive_corpse(corpse) {
 
                         ttmp = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
                         if (ttmp)
-                            cptr.stI32o(ttmp, $trap_tseen, 1);
+                            cptr.stBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0, 1);
                         (yield* pline(
                             __s_s_claws_itself_out_of_the_ground,
                             canspotmon(mtmp)

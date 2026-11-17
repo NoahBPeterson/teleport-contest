@@ -7044,8 +7044,8 @@ function there_cmd_menu_self(win, x, y, act) {
     if (num_spells() > 0)
         mcmd_addmenu(win, NHC.MCMD_CAST_SPELL, __s_cast_a_spell), ++K;
 
-    if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0) {
-        if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE)
+    if ((ttmp = t_at(x, y)) !== null && cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0) {
+        if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) != NHC.VIBRATING_SQUARE)
             mcmd_addmenu(win, NHC.MCMD_UNTRAP_HERE, __s_attempt_to_disarm_trap), ++K;
     }
     return K;
@@ -7118,9 +7118,9 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
     if (typ <= NHC.SCORR)
         mcmd_addmenu(win, NHC.MCMD_SEARCH, __s_search_for_secret_doors), ++K;
 
-    if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0) {
+    if ((ttmp = t_at(x, y)) !== null && cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0) {
         mcmd_addmenu(win, NHC.MCMD_LOOK_TRAP, __s_examine_trap), ++K;
-        if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE)
+        if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) != NHC.VIBRATING_SQUARE)
             mcmd_addmenu(win, NHC.MCMD_UNTRAP_TRAP, __s_attempt_to_disarm_trap), ++K;
         mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __s_move_on_the_trap), ++K;
     }
@@ -7146,9 +7146,7 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
         void cptr.sprintf(cptr.decay(buf), __s_put_saddle_on_s, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_APPLY_SADDLE, cptr.decay(buf)), ++K;
     }
-    if (mtmp &&
-            (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 ||
-                cptr.ld1so(mtmp, $monst_mtame))) {
+    if (mtmp && ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) {
         void cptr.sprintf(cptr.decay(buf), __s_talk_to_s, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_TALK, cptr.decay(buf)), ++K;
 
@@ -7165,8 +7163,7 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
     }
 
     if ((mtmp &&
-        !(cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 ||
-            cptr.ld1so(mtmp, $monst_mtame))) ||
+        !((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) ||
             ((glyph_at(x, y)) == NHC.GLYPH_INVIS_OFF)) {
         void cptr.sprintf(
             cptr.decay(buf),

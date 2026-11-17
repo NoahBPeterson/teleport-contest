@@ -1230,7 +1230,7 @@ export function* trap_predicament(outbuf, final, wizxtra) {
                 void cptr.sprintf(
                     eos(outbuf),
                     __s_in_s,
-                    (yield* an((yield* trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0))))
+                    (yield* an((yield* trapname(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0, 0))))
                 );
             break;
     }
@@ -1265,7 +1265,7 @@ function cause_known(propindx) {
                 ) &
                     1) |
                     0 &&
-                cptr.ldBits(cptr.add(o, $obj_dknown), 1, 1, 0) | 0)
+                (cptr.ldI32o(o, $obj_dknown) & 1) | 0)
             return 1;
     }
     return 0;
@@ -2202,26 +2202,25 @@ function* one_characteristic(mode, final, attrindx) {
         case NHC.A_STR:
             if (uarmg.v &&
                     cptr.ldI16o(uarmg.v, $obj_otyp) == NHC.GAUNTLETS_OF_POWER &&
-                    cptr.ldBits(cptr.add(uarmg.v, $obj_cursed), 0, 1, 0) | 0)
+                    (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
                 hide_innate_value = 1;
             break;
         case NHC.A_DEX:
             break;
         case NHC.A_CON:
-            if (is_art(uwep.v, NHC.ART_OGRESMASHER) &&
-                    cptr.ldBits(cptr.add(uwep.v, $obj_cursed), 0, 1, 0) | 0)
+            if (is_art(uwep.v, NHC.ART_OGRESMASHER) && (cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0)
                 hide_innate_value = 1;
             break;
         case NHC.A_INT:
             if (uarmh.v &&
                     cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP &&
-                    cptr.ldBits(cptr.add(uarmh.v, $obj_cursed), 0, 1, 0) | 0)
+                    (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
                 hide_innate_value = 1;
             break;
         case NHC.A_WIS:
             if (uarmh.v &&
                     cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP &&
-                    cptr.ldBits(cptr.add(uarmh.v, $obj_cursed), 0, 1, 0) | 0)
+                    (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
                 hide_innate_value = 1;
             break;
         case NHC.A_CHA:
@@ -2683,7 +2682,7 @@ function* status_enlightenment(mode, final) {
     if (Riding) {
         let saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n));
 
-        if (saddle && cptr.ldBits(cptr.add(saddle, $obj_cursed), 0, 1, 0) | 0) {
+        if (saddle && (cptr.ldI32o(saddle, $obj_cursed) & 1) | 0) {
             void cptr.sprintf(
                 cptr.decay(buf),
                 __s_stuck_to_s_s,
@@ -4415,7 +4414,7 @@ export function* youhiding(via_enlghtmt, msgflag) {
                 void cptr.sprintf(
                     bp,
                     __s_in_a_spit,
-                    (t && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.SPIKED_PIT)
+                    (t && (cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.SPIKED_PIT)
                         ? __s_spiked
                         : __s_empty
                 );
@@ -6202,7 +6201,7 @@ export function* mstatusline(mtmp) {
                 __s_sp_lparen_pct_d,
                 cptr.ld1so(mtmp, $monst_mtame)
             );
-            if (!cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0))
+            if (!(cptr.ldI32o(mtmp, $monst_isminion) & 1))
                 void cptr.sprintf(
                     eos(cptr.decay(info)),
                     __s_hungry_ld_apport_d,
@@ -6217,7 +6216,7 @@ export function* mstatusline(mtmp) {
                 );
             void cptr.strcat(cptr.decay(info), __s_rparen);
         }
-    } else if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
+    } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
         void cptr.strcat(cptr.decay(info), __s_peaceful);
 
     if (cptr.eq(
@@ -6261,43 +6260,42 @@ export function* mstatusline(mtmp) {
         void cptr.strcat(cptr.decay(info), __s_eating);
     /* a stethoscope exposes mimic before getting here so this
        won't be relevant for it, but wand of probing doesn't */
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0 ||
+    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 ||
             cptr.ld1uo(mtmp, $monst_m_ap_type) ||
             visible_region_at(
                 cptr.ldI16o(gb, $instance_globals_b_bhitpos),
                 cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)
             ))
         (yield* mhidden_description(mtmp, 15, eos(cptr.decay(info))));
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mcan) & 1))
         void cptr.strcat(cptr.decay(info), __s_cancelled);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mconf) & 1))
         void cptr.strcat(cptr.decay(info), __s_confused__2);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0) | 0 ||
-            !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mblinded) & 127) | 0 || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
         void cptr.strcat(cptr.decay(info), __s_blind);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mstun) & 1))
         void cptr.strcat(cptr.decay(info), __s_stunned__2);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1))
         void cptr.strcat(cptr.decay(info), __s_asleep);
-    else if (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0) | 0 ||
-            !cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0))
+    else if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0 ||
+            !(cptr.ldI32o(mtmp, $monst_mcanmove) & 1))
         void cptr.strcat(cptr.decay(info), __s_can_t_move);
     else if ((cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n) != 0n)
         void cptr.strcat(cptr.decay(info), __s_meditating);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mflee) & 1))
         void cptr.strcat(cptr.decay(info), __s_scared);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1))
         void cptr.strcat(cptr.decay(info), __s_trapped__2);
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mspeed), 0, 2, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mspeed) & 3))
         void cptr.strcat(
             cptr.decay(info),
-            ((cptr.ldBits(cptr.add(mtmp, $monst_mspeed), 0, 2, 0) | 0) == NHM.MFAST)
+            (((cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0) == NHM.MFAST)
                 ? __s_fast__2
-                : (((cptr.ldBits(cptr.add(mtmp, $monst_mspeed), 0, 2, 0) | 0) == NHM.MSLOW)
+                : ((((cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0) == NHM.MSLOW)
                     ? __s_slow
                     : __s_speed)
         );
-    if (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_minvis) & 1))
         void cptr.strcat(cptr.decay(info), __s_invisible__3);
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
         let pm = cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data);
@@ -6332,7 +6330,7 @@ export function* mstatusline(mtmp) {
             void cptr.sprintf(eos(cptr.decay(info)), __s_injured_s, what);
         }
     }
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0))
+    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1))
         void cptr.strcat(cptr.decay(info), __s_leashed);
 
     /* avoid "Status of the invisible newt ..., invisible" */

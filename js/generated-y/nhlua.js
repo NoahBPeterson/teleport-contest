@@ -857,21 +857,29 @@ function* nhl_gettrap(L) {
             (yield* nhl_add_table_entry_int(
                 L,
                 __s_ttyp,
-                BigInt((cptr.ldI32o(ttmp, $trap_ttyp) & 31) >>> 0)
+                BigInt(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) >>> 0)
             ));
             (yield* nhl_add_table_entry_str(
                 L,
                 __s_ttyp_name,
-                get_trapname_bytype((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0)
+                get_trapname_bytype(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0)
             ));
-            (yield* nhl_add_table_entry_bool(L, __s_tseen, schar((cptr.ldI32o(ttmp, $trap_tseen) & 1))));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_tseen,
+                schar(cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0))
+            ));
             (yield* nhl_add_table_entry_bool(
                 L,
                 __s_madeby_u,
-                schar((cptr.ldI32o(ttmp, $trap_madeby_u) & 1))
+                schar(cptr.ldBits(cptr.add(ttmp, $trap_madeby_u), 7, 1, 0))
             ));
-            (yield* nhl_add_table_entry_bool(L, __s_once, schar((cptr.ldI32o(ttmp, $trap_once) & 1))));
-            switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_once,
+                schar(cptr.ldBits(cptr.add(ttmp, $trap_once), 6, 1, 0))
+            ));
+            switch (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) {
                 case NHC.SQKY_BOARD:
                     (yield* nhl_add_table_entry_int(L, __s_tnote, BigInt(cptr.ldI16o(ttmp, $trap_vl))));
                     break;
@@ -2892,7 +2900,7 @@ function* nhl_gamestate(L) {
         void cptr.memcpy(
             cptr.add(svm, $instance_globals_saved_m_mvitals),
             cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals),
-            4596n
+            1532n
         );
         /* clear user-given object type names */
         for (otyp = 0; otyp < NHC.NUM_OBJECTS; otyp++)
@@ -2931,11 +2939,11 @@ function* nhl_gamestate(L) {
             cptr.add(svd, $instance_globals_saved_d_disco),
             962n
         );
-        cptr.stPtro(gg, $instance_globals_g_gmst_mvitals, (yield* alloc(4596)));
+        cptr.stPtro(gg, $instance_globals_g_gmst_mvitals, (yield* alloc(1532)));
         void cptr.memcpy(
             cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals),
             cptr.add(svm, $instance_globals_saved_m_mvitals),
-            4596n
+            1532n
         );
         void cptr.memcpy(cptr.add(gg, $instance_globals_g_gmst_spl_book), svs, 344n);
         void __builtin___memset_chk(svs, 0, 344n, __builtin_object_size(svs, 0));

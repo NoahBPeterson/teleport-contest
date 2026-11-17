@@ -764,7 +764,7 @@ export function* observe_object(obj) {
 
     /* skip for generic objects and for STRANGE_OBJECT */
     if (oindx >= NHC.FIRST_OBJECT && !Hallucination()) {
-        cptr.stBits(cptr.add(obj, $obj_dknown), 1, 1, 0, 1);
+        cptr.stI32o(obj, $obj_dknown, 1);
         (yield* discover_object(oindx, 0, 1, 0));
     }
 }
@@ -910,17 +910,15 @@ function* discovered_cmp(v1, v2) {
 /** C ref: o_init.c:567 — @param {CInt} otyp @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 function* sortloot_descr(otyp, outbuf) {
     let sl_cookie = cptr.alloc(24);
-    let o = cptr.alloc(112);
+    let o = cptr.alloc(216);
 
-    cptr.memcpy(o, cg, 112);
+    cptr.memcpy(o, cg, 216);
     cptr.stI16o(o, $obj_otyp, i16(otyp));
     cptr.st1o(o, $obj_oclass, cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_class));
-    cptr.stBits(cptr.add(o, $obj_dknown), 1, 1, 0, 1);  /* not observe_object, this isn't a real object */
-    cptr.stBits(
-        cptr.add(o, $obj_known),
-        0,
-        1,
-        0,
+    cptr.stI32o(o, $obj_dknown, 1);  /* not observe_object, this isn't a real object */
+    cptr.stI32o(
+        o,
+        $obj_known,
         (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
             !(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_uses_known) & 1))
             ? 1
@@ -1750,9 +1748,9 @@ export function* rename_disco() {
             cptr.free(selected.v);
         }
         if (dis != NHC.STRANGE_OBJECT) {
-            let odummy = cptr.alloc(112);
+            let odummy = cptr.alloc(216);
 
-            cptr.memcpy(odummy, cg, 112);
+            cptr.memcpy(odummy, cg, 216);
             cptr.stI16o(odummy, $obj_otyp, i16(dis));
             cptr.st1o(
                 odummy,
@@ -1760,14 +1758,12 @@ export function* rename_disco() {
                 cptr.ld1so2(objects, dis, $sizeof_objclass, $objclass_oc_class)
             );
             cptr.stI64o(odummy, $obj_quan, 1n);
-            cptr.stBits(
-                cptr.add(odummy, $obj_known),
-                0,
-                1,
-                0,
+            cptr.stI32o(
+                odummy,
+                $obj_known,
                 (!(cptr.ldI32o2(objects, dis, $sizeof_objclass, $objclass_oc_uses_known) & 1)) >>> 0
             );
-            cptr.stBits(cptr.add(odummy, $obj_dknown), 1, 1, 0, 1);  /* not observe_object: it isn't real */
+            cptr.stI32o(odummy, $obj_dknown, 1);  /* not observe_object: it isn't real */
             (yield* docall(odummy));
         }
     }

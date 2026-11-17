@@ -319,7 +319,7 @@ function item_reading_classification(obj, outbuf) {
     } else if (otyp == NHC.HAWAIIAN_SHIRT) {
         void cptr.strcpy(outbuf, __s_look_at_the_pattern_on_the_shirt);
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS) {
-        let magic = ((cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0 &&
+        let magic = (((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
             otyp != NHC.SCR_MAIL &&
             (otyp != NHC.SCR_BLANK_PAPER ||
                 !(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1)))
@@ -517,7 +517,7 @@ export function itemactions(otmp) {
     let buf2 = new Uint8Array(256);
     let selected = cptr.box(0);
     let mtmp;
-    let light = cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0) | 0 ? __s_extinguish : __s_light;
+    let light = (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 ? __s_extinguish : __s_light;
     let already_worn = schar(((cptr.ldI64o(otmp, $obj_owornmask) & 983167n) != 0n));
 
     win = create_nhwindow()(NHM.NHW_MENU);
@@ -607,9 +607,7 @@ export function itemactions(otmp) {
                 cptr.decay(buf),
                 __s_attach_s_to_your_candelabrum_or_s_s,
                 s,
-                !cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0)
-                    ? __s_light__2
-                    : __s_extinguish__2,
+                !(cptr.ldI32o(otmp, $obj_lamplit) & 1) ? __s_light__2 : __s_extinguish__2,
                 multiple ? __s_them : __s_it
             );
         else
@@ -794,7 +792,7 @@ export function itemactions(otmp) {
     }
 
     /* p: pay for unpaid utems */
-    if (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) | 0 &&
+    if ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 &&
             (mtmp = shop_keeper(cptr.ld1s(in_rooms(
                 cptr.ldI16(u),
                 cptr.ldI16o(u, $you_uy),
@@ -933,16 +931,14 @@ export function itemactions(otmp) {
     if (cptr.ldI64o(otmp, $obj_owornmask) & 127n)
         ia_addmenu(win, NHC.IA_TAKEOFF_OBJ, 84, __s_take_off_this_armor);
     if ((Is_container(otmp) &&
-        ((cptr.ldPtro((otmp), $obj_cobj) !== null) ||
-            !cptr.ldBits(cptr.add(otmp, $obj_cknown), 4, 1, 0))) ||
+        ((cptr.ldPtro((otmp), $obj_cobj) !== null) || !(cptr.ldI32o(otmp, $obj_cknown) & 1))) ||
             (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY &&
-                (cptr.ld1so(otmp, $obj_spe) > 0 ||
-                    !cptr.ldBits(cptr.add(otmp, $obj_known), 0, 1, 0))))
+                (cptr.ld1so(otmp, $obj_spe) > 0 || !(cptr.ldI32o(otmp, $obj_known) & 1))))
         ia_addmenu(win, NHC.IA_TIP_CONTAINER, 84, __s_tip_all_the_contents_out_of_this);
 
     /* V: invoke */
     if ((cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR &&
-        !cptr.ldBits(cptr.add(otmp, $obj_known), 0, 1, 0)) ||
+        !(cptr.ldI32o(otmp, $obj_known) & 1)) ||
             cptr.ld1so(otmp, $obj_oartifact) ||
             (cptr.ldI32o2(
                 objects,

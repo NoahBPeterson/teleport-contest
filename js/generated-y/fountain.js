@@ -342,7 +342,7 @@ function* dowaternymph() {
             (yield* You(__s_attract_s, (yield* a_monnam(mtmp))));
         else
             (yield* You_hear(__s_a_seductive_voice));
-        cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
+        cptr.stI32o(mtmp, $monst_msleeping, 0);
         if (t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
             void (yield* mintrap(mtmp, NHM.NO_TRAP_FLAGS));
     } else if (!Blind()) {
@@ -476,7 +476,7 @@ function* watchman_warn_fountain(mtmp) {
             ) &
                 NHM.COULD_SEE) !=
                 0) &&
-            cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0) {
+            (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
         if (!Deaf()) {
             (yield* pline(__s_s_yells, (yield* Amonnam(mtmp))));
             (yield* verbalize(__s_hey_stop_using_that_fountain));
@@ -716,7 +716,7 @@ export function* drinkfountain() {
                     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = nextobj) {
                         nextobj = cptr.ldPtr(obj);
                         if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
-                                !cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) &&
+                                !(cptr.ldI32o(obj, $obj_cursed) & 1) &&
                                 !rn2(5)) {
                             (yield* curse(obj));
                             ++buc_changed;
@@ -833,7 +833,7 @@ export function* dipfountain(obj) {
             (yield* curse(obj));
             if (cptr.ld1so(obj, $obj_spe) > -6 && !rn2(3))
                 (cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + -1)) - (-1);
-            cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, 0);
+            cptr.stI32o(obj, $obj_oerodeproof, 0);
             (yield* exercise(NHC.A_WIS, 0));
             (yield* livelog_printf(
                 64n,
@@ -855,14 +855,8 @@ export function* dipfountain(obj) {
             obj = (yield* oname(obj, artiname(NHC.ART_EXCALIBUR), 272));
             (yield* discover_artifact(NHC.ART_EXCALIBUR));
             (yield* bless(obj));
-            cptr.stBits(
-                cptr.add(obj, $obj_oeroded),
-                0,
-                2,
-                0,
-                cptr.stBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0, 0)
-            );
-            cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, 1);
+            cptr.stI32o(obj, $obj_oeroded, cptr.stI32o(obj, $obj_oeroded2, 0));
+            cptr.stI32o(obj, $obj_oerodeproof, 1);
             (yield* exercise(NHC.A_WIS, 1));
             (yield* livelog_printf(
                 64n,
@@ -900,7 +894,7 @@ export function* dipfountain(obj) {
         case 16:
             if (!is_hands &&
                     cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
-                    !cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)) {
+                    !(cptr.ldI32o(obj, $obj_cursed) & 1)) {
                 (yield* curse(obj));
             }
             break;
@@ -908,7 +902,7 @@ export function* dipfountain(obj) {
         case 18:
         case 19:
         case 20:
-            if (!is_hands && cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) | 0) {
+            if (!is_hands && (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
                 if (!Blind())
                     (yield* pline_The(__s_s_glows_for_a_moment, hliquid(__s_water)));
                 (yield* uncurse(obj));
@@ -1196,13 +1190,7 @@ export function* drinksink() {
                 /* reject water and try again */
                 (yield* obfree(otmp, null));
             }
-            cptr.stBits(
-                cptr.add(otmp, $obj_cursed),
-                0,
-                1,
-                0,
-                cptr.stBits(cptr.add(otmp, $obj_blessed), 1, 1, 0, 0)
-            );
+            cptr.stI32o(otmp, $obj_cursed, cptr.stI32o(otmp, $obj_blessed, 0));
             (yield* pline(
                 __s_some_s_liquid_flows_from_the_faucet,
                 Blind()
@@ -1453,7 +1441,7 @@ export function* dipsink(obj) {
                 (yield* potionbreathe(obj));
             break;
     }
-    if (try_call && cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0)
+    if (try_call && (cptr.ldI32o(obj, $obj_dknown) & 1) | 0)
         (yield* trycall(obj));
     (yield* useup(obj));
 }

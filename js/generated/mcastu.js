@@ -423,7 +423,7 @@ export function castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
     }
 
     /* monster unable to cast spells? */
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0) | 0 ||
+    if ((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 ||
             cptr.ldI32o(mtmp, $monst_mspec_used) ||
             !ml ||
             (cptr.ldU64o((mtmp), $monst_seen_resistance) &
@@ -473,8 +473,7 @@ export function castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
     }
 
     nomul(0);
-    if (rn2(Math.imul(ml, 10)) <
-            (cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0) | 0 ? 100 : 20)) {
+    if (rn2(Math.imul(ml, 10)) < ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 ? 100 : 20)) {
         ;
         if (canseemon(mtmp) && !Deaf()) {
             set_msg_xy(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
@@ -706,7 +705,7 @@ function mcast_death_touch(mtmp) {
 
 /** C ref: mcastu.c:411 — @param {CPtr<struct monst>} mtmp */
 function mcast_clone_wiz(mtmp) {
-    if (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 &&
+    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 &&
             cptr.ldI32o(svc, $context_info_no_of_wizards) == 1) {
         pline(__s_double_trouble);
         clonewiz();
@@ -720,7 +719,7 @@ function mcast_summon_mons(mtmp) {
 
     if (!count) {
         ;  /* nothing was created? */
-    } else if (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0)) {
+    } else if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1)) {
         ;
         verbalize(__s_destroy_the_thief_my_pet_s, (((count) == 1) ? __s_empty : __s_s));
     } else {
@@ -786,8 +785,7 @@ function mcast_weaken_you(mtmp, dmg) {
 
 /** C ref: mcastu.c:490 — @param {CPtr<struct monst>} mtmp */
 function mcast_disappear(mtmp) {
-    if (!cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) &&
-            !cptr.ldBits(cptr.add(mtmp, $monst_invis_blkd), 2, 1, 0)) {
+    if (!(cptr.ldI32o(mtmp, $monst_minvis) & 1) && !(cptr.ldI32o(mtmp, $monst_invis_blkd) & 1)) {
         if (canseemon(mtmp))
             pline_mon(
                 mtmp,
@@ -977,18 +975,10 @@ function mcast_insects(mtmp) {
                 (mtmp2 = makemon(pm, cptr.ldI16(bypos), cptr.ldI16o(bypos, $nhcoord_y), 131104)) !==
                     null) {
             success = 1;
-            cptr.stBits(
-                cptr.add(mtmp2, $monst_msleeping),
-                7,
-                1,
-                0,
-                cptr.stBits(
-                    cptr.add(mtmp2, $monst_mpeaceful),
-                    1,
-                    1,
-                    0,
-                    cptr.st1o(mtmp2, $monst_mtame, 0)
-                )
+            cptr.stI32o(
+                mtmp2,
+                $monst_msleeping,
+                cptr.stI32o(mtmp2, $monst_mpeaceful, cptr.st1o(mtmp2, $monst_mtame, 0))
             );
             set_malign(mtmp2);
         }
@@ -1248,7 +1238,7 @@ function spell_would_be_useless(mtmp, spellnum) {
     if ((cptr.ldI32o2(mcast_data, spellnum, $sizeof__mcast_data, $_mcast_data_flags) &
         NHM.MCF_HOSTILE) !=
             0) {
-        if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
+        if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             return 1;
     }
 
@@ -1281,7 +1271,7 @@ function spell_would_be_useless(mtmp, spellnum) {
             break;
         case NHC.MCAST_CLONE_WIZ:
             /* only the Wizard is allowed to clone himself */
-            if (!cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) ||
+            if (!(cptr.ldI32o(mtmp, $monst_iswiz) & 1) ||
                     cptr.ldI32o(svc, $context_info_no_of_wizards) > 1)
                 return 1;
             break;
@@ -1296,20 +1286,20 @@ function spell_would_be_useless(mtmp, spellnum) {
             break;
         case NHC.MCAST_HASTE_SELF:
             /* haste self when already fast */
-            if ((cptr.ldBits(cptr.add(mtmp, $monst_permspeed), 2, 2, 0) | 0) == NHM.MFAST)
+            if (((cptr.ldI32o(mtmp, $monst_permspeed) & 3) | 0) == NHM.MFAST)
                 return 1;
             break;
         case NHC.MCAST_DISAPPEAR:
             /* invisibility when already invisible */
-            if (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) | 0 ||
-                    cptr.ldBits(cptr.add(mtmp, $monst_invis_blkd), 2, 1, 0) | 0)
+            if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 ||
+                    (cptr.ldI32o(mtmp, $monst_invis_blkd) & 1) | 0)
                 return 1;
             /* peaceful monster won't cast invisibility if you can't see
                invisible,
                same as when monsters drink potions of invisibility.  This doesn't
                really make a lot of sense, but lets the player avoid hitting
                peaceful monsters by mistake */
-            if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 && !See_invisible())
+            if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !See_invisible())
                 return 1;
             break;
         case NHC.MCAST_CURE_SELF:
@@ -1340,7 +1330,7 @@ export function buzzmu(mtmp, mattk) {
     if (!BZ_VALID_ADTYP(cptr.ld1uo(mattk, $attack_adtyp)))
         return NHM.M_ATTK_MISS;
 
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0) | 0 ||
+    if ((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 ||
             (cptr.ldU64o((mtmp), $monst_seen_resistance) &
                 (cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, $attack_adtyp))))) {
         cursetxt(mtmp, 0);

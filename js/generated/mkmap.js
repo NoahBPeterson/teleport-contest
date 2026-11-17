@@ -1167,14 +1167,24 @@ export function mkmap(init_lev) {
     );
     /* a walled, joined level is cavernous, not mazelike -dlc */
     if (walled && join) {
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev,
+        cptr.stBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+            ),
+            0,
+            1,
+            0,
             0
         );
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev,
+        cptr.stBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev
+            ),
+            1,
+            1,
+            0,
             1
         );
     }

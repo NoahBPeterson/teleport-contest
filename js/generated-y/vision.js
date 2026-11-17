@@ -432,7 +432,7 @@ export function* does_block(x, y, lev) {
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
     ))) &&
-            (!cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) || See_invisible()) &&
+            (!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) &&
             is_lightblocker_mappear(mon))
         return 1;
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) != 1) {
@@ -2980,7 +2980,7 @@ export function howmonseen(mon) {
     /* normal vision;
        cansee is true for both normal and astral vision,
        but couldsee it not true for astral vision */
-    if ((cptr.ldBits(cptr.add(mon, $monst_wormno), 1, 5, 0) | 0
+    if (((cptr.ldI32o(mon, $monst_wormno) & 31) | 0
         ? worm_known(mon)
         : (((cptr.ld1uo(
             cptr.ldPtro(
@@ -3004,14 +3004,13 @@ export function howmonseen(mon) {
             ? 1
             : 0)) &&
             mon_visible(mon) &&
-            !cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0))
+            !(cptr.ldI32o(mon, $monst_minvis) & 1))
         how_seen |= NHM.MONSEEN_NORMAL;
     /* see invisible */
-    if (useemon && cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) | 0)
+    if (useemon && (cptr.ldI32o(mon, $monst_minvis) & 1) | 0)
         how_seen |= NHM.MONSEEN_SEEINVIS;
     /* infravision */
-    if ((!cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) || See_invisible()) &&
-            see_with_infrared(mon))
+    if ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && see_with_infrared(mon))
         how_seen |= NHM.MONSEEN_INFRAVIS;
     /* telepathy */
     if (tp_sensemon(mon))

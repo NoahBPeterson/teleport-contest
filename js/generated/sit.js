@@ -370,11 +370,15 @@ function throne_sit_effect() {
                 break;
             case 10:
                 if (Luck() < 0 || (HSee_invisible() & 117440512n)) {
-                    if ((cptr.ldI32o(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap
-                    ) &
-                            1)) {
+                    if (cptr.ldBits(
+                        cptr.add(
+                            svl,
+                            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap
+                        ),
+                        3,
+                        1,
+                        0
+                    )) {
                         pline(__s_a_terrible_drone_fills_your_head);
                         make_confused(
                             BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(rnd(30))),
@@ -572,7 +576,7 @@ function special_throne_effect(effect) {
                     otmp = cptr.ldPtr(otmp)
                 )
                     if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
-                        cptr.stBits(cptr.add(otmp, $obj_greased), 1, 1, 0, 1);
+                        cptr.stI32o(otmp, $obj_greased, 1);
                 make_glib(((rn2(101) + 100) | 0));
                 update_inventory();
                 break;
@@ -622,13 +626,13 @@ function special_throne_effect(effect) {
         case 10:
             {
                 /* confused blessed remove curse effect */
-                let fake_spellbook = cptr.alloc(112);
+                let fake_spellbook = cptr.alloc(216);
                 let save_confusion = HConfusion();
 
-                cptr.memcpy(fake_spellbook, cg, 112);
+                cptr.memcpy(fake_spellbook, cg, 216);
                 cptr.stI16o(fake_spellbook, $obj_otyp, NHC.SPE_REMOVE_CURSE);
                 cptr.st1o(fake_spellbook, $obj_oclass, NHC.SPBOOK_CLASS);
-                cptr.stBits(cptr.add(fake_spellbook, $obj_blessed), 1, 1, 0, 1);
+                cptr.stI32o(fake_spellbook, $obj_blessed, 1);
                 cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, 1n);
                 void seffects(fake_spellbook);
                 cptr.stI64o2(
@@ -731,7 +735,7 @@ function lay_an_egg() {
     cptr.stI32o(uegg, $obj_owt, weight(uegg) >>> 0);
     /* this sets hatch timers if appropriate */
     set_corpsenm(uegg, egg_type_from_parent(cptr.ldI32o(u, $you_umonnum), 0));
-    cptr.stBits(cptr.add(uegg, $obj_known), 0, 1, 0, 1);
+    cptr.stI32o(uegg, $obj_known, 1);
     observe_object(uegg);
     You(
         __s_s_an_egg,
@@ -904,7 +908,9 @@ export function dosit() {
                     You_cant(__s_sit_down_with_your_s_in_the_bear_trap, body_part(NHC.FOOT));
                     (cptr.stI32o(u, $you_utrap, cptr.ldI32o(u, $you_utrap) + 1)) - (1);
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-                    if (trap && ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.SPIKED_PIT) {
+                    if (trap &&
+                            (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) ==
+                                NHC.SPIKED_PIT) {
                         You(__s_sit_down_on_a_spike_ouch);
                         losehp(
                             Half_physical_damage() ? rn2(2) : 1,
@@ -1121,7 +1127,7 @@ export function rndcurse() {
             }
             /* the !otmp case should never happen; picking an already
                cursed item happens--avoid "resists" message in that case */
-            if (!otmp || cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0)
+            if (!otmp || (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)
                 continue;  /* next target */
 
             if (cptr.ld1so(otmp, $obj_oartifact) && spec_ability(otmp, 4n) && rn2(10) < 8) {
@@ -1129,7 +1135,7 @@ export function rndcurse() {
                 continue;
             }
 
-            if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0))
+            if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
                 unbless(otmp);
             else
                 curse(otmp);
@@ -1141,8 +1147,8 @@ export function rndcurse() {
     if (cptr.ldPtro(u, $you_usteed) &&
             !rn2(4) &&
             (otmp = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) !== null &&
-            !cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
-        if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0))
+            !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
+        if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
             unbless(otmp);
         else
             curse(otmp);
@@ -1150,13 +1156,13 @@ export function rndcurse() {
             pline(
                 __s_s_s__2,
                 Yobjnam2(otmp, __s_glow),
-                hcolor(cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0
+                hcolor((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0
                     ? cptr.ldPtr(c_color_names)
                     : __s_brown)
             );
-            cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, (Hallucination() ? 0 : 1) >>> 0);  /* bypass set_bknown() */
+            cptr.stI32o(otmp, $obj_bknown, (Hallucination() ? 0 : 1) >>> 0);  /* bypass set_bknown() */
         } else {
-            cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, 0);  /* bypass set_bknown() */
+            cptr.stI32o(otmp, $obj_bknown, 0);  /* bypass set_bknown() */
         }
     }
 }

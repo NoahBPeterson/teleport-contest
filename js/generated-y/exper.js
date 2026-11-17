@@ -227,8 +227,8 @@ export function experience(mtmp, nk) {
     ))
         tmp = 1;
 
-    if (cptr.ldBits(cptr.add(mtmp, $monst_mrevived), 4, 1, 0) | 0 ||
-            cptr.ldBits(cptr.add(mtmp, $monst_mcloned), 5, 1, 0) | 0) {
+    if ((cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0 ||
+            (cptr.ldI32o(mtmp, $monst_mcloned) & 1) | 0) {
         /*
          *      Reduce experience awarded for repeated killings of
          *      "the same monster".  Kill count includes all of this
