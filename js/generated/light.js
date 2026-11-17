@@ -408,7 +408,7 @@ export function show_transient_light(obj, x, y) {
         if (!ls || cptr.ld1so(obj, $obj_where) != NHM.OBJ_FREE) {
             impossible(
                 __s_transient_light_s_s_s_not_s,
-                cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0 ? __s_lit : __s_unlit,
+                (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ? __s_lit : __s_unlit,
                 simpleonames(obj),
                 otense(obj, __s_are),
                 !ls ? __s_a_light_source : __s_free
@@ -440,8 +440,7 @@ export function show_transient_light(obj, x, y) {
         mon = cptr.ldPtr(mon)
     ) {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1) ||
-                (cptr.ldBits(cptr.add(mon, $monst_isgd), 6, 1, 0) | 0 &&
-                    !cptr.ldI16o(mon, $monst_mx)))
+                ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
             continue;
         /* light range is the radius of a circle and we're limiting
            canseemon() to a square enclosing that circle, but setting
@@ -451,7 +450,7 @@ export function show_transient_light(obj, x, y) {
         if (dist2(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), x, y) <=
                 radius_squared) {
             if (canseemon(mon))
-                cptr.stBits(cptr.add(mon, $monst_mtemplit), 6, 1, 0, 1);
+                cptr.stI32o(mon, $monst_mtemplit, 1);
         }
         /* [what about worm tails?] */
     }
@@ -487,8 +486,8 @@ export function transient_light_cleanup() {
     ) {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1))
             continue;
-        if (cptr.ldBits(cptr.add(mon, $monst_mtemplit), 6, 1, 0)) {
-            cptr.stBits(cptr.add(mon, $monst_mtemplit), 6, 1, 0, 0);
+        if ((cptr.ldI32o(mon, $monst_mtemplit) & 1)) {
+            cptr.stI32o(mon, $monst_mtemplit, 0);
             ++mtempcount;
             if (!canspotmon(mon))
                 map_invisible(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
@@ -892,8 +891,8 @@ export function obj_move_light_source(src, dest) {
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT &&
                 cptr.eq(cptr.ldPtro(ls, $light_source_id), src))
             cptr.stPtro(ls, $light_source_id, dest);
-    cptr.stBits(cptr.add(src, $obj_lamplit), 7, 1, 0, 0);
-    cptr.stBits(cptr.add(dest, $obj_lamplit), 7, 1, 0, 1);
+    cptr.stI32o(src, $obj_lamplit, 0);
+    cptr.stI32o(dest, $obj_lamplit, 1);
 }
 
 /* return true if there exist any light sources */
@@ -950,7 +949,7 @@ export function obj_sheds_light(obj) {
 /* Return TRUE if sheds light AND will be snuffed by end_burn(). */
 /** C ref: light.c:771 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_is_burning(obj) {
-    return schar((cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0 &&
+    return schar(((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 &&
         (ignitable(obj) || artifact_light(obj))
             ? 1
             : 0));
@@ -981,7 +980,7 @@ export function obj_split_light_source(src, dest) {
             cptr.stPtro(new_ls, $light_source_id, dest);
             cptr.stPtr(new_ls, cptr.ldPtro(gl, $instance_globals_l_light_base));
             cptr.stPtro(gl, $instance_globals_l_light_base, new_ls);
-            cptr.stBits(cptr.add(dest, $obj_lamplit), 7, 1, 0, 1);  /* now an active light source */
+            cptr.stI32o(dest, $obj_lamplit, 1);  /* now an active light source */
         }
 }
 
@@ -1071,15 +1070,15 @@ export function arti_light_radius(obj) {
      */
 
     /* sanity check [simplifies usage by bless()/curse()/&c] */
-    if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) || !artifact_light(obj))
+    if (!(cptr.ldI32o(obj, $obj_lamplit) & 1) || !artifact_light(obj))
         return 0;
 
     /* cursed radius of 1 is not noticeable for an item that's
        carried by the hero but is if it's carried by a monster
        or left lit on the floor (not applicable for Sunsword) */
-    res = (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0
+    res = ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0
             ? 3
-            : (!cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) ? 2 : 1));
+            : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 2 : 1));
 
     /* if poly'd into gold dragon with embedded scales, make the scales
        have minimum radiance (hero as light source will use light radius

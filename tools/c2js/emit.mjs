@@ -41,6 +41,16 @@ function fileHasOld() {
   for (const files of OLD_FILES.values()) if (files.has(CUR_FILE)) return true;
   return false;
 }
+// C2JS_BITS_NEW=rm,trap: only these records get the new bit-field packing and
+// ldBits/stBits; the rest keep ed2c66e's layout. Unset: all new; set but empty: none.
+// C2JS_OLD=bits (or all) still means none. C2JS_LIST_BF=1 lists the records that have bit-fields.
+const BITS_NEW = process.env.C2JS_BITS_NEW === undefined ? null
+  : new Set(process.env.C2JS_BITS_NEW.split(',').map((x) => x.trim()).filter(Boolean));
+const BF_LISTED = new Set();
+function bitsOld(recName) {
+  if (OLD_SET.has('bits') || OLD_SET.has('all')) return true;
+  return BITS_NEW !== null && !BITS_NEW.has(recName);
+}
 export function OLD(fam) {
   if (OLD_SET.has(fam) || OLD_SET.has('all')) return true;
   if (GLOBAL_FAMS.has(fam)) return false;
@@ -2025,7 +2035,11 @@ export class Emitter {
     const rec = this.records.get(name);
     if (!rec) throw new Error(`layout: unknown struct ${name}`);
     if (rec.tag === 'enum') return { size: 4, align: 4, offsets: {} };
-    if (OLD('bits')) {
+    if (process.env.C2JS_LIST_BF && rec.fields.some((f) => f.bits !== undefined) && !BF_LISTED.has(name)) {
+      BF_LISTED.add(name);
+      process.stderr.write(`BFREC ${name} ${rec.fields.filter((f) => f.bits !== undefined).length}\n`);
+    }
+    if (bitsOld(name)) {
       // ed2c66e: every field, bit-fields too, at its own declared type's slot
       let off = 0, size = 1, maxAlign = 1;
       const offsets = {};
@@ -3479,7 +3493,7 @@ export class Emitter {
   /** load a scalar rvalue from a cptr location, by access type */
   /** elemQ for a member: the bit-field token if it is one, else its plain type. */
   fieldLocType(recName, fieldName, fieldQ) {
-    if (OLD('bits')) return fieldQ;
+    if (bitsOld(recName)) return fieldQ;
     const b = this.layoutOf(recName).bits?.[fieldName];
     return b ? `bf:${b.shift}:${b.width}:${fieldQ}` : fieldQ;
   }
@@ -3813,7 +3827,7 @@ export class Emitter {
       if (arrayParts(fieldQ) || (parseType(fieldQ).cls === 'record' && !this.isEnumType(fieldQ))) {
         return { code: loc, prec: PREC.atom, rep: 'cptr', elemQ: fieldQ, elemRec: this.fieldRecordName(fi) };
       }
-      if (OLD('bits')) return { ...this.narrowBitfield(this.loadFrom(loc, fieldQ), fi, fieldQ), locCode: loc, elemQ: fieldQ };
+      if (bitsOld(recName)) return { ...this.narrowBitfield(this.loadFrom(loc, fieldQ), fi, fieldQ), locCode: loc, elemQ: fieldQ };
       const locQ = this.fieldLocType(recName, n.name, fieldQ);
       return { ...this.loadFrom(loc, locQ), locCode: loc, elemQ: locQ };
     }
@@ -7851,7 +7865,7 @@ export class Emitter {
       const init = inits[i];
       if (!init || init.kind === 'ImplicitValueInitExpr') continue;
       const f = named[i];
-      if (f.bits && !OLD('bits')) {
+      if (f.bits && !bitsOld(recName)) {
         const off = this.layoutOf(recName).offsets[f.name];
         const loc = off === 0 ? name : this.cptrCall('add', name, String(off));
         lines.push(`${this.storeTo(loc, this.fieldLocType(recName, f.name, f.q), this.emitExpr(init).code)};`);

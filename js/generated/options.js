@@ -14744,33 +14744,19 @@ export function initoptions_init() {
      */
     /* this detects the IBM-compatible console on most 386 boxes */
     if ((opts = nh_getenv(__s_term)) && !cptr.strncmp(opts, __s_at, 2n)) {
-        if (!cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(gs, $instance_globals_s_symset),
-                    NHC.PRIMARYSET,
-                    $sizeof_symsetentry
-                ),
-                $symsetentry_explicitly
-            ),
-            3,
-            1,
-            0
-        ))
+        if (!(cptr.ldI32o2(
+            gs,
+            NHC.PRIMARYSET,
+            $sizeof_symsetentry,
+            $instance_globals_s_symset + $symsetentry_explicitly
+        ) & 1))
             load_symset(__s_ibmgraphics__2, NHC.PRIMARYSET);
-        if (!cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(gs, $instance_globals_s_symset),
-                    NHC.ROGUESET,
-                    $sizeof_symsetentry
-                ),
-                $symsetentry_explicitly
-            ),
-            3,
-            1,
-            0
-        ))
+        if (!(cptr.ldI32o2(
+            gs,
+            NHC.ROGUESET,
+            $sizeof_symsetentry,
+            $instance_globals_s_symset + $symsetentry_explicitly
+        ) & 1))
             load_symset(__s_rogueibm, NHC.ROGUESET);
         switch_symbols(1);
         cptr.st1o(iflags, $instance_flags_wc_color, 1);
@@ -14785,19 +14771,12 @@ export function initoptions_init() {
                 cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE),
                 15
             )) {
-        if (!cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(gs, $instance_globals_s_symset),
-                    NHC.PRIMARYSET,
-                    $sizeof_symsetentry
-                ),
-                $symsetentry_explicitly
-            ),
-            3,
-            1,
-            0
-        ))
+        if (!(cptr.ldI32o2(
+            gs,
+            NHC.PRIMARYSET,
+            $sizeof_symsetentry,
+            $instance_globals_s_symset + $symsetentry_explicitly
+        ) & 1))
             load_symset(__s_decgraphics__2, NHC.PRIMARYSET);
         switch_symbols(1);
     }

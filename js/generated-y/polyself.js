@@ -1284,7 +1284,7 @@ function* check_strangling(on) {
 function* polyman(fmt, arg) {
     let sticking = schar((sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
         cptr.ldPtro(u, $you_ustuck) &&
-        !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)
+        !(cptr.ldI32o(u, $you_uswallow) & 1)
             ? 1
             : 0));
     let was_mimicking = schar((U_AP_TYPE() != NHC.M_AP_NOTHING));
@@ -1295,14 +1295,14 @@ function* polyman(fmt, arg) {
         cptr.memcpy(cptr.add(u, $you_acurr), cptr.add(u, $you_macurr), 6);  /* restore old attribs */
         cptr.memcpy(cptr.add(u, $you_amax), cptr.add(u, $you_mamax), 6);
         cptr.stI32o(u, $you_umonnum, cptr.ldI32o(u, $you_umonster));
-        cptr.st1o(flags, $flag_female, schar(cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0)));
+        cptr.st1o(flags, $flag_female, schar((cptr.ldI32o(u, $you_mfemale) & 1)));
     }
     (yield* set_uasmon());
 
     cptr.stI32o(u, $you_mh, cptr.stI32o(u, $you_mhmax, 0));
     cptr.stI32o(u, $you_mtimedone, 0);
     (yield* skinback(0));
-    cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
+    cptr.stI32o(u, $you_uundetected, 0);
 
     if (sticking)
         (yield* uunstick());
@@ -1391,17 +1391,9 @@ export function* change_sex() {
                     262144n) != 0n)))
         cptr.st1o(flags, $flag_female, schar((!cptr.ld1so(flags, $flag_female))));
     if (Upolyd())
-        cptr.stBits(
-            cptr.add(u, $you_mfemale),
-            3,
-            1,
-            0,
-            (!cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0)) >>> 0
-        );
+        cptr.stI32o(u, $you_mfemale, (!(cptr.ldI32o(u, $you_mfemale) & 1)) >>> 0);
     max_rank_sz();  /* [this appears to be superfluous] */
-    if ((Upolyd()
-        ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
-        : cptr.ld1so(flags, $flag_female)) &&
+    if ((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) &&
             cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
         void cptr.strcpy(
             cptr.add(svp, $instance_globals_saved_p_pl_character),
@@ -1590,7 +1582,7 @@ function* newman() {
     (yield* newuhs(0));
     /* use saved gender we're about to revert to, not current */
     newform = ((Upolyd()
-        ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
+        ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
         : cptr.ld1so(flags, $flag_female)) &&
         cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f))
             ? cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f)
@@ -1954,7 +1946,7 @@ export function* polyself(psflags) {
                 $instance_globals_saved_m_mvitals + $mvitals_mvflags
             ) &
                     NHM.G_GENOD)) {
-                was_lit = cptr.ldBits(cptr.add(uarm.v, $obj_lamplit), 7, 1, 0);
+                was_lit = (cptr.ldI32o(uarm.v, $obj_lamplit) & 1);
                 arm_light = artifact_light(uarm.v) ? arti_light_radius(uarm.v) : 0;
 
                 /* allow G_EXTINCT */
@@ -2159,13 +2151,13 @@ export function* polymon(mntmp) {
     let ustuckNam = new Uint8Array(256);
     let sticking = schar((sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
         cptr.ldPtro(u, $you_ustuck) &&
-        !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)
+        !(cptr.ldI32o(u, $you_uswallow) & 1)
             ? 1
             : 0));
     let was_blind = schar((!!Blind()));
     let dochange = 0;
     let was_expelled = 0;
-    let was_hiding_under = schar((cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
+    let was_hiding_under = schar(((cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
         ((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
@@ -2218,14 +2210,14 @@ export function* polymon(mntmp) {
         /* Human to monster; save human stats */
         cptr.memcpy(cptr.add(u, $you_macurr), cptr.add(u, $you_acurr), 6);
         cptr.memcpy(cptr.add(u, $you_mamax), cptr.add(u, $you_amax), 6);
-        cptr.stBits(cptr.add(u, $you_mfemale), 3, 1, 0, cptr.ld1so(flags, $flag_female));
+        cptr.stI32o(u, $you_mfemale, cptr.ld1so(flags, $flag_female));
     } else {
         /* Monster to monster; restore human stats, to be
          * immediately changed to provide stats for the new monster
          */
         cptr.memcpy(cptr.add(u, $you_acurr), cptr.add(u, $you_macurr), 6);
         cptr.memcpy(cptr.add(u, $you_amax), cptr.add(u, $you_mamax), 6);
-        cptr.st1o(flags, $flag_female, schar(cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0)));
+        cptr.st1o(flags, $flag_female, schar((cptr.ldI32o(u, $you_mfemale) & 1)));
     }
 
     /* if stuck mimicking gold, stop immediately */
@@ -2437,7 +2429,7 @@ export function* polymon(mntmp) {
         (yield* learn_egg_type(egg_type_from_parent(cptr.ldI32o(u, $you_umonnum), 1)));
     }
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         let usiz;
 
         /* if new form can't be swallowed, make engulfer expel hero */
@@ -2533,7 +2525,7 @@ export function* polymon(mntmp) {
         !cptr.ldPtro(u, $you_ustuck) &&
         !Flying() &&
         is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) ||
-        ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 && !Swimming())) &&
+        (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !Swimming())) &&
             !was_expelled) {
         (yield* spoteffects(1));
         /* FIXME? if spoteffects() triggered rehumanize then we should
@@ -2821,7 +2813,7 @@ function* break_armor() {
                 cancel_don();
             /* for gold DSM, we don't want Armor_gone() to report that it
                stops shining _after_ we've been told that it is destroyed */
-            if (cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0))
+            if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
                 (yield* end_burn(otmp, 0));
 
             (yield* You(__s_break_out_of_your_armor));
@@ -3026,14 +3018,14 @@ function* drop_weapon(alone) {
             if (cptr.ld1so(u, $you_twoweap)) {
                 otmp = uswapwep.v;
                 (yield* uswapwepgone());
-                if (cptr.ldBits(cptr.add(otmp, $obj_in_use), 2, 1, 0))
+                if ((cptr.ldI32o(otmp, $obj_in_use) & 1))
                     updateinv = 0;
                 else if (candropswapwep)
                     (yield* dropx(otmp));
             }
             otmp = uwep.v;
             (yield* uwepgone());
-            if (cptr.ldBits(cptr.add(otmp, $obj_in_use), 2, 1, 0))
+            if ((cptr.ldI32o(otmp, $obj_in_use) & 1))
                 updateinv = 0;
             else if (candropwep)
                 (yield* dropx(otmp));
@@ -3232,7 +3224,7 @@ export function* dospinweb() {
         (yield* You(__s_must_be_on_s_ground_to_spin_a_web, reject_terrain ? __s_solid : __s_the));
         return NHM.ECMD_OK;
     }
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         (yield* You(__s_release_web_fluid_inside_s, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
         if (((cptr.ldU64o(
             (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
@@ -3294,7 +3286,7 @@ export function* dospinweb() {
     }
     (yield* exercise(NHC.A_DEX, 1));
     if (ttmp) {
-        switch (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) {
+        switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
             case NHC.PIT:
             case NHC.SPIKED_PIT:
                 (yield* You(__s_spin_a_web_covering_up_the_pit));
@@ -3320,7 +3312,7 @@ export function* dospinweb() {
             case NHC.TRAPDOOR:
                 (yield* You(
                     __s_web_over_the_s,
-                    ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.TRAPDOOR)
+                    (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR)
                         ? __s_trap_door
                         : __s_hole
                 ));
@@ -3347,10 +3339,7 @@ export function* dospinweb() {
                 (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
                 return NHM.ECMD_TIME;
             default:
-                (yield* impossible(
-                    __s_webbing_over_trap_type_d,
-                    cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0
-                ));
+                (yield* impossible(__s_webbing_over_trap_type_d, (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0));
                 return NHM.ECMD_OK;
         }
     } else if (On_stairs(x, y)) {
@@ -3374,7 +3363,7 @@ export function* dospinweb() {
     ttmp = (yield* maketrap(x, y, NHC.WEB));
     if (ttmp) {
         (yield* You(__s_spin_a_web__2));
-        cptr.stBits(cptr.add(ttmp, $trap_madeby_u), 7, 1, 0, 1);
+        cptr.stI32o(ttmp, $trap_madeby_u, 1);
         (yield* feeltrap(ttmp));
         if (cptr.ld1s((yield* in_rooms(x, y, NHC.SHOPBASE))))
             (yield* add_damage(x, y, 30n));
@@ -3472,8 +3461,7 @@ export function* dogaze() {
                         16777216n) !=
                         0n)) {
                 (yield* pline(__s_s_seems_not_to_notice_your_gaze, (yield* Monnam(mtmp))));
-            } else if (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) | 0 &&
-                    !See_invisible()) {
+            } else if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !See_invisible()) {
                 (yield* You_cant(__s_see_where_to_gaze_at_s, (yield* Monnam(mtmp))));
             } else if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ==
                 NHC.M_AP_FURNITURE ||
@@ -3486,7 +3474,7 @@ export function* dogaze() {
                 (yield* You(__s_avoid_gazing_at_s, (yield* y_monnam(mtmp))));
             } else {
                 if (cptr.ld1so(flags, $flag_confirm) &&
-                        cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 &&
+                        (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 &&
                         !HConfusion()) {
                     void cptr.sprintf(
                         cptr.decay(qbuf),
@@ -3499,8 +3487,8 @@ export function* dogaze() {
                 }
                 (yield* setmangry(mtmp, 1));
                 if (helpless(mtmp) ||
-                        cptr.ldBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0) | 0 ||
-                        !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0) ||
+                        (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0 ||
+                        !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) ||
                         !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
                             4096n) ==
                             0n)) {
@@ -3511,11 +3499,11 @@ export function* dogaze() {
                  * gazes at *you*--only medusa gaze gets reflected then.
                  */
                 if (adtyp == NHM.AD_CONF) {
-                    if (!cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0))
+                    if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1))
                         (yield* Your(__s_gaze_confuses_s, (yield* mon_nam(mtmp))));
                     else
                         (yield* pline(__s_s_is_getting_more_and_more_confused, (yield* Monnam(mtmp))));
-                    cptr.stBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0, 1);
+                    cptr.stI32o(mtmp, $monst_mconf, 1);
                 } else if (adtyp == NHM.AD_FIRE) {
                     let dmg = d(2, 6);
                     let orig_dmg = dmg;
@@ -3545,7 +3533,7 @@ export function* dogaze() {
                     cptr.ldPtro(mtmp, $monst_data),
                     cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)
                 ) &&
-                        !cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0)) {
+                        !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
                     if (!Free_action()) {
                         (yield* You(__s_are_frozen_by_s_gaze, (yield* s_suffix((yield* mon_nam(mtmp))))));
                         nomul((cptr.ldI32o(u, $you_ulevel) > 6 || rn2(4))
@@ -3578,7 +3566,7 @@ export function* dogaze() {
                     cptr.ldPtro(mtmp, $monst_data),
                     cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)
                 ) &&
-                        !cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0)) {
+                        !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
                     (yield* pline(__s_gazing_at_the_awake_s_is_not_a_very, (yield* l_monnam(mtmp))));
                     /* as if gazing at a sleeping anything is fruitful... */
                     (yield* urgent_pline(__s_you_turn_to_stone__2));
@@ -3624,7 +3612,7 @@ export function* dohide() {
             __s_hide_while_you_re_s,
             !cptr.ldPtro(u, $you_ustuck)
                 ? __s_trapped
-                : (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0
+                : ((cptr.ldI32o(u, $you_uswallow) & 1) | 0
                     ? ((dmgtype_fromattack(
                         (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
                         NHM.AD_DGST,
@@ -3642,9 +3630,9 @@ export function* dohide() {
                             ? __s_holding_someone
                             : __s_holding_that_creature)))
         ));
-        if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 ||
+        if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 ||
                 (ismimic && U_AP_TYPE() != NHC.M_AP_NOTHING)) {
-            cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
+            cptr.stI32o(u, $you_uundetected, 0);
             cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_NOTHING);
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         }
@@ -3667,7 +3655,7 @@ export function* dohide() {
             (yield* pline_The(__s_fountain_is_not_deep_enough_to_hide_in));
         else
             (yield* There(__s_is_no_s_to_hide_in_here, hliquid(__s_water)));
-        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
+        cptr.stI32o(u, $you_uundetected, 0);
         return NHM.ECMD_OK;
     }
     if (((cptr.ldU64o(
@@ -3689,7 +3677,7 @@ export function* dohide() {
 
         if (!otop) {
             (yield* There(__s_is_nothing_to_hide_under_here));
-            cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
+            cptr.stI32o(u, $you_uundetected, 0);
             return NHM.ECMD_OK;
         }
         for (
@@ -3725,14 +3713,14 @@ export function* dohide() {
             );
             (yield* instapetrify(cptr.decay(kbuf)));
             /* only reach here if life-saved */
-            cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
+            cptr.stI32o(u, $you_uundetected, 0);
             return NHM.ECMD_TIME;
         }
     }
     /* Planes of Air and Water */
     if (on_ceiling && !has_ceiling(cptr.add(u, $you_uz))) {
         (yield* There(__s_is_nowhere_to_hide_above_you));
-        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
+        cptr.stI32o(u, $you_uundetected, 0);
         return NHM.ECMD_OK;
     }
     if ((((cptr.ldU64o(
@@ -3779,14 +3767,14 @@ export function* dohide() {
                         )
                     ))))) {
         (yield* There(__s_is_nowhere_to_hide_beneath_you));
-        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
+        cptr.stI32o(u, $you_uundetected, 0);
         return NHM.ECMD_OK;
     }
     /* TODO? inhibit floor hiding at furniture locations, or
      * else make youhiding() give smarter messages at such spots.
      */
 
-    if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 ||
+    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 ||
             (ismimic && U_AP_TYPE() != NHC.M_AP_NOTHING)) {
         (yield* youhiding(0, 1));  /* "you are already hiding" */
         return NHM.ECMD_OK;
@@ -3797,7 +3785,7 @@ export function* dohide() {
         cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_OBJECT);
         cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, NHC.STRANGE_OBJECT);
     } else
-        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 1);
+        cptr.stI32o(u, $you_uundetected, 1);
     (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
     (yield* youhiding(0, 0));  /* "you are now hiding" */
     return NHM.ECMD_TIME;
@@ -3858,12 +3846,12 @@ export function* domindblast() {
             cptr.ldI16o(u, $you_uy)
         ) > 64)
             continue;
-        if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
+        if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             continue;
         if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n))
             continue;
         u_sen = telepathic(cptr.ldPtro(mtmp, $monst_data)) &&
-            !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0)
+            !(cptr.ldI32o(mtmp, $monst_mcansee) & 1)
                 ? 1
                 : 0;
         if (u_sen || (telepathic(cptr.ldPtro(mtmp, $monst_data)) && rn2(2)) || !rn2(10)) {

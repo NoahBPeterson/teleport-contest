@@ -1908,9 +1908,9 @@ export function* tt_doppel(mon) {
         ret = ((rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
     else {
         if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 70)
-            cptr.stBits(cptr.add(mon, $monst_female), 0, 1, 0, 1);
+            cptr.stI32o(mon, $monst_female, 1);
         else if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 77)
-            cptr.stBits(cptr.add(mon, $monst_female), 0, 1, 0, 0);
+            cptr.stI32o(mon, $monst_female, 0);
         ret = (yield* classmon(cptr.add(tt, $toptenentry_plrole)));
         /* Only take on a name if the player can see
            the doppelganger, otherwise we end up with

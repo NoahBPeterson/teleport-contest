@@ -849,9 +849,9 @@ export function* do_statusline2() {
     if (Strangled())
         void cptr.strcpy(nb = eos(nb), __s_strngl);
     if (Sick()) {
-        if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_VOMITABLE)
+        if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE)
             void cptr.strcpy(nb = eos(nb), __s_foodpois);
-        if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_NONVOMITABLE)
+        if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE)
             void cptr.strcpy(nb = eos(nb), __s_termill);
     }
     if (cptr.ldI32o(u, $you_uhs) != NHC.NOT_HUNGRY)
@@ -2709,8 +2709,7 @@ function* bot_via_windowport() {
                 NHC.bl_foodpois,
                 $sizeof_condtests_t,
                 $condtests_t_test,
-                schar((((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) &
-                    NHM.SICK_VOMITABLE) != 0))
+                schar(((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE) != 0))
             );
         if (cptr.ld1so2(condtests, NHC.bl_termill, $sizeof_condtests_t, $condtests_t_enabled))
             cptr.st1o2(
@@ -2718,8 +2717,7 @@ function* bot_via_windowport() {
                 NHC.bl_termill,
                 $sizeof_condtests_t,
                 $condtests_t_test,
-                schar((((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) &
-                    NHM.SICK_NONVOMITABLE) != 0))
+                schar(((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) != 0))
             );
     }
     cptr.st1o2(
@@ -2789,7 +2787,7 @@ function* bot_via_windowport() {
            so swallowed needs to be checked first; it is not possible for
            a hero in sticks() form to be held--sticky hero does the holding
            even if u.ustuck is also a holder */
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             if (cptr.ld1so2(condtests, NHC.bl_held, $sizeof_condtests_t, $condtests_t_enabled))
                 cptr.st1o2(condtests, NHC.bl_held, $sizeof_condtests_t, $condtests_t_test, 1);
         } else if (Upolyd() &&

@@ -323,7 +323,7 @@ export function poly_when_stoned(ptr) {
 /** C ref: mondata.c:91 — @param {CPtr<struct monst>} mon @param {CInt} adtyp @returns {CInt} */
 export function* defended(mon, adtyp) {
     let o;
-    let otemp = cptr.alloc(112);
+    let otemp = cptr.alloc(216);
     let mndx;
     let is_you = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
 
@@ -339,7 +339,7 @@ export function* defended(mon, adtyp) {
         /* a dragon is its own suit...  if mon is poly'd hero, we don't
            care about embedded scales (uskin) because being a dragon with
            embedded scales is no better than just being a dragon */
-        cptr.memcpy(otemp, cg, 112);
+        cptr.memcpy(otemp, cg, 216);
         cptr.st1o(otemp, $obj_oclass, NHC.ARMOR_CLASS);
         cptr.stI16o(
             otemp,
@@ -492,10 +492,10 @@ export function* resists_blnd(mon) {
                 (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))
                 ? 1
                 : 0)
-            : (cptr.ldBits(cptr.add(mon, $monst_mblinded), 0, 7, 0) | 0 ||
-                !cptr.ldBits(cptr.add(mon, $monst_mcansee), 7, 1, 0) ||
+            : ((cptr.ldI32o(mon, $monst_mblinded) & 127) | 0 ||
+                !(cptr.ldI32o(mon, $monst_mcansee) & 1) ||
                 !((cptr.ldU64o((ptr), $permonst_mflags1) & 4096n) == 0n) ||
-                cptr.ldBits(cptr.add(mon, $monst_msleeping), 7, 1, 0) | 0
+                (cptr.ldI32o(mon, $monst_msleeping) & 1) | 0
                 ? 1
                 : 0))
         return 1;
@@ -576,7 +576,7 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
         case NHM.AT_MAGC:
         case NHM.AT_BREA:
             /* light-based attacks may be cancelled or resisted */
-            if (magr && cptr.ldBits(cptr.add(magr, $monst_mcan), 4, 1, 0) | 0)
+            if (magr && (cptr.ldI32o(magr, $monst_mcan) & 1) | 0)
                 return 0;
             return schar((!(yield* resists_blnd(mdef))));
         case NHM.AT_WEAP:
@@ -596,7 +596,7 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
             } else
                 return 0;  /* other objects cannot cause blindness yet */
             if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
-                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
+                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
                 return 0;  /* can't affect eyes while inside monster */
             break;
         case NHM.AT_ENGL:
@@ -606,7 +606,7 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
                             (unconscious() || is_fainted())) ||
                         cptr.ldI32o(u, $you_ucreamed)))
                 return 0;
-            if (!is_you && cptr.ldBits(cptr.add(mdef, $monst_msleeping), 7, 1, 0) | 0)
+            if (!is_you && (cptr.ldI32o(mdef, $monst_msleeping) & 1) | 0)
                 return 0;
             break;
         case NHM.AT_CLAW:
@@ -614,14 +614,14 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
             if (is_you && ublindf.v)
                 return 0;
             if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
-                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
+                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
                 return 0;  /* can't affect eyes while inside monster */
             check_visor = 1;
             break;
         case NHM.AT_TUCH:
         case NHM.AT_STNG:
             /* some physical, blind-inducing attacks can be cancelled */
-            if (magr && cptr.ldBits(cptr.add(magr, $monst_mcan), 4, 1, 0) | 0)
+            if (magr && (cptr.ldI32o(magr, $monst_mcan) & 1) | 0)
                 return 0;
             break;
         default:
@@ -1644,7 +1644,7 @@ export function* name_to_monclass(in_str, mndx_p) {
 export function gender(mtmp) {
     if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 262144n) != 0n))
         return 2;
-    return cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0) | 0;
+    return (cptr.ldI32o(mtmp, $monst_female) & 1) | 0;
 }
 
 /* Like gender(), but unseen humanoids are "it" rather than "he" or "she"
@@ -1669,7 +1669,7 @@ export function pronoun_gender(mtmp, pg_flags) {
     return (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) != 0n) ||
         (cptr.ldU16o(cptr.ldPtro(mtmp, $monst_data), $permonst_geno) & NHM.G_UNIQ) ||
         ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 524288n) != 0n))
-            ? cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0) | 0
+            ? (cptr.ldI32o(mtmp, $monst_female) & 1) | 0
             : 2;
 }
 
@@ -1680,18 +1680,17 @@ export function levl_follower(mtmp) {
         return 1;
 
     /* Wizard with Amulet won't bother trying to follow across levels */
-    if (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 && mon_has_amulet(mtmp))
+    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && mon_has_amulet(mtmp))
         return 0;
     /* some monsters will follow even while intending to flee from you */
     if (cptr.ld1so(mtmp, $monst_mtame) ||
-            cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 ||
+            (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 ||
             is_fshk(mtmp))
         return 1;
     /* stalking types follow, but won't when fleeing unless you hold
        the Amulet */
     return schar(((cptr.ldU64o(cptr.ldPtro(mtmp, $monst_data), $permonst_mflags2) & 16777216n) &&
-        (!cptr.ldBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0) ||
-            cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0)
+        (!(cptr.ldI32o(mtmp, $monst_mflee) & 1) || (cptr.ldI32o(u, $you_uhave) & 1) | 0)
             ? 1
             : 0));
 }
@@ -2194,7 +2193,7 @@ export function cvt_prop_to_mseenres(prop) {
 export function monstseesu(seenres) {
     let mtmp;
 
-    if (seenres == 0n || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
+    if (seenres == 0n || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
         return;
 
     for (
@@ -2229,7 +2228,7 @@ export function monstseesu(seenres) {
 export function monstunseesu(seenres) {
     let mtmp;
 
-    if (seenres == 0n || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
+    if (seenres == 0n || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
         return;
 
     for (
@@ -2360,13 +2359,13 @@ export function mons_see_trap(ttmp) {
                     0n) ||
                 !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) ==
                     0n) ||
-                !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0))
+                !(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
             continue;
         if (dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), tx, ty) > maxdist)
             continue;
         if (!m_cansee(mtmp, tx, ty))
             continue;
-        mon_learns_traps(mtmp, cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0);
+        mon_learns_traps(mtmp, (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0);
     }
 }
 

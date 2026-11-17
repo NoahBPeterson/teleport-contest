@@ -192,9 +192,9 @@ export function* new_were(mon) {
     set_mon_data(mon, cptr.add(mons, pm, $sizeof_permonst));
     if (helpless(mon)) {
         /* transformation wakens and/or revitalizes */
-        cptr.stBits(cptr.add(mon, $monst_msleeping), 7, 1, 0, 0);
-        cptr.stBits(cptr.add(mon, $monst_mfrozen), 0, 7, 0, 0);  /* not asleep or paralyzed */
-        cptr.stBits(cptr.add(mon, $monst_mcanmove), 7, 1, 0, 1);
+        cptr.stI32o(mon, $monst_msleeping, 0);
+        cptr.stI32o(mon, $monst_mfrozen, 0);  /* not asleep or paralyzed */
+        cptr.stI32o(mon, $monst_mcanmove, 1);
     }
     /* regenerate by 1/4 of the lost hit points */
     (yield* healmon(
@@ -209,7 +209,7 @@ export function* new_were(mon) {
     /* vision capability isn't changing so we don't call set_apparxy() to
        update mon's idea of where hero is; peaceful check is redundant */
     if (cptr.ld1so(svc, $context_info_mon_moving) &&
-            !cptr.ldBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0) &&
+            !(cptr.ldI32o(mon, $monst_mpeaceful) & 1) &&
             (yield* onscary(cptr.ldI16o(mon, $monst_mux), cptr.ldI16o(mon, $monst_muy), mon)) &&
             monnear(mon, cptr.ldI16o(mon, $monst_mux), cptr.ldI16o(mon, $monst_muy)))
         (yield* monflee(mon, ((rn2(9) + 2) | 0), 1, 1));  /* 2..10 turns */

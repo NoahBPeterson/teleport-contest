@@ -899,8 +899,8 @@ function known_vibrating_square_at(x, y) {
         let ttmp = t_at(x, y);
 
         return schar((ttmp &&
-            (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.VIBRATING_SQUARE &&
-            cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0
+            ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE &&
+            (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0
                 ? 1
                 : 0));
     }
@@ -2077,15 +2077,11 @@ export function* getpos(ccp, force, goal) {
             { __pc = 2; continue; }
         }
         case 74: {
-            if (cptr.ldBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-                ),
-                4,
-                1,
-                0
-            ) |
+            if ((cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+            ) &
+                1) |
                 0 &&
                     !cptr.ldI32o(iflags, $instance_flags_terrainmode)) { __pc = 77; continue; }
             __pc = 76; continue;

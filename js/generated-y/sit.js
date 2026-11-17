@@ -374,15 +374,11 @@ function* throne_sit_effect() {
                 break;
             case 10:
                 if (Luck() < 0 || (HSee_invisible() & 117440512n)) {
-                    if (cptr.ldBits(
-                        cptr.add(
-                            svl,
-                            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap
-                        ),
-                        3,
-                        1,
-                        0
-                    )) {
+                    if ((cptr.ldI32o(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap
+                    ) &
+                            1)) {
                         (yield* pline(__s_a_terrible_drone_fills_your_head));
                         (yield* make_confused(
                             BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(rnd(30))),
@@ -470,7 +466,7 @@ function* throne_sit_effect() {
         ) &
             2048n) !=
             0n) ||
-                cptr.ldBits(cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth), 3, 2, 0) | 0)
+                (cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3) | 0)
             (yield* You_feel(__s_very_comfortable_here));
         else
             (yield* You_feel(__s_somehow_out_of_place));
@@ -598,7 +594,7 @@ function* special_throne_effect(effect) {
                     otmp = cptr.ldPtr(otmp)
                 )
                     if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
-                        cptr.stBits(cptr.add(otmp, $obj_greased), 1, 1, 0, 1);
+                        cptr.stI32o(otmp, $obj_greased, 1);
                 (yield* make_glib(((rn2(101) + 100) | 0)));
                 (yield* update_inventory());
                 break;
@@ -624,7 +620,7 @@ function* special_throne_effect(effect) {
                     ) -
                         1) | 0))
                 );
-                if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
+                if ((cptr.ldI32o(u, $you_uhave) & 1))
                     (yield* You_feel(__s_extremely_disoriented_for_a_moment));
                 else
                     (yield* schedule_goto(
@@ -648,13 +644,13 @@ function* special_throne_effect(effect) {
         case 10:
             {
                 /* confused blessed remove curse effect */
-                let fake_spellbook = cptr.alloc(112);
+                let fake_spellbook = cptr.alloc(216);
                 let save_confusion = HConfusion();
 
-                cptr.memcpy(fake_spellbook, cg, 112);
+                cptr.memcpy(fake_spellbook, cg, 216);
                 cptr.stI16o(fake_spellbook, $obj_otyp, NHC.SPE_REMOVE_CURSE);
                 cptr.st1o(fake_spellbook, $obj_oclass, NHC.SPBOOK_CLASS);
-                cptr.stBits(cptr.add(fake_spellbook, $obj_blessed), 1, 1, 0, 1);
+                cptr.stI32o(fake_spellbook, $obj_blessed, 1);
                 cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, 1n);
                 void (yield* seffects(fake_spellbook));
                 cptr.stI64o2(
@@ -716,7 +712,7 @@ function* lay_an_egg() {
         (yield* You(__s_don_t_have_enough_energy_to_lay_an_egg));
         return NHM.ECMD_OK;
     } else if (eggs_in_water(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
-        if (!((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
+        if (!(((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ||
                 (((cptr.ldI16o(
                     (cptr.add(
                         svd,
@@ -757,7 +753,7 @@ function* lay_an_egg() {
     cptr.stI32o(uegg, $obj_owt, (yield* weight(uegg)) >>> 0);
     /* this sets hatch timers if appropriate */
     (yield* set_corpsenm(uegg, egg_type_from_parent(cptr.ldI32o(u, $you_umonnum), 0)));
-    cptr.stBits(cptr.add(uegg, $obj_known), 0, 1, 0, 1);
+    cptr.stI32o(uegg, $obj_known, 1);
     (yield* observe_object(uegg));
     (yield* You(
         __s_s_an_egg,
@@ -792,7 +788,7 @@ export function* dosit() {
             (yield* You(__s_are_already_sitting_on_s, (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
             return NHM.ECMD_OK;
         }
-        if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
+        if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
                 ((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
@@ -800,10 +796,10 @@ export function* dosit() {
                     256n) !=
                     0n) &&
                 cptr.ldI32o(u, $you_umonnum) != NHC.PM_TRAPPER)
-            cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);  /* no longer on the ceiling */
+            cptr.stI32o(u, $you_uundetected, 0);  /* no longer on the ceiling */
 
         if (!can_reach_floor(0)) {
-            if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+            if ((cptr.ldI32o(u, $you_uswallow) & 1))
                 (yield* There(__s_are_no_seats_in_here));
             else if (Levitation())
                 (yield* You(__s_tumble_in_place));
@@ -911,15 +907,13 @@ export function* dosit() {
                     }
                     (yield* useupf(obj, cptr.ldI64o(obj, $obj_quan)));
                 } else if (!(Is_box(obj) ||
-                        (cptr.ldBits(
-                            cptr.add(
-                                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                                $objclass_oc_material
-                            ),
-                            3,
-                            5,
-                            0
-                        ) |
+                        ((cptr.ldI32o2(
+                            objects,
+                            cptr.ldI16o(obj, $obj_otyp),
+                            $sizeof_objclass,
+                            $objclass_oc_material
+                        ) &
+                            31) |
                             0) ==
                             NHC.CLOTH))
                     (yield* pline(__s_it_s_not_very_comfortable));
@@ -932,9 +926,7 @@ export function* dosit() {
                     (yield* You_cant(__s_sit_down_with_your_s_in_the_bear_trap, (yield* body_part(NHC.FOOT))));
                     (cptr.stI32o(u, $you_utrap, cptr.ldI32o(u, $you_utrap) + 1)) - (1);
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-                    if (trap &&
-                            (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) ==
-                                NHC.SPIKED_PIT) {
+                    if (trap && ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.SPIKED_PIT) {
                         (yield* You(__s_sit_down_on_a_spike_ouch));
                         (yield* losehp(
                             Half_physical_damage() ? rn2(2) : 1,
@@ -971,7 +963,7 @@ export function* dosit() {
                 (yield* You(__s_pct_s_dot, Flying() ? __s_land : __s_sit_down));
                 (yield* dotrap(trap, NHM.VIASITTING));
             }
-        } else if (((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
+        } else if ((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ||
             (((cptr.ldI16o(
                 (cptr.add(
                     svd,
@@ -1151,7 +1143,7 @@ export function* rndcurse() {
             }
             /* the !otmp case should never happen; picking an already
                cursed item happens--avoid "resists" message in that case */
-            if (!otmp || cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0)
+            if (!otmp || (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)
                 continue;  /* next target */
 
             if (cptr.ld1so(otmp, $obj_oartifact) && spec_ability(otmp, 4n) && rn2(10) < 8) {
@@ -1159,7 +1151,7 @@ export function* rndcurse() {
                 continue;
             }
 
-            if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0))
+            if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
                 (yield* unbless(otmp));
             else
                 (yield* curse(otmp));
@@ -1171,8 +1163,8 @@ export function* rndcurse() {
     if (cptr.ldPtro(u, $you_usteed) &&
             !rn2(4) &&
             (otmp = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) !== null &&
-            !cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0)) {
-        if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0))
+            !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
+        if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
             (yield* unbless(otmp));
         else
             (yield* curse(otmp));
@@ -1180,13 +1172,13 @@ export function* rndcurse() {
             (yield* pline(
                 __s_s_s__2,
                 (yield* Yobjnam2(otmp, __s_glow)),
-                hcolor(cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0
+                hcolor((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0
                     ? cptr.ldPtr(c_color_names)
                     : __s_brown)
             ));
-            cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, (Hallucination() ? 0 : 1) >>> 0);  /* bypass set_bknown() */
+            cptr.stI32o(otmp, $obj_bknown, (Hallucination() ? 0 : 1) >>> 0);  /* bypass set_bknown() */
         } else {
-            cptr.stBits(cptr.add(otmp, $obj_bknown), 2, 1, 0, 0);  /* bypass set_bknown() */
+            cptr.stI32o(otmp, $obj_bknown, 0);  /* bypass set_bknown() */
         }
     }
 }

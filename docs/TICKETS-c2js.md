@@ -476,6 +476,28 @@ platforms apart, and a normal game can't.
 So C has no single answer here. NetHack's C calls none of these except through Lua's math
 library, and no shipped script uses them, so the port leaves JS `Math` as it is.
 
+**Judge bisection by family (Nov 16-17).** `tools/c2js` gates each change family with
+`C2JS_OLD=fam,...` (`all` = main's js byte for byte; unset = eb3e9b6's byte for byte) and per file
+with `C2JS_OLD_FILES='fam:a.c|b.c'` (not `bits`, `arr2d` or `seed`). Each run is main's code with
+one group of families new:
+
+| Run | Commit | New families | Held-out | Passing | Screens | Anim | RNG |
+|---|---|---|---|---|---|---|---|
+| base | bc2319e | none | 13120 | 54 | 99.954% | 3006 | 99.9901% |
+| all | eb3e9b6 | all | 13036 | 54 | 99.314% | 3002 | 99.9901% |
+| 1 | 364dd9a | `bits` | 13035 | 53 | 99.307% | 3002 | 99.9901% |
+| 2 | (this) | `bits` for `rm` only | | | | | |
+
+So the bitfield family (packing, `ldBits`/`stBits`, C struct layout) carries the whole loss. On its
+own it also breaks one session that passes on both base and all-new, so some other family is
+needed with it. Next: split `bits` by struct.
+
+`C2JS_BITS_NEW=rm,trap` gates `bits` per record (unset = all 27 records new, empty = none;
+`C2JS_LIST_BF=1` lists them). Functions changed when one record alone is new: obj 585, monst 570,
+you 268, rm 237, objclass 193, trap 179, levelflags 110, the other 20 under 50 each
+(`.cache/sw/perstruct.out`). Run 2 tries `rm` first, because the loss only affects drawing and
+animation frames.
+
 ### C2JS-063: a Linux recorder and the macOS recorder disagree. OPEN (documented)
 Another team's public recordings (3,447 sessions, made on Linux) were scored against the port.
 3,434 pass, 13 fail, and every one of the 13 has the same RNG as the recording. Re-recording the

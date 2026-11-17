@@ -3467,11 +3467,9 @@ export function* role_init() {
         cptr.st1o(pm, $permonst_maligntyp, schar(Math.imul(alignmnt, 3)));
         /* if gender is random, we choose it now instead of waiting
            until the leader monster is created */
-        cptr.stBits(
-            cptr.add(svq, $q_score_ldrgend),
-            5,
-            2,
-            0,
+        cptr.stI32o(
+            svq,
+            $q_score_ldrgend,
             (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n)
                 ? 2
                 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n)
@@ -3511,11 +3509,9 @@ export function* role_init() {
         cptr.stI16o(pm, $permonst_mflags3, cptr.ldU16o(pm, $permonst_mflags3) | 80);
         /* if gender is random, we choose it now instead of waiting
            until the nemesis monster is created */
-        cptr.stBits(
-            cptr.add(svq, $q_score_nemgend),
-            7,
-            2,
-            0,
+        cptr.stI32o(
+            svq,
+            $q_score_nemgend,
             (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n)
                 ? 2
                 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n)
@@ -3561,11 +3557,9 @@ export function* role_init() {
         );
     }
     /* 0 or 1; no gods are neuter, nor is gender randomized */
-    cptr.stBits(
-        cptr.add(svq, $q_score_godgend),
-        1,
-        2,
-        0,
+    cptr.stI32o(
+        svq,
+        $q_score_godgend,
         (!(yield* strncmpi((align_gtitle(schar(alignmnt))), (__s_goddess), -1))) >>> 0
     );
 

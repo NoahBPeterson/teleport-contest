@@ -1684,14 +1684,14 @@ function knows_object(obj, override_pauper) {
    like all gems except the loadstone and luckstone. */
 /** C ref: u_init.c:586 — @param {CInt} sym */
 function knows_class(sym) {
-    let odummy = cptr.alloc(112);
+    let odummy = cptr.alloc(216);
     let o;
     let ct;
 
     if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper))
         return;
 
-    cptr.memcpy(odummy, cg, 112);
+    cptr.memcpy(odummy, cg, 216);
     cptr.st1o(odummy, $obj_oclass, sym);
     o = odummy;  /* for use in various obj.h macros */
 
@@ -1737,12 +1737,7 @@ function knows_class(sym) {
         }
 
         if (cptr.ld1so2(objects, ct, $sizeof_objclass, $objclass_oc_class) == sym &&
-                !cptr.ldBits(
-                    cptr.add(cptr.add(objects, ct, $sizeof_objclass), $objclass_oc_magic),
-                    4,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o2(objects, ct, $sizeof_objclass, $objclass_oc_magic) & 1))
             knows_object(ct, 0);
     }
 }
@@ -1864,12 +1859,7 @@ function u_init_role() {
             /* in order to assist non-Japanese speakers, pre-discover items
                that switch to Japanese names when playing as a Samurai */
             for (i = NHC.MAXOCLASSES; i < NHC.NUM_OBJECTS; ++i) {
-                if (cptr.ldBits(
-                    cptr.add(cptr.add(objects, i, $sizeof_objclass), $objclass_oc_magic),
-                    4,
-                    1,
-                    0
-                ))
+                if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_magic) & 1))
                     continue;
                 if (Japanese_item_name(i, null))
                     /* we don't override pauper here because that would give
@@ -2088,7 +2078,7 @@ export function u_init_misc() {
 
     /* zero u, including pointer values --
      * necessary when aborting from a failed restore */
-    void __builtin___memset_chk(u, 0, 2760n, __builtin_object_size(u, 0));
+    void __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
     cptr.stPtro(u, $you_ustuck, null);
     void __builtin___memset_chk(ubirthday, 0, 8n, __builtin_object_size(ubirthday, 0));
     void __builtin___memset_chk(urealtime, 0, 24n, __builtin_object_size(urealtime, 0));
@@ -2170,13 +2160,7 @@ export function u_init_misc() {
         );  /* set PermaBlind */
 
     /* roughly based on distribution in human population */
-    cptr.stBits(
-        cptr.add(u, $you_uhandedness),
-        7,
-        1,
-        0,
-        (rn2(10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0
-    );
+    cptr.stI32o(u, $you_uhandedness, (rn2(10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
 
     max_rank_sz();  /* set max str size for class ranks */
 
@@ -2402,44 +2386,26 @@ function ini_inv_adjust_obj(trop, obj) {
         /* no "blessed" or "identified" money */
         cptr.stI64o(obj, $obj_quan, cptr.ldI64o(u, $you_umoney0));
     } else {
-        if (cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_uses_known
-            ),
-            2,
-            1,
-            0
-        ))
-            cptr.stBits(cptr.add(obj, $obj_known), 0, 1, 0, 1);
+        if ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(obj, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_uses_known
+        ) & 1))
+            cptr.stI32o(obj, $obj_known, 1);
         /* not observe_object during startup, that's handled later */
-        cptr.stBits(
-            cptr.add(obj, $obj_dknown),
-            1,
-            1,
-            0,
-            cptr.stBits(
-                cptr.add(obj, $obj_bknown),
-                2,
-                1,
-                0,
-                cptr.stBits(cptr.add(obj, $obj_rknown), 3, 1, 0, 1)
-            )
+        cptr.stI32o(
+            obj,
+            $obj_dknown,
+            cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1))
         );
         if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
-            cptr.stBits(
-                cptr.add(obj, $obj_cknown),
-                4,
-                1,
-                0,
-                cptr.stBits(cptr.add(obj, $obj_lknown), 5, 1, 0, 1)
-            );
-            cptr.stBits(cptr.add(obj, $obj_otrapped), 7, 1, 0, 0);
+            cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
+            cptr.stI32o(obj, $obj_otrapped, 0);
         }
-        cptr.stBits(cptr.add(obj, $obj_cursed), 0, 1, 0, 0);
-        if (cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0) | 0 &&
-                cptr.ld1so(u, $you_ualign) != -1)
-            cptr.stBits(cptr.add(obj, $obj_otrapped), 7, 1, 0, 0);
+        cptr.stI32o(obj, $obj_cursed, 0);
+        if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && cptr.ld1so(u, $you_ualign) != -1)
+            cptr.stI32o(obj, $obj_otrapped, 0);
         if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS ||
                 cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) {
             cptr.stI64o(obj, $obj_quan, trquan(trop));
@@ -2462,21 +2428,19 @@ function ini_inv_adjust_obj(trop, obj) {
                 $objclass_oc_class
             ) ==
                 NHC.RING_CLASS &&
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_charged
-                        ),
-                        5,
-                        1,
-                        0
-                    ) |
+                    (cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_charged
+                    ) &
+                        1) |
                         0 &&
                     cptr.ld1so(obj, $obj_spe) <= 0)
                 cptr.st1o(obj, $obj_spe, schar(rne(3)));
         }
         if (cptr.ld1so(trop, $trobj_trbless) != 2)
-            cptr.stBits(cptr.add(obj, $obj_blessed), 1, 1, 0, cptr.ld1so(trop, $trobj_trbless));
+            cptr.stI32o(obj, $obj_blessed, cptr.ld1so(trop, $trobj_trbless));
 
     }
     /* defined after setting otyp+quan + blessedness */
@@ -2497,7 +2461,7 @@ function ini_inv_use_obj(obj) {
         $sizeof_objdescr,
         $objdescr_oc_descr
     )) &&
-            cptr.ldBits(cptr.add(obj, $obj_known), 0, 1, 0) | 0)
+            (cptr.ldI32o(obj, $obj_known) & 1) | 0)
         discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0);
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP)
         discover_object(NHC.POT_OIL, 1, 1, 0);

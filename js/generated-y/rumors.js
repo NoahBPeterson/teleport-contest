@@ -57,6 +57,7 @@ const $NHFILE_mode = FLD.NHFILE_mode, $flag_debug = FLD.flag_debug,
       $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
       $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
+      $u_event_major_oracle = FLD.u_event_major_oracle,
       $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
       $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
       $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
@@ -957,7 +958,7 @@ export function* doconsult(oracl) {
     if (!oracl) {
         (yield* There(__s_is_no_one_here_to_consult));
         return NHM.ECMD_OK;
-    } else if (!cptr.ldBits(cptr.add(oracl, $monst_mpeaceful), 1, 1, 0)) {
+    } else if (!(cptr.ldI32o(oracl, $monst_mpeaceful) & 1)) {
         (yield* pline(__s_s_is_in_no_mood_for_consultations, (yield* Monnam(oracl))));
         return NHM.ECMD_OK;
     } else if (!umoney) {
@@ -999,24 +1000,25 @@ export function* doconsult(oracl) {
     }
     (yield* money2mon(oracl, BigInt(u_pay)));
     cptr.st1(disp, 1);
-    if (!cptr.ldBits(cptr.add(u, $you_uevent), 1, 1, 0) &&
-            !cptr.ldBits(cptr.add(u, $you_uevent), 0, 1, 0))
+    if (!(cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) &&
+            !(cptr.ldI32o(u, $you_uevent) & 1))
         (yield* record_achievement(NHC.ACH_ORCL));
     add_xpts = 0;  /* first oracle of each type gives experience points */
     if (u_pay == minor_cost) {
         (yield* outrumor(1, NHM.BY_ORACLE));
-        if (!cptr.ldBits(cptr.add(u, $you_uevent), 0, 1, 0))
-            add_xpts = (u_pay / (cptr.ldBits(cptr.add(u, $you_uevent), 1, 1, 0) | 0 ? 25 : 10)) | 0;
+        if (!(cptr.ldI32o(u, $you_uevent) & 1))
+            add_xpts = (u_pay /
+                    ((cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) | 0 ? 25 : 10)) | 0;
         /* 5 pts if very 1st, or 2 pts if major already done */
-        cptr.stBits(cptr.add(u, $you_uevent), 0, 1, 0, 1);
+        cptr.stI32o(u, $you_uevent, 1);
     } else {
         let cheapskate = schar((u_pay < major_cost));
 
         (yield* outoracle(cheapskate, 1));
-        if (!cheapskate && !cptr.ldBits(cptr.add(u, $you_uevent), 1, 1, 0))
-            add_xpts = (u_pay / (cptr.ldBits(cptr.add(u, $you_uevent), 0, 1, 0) | 0 ? 25 : 10)) | 0;
+        if (!cheapskate && !(cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1))
+            add_xpts = (u_pay / ((cptr.ldI32o(u, $you_uevent) & 1) | 0 ? 25 : 10)) | 0;
         /* ~100 pts if very 1st, ~40 pts if minor already done */
-        cptr.stBits(cptr.add(u, $you_uevent), 1, 1, 0, 1);
+        cptr.stI32o(u, $you_uevent + $u_event_major_oracle, 1);
         (yield* exercise(NHC.A_WIS, schar((!cheapskate))));
     }
     if (add_xpts) {

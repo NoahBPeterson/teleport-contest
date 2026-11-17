@@ -69,6 +69,7 @@ const $Gender_he = FLD.Gender_he, $context_info_mon_moving = FLD.context_info_mo
       $sizeof_Gender = FLD.sizeof_Gender, $sizeof_entity = FLD.sizeof_entity,
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
       $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+      $u_event_uheard_tune = FLD.u_event_uheard_tune,
       $u_event_uopened_dbridge = FLD.u_event_uopened_dbridge,
       $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_uevent = FLD.you_uevent,
       $you_uinwater = FLD.you_uinwater, $you_uprops = FLD.you_uprops,
@@ -897,7 +898,7 @@ function m_to_e(mtmp, x, y, etmp) {
     if (mtmp) {
         cptr.stI32o(etmp, $entity_ex, x);
         cptr.stI32o(etmp, $entity_ey, y);
-        if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0) | 0 &&
+        if ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 &&
                 (x != cptr.ldI16o(mtmp, $monst_mx) || y != cptr.ldI16o(mtmp, $monst_my)))
             cptr.stPtro(
                 etmp,
@@ -1233,19 +1234,19 @@ function e_jumps(etmp) {
                 : 0)
             : (helpless(cptr.ldPtr(etmp)) ||
                 !cptr.ld1so(cptr.ldPtro(etmp, $entity_edata), $permonst_mmove) ||
-                cptr.ldBits(cptr.add(cptr.ldPtr(etmp), $monst_wormno), 1, 5, 0) | 0
+                (cptr.ldI32o(cptr.ldPtr(etmp), $monst_wormno) & 31) | 0
                 ? 1
                 : 0))
         return 0;
 
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))
             ? HConfusion()
-            : BigInt(cptr.ldBits(cptr.add(cptr.ldPtr(etmp), $monst_mconf), 0, 1, 0) >>> 0))
+            : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), $monst_mconf) & 1) >>> 0))
         tmp = (tmp - 2) | 0;
 
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))
             ? HStun()
-            : BigInt(cptr.ldBits(cptr.add(cptr.ldPtr(etmp), $monst_mstun), 7, 1, 0) >>> 0))
+            : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), $monst_mstun) & 1) >>> 0))
         tmp = (tmp - 3) | 0;
 
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
@@ -1804,7 +1805,7 @@ export function open_drawbridge(x, y) {
                     $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
                 )
             ))))
-        cptr.stBits(cptr.add(u, $you_uevent + $u_event_uopened_dbridge), 0, 1, 0, 1);
+        cptr.stI32o(u, $you_uevent + $u_event_uopened_dbridge, 1);
     nokiller();
 }
 
@@ -1943,7 +1944,7 @@ export function destroy_drawbridge(x, y) {
                     $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
                 )
             ))))
-        cptr.stBits(cptr.add(u, $you_uevent + $u_event_uopened_dbridge), 0, 1, 0, 1);
+        cptr.stI32o(u, $you_uevent + $u_event_uopened_dbridge, 1);
 
     set_entity(x2.v, y2.v, etmp2);  /* currently only automissers can be here */
     if (cptr.ldPtro(etmp2, $entity_edata)) {
@@ -2049,7 +2050,7 @@ export function destroy_drawbridge(x, y) {
                     $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
                 )
             ))))
-        cptr.stBits(cptr.add(u, $you_uevent), 6, 2, 0, 3);  /* bridge is gone so tune is now useless */
+        cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 3);  /* bridge is gone so tune is now useless */
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

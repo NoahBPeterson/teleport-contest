@@ -569,19 +569,13 @@ export function remove_region(reg) {
     cptr.stI64o(reg, $NhRegion_ttl, -2n);  /* for visible_region_at */
     if (cptr.ld1so(reg, $NhRegion_visible)) {
         let pass;
-        let tmp_uinwater = schar(cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0));
+        let tmp_uinwater = schar((cptr.ldI32o(u, $you_uinwater) & 1));
 
         /* need to process the region's spots twice, first unblocking all
            locations which no longer block line-of-sight, then redrawing
            spots within revised line-of-sight; skip second pass if blind */
         for (pass = 1; pass <= (Blind() ? 1 : 2); ++pass) {
-            cptr.stBits(
-                cptr.add(u, $you_uinwater),
-                1,
-                1,
-                0,
-                ((pass == 1) ? 0 : tmp_uinwater) >>> 0
-            );
+            cptr.stI32o(u, $you_uinwater, ((pass == 1) ? 0 : tmp_uinwater) >>> 0);
 
             for (x = cptr.ldI16(reg); x <= cptr.ldI16o(reg, $nhrect_hx); x++)
                 for (y = cptr.ldI16o(reg, $nhrect_ly); y <= cptr.ldI16o(reg, $nhrect_hy); y++)
@@ -611,7 +605,7 @@ export function remove_region(reg) {
                         }
                     }
         }
-        cptr.stBits(cptr.add(u, $you_uinwater), 1, 1, 0, tmp_uinwater);
+        cptr.stI32o(u, $you_uinwater, tmp_uinwater);
     }
     free_region(reg);
 }
@@ -1581,7 +1575,7 @@ export function expire_gas_cloud(p1, p2) {
                         ))
                             unblock_point(x, y);
                     } else {
-                        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+                        if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
                             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                                 cptr.st1o(gg, $instance_globals_g_gas_cloud_diss_within, 1);
                             else if (((cptr.ld1uo(
@@ -1687,9 +1681,9 @@ export function inside_gas_cloud(p1, p2) {
                 setmangry(mtmp, 1);
             if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) ==
                 0n) &&
-                    cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0) | 0) {
-                cptr.stBits(cptr.add(mtmp, $monst_mblinded), 0, 7, 0, 1);
-                cptr.stBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0, 0);
+                    (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0) {
+                cptr.stI32o(mtmp, $monst_mblinded, 1);
+                cptr.stI32o(mtmp, $monst_mcansee, 0);
             }
             if (Resists_Elem(mtmp, NHC.POISON_RES))
                 return 0;

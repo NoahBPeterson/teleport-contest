@@ -410,7 +410,7 @@ export function* does_block(x, y, lev) {
         if (cptr.ld1so(lev, $rm_typ) == NHC.CLOUD ||
                 ((cptr.ld1so(lev, $rm_typ)) == NHC.WATER) ||
                 cptr.ld1so(lev, $rm_typ) == NHC.LAVAWALL ||
-                ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 && is_moat(i16(x), i16(y))))
+                (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && is_moat(i16(x), i16(y))))
             return 1;
     }  /* gs.seethru */
 
@@ -432,7 +432,7 @@ export function* does_block(x, y, lev) {
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
     ))) &&
-            (!cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) || See_invisible()) &&
+            (!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) &&
             is_lightblocker_mappear(mon))
         return 1;
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) != 1) {
@@ -775,7 +775,7 @@ export function* vision_recalc(control) {
         (yield* get_unused_cs(next_array, next_rmin, next_rmax));
 
         /* You see nothing, nothing can see you --- if swallowed or refreshing. */
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 || control == 2) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || control == 2) {
             /* do nothing -- get_unused_cs() nulls out the new work area */
             ;
         } else if (Blind()) {
@@ -850,7 +850,7 @@ export function* vision_recalc(control) {
             let lo_col;
             let has_night_vision = 1;  /* hero has night vision */
 
-            if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+            if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
                     !(((cptr.ldI16o(
                         (cptr.add(
                             svd,
@@ -2988,7 +2988,7 @@ export function howmonseen(mon) {
     /* normal vision;
        cansee is true for both normal and astral vision,
        but couldsee it not true for astral vision */
-    if ((cptr.ldBits(cptr.add(mon, $monst_wormno), 1, 5, 0) | 0
+    if (((cptr.ldI32o(mon, $monst_wormno) & 31) | 0
         ? worm_known(mon)
         : (((cptr.ld1uo(
             cptr.ldPtro(
@@ -3012,14 +3012,13 @@ export function howmonseen(mon) {
             ? 1
             : 0)) &&
             mon_visible(mon) &&
-            !cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0))
+            !(cptr.ldI32o(mon, $monst_minvis) & 1))
         how_seen |= NHM.MONSEEN_NORMAL;
     /* see invisible */
-    if (useemon && cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) | 0)
+    if (useemon && (cptr.ldI32o(mon, $monst_minvis) & 1) | 0)
         how_seen |= NHM.MONSEEN_SEEINVIS;
     /* infravision */
-    if ((!cptr.ldBits(cptr.add(mon, $monst_minvis), 1, 1, 0) || See_invisible()) &&
-            see_with_infrared(mon))
+    if ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && see_with_infrared(mon))
         how_seen |= NHM.MONSEEN_INFRAVIS;
     /* telepathy */
     if (tp_sensemon(mon))
