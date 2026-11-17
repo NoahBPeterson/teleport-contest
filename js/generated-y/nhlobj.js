@@ -422,35 +422,63 @@ function* l_obj_objects_to_table(L) {
     (yield* nhl_add_table_entry_int(
         L,
         __s_name_known,
-        BigInt((cptr.ldI32o(o, $objclass_oc_name_known) & 1) >>> 0)
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_name_known), 0, 1, 0) >>> 0)
     ));
-    (yield* nhl_add_table_entry_int(L, __s_merge, BigInt((cptr.ldI32o(o, $objclass_oc_merge) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_merge,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_merge), 1, 1, 0) >>> 0)
+    ));
     (yield* nhl_add_table_entry_int(
         L,
         __s_uses_known,
-        BigInt((cptr.ldI32o(o, $objclass_oc_uses_known) & 1) >>> 0)
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_uses_known), 2, 1, 0) >>> 0)
     ));
     (yield* nhl_add_table_entry_int(
         L,
         __s_encountered,
-        BigInt((cptr.ldI32o(o, $objclass_oc_encountered) & 1) >>> 0)
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_encountered), 3, 1, 0) >>> 0)
     ));
-    (yield* nhl_add_table_entry_int(L, __s_magic, BigInt((cptr.ldI32o(o, $objclass_oc_magic) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_magic,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_magic), 4, 1, 0) >>> 0)
+    ));
     (yield* nhl_add_table_entry_int(
         L,
         __s_charged,
-        BigInt((cptr.ldI32o(o, $objclass_oc_charged) & 1) >>> 0)
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_charged), 5, 1, 0) >>> 0)
     ));
-    (yield* nhl_add_table_entry_int(L, __s_unique, BigInt((cptr.ldI32o(o, $objclass_oc_unique) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_nowish, BigInt((cptr.ldI32o(o, $objclass_oc_nowish) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_big, BigInt((cptr.ldI32o(o, $objclass_oc_big) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_unique,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_unique), 6, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_nowish,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_nowish), 7, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_big,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_big), 0, 1, 0) >>> 0)
+    ));
     /* TODO: oc_bimanual, oc_bulky */
-    (yield* nhl_add_table_entry_int(L, __s_tough, BigInt((cptr.ldI32o(o, $objclass_oc_tough) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_dir, BigInt((cptr.ldI32o(o, $objclass_oc_dir) & 7) >>> 0)));  /* TODO: convert to text */
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_tough,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_tough), 1, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_dir,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_dir), 0, 3, 0) >>> 0)
+    ));  /* TODO: convert to text */
     (yield* nhl_add_table_entry_str(
         L,
         __s_material,
-        cptr.ldPtro(materialnm, (cptr.ldI32o(o, $objclass_oc_material) & 31), 8)
+        cptr.ldPtro(materialnm, cptr.ldBits(cptr.add(o, $objclass_oc_material), 3, 5, 0), 8)
     ));
     /* TODO: oc_subtyp, oc_skill, oc_armcat */
     (yield* nhl_add_table_entry_int(L, __s_oprop, BigInt(cptr.ld1uo(o, $objclass_oc_oprop) >>> 0)));
@@ -562,56 +590,148 @@ function* l_obj_to_table(L) {
     /* TODO: nhl_add_table_entry_char(L, "oartifact", obj->oartifact);*/
     (yield* nhl_add_table_entry_int(L, __s_where, BigInt(cptr.ld1so(obj, $obj_where))));
     /* TODO: nhl_add_table_entry_int(L, "timed", obj->timed); */
-    (yield* nhl_add_table_entry_int(L, __s_cursed, BigInt((cptr.ldI32o(obj, $obj_cursed) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_blessed, BigInt((cptr.ldI32o(obj, $obj_blessed) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_unpaid, BigInt((cptr.ldI32o(obj, $obj_unpaid) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_no_charge, BigInt((cptr.ldI32o(obj, $obj_no_charge) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_known, BigInt((cptr.ldI32o(obj, $obj_known) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_dknown, BigInt((cptr.ldI32o(obj, $obj_dknown) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_bknown, BigInt((cptr.ldI32o(obj, $obj_bknown) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_rknown, BigInt((cptr.ldI32o(obj, $obj_rknown) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_tknown, BigInt((cptr.ldI32o(obj, $obj_tknown) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_cursed,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_blessed,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_unpaid,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_no_charge,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_known,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_known), 0, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_dknown,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_bknown,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_bknown), 2, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_rknown,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_rknown), 3, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_tknown,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_tknown), 6, 1, 0) >>> 0)
+    ));
     if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS)
         (yield* nhl_add_table_entry_int(
             L,
             __s_odiluted,
-            BigInt((cptr.ldI32o(obj, $obj_oeroded) & 3) >>> 0)
+            BigInt(cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) >>> 0)
         ));
     else
-        (yield* nhl_add_table_entry_int(L, __s_oeroded, BigInt((cptr.ldI32o(obj, $obj_oeroded) & 3) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_oeroded2, BigInt((cptr.ldI32o(obj, $obj_oeroded2) & 3) >>> 0)));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_oeroded,
+            BigInt(cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0) >>> 0)
+        ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_oeroded2,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_oeroded2), 2, 2, 0) >>> 0)
+    ));
     /* TODO: orotten, norevive */
     (yield* nhl_add_table_entry_int(
         L,
         __s_oerodeproof,
-        BigInt((cptr.ldI32o(obj, $obj_oerodeproof) & 1) >>> 0)
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0) >>> 0)
     ));
-    (yield* nhl_add_table_entry_int(L, __s_olocked, BigInt((cptr.ldI32o(obj, $obj_olocked) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_obroken, BigInt((cptr.ldI32o(obj, $obj_obroken) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_olocked,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_olocked), 5, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_obroken,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_obroken), 6, 1, 0) >>> 0)
+    ));
     if (is_poisonable(obj))
         (yield* nhl_add_table_entry_int(
             L,
             __s_opoisoned,
-            BigInt((cptr.ldI32o(obj, $obj_otrapped) & 1) >>> 0)
+            BigInt(cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0) >>> 0)
         ));
     else
         (yield* nhl_add_table_entry_int(
             L,
             __s_otrapped,
-            BigInt((cptr.ldI32o(obj, $obj_otrapped) & 1) >>> 0)
+            BigInt(cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0) >>> 0)
         ));
     /* TODO: degraded_horn */
-    (yield* nhl_add_table_entry_int(L, __s_recharged, BigInt((cptr.ldI32o(obj, $obj_recharged) & 7) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_recharged,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_recharged), 4, 3, 0) >>> 0)
+    ));
     /* TODO: on_ice */
-    (yield* nhl_add_table_entry_int(L, __s_lamplit, BigInt((cptr.ldI32o(obj, $obj_lamplit) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_globby, BigInt((cptr.ldI32o(obj, $obj_globby) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_greased, BigInt((cptr.ldI32o(obj, $obj_greased) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_nomerge, BigInt((cptr.ldI32o(obj, $obj_nomerge) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_how_lost, BigInt((cptr.ldI32o(obj, $obj_how_lost) & 7) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_in_use, BigInt((cptr.ldI32o(obj, $obj_in_use) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_bypass, BigInt((cptr.ldI32o(obj, $obj_bypass) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_cknown, BigInt((cptr.ldI32o(obj, $obj_cknown) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_lknown, BigInt((cptr.ldI32o(obj, $obj_lknown) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_lamplit,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_globby,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_globby), 0, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_greased,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_greased), 1, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_nomerge,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_nomerge), 7, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_how_lost,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_how_lost), 0, 3, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_in_use,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_in_use), 2, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_bypass,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_bypass), 3, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_cknown,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_cknown), 4, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_lknown,
+        BigInt(cptr.ldBits(cptr.add(obj, $obj_lknown), 5, 1, 0) >>> 0)
+    ));
     (yield* nhl_add_table_entry_int(L, __s_corpsenm, BigInt(cptr.ldI32o(obj, $obj_corpsenm))));
     if (cptr.ldI32o(obj, $obj_corpsenm) != NHC.NON_PM &&
             (cptr.ldI16o(obj, $obj_otyp) == NHC.TIN ||

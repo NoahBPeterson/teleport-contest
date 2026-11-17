@@ -445,7 +445,13 @@ export function* explode(x, y, type, dam, olet, expltype) {
             exploding_wand_typ = i16(type);
             /* most attack wands produce specific explosions;
                other types produce a generic magical explosion */
-            if (((cptr.ldI32o2(objects, type, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) ==
+            if ((cptr.ldBits(
+                cptr.add(cptr.add(objects, type, $sizeof_objclass), $objclass_oc_dir),
+                0,
+                3,
+                0
+            ) |
+                0) ==
                 NHM.RAY &&
                     type != NHC.WAN_DIGGING &&
                     type != NHC.WAN_SLEEP) {
@@ -494,11 +500,13 @@ export function* explode(x, y, type, dam, olet, expltype) {
     }
     /* if hero is engulfed and caused the explosion, only hero and
        engulfer will be affected */
-    inside_engulfer = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && type >= 0 ? 1 : 0));
+    inside_engulfer = schar((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && type >= 0
+            ? 1
+            : 0));
     /* held but not engulfed implies holder is reaching into second spot
        so might get hit by double damage */
     grabbed = (grabbing = 0);
-    if (cptr.ldPtro(u, $you_ustuck) && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldPtro(u, $you_ustuck) && !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
             grabbing = 1;
         else
@@ -796,7 +804,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
 
                 /* Affect the floor unless the player caused the explosion
                  * from inside their engulfer. */
-                if (!((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                if (!(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                         !cptr.ld1so(svc, $context_info_mon_moving)))
                     void (yield* zap_over_floor(xx, yy, type, shopdamage, 0, exploding_wand_typ));
 
@@ -830,7 +838,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
                             ++tryct < 20);
                     str = cptr.decay(hallu_buf);
                 }
-                if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))) {
                     (yield* engulfer_explosion_msg(adtyp, olet));
                 } else if (((cptr.ld1uo(
@@ -1219,7 +1227,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
                 let trap;
 
                 if ((trap = t_at(sx, sy)) &&
-                        ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.STATUE_TRAP)
+                        (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.STATUE_TRAP)
                     (yield* deltrap(trap));
                 if (((cptr.ld1uo(
                     cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), sy, 8),
@@ -1241,13 +1249,15 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
             /* 1 in 10 chance of destruction of obj; glass, egg destruction */
         } else if (((scflags & NHM.MAY_DESTROY) >>> 0) != 0 &&
                 (!rn2(10) ||
-                    (((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(otmp, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                    ((cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) ==
                         NHC.GLASS ||
                         cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG))) {
@@ -1490,7 +1500,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
     }
     (yield* newsym(sx, sy));
     if (((sx) == cptr.ldI16(u) && (sy) == cptr.ldI16o(u, $you_uy)) &&
-            (cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
+            cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
@@ -1506,8 +1516,8 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
         $instance_globals_saved_l_level + $dlevel_t_monsters
     ))) !==
         null) &&
-            (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
-        cptr.stI32o(mtmp, $monst_mtrapped, 0);
+            cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0)
+        cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
     (yield* maybe_unhide_at(sx, sy));
     if (lostgoods)
         (yield* credit_report(shkp, 1, 0));
@@ -1536,12 +1546,12 @@ export function* splatter_burning_oil(x, y, diluted_oil) {
    possibly killing the hero and attempting to save bones */
 /** C ref: explode.c:974 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 export function* explode_oil(obj, x, y) {
-    let diluted_oil = schar((cptr.ldI32o(obj, $obj_oeroded) & 3));
+    let diluted_oil = schar(cptr.ldBits(cptr.add(obj, $obj_oeroded), 0, 2, 0));
 
-    if (!(cptr.ldI32o(obj, $obj_lamplit) & 1))
+    if (!cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0))
         (yield* impossible(__s_exploding_unlit_oil));
     (yield* end_burn(obj, 1));
-    cptr.stI32o(obj, $obj_how_lost, NHM.LOST_EXPLODING);
+    cptr.stBits(cptr.add(obj, $obj_how_lost), 0, 3, 0, NHM.LOST_EXPLODING);
     (yield* splatter_burning_oil(x, y, diluted_oil));
 }
 

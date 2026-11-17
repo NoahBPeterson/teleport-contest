@@ -550,7 +550,7 @@ export function* self_lookat(outbuf) {
     );
     if (cptr.ldPtro(u, $you_usteed))
         void cptr.sprintf(eos(outbuf), __s_mounted_on_s, (yield* y_monnam(cptr.ldPtro(u, $you_usteed))));
-    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 ||
             (Upolyd() && U_AP_TYPE()) ||
             visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         (yield* mhidden_description(cptr.add(gy, $instance_globals_y_youmonst), 11, eos(outbuf)));
@@ -627,11 +627,15 @@ export function* mhidden_description(mon, mhid_flags, outbuf) {
         let isyou = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
         x = i16((isyou ? cptr.ldI16(u) : cptr.ldI16o(mon, $monst_mx)));
         y = i16((isyou ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(mon, $monst_my)));
-        glyph = ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-        ) &
-            1) |
+        glyph = (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+            ),
+            4,
+            1,
+            0
+        ) |
             0 && !isyou)
                 ? cptr.ldI32o3(
                     svl,
@@ -681,8 +685,8 @@ export function* mhidden_description(mon, mhid_flags, outbuf) {
                 void cptr.strcat(outbuf, what);
             }
         } else if (isyou
-                ? (cptr.ldI32o(u, $you_uundetected) & 1) | 0
-                : (cptr.ldI32o(mon, $monst_mundetected) & 1) | 0) {
+                ? cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0
+                : cptr.ldBits(cptr.add(mon, $monst_mundetected), 6, 1, 0) | 0) {
             void cptr.strcpy(outbuf, __s_hiding);
             if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 128n) != 0n)) {
                 void cptr.strcat(outbuf, __s_under);
@@ -848,9 +852,11 @@ export function* object_from_map(glyph, x, y, obj_p) {
         /* extra fields needed for shop price with doname() formatting */
         cptr.st1o(otmp, $obj_where, NHM.OBJ_FLOOR);
         cptr.stI16o(otmp, $obj_ox, x), cptr.stI16o(otmp, $obj_oy, y);
-        cptr.stI32o(
-            otmp,
-            $obj_no_charge,
+        cptr.stBits(
+            cptr.add(otmp, $obj_no_charge),
+            3,
+            1,
+            0,
             (cptr.ldI16o(otmp, $obj_otyp) == NHC.STRANGE_OBJECT && (yield* costly_spot(x, y)) ? 1 : 0) >>> 0
         );
     }
@@ -867,7 +873,7 @@ export function* object_from_map(glyph, x, y, obj_p) {
     if (fakeobj &&
             mtmp &&
             mimic_obj &&
-            ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 ||
+            (cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0) | 0 ||
                 ((cptr.ld1uo((mtmp), $monst_m_ap_type) & -8) & NHM.M_AP_F_DKNOWN))) {
         cptr.st1o(mtmp, $monst_m_ap_type, cptr.ld1uo(mtmp, $monst_m_ap_type) | NHM.M_AP_F_DKNOWN);
         (yield* observe_object(otmp));
@@ -893,7 +899,7 @@ function* look_at_object(buf, x, y, glyph) {
             (cptr.ldI16o(otmp.v, $obj_otyp) != NHC.STRANGE_OBJECT)
                 ? (yield* distant_name(
                     otmp.v,
-                    (cptr.ldI32o(otmp.v, $obj_dknown) & 1) | 0
+                    cptr.ldBits(cptr.add(otmp.v, $obj_dknown), 1, 1, 0) | 0
                         ? doname_with_price
                         : doname_vague_quan
                 ))
@@ -918,11 +924,15 @@ function* look_at_object(buf, x, y, glyph) {
         $instance_globals_saved_l_level + $rm_typ
     )) ==
         NHC.TREE ||
-            ((cptr.ldI32o(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-            ) &
-                1) |
+            (cptr.ldBits(
+                cptr.add(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
+                ),
+                2,
+                1,
+                0
+            ) |
                 0 &&
                 (cptr.ld1so3(
                     svl,
@@ -1022,21 +1032,21 @@ function* look_at_monster(buf, monbuf, mtmp, x, y) {
         buf,
         __s_s_s_s_s,
         (cptr.ldI16o(mtmp, $monst_mx) != x || cptr.ldI16o(mtmp, $monst_my) != y)
-            ? (((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && accurate)
+            ? ((cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 && accurate)
                 ? __s_tail_of
                 : __s_tail_of_a)
             : __s_empty,
         accurate ? monhealthdescr(mtmp, 1, cptr.decay(healthbuf)) : __s_empty,
         (cptr.ld1so(mtmp, $monst_mtame) && accurate)
             ? __s_tame
-            : (((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && accurate)
+            : ((cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 && accurate)
                 ? __s_peaceful
                 : __s_empty),
         name
     );
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
-        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
-                (cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0)
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+                cptr.ldBits(cptr.add(iflags, $instance_flags_save_uswallow), 0, 1, 0) | 0)
             void cptr.strcat(
                 buf,
                 (dmgtype_fromattack(
@@ -1058,20 +1068,20 @@ function* look_at_monster(buf, monbuf, mtmp, x, y) {
     /* if mtmp isn't able to move (other than because it is a type of
        monster that never moves), say so [excerpt from mstatusline() for
        stethoscope or wand of probing] */
-    if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0))
         /* unfortunately mfrozen covers temporary sleep and being busy
            (donning armor, for instance) as well as paralysis */
         void cptr.strcat(buf, __s_can_t_move_paralyzed_or_sleeping_or_busy);
-    else if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1))
+    else if (cptr.ldBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0))
         /* sleeping for an indeterminate duration */
         void cptr.strcat(buf, __s_asleep);
     else if ((cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n) != 0n)
         /* arbitrary reason why it isn't moving */
         void cptr.strcat(buf, __s_meditating);
 
-    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0))
         void cptr.strcat(buf, __s_leashed_to_you);
-    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0 &&
             ((cptr.ld1uo(
                 cptr.ldPtro(
                     cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -1083,18 +1093,18 @@ function* look_at_monster(buf, monbuf, mtmp, x, y) {
                 NHM.IN_SIGHT) !=
                 0)) {
         let t = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-        let tt = t ? (cptr.ldI32o(t, $trap_ttyp) & 31) | 0 : NHC.NO_TRAP;
+        let tt = t ? cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0 : NHC.NO_TRAP;
 
         /* newsym lets you know of the trap, so mention it here */
         if (tt == NHC.BEAR_TRAP || ((tt) == NHC.PIT || (tt) == NHC.SPIKED_PIT) || tt == NHC.WEB) {
             void cptr.sprintf(eos(buf), __s_trapped_in_s, (yield* an((yield* trapname(tt, 0)))));
-            cptr.stI32o(t, $trap_tseen, 1);
+            cptr.stBits(cptr.add(t, $trap_tseen), 5, 1, 0, 1);
         }
     }
 
     /* we know the hero sees a monster at this location, but if it's shown
        due to persistent monster detection he might remember something else */
-    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0 ||
             (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ||
             visible_region_at(x, y))
         (yield* mhidden_description(mtmp, 11, eos(buf)));
@@ -1434,10 +1444,10 @@ function* lookat(x, y, buf, monbuf) {
     glyph = glyph_at(x, y);
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
             ((Blind() ||
-                (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
-                (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
+                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+                (!Invisible() && !cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))) ||
                 (Unblind_telepat() || Detect_monsters())) &&
-            !((cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0 &&
+            !(cptr.ldBits(cptr.add(iflags, $instance_flags_save_uswallow), 0, 1, 0) | 0 &&
                 glyph ==
                     (((Hallucination()
                         ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))
@@ -1445,7 +1455,12 @@ function* lookat(x, y, buf, monbuf) {
                             (cptr.ldPtro((cptr.ldPtro(u, $you_ustuck)), $monst_data)),
                             $permonst_pmidx
                         ))) +
-                        ((((cptr.ldI32o((cptr.ldPtro(u, $you_ustuck)), $monst_female) & 1) |
+                        (((cptr.ldBits(
+                            cptr.add((cptr.ldPtro(u, $you_ustuck)), $monst_female),
+                            0,
+                            1,
+                            0
+                        ) |
                             0) == 0)
                             ? NHC.GLYPH_MON_MALE_OFF
                             : NHC.GLYPH_MON_FEM_OFF)) |
@@ -1467,10 +1482,10 @@ function* lookat(x, y, buf, monbuf) {
            (even if you could also see yourself via other means).
            Sensing self while blind or swallowed is treated as if it
            were by normal vision (cf canseeself()). */
-        if ((Invisible() || (cptr.ldI32o(u, $you_uundetected) & 1) | 0) &&
+        if ((Invisible() || cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0) &&
                 !Blind() &&
-                !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
-                    (cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0)) {
+                !(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+                    cptr.ldBits(cptr.add(iflags, $instance_flags_save_uswallow), 0, 1, 0) | 0)) {
             let how = 0;
 
             if (Infravision())
@@ -1491,7 +1506,7 @@ function* lookat(x, y, buf, monbuf) {
                     ((how & 4) >>> 0) ? __s_monster_detection : __s_empty
                 );
         }
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* when swallowed, we're only called for spots adjacent to hero,
            and blindness doesn't prevent hero from feeling what holds him */
         void cptr.sprintf(buf, __s_interior_of_s, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck))));
@@ -1530,7 +1545,7 @@ function* lookat(x, y, buf, monbuf) {
     } else if (((glyph) == NHC.GLYPH_NOTHING_OFF)) {
         void cptr.strcpy(buf, __s_dark_part_of_a_room);
     } else if (((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) {
-        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+        if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
                 !(((cptr.ldI16o(
                     (cptr.add(
                         svd,
@@ -1607,15 +1622,23 @@ function* lookat(x, y, buf, monbuf) {
             case NHC.S_ndoor:
                 if (is_drawbridge_wall(x, y) >= 0)
                     void cptr.strcpy(buf, __s_open_drawbridge_portcullis);
-                else if ((((cptr.ldI32o3(
-                    svl,
-                    x,
-                    $sizeof_rm_x21,
-                    y,
-                    $sizeof_rm,
-                    $instance_globals_saved_l_level + $rm_flags
-                ) &
-                    31) |
+                else if (((cptr.ldBits(
+                    cptr.add(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(svl, $instance_globals_saved_l_level),
+                                x,
+                                $sizeof_rm_x21
+                            ),
+                            y,
+                            $sizeof_rm
+                        ),
+                        $rm_flags
+                    ),
+                    0,
+                    5,
+                    0
+                ) |
                     0) &
                     -17) ==
                         NHM.D_BROKEN)
@@ -1671,7 +1694,7 @@ function* lookat(x, y, buf, monbuf) {
                 )) {
                     void cptr.strcpy(buf, __s_unexplored);
                     break;
-                } else if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+                } else if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
                         !(((cptr.ldI16o(
                             (cptr.add(
                                 svd,
@@ -2302,7 +2325,7 @@ export function* do_screen_description(cc, looked, sym, out_str, firstmatch, for
     let found = 0;  /* count of matching syms found */
     let hit_trap = cptr.box(0);
     let need_to_look = 0;
-    let submerged = schar((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+    let submerged = schar(((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
         !(((cptr.ldI16o(
             (cptr.add(
                 svd,
@@ -2361,7 +2384,7 @@ export function* do_screen_description(cc, looked, sym, out_str, firstmatch, for
     x_str = null;
     if (!looked) {
         ;  /* skip special handling */
-    } else if ((((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || submerged) &&
+    } else if (((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 || submerged) &&
         !(dist2(
             ((cptr.ldI16(cc))),
             ((cptr.ldI16o(cc, $nhcoord_y))),
@@ -3008,7 +3031,7 @@ function add_quoted_engraving(x, y, buf, force) {
     if (!floorengr && !headstone && !force)
         return 0;
 
-    if ((cptr.ldI32o(ep, $engr_eread) & 1))
+    if (cptr.ldBits(cptr.add(ep, $engr_eread), 2, 1, 0))
         nh_snprintf(
             __s_add_quoted_engraving,
             1660,
@@ -3165,7 +3188,7 @@ export function* do_look(mode, click_cc) {
                     __s_something_else_by_symbol_or_name,
                     NHM.MENU_ITEMFLAGS_NONE
                 ));
-                if (!(cptr.ldI32o(u, $you_uswallow) & 1) && !Hallucination()) {
+                if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) && !Hallucination()) {
                     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
                     (yield* add_menu_str(win, __s_empty));
                     /* these options work sensibly for swallowed case, but
@@ -3540,8 +3563,9 @@ function* look_all(nearby, do_mons) {
 
                     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
                             ((Blind() ||
-                                (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
-                                (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
+                                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+                                (!Invisible() &&
+                                    !cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))) ||
                                 (Unblind_telepat() || Detect_monsters()))) {
                         void (yield* self_lookat(cptr.decay(lookbuf)));
                         ++count;
@@ -3599,8 +3623,9 @@ function* look_all(nearby, do_mons) {
                                     cmode
                                 )
                                 : (!((Blind() ||
-                                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
-                                    (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
+                                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+                                    (!Invisible() &&
+                                        !cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))) ||
                                     (Unblind_telepat() || Detect_monsters()))
                                     ? __s_your_position
                                     : __s_you)
@@ -3686,7 +3711,7 @@ function* look_traps(nearby) {
                 (yield* trap_description(cptr.decay(lookbuf), tnum, x, y));
                 ++count;
             } else if ((t = t_at(x, y)) !== null &&
-                    (cptr.ldI32o(t, $trap_tseen) & 1) | 0 &&
+                    cptr.ldBits(cptr.add(t, $trap_tseen), 5, 1, 0) | 0 &&
                     ((!(((cptr.ldI16o(
                         (cptr.add(
                             svd,
@@ -3735,18 +3760,22 @@ function* look_traps(nearby) {
                             0))) {
                 void cptr.strcpy(
                     cptr.decay(lookbuf),
-                    (yield* trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0))
+                    (yield* trapname(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0, 0))
                 );
                 void cptr.sprintf(eos(cptr.decay(lookbuf)), __s_obscured_by_s, encglyph(glyph));
-                glyph = (((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1) |
+                glyph = (((((NHC.S_arrow_trap +
+                    ((cptr.ldBits(cptr.add((t), $trap_ttyp), 0, 5, 0) | 0)) -
+                    1) |
                     0)) ==
                     NHC.S_stone)
                         ? NHC.GLYPH_CMAP_STONE_OFF
-                        : (((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1) |
+                        : (((((NHC.S_arrow_trap +
+                            ((cptr.ldBits(cptr.add((t), $trap_ttyp), 0, 5, 0) | 0)) -
+                            1) |
                             0)) <=
                             NHC.S_trwall)
                             ? ((NHC.S_arrow_trap +
-                                (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) -
+                                ((cptr.ldBits(cptr.add((t), $trap_ttyp), 0, 5, 0) | 0)) -
                                 1 -
                                 NHC.S_vwall +
                                 (In_mines(cptr.add(u, $you_uz))
@@ -3780,38 +3809,41 @@ function* look_traps(nearby) {
                                                 ? NHC.GLYPH_CMAP_SOKO_OFF
                                                 : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
                             : (((((NHC.S_arrow_trap +
-                                (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) -
+                                ((cptr.ldBits(cptr.add((t), $trap_ttyp), 0, 5, 0) | 0)) -
                                 1) |
                                 0)) <
                                 NHC.S_altar)
                                 ? ((NHC.S_arrow_trap +
-                                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) -
+                                    ((cptr.ldBits(cptr.add((t), $trap_ttyp), 0, 5, 0) | 0)) -
                                     1 -
                                     NHC.S_ndoor +
                                     NHC.GLYPH_CMAP_A_OFF) | 0)
                                 : (((((NHC.S_arrow_trap +
-                                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) -
+                                    ((cptr.ldBits(cptr.add((t), $trap_ttyp), 0, 5, 0) | 0)) -
                                     1) |
                                     0)) ==
                                     NHC.S_altar)
                                     ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
                                     : (((((NHC.S_arrow_trap +
-                                        (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) -
+                                        ((cptr.ldBits(cptr.add((t), $trap_ttyp), 0, 5, 0) | 0)) -
                                         1) |
                                         0)) <
                                         ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
                                         ? ((NHC.S_arrow_trap +
-                                            (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) -
+                                            ((cptr.ldBits(cptr.add((t), $trap_ttyp), 0, 5, 0) |
+                                                0)) -
                                             1 -
                                             NHC.S_grave +
                                             NHC.GLYPH_CMAP_B_OFF) | 0)
                                         : (((((NHC.S_arrow_trap +
-                                            (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) -
+                                            ((cptr.ldBits(cptr.add((t), $trap_ttyp), 0, 5, 0) |
+                                                0)) -
                                             1) |
                                             0)) <=
                                             NHC.S_goodpos)
                                             ? ((NHC.S_arrow_trap +
-                                                (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) -
+                                                ((cptr.ldBits(cptr.add((t), $trap_ttyp), 0, 5, 0) |
+                                                    0)) -
                                                 1 -
                                                 NHC.S_digbeam +
                                                 NHC.GLYPH_CMAP_C_OFF) | 0)
@@ -4179,9 +4211,9 @@ export function* doidtrap() {
 
     for (trap = cptr.ldPtr(gf); trap; trap = cptr.ldPtr(trap))
         if (cptr.ldI16o(trap, $trap_tx) == x && cptr.ldI16o(trap, $trap_ty) == y) {
-            if (!(cptr.ldI32o(trap, $trap_tseen) & 1))
+            if (!cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0))
                 break;
-            tt = (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0;
+            tt = cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0;
             if (cptr.ldI32o(u, $you_dz)) {
                 if (cptr.ldI32o(u, $you_dz) < 0
                         ? ((tt) == NHC.HOLE || (tt) == NHC.TRAPDOOR ? 1 : 0)
@@ -4191,12 +4223,12 @@ export function* doidtrap() {
             (yield* pline(
                 __s_that_is_s_s_s,
                 (yield* an((yield* trapname(tt, 0)))),
-                !(cptr.ldI32o(trap, $trap_madeby_u) & 1)
+                !cptr.ldBits(cptr.add(trap, $trap_madeby_u), 7, 1, 0)
                     ? __s_empty
                     : ((tt == NHC.WEB)
                         ? __s_woven
                         : ((tt == NHC.HOLE || tt == NHC.PIT) ? __s_dug : __s_set)),
-                !(cptr.ldI32o(trap, $trap_madeby_u) & 1) ? __s_empty : __s_by_you
+                !cptr.ldBits(cptr.add(trap, $trap_madeby_u), 7, 1, 0) ? __s_empty : __s_by_you
             ));
             return NHM.ECMD_OK;
         }

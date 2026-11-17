@@ -573,11 +573,14 @@ export function init_rogue_symbols() {
     /* default on Rogue level is no color
      * but some symbol sets can override that
      */
-    cptr.stI32o2(
-        gs,
-        NHC.ROGUESET,
-        $sizeof_symsetentry,
-        $instance_globals_s_symset + $symsetentry_nocolor,
+    cptr.stBits(
+        cptr.add(
+            cptr.add(cptr.add(gs, $instance_globals_s_symset), NHC.ROGUESET, $sizeof_symsetentry),
+            $symsetentry_nocolor
+        ),
+        0,
+        1,
+        0,
         1
     );
 }
@@ -761,26 +764,35 @@ export function clear_symsetentry(which_set, name_too) {
         $instance_globals_s_symset + $symsetentry_handling,
         NHC.H_UNK
     );
-    cptr.stI32o2(
-        gs,
-        which_set,
-        $sizeof_symsetentry,
-        $instance_globals_s_symset + $symsetentry_nocolor,
+    cptr.stBits(
+        cptr.add(
+            cptr.add(cptr.add(gs, $instance_globals_s_symset), which_set, $sizeof_symsetentry),
+            $symsetentry_nocolor
+        ),
+        0,
+        1,
+        0,
         0
     );
     /* initialize restriction bits */
-    cptr.stI32o2(
-        gs,
-        which_set,
-        $sizeof_symsetentry,
-        $instance_globals_s_symset + $symsetentry_primary,
+    cptr.stBits(
+        cptr.add(
+            cptr.add(cptr.add(gs, $instance_globals_s_symset), which_set, $sizeof_symsetentry),
+            $symsetentry_primary
+        ),
+        1,
+        1,
+        0,
         0
     );
-    cptr.stI32o2(
-        gs,
-        which_set,
-        $sizeof_symsetentry,
-        $instance_globals_s_symset + $symsetentry_rogue,
+    cptr.stBits(
+        cptr.add(
+            cptr.add(cptr.add(gs, $instance_globals_s_symset), which_set, $sizeof_symsetentry),
+            $symsetentry_rogue
+        ),
+        2,
+        1,
+        0,
         0
     );
 
@@ -1816,7 +1828,7 @@ export function* parse_sym_line(buf, which_set) {
                         break;
                 switch (cptr.ldI32o(symp, $symparse_idx)) {
                     case 0:
-                        tmpsp = (yield* alloc(48));
+                        tmpsp = (yield* alloc(40));
                         cptr.stPtr(tmpsp, null);
                         if (!lastsp)
                             cptr.stPtro(gs, $instance_globals_s_symset_list, tmpsp);
@@ -1835,9 +1847,9 @@ export function* parse_sym_line(buf, which_set) {
                         cptr.stPtro(tmpsp, $symsetentry_desc, null);
                         cptr.stI32o(tmpsp, $symsetentry_handling, NHC.H_UNK);
                         /* initialize restriction bits */
-                        cptr.stI32o(tmpsp, $symsetentry_nocolor, 0);
-                        cptr.stI32o(tmpsp, $symsetentry_primary, 0);
-                        cptr.stI32o(tmpsp, $symsetentry_rogue, 0);
+                        cptr.stBits(cptr.add(tmpsp, $symsetentry_nocolor), 0, 1, 0, 0);
+                        cptr.stBits(cptr.add(tmpsp, $symsetentry_primary), 1, 1, 0, 0);
+                        cptr.stBits(cptr.add(tmpsp, $symsetentry_rogue), 2, 1, 0, 0);
                         break;
                     case 2:
                         /* handler type identified */
@@ -1863,10 +1875,22 @@ export function* parse_sym_line(buf, which_set) {
                                 if (tmpsp) {
                                     switch (i) {
                                         case 0:
-                                            cptr.stI32o(tmpsp, $symsetentry_primary, 1);
+                                            cptr.stBits(
+                                                cptr.add(tmpsp, $symsetentry_primary),
+                                                1,
+                                                1,
+                                                0,
+                                                1
+                                            );
                                             break;
                                         case 1:
-                                            cptr.stI32o(tmpsp, $symsetentry_rogue, 1);
+                                            cptr.stBits(
+                                                cptr.add(tmpsp, $symsetentry_rogue),
+                                                2,
+                                                1,
+                                                0,
+                                                1
+                                            );
                                             break;
                                     }
                                 }
@@ -1918,21 +1942,35 @@ export function* parse_sym_line(buf, which_set) {
                             if (!(yield* strncmpi((bufp), (__s_true), -1)) ||
                                     !(yield* strncmpi((bufp), (__s_yes), -1)) ||
                                     !(yield* strncmpi((bufp), (__s_on), -1)))
-                                cptr.stI32o2(
-                                    gs,
-                                    which_set,
-                                    $sizeof_symsetentry,
-                                    $instance_globals_s_symset + $symsetentry_nocolor,
+                                cptr.stBits(
+                                    cptr.add(
+                                        cptr.add(
+                                            cptr.add(gs, $instance_globals_s_symset),
+                                            which_set,
+                                            $sizeof_symsetentry
+                                        ),
+                                        $symsetentry_nocolor
+                                    ),
+                                    0,
+                                    1,
+                                    0,
                                     0
                                 );
                             else if (!(yield* strncmpi((bufp), (__s_false), -1)) ||
                                     !(yield* strncmpi((bufp), (__s_no), -1)) ||
                                     !(yield* strncmpi((bufp), (__s_off), -1)))
-                                cptr.stI32o2(
-                                    gs,
-                                    which_set,
-                                    $sizeof_symsetentry,
-                                    $instance_globals_s_symset + $symsetentry_nocolor,
+                                cptr.stBits(
+                                    cptr.add(
+                                        cptr.add(
+                                            cptr.add(gs, $instance_globals_s_symset),
+                                            which_set,
+                                            $sizeof_symsetentry
+                                        ),
+                                        $symsetentry_nocolor
+                                    ),
+                                    0,
+                                    1,
+                                    0,
                                     1
                                 );
                         }
@@ -1946,20 +1984,34 @@ export function* parse_sym_line(buf, which_set) {
                             if (!(yield* strncmpi((cptr.ldPtro(known_restrictions, n, 8)), (bufp), -1))) {
                                 switch (n) {
                                     case 0:
-                                        cptr.stI32o2(
-                                            gs,
-                                            which_set,
-                                            $sizeof_symsetentry,
-                                            $instance_globals_s_symset + $symsetentry_primary,
+                                        cptr.stBits(
+                                            cptr.add(
+                                                cptr.add(
+                                                    cptr.add(gs, $instance_globals_s_symset),
+                                                    which_set,
+                                                    $sizeof_symsetentry
+                                                ),
+                                                $symsetentry_primary
+                                            ),
+                                            1,
+                                            1,
+                                            0,
                                             1
                                         );
                                         break;
                                     case 1:
-                                        cptr.stI32o2(
-                                            gs,
-                                            which_set,
-                                            $sizeof_symsetentry,
-                                            $instance_globals_s_symset + $symsetentry_rogue,
+                                        cptr.stBits(
+                                            cptr.add(
+                                                cptr.add(
+                                                    cptr.add(gs, $instance_globals_s_symset),
+                                                    which_set,
+                                                    $sizeof_symsetentry
+                                                ),
+                                                $symsetentry_rogue
+                                            ),
+                                            2,
+                                            1,
+                                            0,
                                             1
                                         );
                                         break;
@@ -2373,8 +2425,8 @@ export function* do_symset(rogueflag) {
         for (sl = cptr.ldPtro(gs, $instance_globals_s_symset_list); sl; sl = cptr.ldPtr(sl)) {
             /* check restrictions */
             if (rogueflag
-                    ? (cptr.ldI32o(sl, $symsetentry_primary) & 1) | 0
-                    : (cptr.ldI32o(sl, $symsetentry_rogue) & 1) | 0)
+                    ? cptr.ldBits(cptr.add(sl, $symsetentry_primary), 1, 1, 0) | 0
+                    : cptr.ldBits(cptr.add(sl, $symsetentry_rogue), 2, 1, 0) | 0)
                 continue;
             if (cptr.ldI32o(sl, $symsetentry_handling) == NHC.H_MAC)
                 continue;
@@ -2418,8 +2470,8 @@ export function* do_symset(rogueflag) {
         for (sl = cptr.ldPtro(gs, $instance_globals_s_symset_list); sl; sl = cptr.ldPtr(sl)) {
             /* check restrictions */
             if (rogueflag
-                    ? (cptr.ldI32o(sl, $symsetentry_primary) & 1) | 0
-                    : (cptr.ldI32o(sl, $symsetentry_rogue) & 1) | 0)
+                    ? cptr.ldBits(cptr.add(sl, $symsetentry_primary), 1, 1, 0) | 0
+                    : cptr.ldBits(cptr.add(sl, $symsetentry_rogue), 2, 1, 0) | 0)
                 continue;
             if (cptr.ldI32o(sl, $symsetentry_handling) == NHC.H_MAC)
                 continue;

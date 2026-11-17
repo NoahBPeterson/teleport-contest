@@ -823,7 +823,7 @@ function dopush(sx, sy, rx, ry, otmp, costly) {
         addtobill(otmp, 0, 0, 0);
     } else if (!costly &&
             costly_spot(rx, ry) &&
-            (cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 &&
+            cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) | 0 &&
             ((shkp = shop_keeper(cptr.ld1s(in_rooms(rx, ry, NHC.SHOPBASE)))) !== null) &&
             onshopbill(otmp, shkp, 1)) {
         /* this can happen if hero pushes boulder from farther inside
@@ -834,7 +834,7 @@ function dopush(sx, sy, rx, ry, otmp, costly) {
            "muttering an incantation" to fracture the boulder while it
            is unpaid at the free spot */
         subfrombill(otmp, shkp);
-    } else if ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 &&
+    } else if (cptr.ldBits(cptr.add(otmp, $obj_unpaid), 2, 1, 0) | 0 &&
             (shkp = find_objowner(otmp, sx, sy)) !== null &&
             !cptr.strchr(
                 in_rooms(rx, ry, NHC.SHOPBASE),
@@ -1136,11 +1136,15 @@ function moverock_core(sx, sy) {
                     : 0));
 
             /* KMH -- Sokoban doesn't let you push boulders diagonally */
-            if ((cptr.ldI32o(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-            ) &
-                1) |
+            if (cptr.ldBits(
+                cptr.add(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
+                ),
+                7,
+                1,
+                0
+            ) |
                 0 &&
                     cptr.ldI32o(u, $you_dx) &&
                     cptr.ldI32o(u, $you_dy)) {
@@ -1157,8 +1161,8 @@ function moverock_core(sx, sy) {
             if (mtmp &&
                     !(cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) ==
                         NHC.S_GHOST) &&
-                    (!(cptr.ldI32o(mtmp, $monst_mtrapped) & 1) ||
-                        !(ttmp && is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31))))) {
+                    (!cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) ||
+                        !(ttmp && is_pit(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0))))) {
                 let deliver_part1 = 0;
 
                 if (Blind())
@@ -1213,7 +1217,7 @@ function moverock_core(sx, sy) {
                    to move any others at this location; return -1
                    if another boulder is in hero's way, or 0 if he
                    should advance to the vacated boulder position */
-                switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
+                switch (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) {
                     case NHC.LANDMINE:
                         if (rn2(10)) {
                             obj_extract_self(otmp);
@@ -1223,7 +1227,9 @@ function moverock_core(sx, sy) {
                                 __s_s_s_s_land_mine,
                                 (!Deaf() || !Blind()) ? __s_kaablamm : __s_gadzooks,
                                 Tobjnam(otmp, __s_trigger),
-                                (cptr.ldI32o(ttmp, $trap_madeby_u) & 1) | 0 ? __s_your : __s_a
+                                cptr.ldBits(cptr.add(ttmp, $trap_madeby_u), 7, 1, 0) | 0
+                                    ? __s_your
+                                    : __s_a
                             );
                             blow_up_landmine(ttmp);
                             /* if the boulder remains, it should fill the pit */
@@ -1273,15 +1279,18 @@ function moverock_core(sx, sy) {
                                 __s_s_s_and_s_a_s_in_the_s,
                                 Tobjnam(
                                     otmp,
-                                    (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR)
+                                    ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) ==
+                                        NHC.TRAPDOOR)
                                         ? __s_trigger
                                         : __s_fall
                                 ),
-                                (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR)
+                                ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) ==
+                                    NHC.TRAPDOOR)
                                     ? __s_empty
                                     : __s_into,
                                 otense(otmp, __s_plug),
-                                (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR)
+                                ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) ==
+                                    NHC.TRAPDOOR)
                                     ? __s_trap_door
                                     : __s_hole,
                                 surface(rx, ry)
@@ -1289,29 +1298,56 @@ function moverock_core(sx, sy) {
                         deltrap(ttmp);
                         useupf(otmp, 1n);
                         bury_objs(rx, ry);
-                        cptr.stI32o3(
-                            svl,
-                            rx,
-                            $sizeof_rm_x21,
-                            ry,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_flags,
-                            cptr.ldI32o3(
-                                svl,
-                                rx,
-                                $sizeof_rm_x21,
-                                ry,
-                                $sizeof_rm,
-                                $instance_globals_saved_l_level + $rm_flags
+                        cptr.stBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        rx,
+                                        $sizeof_rm_x21
+                                    ),
+                                    ry,
+                                    $sizeof_rm
+                                ),
+                                $rm_flags
+                            ),
+                            0,
+                            5,
+                            0,
+                            cptr.ldBits(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(
+                                            cptr.add(svl, $instance_globals_saved_l_level),
+                                            rx,
+                                            $sizeof_rm_x21
+                                        ),
+                                        ry,
+                                        $sizeof_rm
+                                    ),
+                                    $rm_flags
+                                ),
+                                0,
+                                5,
+                                0
                             ) & -9
                         );
-                        cptr.stI32o3(
-                            svl,
-                            rx,
-                            $sizeof_rm_x21,
-                            ry,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_candig,
+                        cptr.stBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        rx,
+                                        $sizeof_rm_x21
+                                    ),
+                                    ry,
+                                    $sizeof_rm
+                                ),
+                                $rm_candig
+                            ),
+                            7,
+                            1,
+                            0,
                             1
                         );
                         if (((cptr.ld1uo(
@@ -1335,7 +1371,8 @@ function moverock_core(sx, sy) {
                     case NHC.TELEP_TRAP:
                         rock_disappear_msg(otmp);
                         cptr.stI32o(otmp, $obj_corpsenm, 0);  /* reset before moving it */
-                        if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TELEP_TRAP) {
+                        if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) ==
+                                NHC.TELEP_TRAP) {
                             void rloco(otmp);
                         } else {
                             if (costly)
@@ -1343,7 +1380,7 @@ function moverock_core(sx, sy) {
                                     otmp,
                                     rx,
                                     ry,
-                                    schar((!(cptr.ldI32o(ttmp, $trap_tseen) & 1))),
+                                    schar((!cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0))),
                                     0
                                 );
                             obj_extract_self(otmp);
@@ -1435,7 +1472,7 @@ export function still_chewing(x, y) {
     if (!boulder &&
             ((((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) && !may_dig(x, y)) ||
                 (cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS &&
-                    (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE)))) {
+                    ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.W_NONDIGGABLE)))) {
         You(
             __s_hurt_your_teeth_on_the_s,
             (cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS)
@@ -1570,23 +1607,31 @@ export function still_chewing(x, y) {
             dmgtxt = __s_damage;
         }
         digtxt = __s_chew_a_hole_in_the_wall;
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-        ) &
-                1)) {
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+            ),
+            0,
+            1,
+            0
+        )) {
             cptr.st1o(lev, $rm_typ, NHC.ROOM);
-        } else if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev
-        ) &
-            1) |
+        } else if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev
+            ),
+            1,
+            1,
+            0
+        ) |
             0 &&
                 !in_town(x, y)) {
             cptr.st1o(lev, $rm_typ, NHC.CORR);
         } else {
             cptr.st1o(lev, $rm_typ, NHC.DOOR);
-            cptr.stI32o(lev, $rm_flags, NHM.D_NODOOR);
+            cptr.stBits(cptr.add(lev, $rm_flags), 0, 5, 0, NHM.D_NODOOR);
         }
     } else if (IS_TREE(cptr.ld1so(lev, $rm_typ))) {
         digtxt = __s_chew_through_the_tree;
@@ -1618,12 +1663,12 @@ export function still_chewing(x, y) {
                 : __s_eat_through_the_bars;
         dissolve_bars(x, y);
     } else if (cptr.ld1so(lev, $rm_typ) == NHC.SDOOR) {
-        if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
-            cptr.stI32o(lev, $rm_flags, NHM.D_NODOOR);
+        if ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.D_TRAPPED) {
+            cptr.stBits(cptr.add(lev, $rm_flags), 0, 5, 0, NHM.D_NODOOR);
             b_trapped(__s_secret_door, NHC.NO_PART);
         } else {
             digtxt = __s_chew_through_the_secret_door;
-            cptr.stI32o(lev, $rm_flags, NHM.D_BROKEN);
+            cptr.stBits(cptr.add(lev, $rm_flags), 0, 5, 0, NHM.D_BROKEN);
         }
         cptr.st1o(lev, $rm_typ, NHC.DOOR);
 
@@ -1632,12 +1677,12 @@ export function still_chewing(x, y) {
             add_damage(x, y, 400n);
             dmgtxt = __s_break;
         }
-        if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
-            cptr.stI32o(lev, $rm_flags, NHM.D_NODOOR);
+        if ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.D_TRAPPED) {
+            cptr.stBits(cptr.add(lev, $rm_flags), 0, 5, 0, NHM.D_NODOOR);
             b_trapped(__s_door, NHC.NO_PART);
         } else {
             digtxt = __s_chew_through_the_door;
-            cptr.stI32o(lev, $rm_flags, NHM.D_BROKEN);
+            cptr.stBits(cptr.add(lev, $rm_flags), 0, 5, 0, NHM.D_BROKEN);
         }
 
     } else {
@@ -1816,7 +1861,7 @@ export function may_dig(x, y) {
 
     return schar((!((((cptr.ld1so(lev, $rm_typ)) <= NHC.DBWALL) ||
         IS_TREE(cptr.ld1so(lev, $rm_typ))) &&
-            (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE))));
+            ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.W_NONDIGGABLE))));
 }
 
 /** C ref: hack.c:932 — @param {CInt} x @param {CInt} y @returns {CInt} */
@@ -1830,15 +1875,19 @@ export function may_passwall(x, y) {
         $instance_globals_saved_l_level + $rm_typ
     )) <=
         NHC.DBWALL) &&
-            (((cptr.ldI32o3(
-                svl,
-                x,
-                $sizeof_rm_x21,
-                y,
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_flags
-            ) &
-                31) |
+            ((cptr.ldBits(
+                cptr.add(
+                    cptr.add(
+                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+                        y,
+                        $sizeof_rm
+                    ),
+                    $rm_flags
+                ),
+                0,
+                5,
+                0
+            ) |
                 0) &
                 NHM.W_NONPASSWALL))));
 }
@@ -1851,11 +1900,15 @@ export function may_passwall(x, y) {
  * @returns {CInt}
  */
 export function bad_rock(mdat, x, y) {
-    return schar((((cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-    ) &
-        1) |
+    return schar(((cptr.ldBits(
+        cptr.add(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
+        ),
+        7,
+        1,
+        0
+    ) |
         0 &&
         sobj_at(NHC.BOULDER, x, y)) ||
         (((cptr.ld1so3(
@@ -1907,10 +1960,15 @@ export function cant_squeeze_thru(mon) {
 
     /* Sokoban restriction applies to hero only */
     if (cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst)) &&
-            (cptr.ldI32o(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-            ) & 1) | 0)
+            cptr.ldBits(
+                cptr.add(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
+                ),
+                7,
+                1,
+                0
+            ) | 0)
         return 3;
 
     /* can squeeze through */
@@ -2163,7 +2221,7 @@ export function test_move(ux, uy, dx, dy, mode) {
                 if (mode == NHM.DO_MOVE) {
                     if (Blind())
                         feel_location(x, y);
-                    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ||
+                    if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
                             cptr.ld1so(flags, $flag_mention_walls))
                         You_cant(__s_move_diagonally_into_an_intact_doorway);
                 }
@@ -2217,8 +2275,8 @@ export function test_move(ux, uy, dx, dy, mode) {
         let t = t_at(x, y);
 
         if (t &&
-                (cptr.ldI32o(t, $trap_tseen) & 1) | 0 &&
-                ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE)
+                cptr.ldBits(cptr.add(t, $trap_tseen), 5, 1, 0) | 0 &&
+                (cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) != NHC.VIBRATING_SQUARE)
             return schar((mode == NHM.TEST_TRAP));
 
         /* FIXME: should be using lastseentyp[x][y] rather than seen vector
@@ -2255,31 +2313,43 @@ export function test_move(ux, uy, dx, dy, mode) {
                         (is_pool(x, y)
                             ? (uarmf.v &&
                                 cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.WATER_WALKING_BOOTS &&
-                                (cptr.ldI32o2(
-                                    objects,
-                                    NHC.WATER_WALKING_BOOTS,
-                                    $sizeof_objclass,
-                                    $objclass_oc_name_known
-                                ) &
-                                    1) |
+                                cptr.ldBits(
+                                    cptr.add(
+                                        cptr.add(
+                                            objects,
+                                            NHC.WATER_WALKING_BOOTS,
+                                            $sizeof_objclass
+                                        ),
+                                        $objclass_oc_name_known
+                                    ),
+                                    0,
+                                    1,
+                                    0
+                                ) |
                                     0 &&
                                 !cptr.ldPtro(u, $you_usteed)
                                 ? 1
                                 : 0)
                             : (((uarmf.v &&
                                 cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.WATER_WALKING_BOOTS &&
-                                (cptr.ldI32o2(
-                                    objects,
-                                    NHC.WATER_WALKING_BOOTS,
-                                    $sizeof_objclass,
-                                    $objclass_oc_name_known
-                                ) &
-                                    1) |
+                                cptr.ldBits(
+                                    cptr.add(
+                                        cptr.add(
+                                            objects,
+                                            NHC.WATER_WALKING_BOOTS,
+                                            $sizeof_objclass
+                                        ),
+                                        $objclass_oc_name_known
+                                    ),
+                                    0,
+                                    1,
+                                    0
+                                ) |
                                     0 &&
                                 !cptr.ldPtro(u, $you_usteed)) &&
                                 Fire_resistance() &&
-                                (cptr.ldI32o(uarmf.v, $obj_oerodeproof) & 1) | 0 &&
-                                (cptr.ldI32o(uarmf.v, $obj_rknown) & 1) | 0) &&
+                                cptr.ldBits(cptr.add(uarmf.v, $obj_oerodeproof), 4, 1, 0) | 0 &&
+                                cptr.ldBits(cptr.add(uarmf.v, $obj_rknown), 3, 1, 0) | 0) &&
                                 is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
                                 ? 1
                                 : 0)))))
@@ -2308,11 +2378,15 @@ export function test_move(ux, uy, dx, dy, mode) {
     }
 
     if (sobj_at(NHC.BOULDER, x, y) &&
-            ((cptr.ldI32o(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-            ) &
-                1) |
+            (cptr.ldBits(
+                cptr.add(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
+                ),
+                7,
+                1,
+                0
+            ) |
                 0 ||
                 !Passes_walls())) {
         if (mode != NHM.TEST_TRAV &&
@@ -2368,12 +2442,19 @@ export function test_move(ux, uy, dx, dy, mode) {
                         !carrying(NHC.PICK_AXE) &&
                         !carrying(NHC.DWARVISH_MATTOCK) &&
                         !((obj = carrying(NHC.WAN_DIGGING)) &&
-                            !(cptr.ldI32o2(
-                                objects,
-                                cptr.ldI16o(obj, $obj_otyp),
-                                $sizeof_objclass,
-                                $objclass_oc_name_known
-                            ) & 1)))
+                            !cptr.ldBits(
+                                cptr.add(
+                                    cptr.add(
+                                        objects,
+                                        cptr.ldI16o(obj, $obj_otyp),
+                                        $sizeof_objclass
+                                    ),
+                                    $objclass_oc_name_known
+                                ),
+                                0,
+                                1,
+                                0
+                            )))
                     return 0;
             }
         }
@@ -2878,8 +2959,8 @@ function trapmove(x, y, desttrap) {
             break;
         case NHC.TT_PIT:
             if (desttrap &&
-                    (cptr.ldI32o(desttrap, $trap_tseen) & 1) | 0 &&
-                    is_pit((cptr.ldI32o(desttrap, $trap_ttyp) & 31)))
+                    cptr.ldBits(cptr.add(desttrap, $trap_tseen), 5, 1, 0) | 0 &&
+                    is_pit(cptr.ldBits(cptr.add(desttrap, $trap_ttyp), 0, 5, 0)))
                 return 1;  /* move into adjacent pit */
             /* try to escape; position stays same regardless of success */
             climb_pit();
@@ -3044,7 +3125,7 @@ export function notice_mon(mtmp) {
             !cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked)) {
         let spot = schar((canspotmon(mtmp) &&
             !(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 256n) != 0n) &&
-                ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 ||
+                (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0 ||
                     (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ==
                         NHC.M_AP_FURNITURE ||
                     (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT))
@@ -3052,9 +3133,9 @@ export function notice_mon(mtmp) {
                 : 0));
 
         if (spot &&
-                !(cptr.ldI32o(mtmp, $monst_mspotted) & 1) &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_mspotted), 0, 1, 0) &&
                 !(cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
-            cptr.stI32o(mtmp, $monst_mspotted, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mspotted), 0, 1, 0, 1);
             set_msg_xy(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
             You(
                 __s_s_s,
@@ -3068,7 +3149,7 @@ export function notice_mon(mtmp) {
                                 524288n) != 0n))
                             ? NHM.ARTICLE_A
                             : NHM.ARTICLE_NONE),
-                    ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 &&
+                    (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 &&
                         !cptr.ld1so(mtmp, $monst_mtame))
                         ? __s_peaceful
                         : null,
@@ -3077,7 +3158,7 @@ export function notice_mon(mtmp) {
                 )
             );
         } else if (!spot) {
-            cptr.stI32o(mtmp, $monst_mspotted, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mspotted), 0, 1, 0, 0);
         }
     }
 }
@@ -3121,7 +3202,7 @@ export function notice_all_mons(reset) {
             if (canspotmon(mtmp))
                 cnt++;
             else if (reset)
-                cptr.stI32o(mtmp, $monst_mspotted, 0);
+                cptr.stBits(cptr.add(mtmp, $monst_mspotted), 0, 1, 0, 0);
         }
         if (!cnt)
             return;
@@ -3139,7 +3220,7 @@ export function notice_all_mons(reset) {
             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                 continue;
             if (!canspotmon(mtmp))
-                cptr.stI32o(mtmp, $monst_mspotted, 0);
+                cptr.stBits(cptr.add(mtmp, $monst_mspotted), 0, 1, 0, 0);
             else if (i < cnt)
                 cptr.stPtro(arr, i++, mtmp, 8);
         }
@@ -3284,7 +3365,8 @@ function swim_move_danger(x, y) {
     let newtyp = u_simple_floortyp(x, y);
     let liquid_wall = schar((((newtyp) == NHC.WATER) || newtyp == NHC.LAVAWALL ? 1 : 0));
 
-    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && (is_pool(x, y) || ((newtyp) == NHC.WATER)))
+    if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+            (is_pool(x, y) || ((newtyp) == NHC.WATER)))
         return 0;
 
     if ((newtyp != u_simple_floortyp(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) &&
@@ -3307,30 +3389,34 @@ function swim_move_danger(x, y) {
         if ((is_pool(x, y) &&
             !(uarmf.v &&
                 cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.WATER_WALKING_BOOTS &&
-                (cptr.ldI32o2(
-                    objects,
-                    NHC.WATER_WALKING_BOOTS,
-                    $sizeof_objclass,
-                    $objclass_oc_name_known
-                ) &
-                    1) |
+                cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, NHC.WATER_WALKING_BOOTS, $sizeof_objclass),
+                        $objclass_oc_name_known
+                    ),
+                    0,
+                    1,
+                    0
+                ) |
                     0 &&
                 !cptr.ldPtro(u, $you_usteed))) ||
                 (is_lava(x, y) &&
                     !((uarmf.v &&
                         cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.WATER_WALKING_BOOTS &&
-                        (cptr.ldI32o2(
-                            objects,
-                            NHC.WATER_WALKING_BOOTS,
-                            $sizeof_objclass,
-                            $objclass_oc_name_known
-                        ) &
-                            1) |
+                        cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, NHC.WATER_WALKING_BOOTS, $sizeof_objclass),
+                                $objclass_oc_name_known
+                            ),
+                            0,
+                            1,
+                            0
+                        ) |
                             0 &&
                         !cptr.ldPtro(u, $you_usteed)) &&
                         Fire_resistance() &&
-                        (cptr.ldI32o(uarmf.v, $obj_oerodeproof) & 1) | 0 &&
-                        (cptr.ldI32o(uarmf.v, $obj_rknown) & 1) | 0) &&
+                        cptr.ldBits(cptr.add(uarmf.v, $obj_oerodeproof), 4, 1, 0) | 0 &&
+                        cptr.ldBits(cptr.add(uarmf.v, $obj_rknown), 3, 1, 0) | 0) &&
                     !is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) ||
                 liquid_wall) {
             if (cptr.ld1so(svc, $context_info_nopick)) {
@@ -3368,7 +3454,7 @@ function domove_bump_mon(mtmp, glyph) {
                 !Protection_from_shape_changers() &&
                 !sensemon(mtmp))
             stumble_onto_mimic(mtmp);
-        else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !Hallucination())
+        else if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 && !Hallucination())
             /* m_monnam(): "dog" or "Fido", no "invisible dog" or "it" */
             pline(__s_pardon_me_s, m_monnam(mtmp));
         else
@@ -3400,7 +3486,7 @@ function domove_attackmon_at(mtmp, x, y, displaceu) {
      * do_attack().
      */
     if (cptr.ld1so(svc, $context_info_forcefight) ||
-            !(cptr.ldI32o(mtmp, $monst_mundetected) & 1) ||
+            !cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) ||
             sensemon(mtmp) ||
             ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n) ||
                 cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL) &&
@@ -3417,7 +3503,7 @@ function domove_attackmon_at(mtmp, x, y, displaceu) {
                 cptr.ldI16o(mtmp, $monst_muy) == cptr.ldI16o(u, $you_uy0) &&
                 !helpless(mtmp) &&
                 !cptr.ldI32o(mtmp, $monst_meating) &&
-                !(cptr.ldI32o(mtmp, $monst_mtrapped) & 1) &&
+                !cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) &&
                 !cptr.ldI32o(u, $you_utrap) &&
                 !cptr.ldPtro(u, $you_ustuck) &&
                 !cptr.ldPtro(u, $you_usteed) &&
@@ -3495,8 +3581,8 @@ function domove_fight_web(x, y) {
 
     if (cptr.ld1so(svc, $context_info_forcefight) &&
             trap &&
-            ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.WEB &&
-            (cptr.ldI32o(trap, $trap_tseen) & 1) | 0) {
+            (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.WEB &&
+            cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0) {
         let wtype = uwep_skill_type();
         let wskill_minus_2 = ((((cptr.ldI16o2(u, wtype, $sizeof_skills, $you_weapon_skills))) >
             NHC.P_UNSKILLED
@@ -3608,20 +3694,20 @@ function domove_swap_with_pet(mtmp, x, y) {
        the display code will draw the hero here before we possibly
        cancel the swap below (we can ignore steed mx,my here) */
     cptr.stI16(u, cptr.ldI16o(u, $you_ux0)), cptr.stI16o(u, $you_uy, cptr.ldI16o(u, $you_uy0));
-    cptr.stI32o(mtmp, $monst_mundetected, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0, 0);
     if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK))
         seemimic(mtmp);
     cptr.stI16(u, cptr.ldI16o(mtmp, $monst_mx)),
             cptr.stI16o(u, $you_uy, cptr.ldI16o(mtmp, $monst_my));  /* resume swapping positions */
 
-    trap = (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0
+    trap = cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0
             ? t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))
             : null;
     if (!trap)
-        cptr.stI32o(mtmp, $monst_mtrapped, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
 
-    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 &&
-            is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31)) &&
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0 &&
+            is_pit(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0)) &&
             sobj_at(NHC.BOULDER, cptr.ldI16o(trap, $trap_tx), cptr.ldI16o(trap, $trap_ty))) {
         /* can't swap places with pet pinned in a pit by a boulder */
         didnt_move = 1;
@@ -3646,24 +3732,24 @@ function domove_swap_with_pet(mtmp, x, y) {
         /* can't swap places when pet won't fit thru the opening */
         You(__s_stop_s_won_t_fit_through, YMonnam(mtmp));
         didnt_move = 1;
-    } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 &&
-            (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0) {
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 &&
+            cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0) {
         /* all mtame are also mpeaceful, so this affects pets too */
         (__builtin_expect(BigInt((!(!cptr.eq(trap, (null))))), 0n)
                 ? __assert_rtn(__s_domove_swap_with_pet, __s_hack_c, 2143, __s_trap_null)
                 : void 0);  /* implied by mtrapped */
-        let what = trapname((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0, 0);
+        let what = trapname(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0, 0);
         let which = __s_that;
         let anbuf = new Uint8Array(10);
 
-        if (!(cptr.ldI32o(trap, $trap_tseen) & 1)) {
+        if (!cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0)) {
             feeltrap(trap);  /* show on map once mtmp is out of the way */
             which = just_an(cptr.decay(anbuf), what);  /* "a " or "an " */
         }
         You(__s_stop_s_can_t_move_out_of_s_s, YMonnam(mtmp), which, what);
         void handle_tip(NHC.TIP_UNTRAP_MON);
         didnt_move = 1;
-    } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 &&
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 &&
             (!goodpos(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0), mtmp, 0) ||
                 !cptr.eq(t_at(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)), (null)) ||
                 mundisplaceable(mtmp))) {
@@ -3672,7 +3758,7 @@ function domove_swap_with_pet(mtmp, x, y) {
         You(__s_stop_s_doesn_t_want_to_swap_places, YMonnam(mtmp));
         didnt_move = 1;
     } else {
-        cptr.stI32o(mtmp, $monst_mtrapped, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
         cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         place_monster(mtmp, cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0));
         newsym(x, y);
@@ -3680,7 +3766,9 @@ function domove_swap_with_pet(mtmp, x, y) {
 
         You(
             __s_s_s,
-            (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_swap_places_with : __s_frighten,
+            cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0
+                ? __s_swap_places_with
+                : __s_frighten,
             x_monnam(
                 mtmp,
                 cptr.ld1so(mtmp, $monst_mtame)
@@ -3690,7 +3778,8 @@ function domove_swap_with_pet(mtmp, x, y) {
                             524288n) != 0n))
                         ? NHM.ARTICLE_THE
                         : NHM.ARTICLE_NONE),
-                ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !cptr.ld1so(mtmp, $monst_mtame))
+                (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 &&
+                    !cptr.ld1so(mtmp, $monst_mtame))
                     ? __s_peaceful
                     : null,
                 has_mgivenname(mtmp) ? NHM.SUPPRESS_SADDLE : 0,
@@ -3851,7 +3940,7 @@ function domove_fight_empty(x, y) {
 
             if (boulder) {
                 void cptr.strcpy(cptr.decay(buf), ansimpleoname(boulder));
-            } else if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !is_pool(x, y)) {
+            } else if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 && !is_pool(x, y)) {
                 /* Underwater, targeting non-water; the map just shows blank
                    because you don't see remembered terrain while underwater;
                    although the hero can attack an adjacent monster this way,
@@ -4020,7 +4109,7 @@ function air_turbulence() {
 /* does water disturb the movement? */
 /** C ref: hack.c:2365 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @returns {CInt} */
 function water_turbulence(x, y) {
-    if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         let wtcap;
         let wtmod = (Swimming() ? NHC.MOD_ENCUMBER : NHC.SLT_ENCUMBER);
 
@@ -4156,11 +4245,14 @@ function avoid_moving_on_trap(x, y, msg) {
     let trap;
 
     if ((trap = t_at(x, y)) &&
-            (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 &&
-            ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE) {
+            cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 &&
+            (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) != NHC.VIBRATING_SQUARE) {
         if (msg && cptr.ld1so(flags, $flag_mention_walls)) {
             set_msg_xy(x, y);
-            You(__s_stop_in_front_of_s, an(trapname((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0, 0)));
+            You(
+                __s_stop_in_front_of_s,
+                an(trapname(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0, 0))
+            );
         }
         return 1;
     }
@@ -4193,28 +4285,32 @@ function avoid_moving_on_liquid(x, y, msg) {
             (in_air ||
                 ((uarmf.v &&
                     cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.WATER_WALKING_BOOTS &&
-                    (cptr.ldI32o2(
-                        objects,
-                        NHC.WATER_WALKING_BOOTS,
-                        $sizeof_objclass,
-                        $objclass_oc_name_known
-                    ) &
-                        1) |
+                    cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, NHC.WATER_WALKING_BOOTS, $sizeof_objclass),
+                            $objclass_oc_name_known
+                        ),
+                        0,
+                        1,
+                        0
+                    ) |
                         0 &&
                     !cptr.ldPtro(u, $you_usteed)) &&
                     Fire_resistance() &&
-                    (cptr.ldI32o(uarmf.v, $obj_oerodeproof) & 1) | 0 &&
-                    (cptr.ldI32o(uarmf.v, $obj_rknown) & 1) | 0) ||
+                    cptr.ldBits(cptr.add(uarmf.v, $obj_oerodeproof), 4, 1, 0) | 0 &&
+                    cptr.ldBits(cptr.add(uarmf.v, $obj_rknown), 3, 1, 0) | 0) ||
                 (is_pool(x, y) &&
                     (uarmf.v &&
                         cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.WATER_WALKING_BOOTS &&
-                        (cptr.ldI32o2(
-                            objects,
-                            NHC.WATER_WALKING_BOOTS,
-                            $sizeof_objclass,
-                            $objclass_oc_name_known
-                        ) &
-                            1) |
+                        cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, NHC.WATER_WALKING_BOOTS, $sizeof_objclass),
+                                $objclass_oc_name_known
+                            ),
+                            0,
+                            1,
+                            0
+                        ) |
                             0 &&
                         !cptr.ldPtro(u, $you_usteed)))) &&
             !(((cptr.ld1so3(
@@ -4331,7 +4427,7 @@ function avoid_trap_andor_region(x, y) {
             !HConfusion() &&
             (!cptr.ld1so(svc, $context_info_nopick) || cptr.ldI32o(svc, $context_info_run)) &&
             (trap = t_at(x, y)) !== null &&
-            (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 &&
+            cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 &&
             test_move(
                 cptr.ldI16(u),
                 cptr.ldI16o(u, $you_uy),
@@ -4341,13 +4437,13 @@ function avoid_trap_andor_region(x, y) {
             ) &&
             (immune_to_trap(
                 cptr.add(gy, $instance_globals_y_youmonst),
-                (cptr.ldI32o(trap, $trap_ttyp) & 31)
+                cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0)
             ) !=
                 NHC.TRAP_CLEARLY_IMMUNE ||
                 Hallucination())) {
         let traptype = (Hallucination()
                 ? rnd(((NHC.TRAPNUM - 1) | 0))
-                : (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0);
+                : cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0);
         let into = into_vs_onto(traptype);
 
         nh_snprintf(
@@ -4484,20 +4580,48 @@ function escape_from_sticky_mon(x, y) {
              * If holder is tame and there is no conflict,
              * guaranteed escape.
              */
-            switch (rn2(!(cptr.ldI32o(cptr.ldPtro(u, $you_ustuck), $monst_mcanmove) & 1)
+            switch (rn2(!cptr.ldBits(
+                cptr.add(cptr.ldPtro(u, $you_ustuck), $monst_mcanmove),
+                7,
+                1,
+                0
+            )
                     ? 8
                     : 40)) {
                 case 3:
-                    if (!(cptr.ldI32o(cptr.ldPtro(u, $you_ustuck), $monst_mcanmove) & 1)) {
+                    if (!cptr.ldBits(
+                        cptr.add(cptr.ldPtro(u, $you_ustuck), $monst_mcanmove),
+                        7,
+                        1,
+                        0
+                    )) {
                         /* it's free to move on next turn */
-                        cptr.stI32o(cptr.ldPtro(u, $you_ustuck), $monst_mfrozen, 1);
-                        cptr.stI32o(cptr.ldPtro(u, $you_ustuck), $monst_msleeping, 0);
+                        cptr.stBits(
+                            cptr.add(cptr.ldPtro(u, $you_ustuck), $monst_mfrozen),
+                            0,
+                            7,
+                            0,
+                            1
+                        );
+                        cptr.stBits(
+                            cptr.add(cptr.ldPtro(u, $you_ustuck), $monst_msleeping),
+                            7,
+                            1,
+                            0,
+                            0
+                        );
                     }
                     // @FallThrough
                     ;
                 default:
                     if (Conflict() ||
-                            (cptr.ldI32o(cptr.ldPtro(u, $you_ustuck), $monst_mconf) & 1) | 0 ||
+                            cptr.ldBits(
+                                cptr.add(cptr.ldPtro(u, $you_ustuck), $monst_mconf),
+                                0,
+                                1,
+                                0
+                            ) |
+                                0 ||
                             !cptr.ld1so(cptr.ldPtro(u, $you_ustuck), $monst_mtame)) {
                         You(__s_cannot_escape_from_s, y_monnam(cptr.ldPtro(u, $you_ustuck)));
                         nomul(0);
@@ -4559,7 +4683,7 @@ function domove_core() {
     if (carrying_too_much())
         return;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, 0));
         x.v = cptr.ldI16o(cptr.ldPtro(u, $you_ustuck), $monst_mx),
                 y.v = cptr.ldI16o(cptr.ldPtro(u, $you_ustuck), $monst_my);
@@ -4794,7 +4918,7 @@ function domove_core() {
         } else if (is_safemon(mtmp) &&
                 !(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 256n) !=
                     0n) &&
-                    (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0)) {
+                    cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0) | 0)) {
             if (!domove_swap_with_pet(mtmp, x.v, y.v)) {
                 cptr.stI16(u, cptr.ldI16o(u, $you_ux0)),
                         cptr.stI16o(u, $you_uy, cptr.ldI16o(u, $you_uy0));  /* didn't move after all */
@@ -4986,8 +5110,10 @@ export function invocation_message() {
             void cptr.sprintf(cptr.decay(buf), __s_under_your_s, makeplural(body_part(NHC.FOOT)));
 
         You_feel(__s_a_strange_vibration_s, cptr.decay(buf));
-        cptr.stI32o(u, $you_uevent + $u_event_uvibrated, 1);
-        if (otmp && cptr.ld1so(otmp, $obj_spe) == 7 && (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0)
+        cptr.stBits(cptr.add(u, $you_uevent + $u_event_uvibrated), 6, 1, 0, 1);
+        if (otmp &&
+                cptr.ld1so(otmp, $obj_spe) == 7 &&
+                cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0) | 0)
             pline(
                 __s_s_s__2,
                 The(xname(otmp)),
@@ -5019,10 +5145,15 @@ export function classify_terrain() {
     } else {
         switch (typ) {
             case NHC.STONE:
-                if ((cptr.ldI32o(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-                ) & 1))
+                if (cptr.ldBits(
+                    cptr.add(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
+                    ),
+                    2,
+                    1,
+                    0
+                ))
                     typ = NHC.TREE;
                 break;
             case NHC.CORR:
@@ -5051,14 +5182,14 @@ export function classify_terrain() {
                 break;
             case NHC.DOOR:
                 /* defaults to "doorway" (door-less or broken) */
-                if ((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_ISOPEN) != 0)
+                if (((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.D_ISOPEN) != 0)
                     typ = NHC.xOPENDOOR;
-                else if ((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 28) != 0)
+                else if (((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & 28) != 0)
                     typ = NHC.xSHUTDOOR;
                 break;
             case NHC.DRAWBRIDGE_UP:
                 /* ICE, MOAT, LAVA, or 'STONE' (which ought to be 'room') */
-                typ = db_under_typ((cptr.ldI32o(lev, $rm_flags) & 31) | 0);
+                typ = db_under_typ(cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0);
                 if (typ == NHC.STONE || typ == NHC.ROOM)
                     typ = NHC.xGROUND;
                 break;
@@ -5221,8 +5352,8 @@ export function switch_terrain() {
 /* set or clear u.uinwater */
 /** C ref: hack.c:3221 — @param {CInt} in_out */
 export function set_uinwater(in_out) {
-    if (in_out != ((cptr.ldI32o(u, $you_uinwater) & 1) | 0)) {
-        cptr.stI32o(u, $you_uinwater, (in_out ? 1 : 0) >>> 0);
+    if (in_out != (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0)) {
+        cptr.stBits(cptr.add(u, $you_uinwater), 1, 1, 0, (in_out ? 1 : 0) >>> 0);
         switch_terrain();
     }
 }
@@ -5233,7 +5364,7 @@ export function set_uinwater(in_out) {
 /** C ref: hack.c:3233 — @param {CInt} newspot @returns {CInt} */
 export function pooleffects(newspot) {
     /* check for leaving water */
-    if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         let still_inwater = 0;  /* assume we're getting out */
 
         if (!is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
@@ -5310,7 +5441,7 @@ export function pooleffects(newspot) {
             still_inwater = 1;
         }
         if (!still_inwater) {
-            let was_underwater = schar((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+            let was_underwater = schar(((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
                 !(((cptr.ldI16o(
                     (cptr.add(
                         svd,
@@ -5352,7 +5483,7 @@ export function pooleffects(newspot) {
             return 0;
         } else if (cptr.ldPtro(u, $you_usteed)) {
             /* steed enters pool */
-            dismount_steed(((cptr.ldI32o(u, $you_uinwater) & 1)) | 0
+            dismount_steed((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0
                     ? NHC.DISMOUNT_FELL
                     : NHC.DISMOUNT_GENERIC);
             /* dismount_steed() -> float_down() -> pickup()
@@ -5406,7 +5537,7 @@ export function pooleffects(newspot) {
         /* if hiding on ceiling then don't automatically enter pool */
         if (Upolyd() &&
                 ceiling_hider(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst)) &&
-                (cptr.ldI32o(u, $you_uundetected) & 1) | 0)
+                cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0)
             return 0;
 
         /* drown(),lava_effects() return true if hero changes
@@ -5436,7 +5567,7 @@ export function pooleffects(newspot) {
                 )))) ||
             is_waterwall(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) &&
                 (newspot ||
-                    !(cptr.ldI32o(u, $you_uinwater) & 1) ||
+                    !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) ||
                     !(Swimming() || Amphibious() || Breathless()))) {
             if (drown())
                 return 1;
@@ -5481,7 +5612,8 @@ export function spoteffects(pick) {
                     ) &&
                 (!__static_spoteffects_spottrap ||
                     !trap ||
-                    (cptr.ldI32o(trap, $trap_ttyp) & 31) == __static_spoteffects_spottraptyp))
+                    cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) ==
+                        __static_spoteffects_spottraptyp))
             return;
         /* when float_down() puts hero into lava and she teleports out,
            defer spoteffects() until after "you are back on solid <surface>" */
@@ -5561,7 +5693,7 @@ export function spoteffects(pick) {
              * If not a pit, pickup before triggering trap.
              * If pit, trigger trap before pickup.
              */
-            pit = schar((trap && is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31)) ? 1 : 0));
+            pit = schar((trap && is_pit(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0)) ? 1 : 0));
             if (pick && !pit)
                 void pickup(1);
 
@@ -5574,9 +5706,15 @@ export function spoteffects(pick) {
                  * to pit) and any new trap type should get triggered.
                  */
                 if (!__static_spoteffects_spottrap ||
-                        __static_spoteffects_spottraptyp != (cptr.ldI32o(trap, $trap_ttyp) & 31)) {
+                        __static_spoteffects_spottraptyp !=
+                            cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0)) {
                     __static_spoteffects_spottrap = trap;
-                    __static_spoteffects_spottraptyp = (cptr.ldI32o(trap, $trap_ttyp) & 31);
+                    __static_spoteffects_spottraptyp = cptr.ldBits(
+                        cptr.add(trap, $trap_ttyp),
+                        0,
+                        5,
+                        0
+                    );
                     dotrap(trap, trapflag >>> 0);  /* fall into arrow trap, etc. */
                     __static_spoteffects_spottrap = null;
                     __static_spoteffects_spottraptyp = NHC.NO_TRAP;
@@ -5613,8 +5751,14 @@ export function spoteffects(pick) {
             $instance_globals_saved_l_level + $dlevel_t_monsters
         ))) !==
             null &&
-                !(cptr.ldI32o(u, $you_uswallow) & 1)) {
-            cptr.stI32o(mtmp, $monst_mundetected, cptr.stI32o(mtmp, $monst_msleeping, 0));
+                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+            cptr.stBits(
+                cptr.add(mtmp, $monst_mundetected),
+                6,
+                1,
+                0,
+                cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0)
+            );
             switch (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet)) {
                 case NHC.S_PIERCER:
                     pline(
@@ -5648,14 +5792,14 @@ export function spoteffects(pick) {
                             Amonnam(mtmp),
                             ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
                         );
-                    else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+                    else if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0)) {
                         You(
                             __s_surprise_s,
                             Blind() && !sensemon(mtmp)
                                 ? cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
                                 : a_monnam(mtmp)
                         );
-                        cptr.stI32o(mtmp, $monst_mpeaceful, 0);
+                        cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
                     } else
                         pline(__s_s_attacks_you_by_surprise, Amonnam(mtmp));
                     break;
@@ -5751,15 +5895,19 @@ export function in_rooms(x, y, typewanted) {
     let step;
     let lev;
 
-    switch (rno = schar((cptr.ldI32o3(
-        svl,
-        x,
-        $sizeof_rm_x21,
-        y,
-        $sizeof_rm,
-        $instance_globals_saved_l_level + $rm_roomno
-    ) &
-            63))) {
+    switch (rno = schar(cptr.ldBits(
+        cptr.add(
+            cptr.add(
+                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+                y,
+                $sizeof_rm
+            ),
+            $rm_roomno
+        ),
+        0,
+        6,
+        0
+    ))) {
         case NHM.NO_ROOM:
             return ptr;
         case NHM.SHARED:
@@ -5804,7 +5952,13 @@ export function in_rooms(x, y, typewanted) {
             $sizeof_rm
         );
         y = 0;
-        if ((rno = schar((cptr.ldI32o2(lev, y, $sizeof_rm, $rm_roomno) & 63))) >= NHM.ROOMOFFSET &&
+        if ((rno = schar(cptr.ldBits(
+            cptr.add(cptr.add(lev, y, $sizeof_rm), $rm_roomno),
+            0,
+            6,
+            0
+        ))) >=
+            NHM.ROOMOFFSET &&
                 !cptr.strchr(ptr, rno) &&
                 (!typewanted ||
                     (typefound = cptr.ld1so2(
@@ -5819,7 +5973,13 @@ export function in_rooms(x, y, typewanted) {
         y = i16(y + step);
         if (y > max_y_offset)
             continue;
-        if ((rno = schar((cptr.ldI32o2(lev, y, $sizeof_rm, $rm_roomno) & 63))) >= NHM.ROOMOFFSET &&
+        if ((rno = schar(cptr.ldBits(
+            cptr.add(cptr.add(lev, y, $sizeof_rm), $rm_roomno),
+            0,
+            6,
+            0
+        ))) >=
+            NHM.ROOMOFFSET &&
                 !cptr.strchr(ptr, rno) &&
                 (!typewanted ||
                     (typefound = cptr.ld1so2(
@@ -5834,7 +5994,13 @@ export function in_rooms(x, y, typewanted) {
         y = i16(y + step);
         if (y > max_y_offset)
             continue;
-        if ((rno = schar((cptr.ldI32o2(lev, y, $sizeof_rm, $rm_roomno) & 63))) >= NHM.ROOMOFFSET &&
+        if ((rno = schar(cptr.ldBits(
+            cptr.add(cptr.add(lev, y, $sizeof_rm), $rm_roomno),
+            0,
+            6,
+            0
+        ))) >=
+            NHM.ROOMOFFSET &&
                 !cptr.strchr(ptr, rno) &&
                 (!typewanted ||
                     (typefound = cptr.ld1so2(
@@ -5856,10 +6022,12 @@ export function in_town(x, y) {
     let sroom;
     let has_subrooms = 0;
 
-    if (!(cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town
-    ) & 1))
+    if (!cptr.ldBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town),
+        3,
+        1,
+        0
+    ))
         return 0;
 
     /*
@@ -5976,11 +6144,12 @@ export function check_special_room(newlev) {
      * TODO: change the minetn variants which don't include any town
      * boundary to have such.
      */
-    if ((cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town
-    ) &
-        1) |
+    if (cptr.ldBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town),
+        3,
+        1,
+        0
+    ) |
         0 &&
             !cptr.ld1so(svc, $context_info_achieveo + $achievement_tracking_minetn_reached) &&
             In_mines(cptr.add(u, $you_uz)) &&
@@ -6060,7 +6229,7 @@ export function check_special_room(newlev) {
 
                     if (oracle) {
                         ;
-                        if (!(cptr.ldI32o(oracle, $monst_mpeaceful) & 1))
+                        if (!cptr.ldBits(cptr.add(oracle, $monst_mpeaceful), 1, 1, 0))
                             verbalize(__s_you_re_in_delphi_s, svp);
                         else
                             verbalize(__s_s_s_welcome_to_delphi, Hello(null), svp);
@@ -6086,63 +6255,100 @@ export function check_special_room(newlev) {
                 /* No more room of that type */
                 switch (rt) {
                     case NHC.COURT:
-                        cptr.stI32o(
-                            svl,
-                            $instance_globals_saved_l_level +
-                                $dlevel_t_flags +
-                                $levelflags_has_court,
+                        cptr.stBits(
+                            cptr.add(
+                                svl,
+                                $instance_globals_saved_l_level +
+                                    $dlevel_t_flags +
+                                    $levelflags_has_court
+                            ),
+                            3,
+                            1,
+                            0,
                             0
                         );
                         break;
                     case NHC.SWAMP:
-                        cptr.stI32o(
-                            svl,
-                            $instance_globals_saved_l_level +
-                                $dlevel_t_flags +
-                                $levelflags_has_swamp,
+                        cptr.stBits(
+                            cptr.add(
+                                svl,
+                                $instance_globals_saved_l_level +
+                                    $dlevel_t_flags +
+                                    $levelflags_has_swamp
+                            ),
+                            0,
+                            1,
+                            0,
                             0
                         );
                         break;
                     case NHC.MORGUE:
-                        cptr.stI32o(
-                            svl,
-                            $instance_globals_saved_l_level +
-                                $dlevel_t_flags +
-                                $levelflags_has_morgue,
+                        cptr.stBits(
+                            cptr.add(
+                                svl,
+                                $instance_globals_saved_l_level +
+                                    $dlevel_t_flags +
+                                    $levelflags_has_morgue
+                            ),
+                            4,
+                            1,
+                            0,
                             0
                         );
                         break;
                     case NHC.ZOO:
-                        cptr.stI32o(
-                            svl,
-                            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo,
+                        cptr.stBits(
+                            cptr.add(
+                                svl,
+                                $instance_globals_saved_l_level +
+                                    $dlevel_t_flags +
+                                    $levelflags_has_zoo
+                            ),
+                            2,
+                            1,
+                            0,
                             0
                         );
                         break;
                     case NHC.BARRACKS:
-                        cptr.stI32o(
-                            svl,
-                            $instance_globals_saved_l_level +
-                                $dlevel_t_flags +
-                                $levelflags_has_barracks,
+                        cptr.stBits(
+                            cptr.add(
+                                svl,
+                                $instance_globals_saved_l_level +
+                                    $dlevel_t_flags +
+                                    $levelflags_has_barracks
+                            ),
+                            6,
+                            1,
+                            0,
                             0
                         );
                         break;
                     case NHC.TEMPLE:
-                        cptr.stI32o(
-                            svl,
-                            $instance_globals_saved_l_level +
-                                $dlevel_t_flags +
-                                $levelflags_has_temple,
+                        cptr.stBits(
+                            cptr.add(
+                                svl,
+                                $instance_globals_saved_l_level +
+                                    $dlevel_t_flags +
+                                    $levelflags_has_temple
+                            ),
+                            7,
+                            1,
+                            0,
                             0
                         );
                         break;
                     case NHC.BEEHIVE:
-                        cptr.stI32o(
-                            svl,
-                            $instance_globals_saved_l_level +
-                                $dlevel_t_flags +
-                                $levelflags_has_beehive,
+                        cptr.stBits(
+                            cptr.add(
+                                svl,
+                                $instance_globals_saved_l_level +
+                                    $dlevel_t_flags +
+                                    $levelflags_has_beehive
+                            ),
+                            5,
+                            1,
+                            0,
                             0
                         );
                         break;
@@ -6158,19 +6364,27 @@ export function check_special_room(newlev) {
                         continue;
                     if (!isok(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) ||
                             roomno !=
-                                ((cptr.ldI32o3(
-                                    svl,
-                                    cptr.ldI16o(mtmp, $monst_mx),
-                                    $sizeof_rm_x21,
-                                    cptr.ldI16o(mtmp, $monst_my),
-                                    $sizeof_rm,
-                                    $instance_globals_saved_l_level + $rm_roomno
-                                ) &
-                                    63) | 0))
+                                (cptr.ldBits(
+                                    cptr.add(
+                                        cptr.add(
+                                            cptr.add(
+                                                cptr.add(svl, $instance_globals_saved_l_level),
+                                                cptr.ldI16o(mtmp, $monst_mx),
+                                                $sizeof_rm_x21
+                                            ),
+                                            cptr.ldI16o(mtmp, $monst_my),
+                                            $sizeof_rm
+                                        ),
+                                        $rm_roomno
+                                    ),
+                                    0,
+                                    6,
+                                    0
+                                ) | 0))
                         continue;
                     if (!Stealth() && !rn2(3)) {
                         wake_msg(mtmp, 0);
-                        cptr.stI32o(mtmp, $monst_msleeping, 0);
+                        cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
                     }
                 }
         }
@@ -6188,7 +6402,7 @@ function pickup_checks() {
     let traphere;
 
     /* uswallow case added by GAN 01/29/87 */
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (!cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_minvent)) {
             if ((dmgtype_fromattack(
                 (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
@@ -6298,7 +6512,7 @@ function pickup_checks() {
         if (((cptr.ld1so(lev, $rm_typ)) == NHC.THRONE))
             pline(
                 __s_it_must_weigh_s_a_ton,
-                (cptr.ldI32o(lev, $rm_flags) & 31) | 0 ? __s_almost : __s_empty
+                cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0 ? __s_almost : __s_empty
             );
         else if (((cptr.ld1so(lev, $rm_typ)) == NHC.SINK))
             pline_The(__s_plumbing_connects_it_to_the_floor);
@@ -6307,7 +6521,7 @@ function pickup_checks() {
         else if (((cptr.ld1so(lev, $rm_typ)) == NHC.FOUNTAIN))
             You(__s_could_drink_the_s, hliquid(__s_water));
         else if (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) &&
-                (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_ISOPEN))
+                ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.D_ISOPEN))
             pline(__s_it_won_t_come_off_the_hinges);
         else if (((cptr.ld1so(lev, $rm_typ)) == NHC.ALTAR))
             pline(__s_moving_the_altar_would_be_a_very_bad);
@@ -6318,7 +6532,8 @@ function pickup_checks() {
         return 0;
     }
     traphere = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-    if (!can_reach_floor(schar((traphere && is_pit((cptr.ldI32o(traphere, $trap_ttyp) & 31))
+    if (!can_reach_floor(schar((traphere &&
+        is_pit(cptr.ldBits(cptr.add(traphere, $trap_ttyp), 0, 5, 0))
             ? 1
             : 0)))) {
         /* if there's a hole here, any objects here clearly aren't at
@@ -6334,9 +6549,9 @@ function pickup_checks() {
             let surf = surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 
             if (traphere) {
-                if (((cptr.ldI32o(traphere, $trap_ttyp) & 31) | 0) == NHC.HOLE)
+                if ((cptr.ldBits(cptr.add(traphere, $trap_ttyp), 0, 5, 0) | 0) == NHC.HOLE)
                     surf = __s_edge_of_the_hole;
-                else if (((cptr.ldI32o(traphere, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR)
+                else if ((cptr.ldBits(cptr.add(traphere, $trap_ttyp), 0, 5, 0) | 0) == NHC.TRAPDOOR)
                     surf = __s_trap_door;
             }
             You(__s_cannot_reach_the_s, surf);
@@ -6695,7 +6910,7 @@ export function doorless_door(x, y) {
                 )
             ))))
         return 0;
-    return schar((!(((cptr.ldI32o(lev_p, $rm_flags) & 31) | 0) & -2)));
+    return schar((!((cptr.ldBits(cptr.add(lev_p, $rm_flags), 0, 5, 0) | 0) & -2)));
 }
 
 /* used by drown() to check whether hero can crawl from water to <x,y>;
@@ -6771,11 +6986,11 @@ export function monster_nearby() {
                         NHC.M_AP_FURNITURE &&
                     (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_OBJECT &&
                     (Hallucination() ||
-                        (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) &&
+                        (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) &&
                             !noattacks(cptr.ldPtro(mtmp, $monst_data)))) &&
                     (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 256n) !=
                         0n) ||
-                        !(cptr.ldI32o(mtmp, $monst_mundetected) & 1)) &&
+                        !cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0)) &&
                     !helpless(mtmp) &&
                     !onscary(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), mtmp) &&
                     canspotmon(mtmp))
@@ -6823,7 +7038,7 @@ export function nomul(nval) {
     if (cptr.ldI64o(gm, $instance_globals_m_multi) < BigInt(nval))
         return;  /* This is a bug fix by ab@unido */
     cptr.st1(disp, cptr.ld1s(disp) | (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n));
-    cptr.stI32o(u, $you_uinvulnerable, 0);  /* Kludge to avoid ctrl-C bug -dlc */
+    cptr.stBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0, 0);  /* Kludge to avoid ctrl-C bug -dlc */
     cptr.stI64o(u, $you_usleep, 0n);
     cptr.stI64o(gm, $instance_globals_m_multi, BigInt(nval));
     if (nval == 0)
@@ -7272,10 +7487,21 @@ export function dump_weights() {
                 cnt,
                 $sizeof_weight_table_entry,
                 $weight_table_entry_unique,
-                schar((((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_unique) & 1) |
+                schar(((cptr.ldBits(
+                    cptr.add(cptr.add(objects, i, $sizeof_objclass), $objclass_oc_unique),
+                    6,
+                    1,
+                    0
+                ) |
                     0) != 0))
             );
-            cptr.stI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known, 1);
+            cptr.stBits(
+                cptr.add(cptr.add(objects, i, $sizeof_objclass), $objclass_oc_name_known),
+                0,
+                1,
+                0,
+                1
+            );
             void cptr.strcpy(cptr.decay(nmbufbase), simple_typename(i));
             nh_snprintf(
                 __s_dump_weights,
@@ -7388,15 +7614,19 @@ export function spot_checks(x, y, old_typ) {
 
     switch (old_typ) {
         case NHC.DRAWBRIDGE_UP:
-            db_ice_now = schar(((((cptr.ldI32o3(
-                svl,
-                x,
-                $sizeof_rm_x21,
-                y,
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_flags
-            ) &
-                31) |
+            db_ice_now = schar((((cptr.ldBits(
+                cptr.add(
+                    cptr.add(
+                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+                        y,
+                        $sizeof_rm
+                    ),
+                    $rm_flags
+                ),
+                0,
+                5,
+                0
+            ) |
                 0) &
                 NHM.DB_UNDER) ==
                     NHM.DB_ICE));

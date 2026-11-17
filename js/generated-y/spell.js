@@ -151,9 +151,7 @@ const $Gender_him = FLD.Gender_him, $Role_mnum = FLD.Role_mnum, $Role_spelarmr =
       $spell_sp_know = FLD.spell_sp_know, $spell_sp_lev = FLD.spell_sp_lev,
       $tport_hideaway_tport_indx = FLD.tport_hideaway_tport_indx,
       $u_conduct_literate = FLD.u_conduct_literate, $u_event_invoked = FLD.u_event_invoked,
-      $u_event_read_tribute = FLD.u_event_read_tribute, $u_event_udemigod = FLD.u_event_udemigod,
-      $u_have_bell = FLD.u_have_bell, $u_have_menorah = FLD.u_have_menorah,
-      $u_roleplay_pauper = FLD.u_roleplay_pauper,
+      $u_event_udemigod = FLD.u_event_udemigod, $u_roleplay_pauper = FLD.u_roleplay_pauper,
       $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
       $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
       $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
@@ -383,15 +381,15 @@ function* cursed_book(bp) {
                 break;
             }
             /* temp disable in_use; death should not destroy the book */
-            was_in_use = schar((cptr.ldI32o(bp, $obj_in_use) & 1));
-            cptr.stI32o(bp, $obj_in_use, 0);
+            was_in_use = schar(cptr.ldBits(cptr.add(bp, $obj_in_use), 2, 1, 0));
+            cptr.stBits(cptr.add(bp, $obj_in_use), 2, 1, 0, 0);
             (yield* poison_strdmg(
                 Poison_resistance() ? ((rn2(2) + 1) | 0) : ((rn2(4) + 3) | 0),
                 rnd(Poison_resistance() ? 6 : 10),
                 __s_contact_poisoned_spellbook,
                 NHM.KILLED_BY_AN
             ));
-            cptr.stI32o(bp, $obj_in_use, was_in_use);
+            cptr.stBits(cptr.add(bp, $obj_in_use), 2, 1, 0, was_in_use);
             break;
         case 6:
             if (Antimagic()) {
@@ -424,7 +422,7 @@ function* confused_book(spellbook) {
     let gone = 0;
 
     if (!rn2(3) && cptr.ldI16o(spellbook, $obj_otyp) != NHC.SPE_BOOK_OF_THE_DEAD) {
-        cptr.stI32o(spellbook, $obj_in_use, 1);  /* in case called from learn() */
+        cptr.stBits(cptr.add(spellbook, $obj_in_use), 2, 1, 0, 1);  /* in case called from learn() */
         (yield* pline(__s_being_confused_you_have_difficulties_in));
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
         (yield* You(__s_accidentally_tear_the_spellbook_to));
@@ -455,7 +453,7 @@ function* deadbook_pacify_undead(mtmp) {
             ) &
                 NHM.IN_SIGHT) !=
                 0)) {
-        cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
         if (sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)) ==
             sgn(cptr.ld1so(u, $you_ualign)) &&
                 dist2(
@@ -489,7 +487,7 @@ function* deadbook(book2) {
             (yield* discover_object(NHC.SPE_BOOK_OF_THE_DEAD, 1, 1, 1));
             (yield* observe_object(book2));  /* in case blind now and hasn't been seen yet */
             /* KMH -- Need ->known to avoid "_a_ Book of the Dead" */
-            cptr.stI32o(book2, $obj_known, 1);
+            cptr.stBits(cptr.add(book2, $obj_known), 0, 1, 0, 1);
             if (invocation_pos(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
                     !On_stairs(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) { __pc = 3; continue; }
             __pc = 2; continue;
@@ -499,7 +497,7 @@ function* deadbook(book2) {
             arti2_primed = 0;
             arti_cursed = 0;
 
-            if ((cptr.ldI32o(book2, $obj_cursed) & 1)) {
+            if (cptr.ldBits(cptr.add(book2, $obj_cursed), 0, 1, 0)) {
                 (yield* pline_The(
                     __s_pct_s_bang,
                     Blind()
@@ -509,14 +507,14 @@ function* deadbook(book2) {
                 return;
             }
 
-            if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) ||
-                    !(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1)) {
+            if (!cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0) ||
+                    !cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0)) {
                 (yield* pline(__s_a_chill_runs_down_your_s, (yield* body_part(NHC.SPINE))));
-                if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1)) {
+                if (!cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0)) {
                     ;
                     (yield* You_hear(__s_a_faint_chime));
                 }
-                if (!(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1))
+                if (!cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0))
                     (yield* pline(__s_vlad_s_doppelganger_is_amused));
                 return;
             }
@@ -528,8 +526,8 @@ function* deadbook(book2) {
             ) {
                 if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION &&
                         cptr.ld1so(otmp, $obj_spe) == 7 &&
-                        (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0) {
-                    if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
+                        cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0) | 0) {
+                    if (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
                         arti1_primed = 1;
                     else
                         arti_cursed = 1;
@@ -541,7 +539,7 @@ function* deadbook(book2) {
                                 cptr.ldI64o(otmp, $obj_age)
                         )) <
                             5n) {
-                    if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
+                    if (!cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
                         arti2_primed = 1;
                     else
                         arti_cursed = 1;
@@ -567,11 +565,11 @@ function* deadbook(book2) {
 
             /* successful invocation */
             (yield* mkinvokearea());
-            cptr.stI32o(u, $you_uevent + $u_event_invoked, 1);
+            cptr.stBits(cptr.add(u, $you_uevent + $u_event_invoked), 1, 1, 0, 1);
             (yield* record_achievement(NHC.ACH_INVK));
             /* in case you haven't killed the Wizard yet, behave as if
                you just did */
-            cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);  /* wizdeadorgone() */
+            cptr.stBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0, 1);  /* wizdeadorgone() */
             if (!cptr.ldI32o(u, $you_udg_cnt) || cptr.ldI32o(u, $you_udg_cnt) > soon)
                 cptr.stI32o(u, $you_udg_cnt, soon);
             __pc = 7;
@@ -592,7 +590,7 @@ function* deadbook(book2) {
             return;
         }
         case 2: {
-            if ((cptr.ldI32o(book2, $obj_cursed) & 1)) { __pc = 11; continue; }
+            if (cptr.ldBits(cptr.add(book2, $obj_cursed), 0, 1, 0)) { __pc = 11; continue; }
             __pc = 12; continue;
         }
         case 11: {
@@ -618,7 +616,7 @@ function* deadbook(book2) {
                             NHM.NO_MINVENT
                         ))) !==
                             null)) {
-                cptr.stI32o(mtmp, $monst_mpeaceful, 0);
+                cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
                 set_malign(mtmp);
             }
             /* next handle the affect on things you're carrying */
@@ -631,7 +629,7 @@ function* deadbook(book2) {
             continue;
         }
         case 12: {
-            if ((cptr.ldI32o(book2, $obj_blessed) & 1)) {
+            if (cptr.ldBits(cptr.add(book2, $obj_blessed), 1, 1, 0)) {
                 (yield* iter_mons(deadbook_pacify_undead));
             } else {
                 switch (rn2(3)) {
@@ -659,7 +657,7 @@ function* deadbook(book2) {
 /* 'book' has just become cursed; if we're reading it, interrupt */
 /** C ref: spell.c:343 — @param {CPtr<struct obj>} book */
 export function* book_cursed(book) {
-    if ((cptr.ldI32o(book, $obj_cursed) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(book, $obj_cursed), 0, 1, 0) | 0 &&
             cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n &&
             cptr.ldPtro(go, $instance_globals_o_occupation) === learn &&
             cptr.eq(cptr.ldPtro(svc, $context_info_spbook), book)) {
@@ -707,7 +705,12 @@ function* learn() {
 
     void cptr.sprintf(
         cptr.decay(splname),
-        (cptr.ldI32o2(objects, booktype, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
+        cptr.ldBits(
+            cptr.add(cptr.add(objects, booktype, $sizeof_objclass), $objclass_oc_name_known),
+            0,
+            1,
+            0
+        ) | 0
             ? __s_quot_pct_s_quot
             : __s_the_s_spell,
         (cptr.ldPtro(
@@ -786,7 +789,7 @@ function* learn() {
             (yield* update_inventory());
     }
 
-    if ((cptr.ldI32o(book, $obj_cursed) & 1)) {
+    if (cptr.ldBits(cptr.add(book, $obj_cursed), 0, 1, 0)) {
         if ((yield* cursed_book(book))) {
             (yield* useup(book));
             cptr.stPtro(svc, $context_info_spbook, null);
@@ -865,12 +868,12 @@ export function* study_book(spellbook) {
 
                 (yield* check_unpaid(spellbook));
                 (yield* discover_object((booktype), 1, 1, 1));
-                if (!(cptr.ldI32o(u, $you_uevent + $u_event_read_tribute) & 1)) {
+                if (!cptr.ldBits(cptr.add(u, $you_uevent), 2, 1, 0)) {
                     (yield* record_achievement(NHC.ACH_NOVL));
                     /* give bonus of 20 xp and 4*20+0 pts */
                     (yield* more_experienced(20, 0));
                     (yield* newexplevel());
-                    cptr.stI32o(u, $you_uevent + $u_event_read_tribute, 1);  /* only once */
+                    cptr.stBits(cptr.add(u, $you_uevent), 2, 1, 0, 1);  /* only once */
                 }
             }
             return 1;
@@ -950,10 +953,10 @@ export function* study_book(spellbook) {
         }
 
         /* Books are often wiser than their readers (Rus.) */
-        cptr.stI32o(spellbook, $obj_in_use, 1);
-        if (!(cptr.ldI32o(spellbook, $obj_blessed) & 1) &&
+        cptr.stBits(cptr.add(spellbook, $obj_in_use), 2, 1, 0, 1);
+        if (!cptr.ldBits(cptr.add(spellbook, $obj_blessed), 1, 1, 0) &&
                 cptr.ldI16o(spellbook, $obj_otyp) != NHC.SPE_BOOK_OF_THE_DEAD) {
-            if ((cptr.ldI32o(spellbook, $obj_cursed) & 1)) {
+            if (cptr.ldBits(cptr.add(spellbook, $obj_cursed), 0, 1, 0)) {
                 too_hard = 1;
             } else {
                 /* uncursed - chance to fail */
@@ -980,7 +983,7 @@ export function* study_book(spellbook) {
                         (read_ability < 12 ? __s_very : __s_empty)
                     );
                     if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1)) != 121) {
-                        cptr.stI32o(spellbook, $obj_in_use, 0);
+                        cptr.stBits(cptr.add(spellbook, $obj_in_use), 2, 1, 0, 0);
                         return 1;
                     }
                 }
@@ -1004,11 +1007,11 @@ export function* study_book(spellbook) {
                 (yield* trycall(spellbook));
                 (yield* useup(spellbook));
             } else
-                cptr.stI32o(spellbook, $obj_in_use, 0);
+                cptr.stBits(cptr.add(spellbook, $obj_in_use), 2, 1, 0, 0);
             return 1;
         } else if (confused) {
             if (!(yield* confused_book(spellbook))) {
-                cptr.stI32o(spellbook, $obj_in_use, 0);
+                cptr.stBits(cptr.add(spellbook, $obj_in_use), 2, 1, 0, 0);
             }
             nomul(cptr.ld1so(svc, $context_info_spbook + $book_info_delay));
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_reading_a_book);
@@ -1016,7 +1019,7 @@ export function* study_book(spellbook) {
             cptr.st1o(svc, $context_info_spbook + $book_info_delay, 0);
             return 1;
         }
-        cptr.stI32o(spellbook, $obj_in_use, 0);
+        cptr.stBits(cptr.add(spellbook, $obj_in_use), 2, 1, 0, 0);
 
         (yield* You(
             __s_begin_to_s_the_runes,
@@ -1419,15 +1422,23 @@ function* propagate_chain_lightning(clq, zap) {
                     $instance_globals_saved_l_level + $rm_typ
                 )) ==
                     NHC.DOOR) &&
-                    !(((cptr.ldI32o3(
-                        svl,
-                        cptr.ldI16o(zap, $chain_lightning_zap_x),
-                        $sizeof_rm_x21,
-                        cptr.ldI16o(zap, $chain_lightning_zap_y),
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_flags
-                    ) &
-                        31) |
+                    !((cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    cptr.ldI16o(zap, $chain_lightning_zap_x),
+                                    $sizeof_rm_x21
+                                ),
+                                cptr.ldI16o(zap, $chain_lightning_zap_y),
+                                $sizeof_rm
+                            ),
+                            $rm_flags
+                        ),
+                        0,
+                        5,
+                        0
+                    ) |
                         0) & 12)))))
         return;  /* zap can't go to this square */
 
@@ -1439,7 +1450,7 @@ function* propagate_chain_lightning(clq, zap) {
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
     ));
-    if (mon && (cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0)
+    if (mon && cptr.ldBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0) | 0)
         return;  /* chain lightning avoids peaceful and tame monsters */
 
     /* When hitting a monster that isn't electricity-resistant, a
@@ -1508,7 +1519,7 @@ function* cast_chain_lightning() {
         Hallucination() ? rn2_on_display_rng(6) : 5
     );
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         // TODO: damage the engulfer
         return;
     }
@@ -1708,7 +1719,7 @@ function* cast_protection() {
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_typ
                 );
-                atmosphere = (pm && (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+                atmosphere = (pm && cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
                         ? ((cptr.eq(pm, cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst)))
                             ? __s_mist
                             : (is_whirly(pm)
@@ -1718,7 +1729,7 @@ function* cast_protection() {
                                     : (((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n)
                                         ? __s_maw
                                         : __s_ooze))))
-                        : ((cptr.ldI32o(u, $you_uinwater) & 1) | 0
+                        : (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0
                             ? hliquid(__s_water)
                             : ((rmtyp == NHC.CLOUD)
                                 ? __s_cloud
@@ -1870,7 +1881,8 @@ function* spelleffects_check(spell, res, energy) {
        in and no turn will be consumed; however, when it does kick in,
        the attempt may fail due to lack of energy after the draining, in
        which case a turn will be used up in addition to the energy loss */
-    if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && cptr.ldI32o(u, $you_uen) >= cptr.ldI32(energy)) {
+    if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 &&
+            cptr.ldI32o(u, $you_uen) >= cptr.ldI32(energy)) {
         (yield* You_feel(__s_the_amulet_draining_your_energy_away));
         /* this used to be 'energy += rnd(2 * energy)' (without 'res'),
            so if amulet-induced cost was more than u.uen, nothing
@@ -1998,7 +2010,13 @@ export function* spelleffects(spell_otyp, atme, force) {
     (yield* exercise(NHC.A_WIS, 1));
     /* pseudo is a temporary "false" object containing the spell stats */
     pseudo = (yield* mksobj(force ? spell : cptr.ldI16o(svs, spell, $sizeof_spell), 0, 0));
-    cptr.stI32o(pseudo, $obj_blessed, cptr.stI32o(pseudo, $obj_cursed, 0));
+    cptr.stBits(
+        cptr.add(pseudo, $obj_blessed),
+        1,
+        1,
+        0,
+        cptr.stBits(cptr.add(pseudo, $obj_cursed), 0, 1, 0, 0)
+    );
     cptr.stI64o(pseudo, $obj_quan, 20n);  /* do not let useup get it */
     /*
      * Find the skill the hero has in a spell type category.
@@ -2067,7 +2085,7 @@ export function* spelleffects(spell_otyp, atme, force) {
                                     $instance_globals_saved_l_level + $rm_typ
                                 )) <=
                                     NHC.DBWALL) ||
-                                (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+                                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
                             /* Spell is reflected back to center */
                             cptr.stI32o(u, $you_dx, cptr.ldI16(cc));
                             cptr.stI32o(u, $you_dy, cptr.ldI16o(cc, $nhcoord_y));
@@ -2099,13 +2117,19 @@ export function* spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_EXTRA_HEALING:
         case NHC.SPE_DRAIN_LIFE:
         case NHC.SPE_STONE_TO_FLESH:
-            if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) !=
+            if ((cptr.ldBits(
+                cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_dir),
+                0,
+                3,
+                0
+            ) |
+                0) !=
                     NHM.NODIR) {
                 if (otyp == NHC.SPE_HEALING || otyp == NHC.SPE_EXTRA_HEALING) {
                     /* healing and extra healing are actually potion effects,
                        but they've been extended to take a direction like wands */
                     if (role_skill >= NHC.P_SKILLED)
-                        cptr.stI32o(pseudo, $obj_blessed, 1);
+                        cptr.stBits(cptr.add(pseudo, $obj_blessed), 1, 1, 0, 1);
                 }
                 if (atme) {
                     cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
@@ -2157,7 +2181,7 @@ export function* spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_CHARM_MONSTER:
             /* high skill yields effect equivalent to blessed scroll */
             if (role_skill >= NHC.P_SKILLED)
-                cptr.stI32o(pseudo, $obj_blessed, 1);
+                cptr.stBits(cptr.add(pseudo, $obj_blessed), 1, 1, 0, 1);
             // @FallThrough
             ;
         case NHC.SPE_MAGIC_MAPPING:
@@ -2171,7 +2195,7 @@ export function* spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_RESTORE_ABILITY:
             /* high skill yields effect equivalent to blessed potion */
             if (role_skill >= NHC.P_SKILLED)
-                cptr.stI32o(pseudo, $obj_blessed, 1);
+                cptr.stBits(cptr.add(pseudo, $obj_blessed), 1, 1, 0, 1);
             // @FallThrough
             ;
         case NHC.SPE_INVISIBILITY:
@@ -2205,7 +2229,7 @@ export function* spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_CLAIRVOYANCE:
             if (!BClairvoyant()) {
                 if (role_skill >= NHC.P_SKILLED)
-                    cptr.stI32o(pseudo, $obj_blessed, 1);  /* detect monsters as well as map */
+                    cptr.stBits(cptr.add(pseudo, $obj_blessed), 1, 1, 0, 1);  /* detect monsters as well as map */
                 (yield* do_vicinity_map(pseudo));
                 /* at present, only one thing blocks clairvoyance */
             } else if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.CORNUTHAUM)
@@ -2258,15 +2282,23 @@ function spell_aim_step(arg, x, y) {
                 $instance_globals_saved_l_level + $rm_typ
             )) ==
                 NHC.DOOR) &&
-                (((cptr.ldI32o3(
-                    svl,
-                    x,
-                    $sizeof_rm_x21,
-                    y,
-                    $sizeof_rm,
-                    $instance_globals_saved_l_level + $rm_flags
-                ) &
-                    31) |
+                ((cptr.ldBits(
+                    cptr.add(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(svl, $instance_globals_saved_l_level),
+                                x,
+                                $sizeof_rm_x21
+                            ),
+                            y,
+                            $sizeof_rm
+                        ),
+                        $rm_flags
+                    ),
+                    0,
+                    5,
+                    0
+                ) |
                     0) &
                     NHM.D_ISOPEN)))
         return 0;
@@ -2331,7 +2363,7 @@ function* throwspell() {
     let uc = cptr.alloc(4);
     let mtmp;
 
-    if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         (yield* pline(__s_you_re_joking_in_this_weather));
         return 0;
     } else if ((((cptr.ldI16o(
@@ -2371,7 +2403,7 @@ function* throwspell() {
             10) {
         (yield* pline_The(__s_spell_dissipates_over_the_distance));
         return 0;
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         (yield* pline_The(__s_spell_is_cut_short));
         (yield* exercise(NHC.A_WIS, 0));  /* What were you THINKING! */
         cptr.stI32o(u, $you_dx, 0);

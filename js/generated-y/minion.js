@@ -156,7 +156,7 @@ export function free_emin(mtmp) {
         cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)));
         cptr.stPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin, null);
     }
-    cptr.stI32o(mtmp, $monst_isminion, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0, 0);
 }
 
 /* count the number of monsters on the level */
@@ -172,7 +172,8 @@ export function monster_census(spotted) {
     ) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
-        if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && cptr.ldI16o(mtmp, $monst_mx) == 0)
+        if (cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0) | 0 &&
+                cptr.ldI16o(mtmp, $monst_mx) == 0)
             continue;
         if (spotted && !canspotmon(mtmp))
             continue;
@@ -203,12 +204,12 @@ export function* msummon(mon) {
             return 0;
         }
 
-        atyp = schar(((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0
+        atyp = schar((cptr.ldBits(cptr.add(mon, $monst_ispriest), 7, 1, 0) | 0
                 ? cptr.ld1so(
                     (cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_epri)),
                     $epri_shralign
                 )
-                : ((cptr.ldI32o(mon, $monst_isminion) & 1) | 0
+                : (cptr.ldBits(cptr.add(mon, $monst_isminion), 5, 1, 0) | 0
                     ? cptr.ld1so(
                         (cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_emin)),
                         $emin_min_align
@@ -320,7 +321,7 @@ export function* msummon(mon) {
             result++;
             /* an angel's alignment should match the summoner */
             if (dtype == NHC.PM_ANGEL) {
-                cptr.stI32o(mtmp, $monst_isminion, 1);
+                cptr.stBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0, 1);
                 cptr.st1o(
                     (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)),
                     $emin_min_align,
@@ -332,7 +333,7 @@ export function* msummon(mon) {
                     (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)),
                     $emin_renegade,
                     schar(((atyp != cptr.ld1so(u, $you_ualign)) ^
-                        !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)))
+                        !cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0)))
                 );
             }
 
@@ -406,7 +407,7 @@ export function* summon_minion(alignment, talk) {
             132096
         ));
         if (mon) {
-            cptr.stI32o(mon, $monst_isminion, 1);
+            cptr.stBits(cptr.add(mon, $monst_isminion), 5, 1, 0, 1);
             cptr.st1o(
                 (cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_emin)),
                 $emin_min_align,
@@ -431,7 +432,7 @@ export function* summon_minion(alignment, talk) {
             132096
         ));
         if (mon) {
-            cptr.stI32o(mon, $monst_isminion, 1);
+            cptr.stBits(cptr.add(mon, $monst_isminion), 5, 1, 0, 1);
             cptr.st1o(
                 (cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_emin)),
                 $emin_min_align,
@@ -467,7 +468,7 @@ export function* summon_minion(alignment, talk) {
                 cptr.ldU64o(mon, $monst_mstrategy) & 18446744071562067967n
             );
         }
-        cptr.stI32o(mon, $monst_mpeaceful, 0);
+        cptr.stBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0, 0);
         /* don't call set_malign(); player was naughty */
     }
 }
@@ -484,7 +485,7 @@ export function* demon_talk(mtmp) {
             (yield* pline(__s_s_looks_very_angry, (yield* Amonnam(mtmp))));
         else
             (yield* You_feel(__s_tension_building));
-        cptr.stI32o(mtmp, $monst_mpeaceful, cptr.st1o(mtmp, $monst_mtame, 0));
+        cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, cptr.st1o(mtmp, $monst_mtame, 0));
         set_malign(mtmp);
         (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
         return 0;
@@ -501,10 +502,17 @@ export function* demon_talk(mtmp) {
     }
 
     /* Slight advantage given. */
-    if (is_dprince(cptr.ldPtro(mtmp, $monst_data)) && (cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0) {
+    if (is_dprince(cptr.ldPtro(mtmp, $monst_data)) &&
+            cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) | 0) {
         let wasunseen = schar((!canspotmon(mtmp)));
 
-        cptr.stI32o(mtmp, $monst_minvis, cptr.stI32o(mtmp, $monst_perminvis, 0));
+        cptr.stBits(
+            cptr.add(mtmp, $monst_minvis),
+            1,
+            1,
+            0,
+            cptr.stBits(cptr.add(mtmp, $monst_perminvis), 3, 1, 0, 0)
+        );
         if (wasunseen && canspotmon(mtmp)) {
             (yield* pline(__s_s_appears_before_you, (yield* Amonnam(mtmp))));
             cptr.stU64o(
@@ -549,7 +557,7 @@ export function* demon_talk(mtmp) {
             )));
 
     if (!demand || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
-        cptr.stI32o(mtmp, $monst_mpeaceful, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
         set_malign(mtmp);
         return 0;
     } else {
@@ -577,7 +585,7 @@ export function* demon_talk(mtmp) {
             (yield* pline(__s_s_scowls_at_you_menacingly_then_vanishes, (yield* Amonnam(mtmp))));
         } else {
             (yield* pline(__s_s_gets_angry, (yield* Amonnam(mtmp))));
-            cptr.stI32o(mtmp, $monst_mpeaceful, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
             set_malign(mtmp);
             return 0;
         }

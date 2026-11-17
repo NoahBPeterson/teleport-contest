@@ -373,15 +373,23 @@ export function selection_filter_mapchar(ov, typ, lit) {
                         break;
                     case 0:
                     case 1:
-                        if ((cptr.ldI32o3(
-                            svl,
-                            x,
-                            $sizeof_rm_x21,
-                            y,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_lit
-                        ) &
-                            1) ==
+                        if (cptr.ldBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        x,
+                                        $sizeof_rm_x21
+                                    ),
+                                    y,
+                                    $sizeof_rm
+                                ),
+                                $rm_lit
+                            ),
+                            6,
+                            1,
+                            0
+                        ) ==
                                 lit >>> 0)
                             selection_setpoint(i16(x), i16(y), ret, 1);
                         break;
@@ -1160,24 +1168,40 @@ export function selection_from_mkroom(croom) {
     for (y = cptr.ldI16o(croom, $mkroom_ly); y <= cptr.ldI16o(croom, $mkroom_hy); y++)
         for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); x++)
             if (isok(x, y) &&
-                    !(cptr.ldI32o3(
-                        svl,
-                        x,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_edge
-                    ) &
-                        1) &&
-                    (cptr.ldI32o3(
-                        svl,
-                        x,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_roomno
-                    ) &
-                        63) == rmno)
+                    !cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    x,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            ),
+                            $rm_edge
+                        ),
+                        6,
+                        1,
+                        0
+                    ) &&
+                    cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    x,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            ),
+                            $rm_roomno
+                        ),
+                        0,
+                        6,
+                        0
+                    ) == rmno)
                 selection_setpoint(x, y, sel, 1);
     return sel;
 }

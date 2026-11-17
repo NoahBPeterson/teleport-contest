@@ -127,11 +127,9 @@ const $NHFILE_mode = FLD.NHFILE_mode, $NhRegion_player_flags = FLD.NhRegion_play
       $objclass_oc_class = FLD.objclass_oc_class, $objclass_oc_prob = FLD.objclass_oc_prob,
       $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
       $permonst_mresists = FLD.permonst_mresists, $prop_intrinsic = FLD.prop_intrinsic,
-      $rm_candig = FLD.rm_candig, $rm_edge = FLD.rm_edge, $rm_flags = FLD.rm_flags,
-      $rm_horizontal = FLD.rm_horizontal, $rm_lit = FLD.rm_lit, $rm_roomno = FLD.rm_roomno,
-      $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $rm_waslit = FLD.rm_waslit,
-      $s_level_dlevel = FLD.s_level_dlevel, $s_level_flags = FLD.s_level_flags,
-      $s_level_rndlevs = FLD.s_level_rndlevs,
+      $rm_candig = FLD.rm_candig, $rm_flags = FLD.rm_flags, $rm_lit = FLD.rm_lit,
+      $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $s_level_dlevel = FLD.s_level_dlevel,
+      $s_level_flags = FLD.s_level_flags, $s_level_rndlevs = FLD.s_level_rndlevs,
       $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
       $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_mkroom = FLD.sizeof_mkroom,
       $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
@@ -270,13 +268,18 @@ export function* set_levltyp(x, y, newtyp) {
         /* hack for secret doors in garden theme rooms */
         if (oldtyp == NHC.SDOOR && newtyp == NHC.AIR) {
             /* levl[][].typ stays SDOOR rather than change to AIR */
-            cptr.stI32o3(
-                svl,
-                x,
-                $sizeof_rm_x21,
-                y,
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_candig,
+            cptr.stBits(
+                cptr.add(
+                    cptr.add(
+                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+                        y,
+                        $sizeof_rm
+                    ),
+                    $rm_candig
+                ),
+                7,
+                1,
+                0,
                 1
             );
             return 1;
@@ -301,13 +304,22 @@ export function* set_levltyp(x, y, newtyp) {
              */
 
             if (IS_LAVA(newtyp))
-                cptr.stI32o3(
-                    svl,
-                    x,
-                    $sizeof_rm_x21,
-                    y,
-                    $sizeof_rm,
-                    $instance_globals_saved_l_level + $rm_lit,
+                cptr.stBits(
+                    cptr.add(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(svl, $instance_globals_saved_l_level),
+                                x,
+                                $sizeof_rm_x21
+                            ),
+                            y,
+                            $sizeof_rm
+                        ),
+                        $rm_lit
+                    ),
+                    6,
+                    1,
+                    0,
                     1
                 );
             if (was_ice && newtyp != NHC.ICE) {
@@ -344,13 +356,18 @@ export function* set_levltyp_lit(x, y, typ, lit) {
             else if (lit == -1)
                 lit = schar(rn2(2));
 
-            cptr.stI32o3(
-                svl,
-                x,
-                $sizeof_rm_x21,
-                y,
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_lit,
+            cptr.stBits(
+                cptr.add(
+                    cptr.add(
+                        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+                        y,
+                        $sizeof_rm
+                    ),
+                    $rm_lit
+                ),
+                6,
+                1,
+                0,
                 lit
             );
         }
@@ -681,11 +698,15 @@ export function bad_location(x, y, nlx, nly, nhx, nhy) {
             $instance_globals_saved_l_level + $rm_typ
         ) ==
             NHC.CORR &&
-            (cptr.ldI32o(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-            ) &
-                1) |
+            cptr.ldBits(
+                cptr.add(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                ),
+                0,
+                1,
+                0
+            ) |
                 0) ||
             cptr.ld1so3(
                 svl,
@@ -801,7 +822,7 @@ function* put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev) {
                It might still fail if there's a dungeon feature here. */
             let t = t_at(x, y);
 
-            if (t && !undestroyable_trap((cptr.ldI32o(t, $trap_ttyp) & 31))) {
+            if (t && !undestroyable_trap(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0))) {
                 if (((mtmp = (cptr.ldPtro3(
                     svl,
                     x,
@@ -811,8 +832,8 @@ function* put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev) {
                     $instance_globals_saved_l_level + $dlevel_t_monsters
                 ))) !==
                     null) &&
-                        (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
-                    cptr.stI32o(mtmp, $monst_mtrapped, 0);
+                        cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0) | 0)
+                    cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
                 (yield* deltrap(t));
             }
             if (bad_location(x, y, nlx, nly, nhx, nhy) || is_exclusion_zone(rtype, x, y))
@@ -881,15 +902,19 @@ function* baalz_fixup() {
     /* find low and high x for to-be-wallified portion of level */
     y = 10;
     for (lastx = (x = 0); x < NHM.COLNO; ++x)
-        if ((((cptr.ldI32o3(
-            svl,
-            x,
-            $sizeof_rm_x21,
-            y,
-            $sizeof_rm,
-            $instance_globals_saved_l_level + $rm_flags
-        ) &
-            31) |
+        if (((cptr.ldBits(
+            cptr.add(
+                cptr.add(
+                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+                    y,
+                    $sizeof_rm
+                ),
+                $rm_flags
+            ),
+            0,
+            5,
+            0
+        ) |
             0) &
             NHM.W_NONDIGGABLE) !=
                 0) {
@@ -905,15 +930,19 @@ function* baalz_fixup() {
     /* find low and high y for to-be-wallified portion of level */
     x = cptr.ldI16o(gb, $instance_globals_b_bughack);
     for (lasty = (y = 0); y < NHM.ROWNO; ++y)
-        if ((((cptr.ldI32o3(
-            svl,
-            x,
-            $sizeof_rm_x21,
-            y,
-            $sizeof_rm,
-            $instance_globals_saved_l_level + $rm_flags
-        ) &
-            31) |
+        if (((cptr.ldBits(
+            cptr.add(
+                cptr.add(
+                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+                    y,
+                    $sizeof_rm
+                ),
+                $rm_flags
+            ),
+            0,
+            5,
+            0
+        ) |
             0) &
             NHM.W_NONDIGGABLE) !=
                 0) {
@@ -980,95 +1009,183 @@ function* baalz_fixup() {
                     NHC.IRONBARS) {
                 /* novelty effect; allowing digging in front of 'eyes' */
                 if (isok(i16(((x - 1) | 0)), i16(y)) &&
-                        (((cptr.ldI32o3(
-                            svl,
-                            (x - 1) | 0,
-                            $sizeof_rm_x21,
-                            y,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_flags
-                        ) &
-                            31) |
+                        ((cptr.ldBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        (x - 1) | 0,
+                                        $sizeof_rm_x21
+                                    ),
+                                    y,
+                                    $sizeof_rm
+                                ),
+                                $rm_flags
+                            ),
+                            0,
+                            5,
+                            0
+                        ) |
                             0) &
                             NHM.W_NONDIGGABLE) !=
                             0) {
-                    cptr.stI32o3(
-                        svl,
-                        (x - 1) | 0,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_flags,
-                        cptr.ldI32o3(
-                            svl,
-                            (x - 1) | 0,
-                            $sizeof_rm_x21,
-                            y,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_flags
+                    cptr.stBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    (x - 1) | 0,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            ),
+                            $rm_flags
+                        ),
+                        0,
+                        5,
+                        0,
+                        cptr.ldBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        (x - 1) | 0,
+                                        $sizeof_rm_x21
+                                    ),
+                                    y,
+                                    $sizeof_rm
+                                ),
+                                $rm_flags
+                            ),
+                            0,
+                            5,
+                            0
                         ) & -9
                     );
                     if (isok(i16(((x - 2) | 0)), i16(y)))
-                        cptr.stI32o3(
-                            svl,
-                            (x - 2) | 0,
-                            $sizeof_rm_x21,
-                            y,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_flags,
-                            cptr.ldI32o3(
-                                svl,
-                                (x - 2) | 0,
-                                $sizeof_rm_x21,
-                                y,
-                                $sizeof_rm,
-                                $instance_globals_saved_l_level + $rm_flags
+                        cptr.stBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        (x - 2) | 0,
+                                        $sizeof_rm_x21
+                                    ),
+                                    y,
+                                    $sizeof_rm
+                                ),
+                                $rm_flags
+                            ),
+                            0,
+                            5,
+                            0,
+                            cptr.ldBits(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(
+                                            cptr.add(svl, $instance_globals_saved_l_level),
+                                            (x - 2) | 0,
+                                            $sizeof_rm_x21
+                                        ),
+                                        y,
+                                        $sizeof_rm
+                                    ),
+                                    $rm_flags
+                                ),
+                                0,
+                                5,
+                                0
                             ) & -9
                         );
                 } else if (isok(i16(((x + 1) | 0)), i16(y)) &&
-                        (((cptr.ldI32o3(
-                            svl,
-                            (x + 1) | 0,
-                            $sizeof_rm_x21,
-                            y,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_flags
-                        ) &
-                            31) |
+                        ((cptr.ldBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        (x + 1) | 0,
+                                        $sizeof_rm_x21
+                                    ),
+                                    y,
+                                    $sizeof_rm
+                                ),
+                                $rm_flags
+                            ),
+                            0,
+                            5,
+                            0
+                        ) |
                             0) &
                             NHM.W_NONDIGGABLE) !=
                             0) {
-                    cptr.stI32o3(
-                        svl,
-                        (x + 1) | 0,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_flags,
-                        cptr.ldI32o3(
-                            svl,
-                            (x + 1) | 0,
-                            $sizeof_rm_x21,
-                            y,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_flags
+                    cptr.stBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    (x + 1) | 0,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            ),
+                            $rm_flags
+                        ),
+                        0,
+                        5,
+                        0,
+                        cptr.ldBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        (x + 1) | 0,
+                                        $sizeof_rm_x21
+                                    ),
+                                    y,
+                                    $sizeof_rm
+                                ),
+                                $rm_flags
+                            ),
+                            0,
+                            5,
+                            0
                         ) & -9
                     );
                     if (isok(i16(((x + 2) | 0)), i16(y)))
-                        cptr.stI32o3(
-                            svl,
-                            (x + 2) | 0,
-                            $sizeof_rm_x21,
-                            y,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_flags,
-                            cptr.ldI32o3(
-                                svl,
-                                (x + 2) | 0,
-                                $sizeof_rm_x21,
-                                y,
-                                $sizeof_rm,
-                                $instance_globals_saved_l_level + $rm_flags
+                        cptr.stBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        (x + 2) | 0,
+                                        $sizeof_rm_x21
+                                    ),
+                                    y,
+                                    $sizeof_rm
+                                ),
+                                $rm_flags
+                            ),
+                            0,
+                            5,
+                            0,
+                            cptr.ldBits(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(
+                                            cptr.add(svl, $instance_globals_saved_l_level),
+                                            (x + 2) | 0,
+                                            $sizeof_rm_x21
+                                        ),
+                                        y,
+                                        $sizeof_rm
+                                    ),
+                                    $rm_flags
+                                ),
+                                0,
+                                5,
+                                0
                             ) & -9
                         );
                 }
@@ -1298,9 +1415,14 @@ export function* fixup_special() {
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
                     )
                 )))) {
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory,
+        cptr.stBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+            ),
+            4,
+            1,
+            0,
             0
         );
         /* water level is an odd beast - it has to be set up
@@ -1507,9 +1629,14 @@ export function* fixup_special() {
     } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) &&
             In_quest(cptr.add(u, $you_uz))) {
         /* less chance for undead corpses (lured from lower morgues) */
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard,
+        cptr.stBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
+            ),
+            6,
+            1,
+            0,
             1
         );
     } else if ((((cptr.ldI16o(
@@ -1530,9 +1657,14 @@ export function* fixup_special() {
                     $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
                 )
             )))) {
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard,
+        cptr.stBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
+            ),
+            6,
+            1,
+            0,
             1
         );
     } else if (on_level(
@@ -1547,10 +1679,12 @@ export function* fixup_special() {
     }
 
     if ((sp = Is_special(cptr.add(u, $you_uz))) !== null &&
-            (cptr.ldI32o(sp, $s_level_flags) & 1) | 0)
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town,
+            cptr.ldBits(cptr.add(sp, $s_level_flags), 0, 1, 0) | 0)
+        cptr.stBits(
+            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town),
+            3,
+            1,
+            0,
             1
         );
 
@@ -1712,7 +1846,7 @@ function* stolen_booty() {
     mtmp = (yield* makemon(cptr.add(mons, NHC.PM_ORC_CAPTAIN, $sizeof_permonst), 0, 0, NHM.MM_NONAME));
     if (mtmp) {
         mtmp = (yield* christen_monst(mtmp, upstart(gang)));
-        cptr.stI32o(mtmp, $monst_mpeaceful, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
         set_malign(mtmp);
         (yield* shiny_orc_stuff(mtmp));
         (yield* migrate_orc(mtmp, 1n));
@@ -1957,10 +2091,12 @@ export function* create_maze(corrwid, wallthick, rmdeadends) {
     rdx = ((cptr.ldI32(gx) / scale) | 0);
     rdy = ((cptr.ldI32(gy) / scale) | 0);
 
-    if ((cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
-    ) & 1))
+    if (cptr.ldBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
+        5,
+        1,
+        0
+    ))
         for (x = 2; x < (Math.imul(rdx, 2)); x++)
             for (y = 2; y < (Math.imul(rdy, 2)); y++)
                 cptr.st1o3(
@@ -1994,10 +2130,12 @@ export function* create_maze(corrwid, wallthick, rmdeadends) {
     (yield* walkfrom(i16(cptr.ldI16(mm)), i16(cptr.ldI16o(mm, $nhcoord_y)), 0));
 
     if (rmdeadends)
-        (yield* maze_remove_deadends(i16((((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
-        ) & 1)) | 0
+        (yield* maze_remove_deadends(i16(((cptr.ldBits(
+            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
+            5,
+            1,
+            0
+        )) | 0
                 ? NHC.CORR
                 : NHC.ROOM))));
 
@@ -2270,14 +2408,18 @@ export function* makemaz(s) {
         (yield* impossible(__s_couldn_t_load_s_making_a_maze, cptr.decay(protofile)));
     }
 
-    cptr.stI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev,
+    cptr.stBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev),
+        0,
+        1,
+        0,
         1
     );
-    cptr.stI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze,
+    cptr.stBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
+        5,
+        1,
+        0,
         (!rn2(3)) >>> 0
     );
 
@@ -2287,10 +2429,12 @@ export function* makemaz(s) {
         (yield* create_maze(1, 1, 0));
     }
 
-    if (!(cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
-    ) & 1))
+    if (!cptr.ldBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
+        5,
+        1,
+        0
+    ))
         (yield* wallification(2, 2, i16(cptr.ldI32(gx)), i16(cptr.ldI32(gy))));
 
     (yield* mazexy(mm));
@@ -2317,10 +2461,12 @@ export function* walkfrom(x, y, typ) {
     let dirs = cptr.alloc(4 * 4);
 
     if (!typ) {
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
+            5,
+            1,
+            0
+        ))
             typ = NHC.CORR;
         else
             typ = NHC.ROOM;
@@ -2345,13 +2491,18 @@ export function* walkfrom(x, y, typ) {
             $instance_globals_saved_l_level + $rm_typ,
             typ
         );
-        cptr.stI32o3(
-            svl,
-            x,
-            $sizeof_rm_x21,
-            y,
-            $sizeof_rm,
-            $instance_globals_saved_l_level + $rm_flags,
+        cptr.stBits(
+            cptr.add(
+                cptr.add(
+                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+                    y,
+                    $sizeof_rm
+                ),
+                $rm_flags
+            ),
+            0,
+            5,
+            0,
             0
         );
     }
@@ -2419,10 +2570,12 @@ export function* walkfrom(x, y, typ) {
 export function* mazexy(cc) {
     let x;
     let y;
-    let allowedtyp = ((cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
-    ) & 1) | 0
+    let allowedtyp = (cptr.ldBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
+        5,
+        1,
+        0
+    ) | 0
             ? NHC.CORR
             : NHC.ROOM);
     let cpt = 0;
@@ -2499,7 +2652,7 @@ export function get_level_extends(left, top, right, bottom) {
             0,
             $sizeof_rm
         );
-        for (y = 0; y <= 20; y++, lev = cptr.add(lev, 1, 36)) {
+        for (y = 0; y <= 20; y++, lev = cptr.add(lev, 1, 8)) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
@@ -2510,10 +2663,15 @@ export function get_level_extends(left, top, right, bottom) {
     }
     xmin = i16(xmin -
             ((nonwall ||
-                !(cptr.ldI32o(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                ) & 1))
+                !cptr.ldBits(
+                    cptr.add(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                    ),
+                    0,
+                    1,
+                    0
+                ))
                 ? 2
                 : 1));
     if (xmin < 0)
@@ -2526,7 +2684,7 @@ export function get_level_extends(left, top, right, bottom) {
             0,
             $sizeof_rm
         );
-        for (y = 0; y <= 20; y++, lev = cptr.add(lev, 1, 36)) {
+        for (y = 0; y <= 20; y++, lev = cptr.add(lev, 1, 8)) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
@@ -2537,10 +2695,15 @@ export function get_level_extends(left, top, right, bottom) {
     }
     xmax = i16(xmax +
             ((nonwall ||
-                !(cptr.ldI32o(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                ) & 1))
+                !cptr.ldBits(
+                    cptr.add(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                    ),
+                    0,
+                    1,
+                    0
+                ))
                 ? 2
                 : 1));
     if (xmax >= NHM.COLNO)
@@ -2553,7 +2716,7 @@ export function get_level_extends(left, top, right, bottom) {
             ymin,
             $sizeof_rm
         );
-        for (x = xmin; x <= xmax; x++, lev = cptr.add(lev, NHM.ROWNO, 36)) {
+        for (x = xmin; x <= xmax; x++, lev = cptr.add(lev, NHM.ROWNO, 8)) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
@@ -2564,10 +2727,15 @@ export function get_level_extends(left, top, right, bottom) {
     }
     ymin = i16(ymin -
             ((nonwall ||
-                !(cptr.ldI32o(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                ) & 1))
+                !cptr.ldBits(
+                    cptr.add(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                    ),
+                    0,
+                    1,
+                    0
+                ))
                 ? 2
                 : 1));
 
@@ -2578,7 +2746,7 @@ export function get_level_extends(left, top, right, bottom) {
             ymax,
             $sizeof_rm
         );
-        for (x = xmin; x <= xmax; x++, lev = cptr.add(lev, NHM.ROWNO, 36)) {
+        for (x = xmin; x <= xmax; x++, lev = cptr.add(lev, NHM.ROWNO, 8)) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
@@ -2589,10 +2757,15 @@ export function get_level_extends(left, top, right, bottom) {
     }
     ymax = i16(ymax +
             ((nonwall ||
-                !(cptr.ldI32o(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                ) & 1))
+                !cptr.ldBits(
+                    cptr.add(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                    ),
+                    0,
+                    1,
+                    0
+                ))
                 ? 2
                 : 1));
 
@@ -2654,39 +2827,75 @@ export function bound_digging() {
                     NHC.DBWALL)) {
                 /* undiggable walls at edges, ... */
                 if (y <= ymin.v || y >= ymax.v || x <= xmin.v || x >= xmax.v)
-                    cptr.stI32o3(
-                        svl,
-                        x,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_flags,
-                        cptr.ldI32o3(
-                            svl,
-                            x,
-                            $sizeof_rm_x21,
-                            y,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_flags
+                    cptr.stBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    x,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            ),
+                            $rm_flags
+                        ),
+                        0,
+                        5,
+                        0,
+                        cptr.ldBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        x,
+                                        $sizeof_rm_x21
+                                    ),
+                                    y,
+                                    $sizeof_rm
+                                ),
+                                $rm_flags
+                            ),
+                            0,
+                            5,
+                            0
                         ) |
                             NHM.W_NONDIGGABLE
                     );
                 /* one tile past that, everything is also unphaseable */
                 if (y < ymin.v || y > ymax.v || x < xmin.v || x > xmax.v)
-                    cptr.stI32o3(
-                        svl,
-                        x,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_flags,
-                        cptr.ldI32o3(
-                            svl,
-                            x,
-                            $sizeof_rm_x21,
-                            y,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_flags
+                    cptr.stBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    x,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            ),
+                            $rm_flags
+                        ),
+                        0,
+                        5,
+                        0,
+                        cptr.ldBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        x,
+                                        $sizeof_rm_x21
+                                    ),
+                                    y,
+                                    $sizeof_rm
+                                ),
+                                $rm_flags
+                            ),
+                            0,
+                            5,
+                            0
                         ) |
                             NHM.W_NONPASSWALL
                     );
@@ -2806,13 +3015,13 @@ cptr.stI32(
 );
 cptr.st1o(__static_movebubbles_water_pos, $rm_typ, NHC.WATER);
 cptr.st1o(__static_movebubbles_water_pos, $rm_seenv, 0);
-cptr.stI32o(__static_movebubbles_water_pos, $rm_flags, 0);
-cptr.stI32o(__static_movebubbles_water_pos, $rm_horizontal, 0);
-cptr.stI32o(__static_movebubbles_water_pos, $rm_lit, 0);
-cptr.stI32o(__static_movebubbles_water_pos, $rm_waslit, 0);
-cptr.stI32o(__static_movebubbles_water_pos, $rm_roomno, 0);
-cptr.stI32o(__static_movebubbles_water_pos, $rm_edge, 0);
-cptr.stI32o(__static_movebubbles_water_pos, $rm_candig, 0);
+cptr.stBits(cptr.add(__static_movebubbles_water_pos, 6), 0, 5, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_water_pos, 6), 5, 1, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_water_pos, 6), 6, 1, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_water_pos, 6), 7, 1, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_water_pos, 7), 0, 6, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_water_pos, 7), 6, 1, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_water_pos, 7), 7, 1, 0, 0);
 let __static_movebubbles_air_pos = cptr.alloc($sizeof_rm); /** C ref: mkmaze.c:1543 — struct rm (function-static) */
 cptr.stI32(
     __static_movebubbles_air_pos,
@@ -2820,13 +3029,13 @@ cptr.stI32(
 );
 cptr.st1o(__static_movebubbles_air_pos, $rm_typ, NHC.AIR);
 cptr.st1o(__static_movebubbles_air_pos, $rm_seenv, 0);
-cptr.stI32o(__static_movebubbles_air_pos, $rm_flags, 0);
-cptr.stI32o(__static_movebubbles_air_pos, $rm_horizontal, 0);
-cptr.stI32o(__static_movebubbles_air_pos, $rm_lit, 1);
-cptr.stI32o(__static_movebubbles_air_pos, $rm_waslit, 0);
-cptr.stI32o(__static_movebubbles_air_pos, $rm_roomno, 0);
-cptr.stI32o(__static_movebubbles_air_pos, $rm_edge, 0);
-cptr.stI32o(__static_movebubbles_air_pos, $rm_candig, 0);
+cptr.stBits(cptr.add(__static_movebubbles_air_pos, 6), 0, 5, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_air_pos, 6), 5, 1, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_air_pos, 6), 6, 1, 0, 1);
+cptr.stBits(cptr.add(__static_movebubbles_air_pos, 6), 7, 1, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_air_pos, 7), 0, 6, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_air_pos, 7), 6, 1, 0, 0);
+cptr.stBits(cptr.add(__static_movebubbles_air_pos, 7), 7, 1, 0, 0);
 let __static_movebubbles_up = 0; /** C ref: mkmaze.c:1546 — signed char (function-static) */
 
 /** C ref: mkmaze.c:1539 */
@@ -2959,7 +3168,7 @@ export function* movebubbles() {
                             cptr.stPtr(cons, cptr.ldPtro(b, $bubble_cons));
                             cptr.stPtro(b, $bubble_cons, cons);
 
-                            if ((cptr.ldI32o(mon, $monst_wormno) & 31))
+                            if (cptr.ldBits(cptr.add(mon, $monst_wormno), 1, 5, 0))
                                 (yield* remove_worm(mon));
                             else
                                 cptr.stPtro3(
@@ -2976,7 +3185,7 @@ export function* movebubbles() {
                             cptr.stI16o(mon, $monst_mx, cptr.stI16o(mon, $monst_my, 0));
                             cptr.stI64o(mon, $monst_mstate, cptr.ldI64o(mon, $monst_mstate) | 16n);
                         }
-                        if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
+                        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
                                 ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
                             cons = (yield* alloc(24));
                             cptr.stI16o(cons, $container_x, x);
@@ -3010,7 +3219,7 @@ export function* movebubbles() {
                                 $sizeof_rm
                             ),
                             __static_movebubbles_water_pos,
-                            36
+                            8
                         );
                         (yield* block_point(x, y));
                     }
@@ -3042,7 +3251,7 @@ export function* movebubbles() {
                         $sizeof_rm
                     ),
                     __static_movebubbles_air_pos,
-                    36
+                    8
                 );
                 (yield* recalc_block_point(x, y));
                 /* all air or all cloud around the perimeter of the Air
@@ -3323,7 +3532,13 @@ function* set_wportal() {
             cptr.ldPtr(cptr.ldPtro(gw, $instance_globals_w_wportal))
         )
     )
-        if (((cptr.ldI32o(cptr.ldPtro(gw, $instance_globals_w_wportal), $trap_ttyp) & 31) | 0) ==
+        if ((cptr.ldBits(
+            cptr.add(cptr.ldPtro(gw, $instance_globals_w_wportal), $trap_ttyp),
+            0,
+            5,
+            0
+        ) |
+            0) ==
                 NHC.MAGIC_PORTAL)
             return;
     (yield* impossible(__s_set_wportal_no_portal));
@@ -4005,13 +4220,22 @@ function* mv_bubble(b, dx, dy, ini) {
                         $instance_globals_saved_l_level + $rm_typ,
                         NHC.AIR
                     );
-                    cptr.stI32o3(
-                        svl,
-                        x,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_lit,
+                    cptr.stBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    x,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            ),
+                            $rm_lit
+                        ),
+                        6,
+                        1,
+                        0,
                         1
                     );
                     unblock_point(x, y);
@@ -4043,13 +4267,22 @@ function* mv_bubble(b, dx, dy, ini) {
                         $instance_globals_saved_l_level + $rm_typ,
                         NHC.CLOUD
                     );
-                    cptr.stI32o3(
-                        svl,
-                        x,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_lit,
+                    cptr.stBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    x,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            ),
+                            $rm_lit
+                        ),
+                        6,
+                        1,
+                        0,
                         1
                     );
                     (yield* block_point(x, y));

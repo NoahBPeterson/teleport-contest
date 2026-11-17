@@ -1275,7 +1275,7 @@ function can_do_extcmd(extcmd) {
     if (!wizard() && (ecflags & NHM.WIZMODECMD)) {
         pline(cptr.decay(unavailcmd), cptr.ldPtro(extcmd, $ext_func_tab_ef_txt));
         return 0;
-    } else if ((cptr.ldI32o(u, $you_uburied) & 1) | 0 && !(ecflags & NHM.IFBURIED)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0) | 0 && !(ecflags & NHM.IFBURIED)) {
         You_cant(__s_do_that_while_you_are_buried);
         return 0;
     } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && (ecflags & NHM.NOFUZZERCMD)) {
@@ -1873,7 +1873,7 @@ export function domonability() {
         return NHM.ECMD_TIME;
     } else if (cptr.ld1uo(uptr, $permonst_msound) == NHC.MS_SHRIEK) {
         You(__s_shriek);
-        if ((cptr.ldI32o(u, $you_uburied) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0))
             pline(__s_unfortunately_sound_does_not_carry_well);
         else
             aggravate();
@@ -2018,9 +2018,9 @@ export function makemap_prepost(pre, wiztower) {
         );
         void __builtin___memset_chk(svu, 0, 16n, __builtin_object_size(svu, 0));
         cptr.stPtro(u, $you_ustuck, null);
-        cptr.stI32o(u, $you_uswallow, cptr.stI32o(u, $you_uswldtim, 0));
+        cptr.stBits(cptr.add(u, $you_uswallow), 0, 1, 0, cptr.stI32o(u, $you_uswldtim, 0));
         set_uinwater(0);  /* u.uinwater = 0 */
-        cptr.stI32o(u, $you_uundetected, 0);  /* not hidden, even if means are available */
+        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);  /* not hidden, even if means are available */
         dmonsfree();  /* purge dead monsters from 'fmon' */
         dobjsfree();
 
@@ -2034,7 +2034,8 @@ export function makemap_prepost(pre, wiztower) {
         cls();
         /* was using safe_teleds() but that doesn't honor arrival region
            on levels which have such; we don't force stairs, just area */
-        u_on_rndspot(((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? 1 : 0) | (wiztower ? 2 : 0));
+        u_on_rndspot((cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 ? 1 : 0) |
+                (wiztower ? 2 : 0));
         losedogs();
         kill_genocided_monsters();
         /* u_on_rndspot() might pick a spot that has a monster, or losedogs()
@@ -7044,8 +7045,8 @@ function there_cmd_menu_self(win, x, y, act) {
     if (num_spells() > 0)
         mcmd_addmenu(win, NHC.MCMD_CAST_SPELL, __s_cast_a_spell), ++K;
 
-    if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0) {
-        if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE)
+    if ((ttmp = t_at(x, y)) !== null && cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0) {
+        if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) != NHC.VIBRATING_SQUARE)
             mcmd_addmenu(win, NHC.MCMD_UNTRAP_HERE, __s_attempt_to_disarm_trap), ++K;
     }
     return K;
@@ -7081,15 +7082,19 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
     if (((typ) == NHC.DOOR)) {
         let key_or_pick;
         let card;
-        let dm = (cptr.ldI32o3(
-            svl,
-            x,
-            $sizeof_rm_x21,
-            y,
-            $sizeof_rm,
-            $instance_globals_saved_l_level + $rm_flags
-        ) &
-                31) | 0;
+        let dm = cptr.ldBits(
+            cptr.add(
+                cptr.add(
+                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+                    y,
+                    $sizeof_rm
+                ),
+                $rm_flags
+            ),
+            0,
+            5,
+            0
+        ) | 0;
 
         if ((dm & 12)) {
             mcmd_addmenu(win, NHC.MCMD_OPEN_DOOR, __s_open_the_door), ++K;
@@ -7118,9 +7123,9 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
     if (typ <= NHC.SCORR)
         mcmd_addmenu(win, NHC.MCMD_SEARCH, __s_search_for_secret_doors), ++K;
 
-    if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0) {
+    if ((ttmp = t_at(x, y)) !== null && cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0) {
         mcmd_addmenu(win, NHC.MCMD_LOOK_TRAP, __s_examine_trap), ++K;
-        if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE)
+        if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) != NHC.VIBRATING_SQUARE)
             mcmd_addmenu(win, NHC.MCMD_UNTRAP_TRAP, __s_attempt_to_disarm_trap), ++K;
         mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __s_move_on_the_trap), ++K;
     }
@@ -7146,7 +7151,9 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
         void cptr.sprintf(cptr.decay(buf), __s_put_saddle_on_s, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_APPLY_SADDLE, cptr.decay(buf)), ++K;
     }
-    if (mtmp && ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) {
+    if (mtmp &&
+            (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 ||
+                cptr.ld1so(mtmp, $monst_mtame))) {
         void cptr.sprintf(cptr.decay(buf), __s_talk_to_s, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_TALK, cptr.decay(buf)), ++K;
 
@@ -7163,7 +7170,8 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
     }
 
     if ((mtmp &&
-        !((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) ||
+        !(cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 ||
+            cptr.ld1so(mtmp, $monst_mtame))) ||
             ((glyph_at(x, y)) == NHC.GLYPH_INVIS_OFF)) {
         void cptr.sprintf(
             cptr.decay(buf),
@@ -7610,29 +7618,45 @@ function domouseaction() {
             )) ==
                     NHC.DOOR)) {
                 /* slight assistance to player: choose kick/open for them */
-                if (((cptr.ldI32o3(
-                    svl,
-                    (cptr.ldI16(u) + x) | 0,
-                    $sizeof_rm_x21,
-                    (cptr.ldI16o(u, $you_uy) + y) | 0,
-                    $sizeof_rm,
-                    $instance_globals_saved_l_level + $rm_flags
-                ) &
-                    31) |
+                if ((cptr.ldBits(
+                    cptr.add(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(svl, $instance_globals_saved_l_level),
+                                (cptr.ldI16(u) + x) | 0,
+                                $sizeof_rm_x21
+                            ),
+                            (cptr.ldI16o(u, $you_uy) + y) | 0,
+                            $sizeof_rm
+                        ),
+                        $rm_flags
+                    ),
+                    0,
+                    5,
+                    0
+                ) |
                     0) &
                         NHM.D_LOCKED) {
                     cmdq_add_ec(NHC.CQ_CANNED, dokick);
                     return NHM.ECMD_OK;
                 }
-                if (((cptr.ldI32o3(
-                    svl,
-                    (cptr.ldI16(u) + x) | 0,
-                    $sizeof_rm_x21,
-                    (cptr.ldI16o(u, $you_uy) + y) | 0,
-                    $sizeof_rm,
-                    $instance_globals_saved_l_level + $rm_flags
-                ) &
-                    31) |
+                if ((cptr.ldBits(
+                    cptr.add(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(svl, $instance_globals_saved_l_level),
+                                (cptr.ldI16(u) + x) | 0,
+                                $sizeof_rm_x21
+                            ),
+                            (cptr.ldI16o(u, $you_uy) + y) | 0,
+                            $sizeof_rm
+                        ),
+                        $rm_flags
+                    ),
+                    0,
+                    5,
+                    0
+                ) |
                     0) &
                         NHM.D_CLOSED) {
                     cmdq_add_ec(NHC.CQ_CANNED, doopen);

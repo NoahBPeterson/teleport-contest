@@ -223,7 +223,7 @@ export function collectFile(target) {
       const elem = am[1].trim();
       // multi-dim arrays are flat byte storage (emitBytePackedArray), so a pointer
       // can walk across rows as in C
-      if (elem.includes('[')) { recordArrays.add(d.name); continue; }
+      if (elem.includes('[')) { if (!ARR2D_OLD) recordArrays.add(d.name); continue; }
       // mirrors emit.mjs emitBytePackedArray: pointer/enum/record/int-ish elems
       // get byte-packed cptr storage; 1-byte char/boolean elems stay Uint8Array
       if (elem.includes('*')) { recordArrays.add(d.name); continue; }
@@ -301,7 +301,9 @@ function readForLines(file, mainFile) {
   return null;
 }
 
-const IR_DIR = path.join(repoRoot, '.cache/c2js/ir');
+// C2JS_OLD=arr2d changes recordArrays, which the IR stores: keep its own cache
+const ARR2D_OLD = (process.env.C2JS_OLD || '').split(',').some((x) => x.trim() === 'arr2d' || x.trim() === 'all');
+const IR_DIR = path.join(repoRoot, ARR2D_OLD ? '.cache/c2js/ir-arr2d-old' : '.cache/c2js/ir');
 
 export function slimIrPath(target) {
   return path.join(IR_DIR, `${target.name}.ir.json`);

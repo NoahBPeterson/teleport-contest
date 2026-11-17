@@ -880,7 +880,7 @@ export function gainstr(otmp, incr, givemsg) {
     }
     void adjattrib(
         NHC.A_STR,
-        (otmp && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) ? -num : num,
+        (otmp && cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0) ? -num : num,
         givemsg ? -1 : 1
     );
 }
@@ -1124,9 +1124,9 @@ export function stone_luck(include_uncursed) {
 
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if (confers_luck(otmp)) {
-            if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
+            if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
                 bonchance -= cptr.ldI64o(otmp, $obj_quan);
-            else if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 || include_uncursed)
+            else if (cptr.ldBits(cptr.add(otmp, $obj_blessed), 1, 1, 0) | 0 || include_uncursed)
                 bonchance += cptr.ldI64o(otmp, $obj_quan);
         }
 
@@ -1843,13 +1843,20 @@ export function from_what(propidx) {
                     ((HFast() & 16777215n) != 0n)
                         ? __s_a_potion_or_spell
                         : (((EFast() & 32n) != 0n &&
-                            (cptr.ldI32o(uarmf.v, $obj_dknown) & 1) | 0 &&
-                            (cptr.ldI32o2(
-                                objects,
-                                cptr.ldI16o(uarmf.v, $obj_otyp),
-                                $sizeof_objclass,
-                                $objclass_oc_name_known
-                            ) & 1) | 0)
+                            cptr.ldBits(cptr.add(uarmf.v, $obj_dknown), 1, 1, 0) | 0 &&
+                            cptr.ldBits(
+                                cptr.add(
+                                    cptr.add(
+                                        objects,
+                                        cptr.ldI16o(uarmf.v, $obj_otyp),
+                                        $sizeof_objclass
+                                    ),
+                                    $objclass_oc_name_known
+                                ),
+                                0,
+                                1,
+                                0
+                            ) | 0)
                             ? ysimple_name(uarmf.v)
                             : (EFast()
                                 ? __s_worn_equipment

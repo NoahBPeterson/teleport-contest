@@ -1145,7 +1145,13 @@ function veggy_item(obj, otyp) {
     }
 
     if (oclass == NHC.FOOD_CLASS) {
-        if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) ==
+        if ((cptr.ldBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+            3,
+            5,
+            0
+        ) |
+            0) ==
             NHC.VEGGY ||
                 otyp == NHC.EGG)
             return 1;
@@ -1235,7 +1241,7 @@ function mkshobj_at(shp, sx, sy, mkspecl) {
         let novel = mksobj_at(NHC.SPE_NOVEL, i16(sx), i16(sy), 0, 0);
 
         if (novel)
-            cptr.stI32o(svc, $context_info_tribute + $tribute_info_bookstock, 1);
+            cptr.stBits(cptr.add(svc, $context_info_tribute + $tribute_info_bookstock), 0, 1, 0, 1);
         return;
     }
 
@@ -1277,10 +1283,10 @@ function nameshk(shk, nlp) {
     if (cptr.eq(nlp, shklight) &&
             In_mines(cptr.add(u, $you_uz)) &&
             (sptr = Is_special(cptr.add(u, $you_uz))) !== null &&
-            (cptr.ldI32o(sptr, $s_level_flags) & 1) | 0) {
+            cptr.ldBits(cptr.add(sptr, $s_level_flags), 0, 1, 0) | 0) {
         /* special-case minetown lighting shk */
         shname = __s_izchak;
-        cptr.stI32o(shk, $monst_female, 0);
+        cptr.stBits(cptr.add(shk, $monst_female), 0, 1, 0, 0);
     } else {
         /* We want variation from game to game, without needing the save
            and restore support which would be necessary for randomization;
@@ -1292,7 +1298,7 @@ function nameshk(shk, nlp) {
                 (ledger_no(cptr.add(u, $you_uz)) + (nseed % 13) - (nseed % 5))) | 0;
         if (name_wanted < 0)
             name_wanted = (name_wanted + 18) | 0;
-        cptr.stI32o(shk, $monst_female, (name_wanted & 1) >>> 0);
+        cptr.stBits(cptr.add(shk, $monst_female), 0, 1, 0, (name_wanted & 1) >>> 0);
 
         for (names_avail = 0; cptr.ldPtro(nlp, names_avail, 8); names_avail++)
             continue;
@@ -1304,7 +1310,7 @@ function nameshk(shk, nlp) {
         for (trycnt = 0; trycnt < 50; trycnt++) {
             if (cptr.eq(nlp, shktools)) {
                 shname = cptr.ldPtro(shktools, rn2(names_avail), 8);
-                cptr.stI32o(shk, $monst_female, 0);  /* reversed below for '_' prefix */
+                cptr.stBits(cptr.add(shk, $monst_female), 0, 1, 0, 0);  /* reversed below for '_' prefix */
             } else if (name_wanted < names_avail) {
                 shname = cptr.ldPtro(nlp, name_wanted, 8);
             } else if ((i = rn2(names_avail)) != 0) {
@@ -1315,12 +1321,14 @@ function nameshk(shk, nlp) {
                     continue;
                 continue;  /* next `trycnt' iteration */
             } else {
-                shname = (cptr.ldI32o(shk, $monst_female) & 1) | 0 ? __s_lucrezia : __s_dirk;
+                shname = cptr.ldBits(cptr.add(shk, $monst_female), 0, 1, 0) | 0
+                        ? __s_lucrezia
+                        : __s_dirk;
             }
             if (cptr.ld1s(shname) == 95 || cptr.ld1s(shname) == 45)
-                cptr.stI32o(shk, $monst_female, 1);
+                cptr.stBits(cptr.add(shk, $monst_female), 0, 1, 0, 1);
             else if (cptr.ld1s(shname) == 124 || cptr.ld1s(shname) == 43)
-                cptr.stI32o(shk, $monst_female, 0);
+                cptr.stBits(cptr.add(shk, $monst_female), 0, 1, 0, 0);
 
             /* is name already in use on this level? */
             for (
@@ -1330,7 +1338,7 @@ function nameshk(shk, nlp) {
             ) {
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) ||
                         (cptr.eq(mtmp, shk)) ||
-                        !(cptr.ldI32o(mtmp, $monst_isshk) & 1))
+                        !cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0))
                     continue;
                 (__builtin_expect(BigInt((!(has_eshk(mtmp)))), 0n)
                         ? __assert_rtn(__s_nameshk, __s_shknam_c, 542, __s_has_eshk_mtmp)
@@ -1398,7 +1406,7 @@ export function free_eshk(mtmp) {
         cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)));
         cptr.stPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk, null);
     }
-    cptr.stI32o(mtmp, $monst_isshk, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0, 0);
 }
 
 /* find a door in room sroom which is good for shop entrance.
@@ -1439,87 +1447,151 @@ function good_shopdoor(sroom, sx, sy) {
             ));
 
             if (isok(i16(((cptr.ldI16(sx) - 1) | 0)), cptr.ldI16(sy)) &&
-                    !(cptr.ldI32o3(
-                        svl,
-                        (cptr.ldI16(sx) - 1) | 0,
-                        $sizeof_rm_x21,
-                        cptr.ldI16(sy),
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_edge
-                    ) &
-                        1) &&
-                    ((cptr.ldI32o3(
-                        svl,
-                        (cptr.ldI16(sx) - 1) | 0,
-                        $sizeof_rm_x21,
-                        cptr.ldI16(sy),
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_roomno
-                    ) &
-                        63) |
+                    !cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    (cptr.ldI16(sx) - 1) | 0,
+                                    $sizeof_rm_x21
+                                ),
+                                cptr.ldI16(sy),
+                                $sizeof_rm
+                            ),
+                            $rm_edge
+                        ),
+                        6,
+                        1,
+                        0
+                    ) &&
+                    (cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    (cptr.ldI16(sx) - 1) | 0,
+                                    $sizeof_rm_x21
+                                ),
+                                cptr.ldI16(sy),
+                                $sizeof_rm
+                            ),
+                            $rm_roomno
+                        ),
+                        0,
+                        6,
+                        0
+                    ) |
                         0) == rmno)
                 (cptr.stI16(sx, cptr.ldI16(sx) + -1)) - (-1);
             else if (isok(i16(((cptr.ldI16(sx) + 1) | 0)), cptr.ldI16(sy)) &&
-                    !(cptr.ldI32o3(
-                        svl,
-                        (cptr.ldI16(sx) + 1) | 0,
-                        $sizeof_rm_x21,
-                        cptr.ldI16(sy),
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_edge
-                    ) &
-                        1) &&
-                    ((cptr.ldI32o3(
-                        svl,
-                        (cptr.ldI16(sx) + 1) | 0,
-                        $sizeof_rm_x21,
-                        cptr.ldI16(sy),
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_roomno
-                    ) &
-                        63) |
+                    !cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    (cptr.ldI16(sx) + 1) | 0,
+                                    $sizeof_rm_x21
+                                ),
+                                cptr.ldI16(sy),
+                                $sizeof_rm
+                            ),
+                            $rm_edge
+                        ),
+                        6,
+                        1,
+                        0
+                    ) &&
+                    (cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    (cptr.ldI16(sx) + 1) | 0,
+                                    $sizeof_rm_x21
+                                ),
+                                cptr.ldI16(sy),
+                                $sizeof_rm
+                            ),
+                            $rm_roomno
+                        ),
+                        0,
+                        6,
+                        0
+                    ) |
                         0) == rmno)
                 (cptr.stI16(sx, cptr.ldI16(sx) + 1)) - (1);
             else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) - 1) | 0))) &&
-                    !(cptr.ldI32o3(
-                        svl,
-                        cptr.ldI16(sx),
-                        $sizeof_rm_x21,
-                        (cptr.ldI16(sy) - 1) | 0,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_edge
-                    ) &
-                        1) &&
-                    ((cptr.ldI32o3(
-                        svl,
-                        cptr.ldI16(sx),
-                        $sizeof_rm_x21,
-                        (cptr.ldI16(sy) - 1) | 0,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_roomno
-                    ) &
-                        63) |
+                    !cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    cptr.ldI16(sx),
+                                    $sizeof_rm_x21
+                                ),
+                                (cptr.ldI16(sy) - 1) | 0,
+                                $sizeof_rm
+                            ),
+                            $rm_edge
+                        ),
+                        6,
+                        1,
+                        0
+                    ) &&
+                    (cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    cptr.ldI16(sx),
+                                    $sizeof_rm_x21
+                                ),
+                                (cptr.ldI16(sy) - 1) | 0,
+                                $sizeof_rm
+                            ),
+                            $rm_roomno
+                        ),
+                        0,
+                        6,
+                        0
+                    ) |
                         0) == rmno)
                 (cptr.stI16(sy, cptr.ldI16(sy) + -1)) - (-1);
             else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) + 1) | 0))) &&
-                    !(cptr.ldI32o3(
-                        svl,
-                        cptr.ldI16(sx),
-                        $sizeof_rm_x21,
-                        (cptr.ldI16(sy) + 1) | 0,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_edge
-                    ) &
-                        1) &&
-                    ((cptr.ldI32o3(
-                        svl,
-                        cptr.ldI16(sx),
-                        $sizeof_rm_x21,
-                        (cptr.ldI16(sy) + 1) | 0,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_roomno
-                    ) &
-                        63) |
+                    !cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    cptr.ldI16(sx),
+                                    $sizeof_rm_x21
+                                ),
+                                (cptr.ldI16(sy) + 1) | 0,
+                                $sizeof_rm
+                            ),
+                            $rm_edge
+                        ),
+                        6,
+                        1,
+                        0
+                    ) &&
+                    (cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    cptr.ldI16(sx),
+                                    $sizeof_rm_x21
+                                ),
+                                (cptr.ldI16(sy) + 1) | 0,
+                                $sizeof_rm
+                            ),
+                            $rm_roomno
+                        ),
+                        0,
+                        6,
+                        0
+                    ) |
                         0) == rmno)
                 (cptr.stI16(sy, cptr.ldI16(sy) + 1)) - (1);
             else
@@ -1627,9 +1699,15 @@ function shkinit(shp, sroom) {
     )))
         return -1;
     eshkp = (cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk));  /* makemon(...,MM_ESHK) allocates this */
-    cptr.stI32o(shk, $monst_isshk, cptr.stI32o(shk, $monst_mpeaceful, 1));
+    cptr.stBits(
+        cptr.add(shk, $monst_isshk),
+        4,
+        1,
+        0,
+        cptr.stBits(cptr.add(shk, $monst_mpeaceful), 1, 1, 0, 1)
+    );
     set_malign(shk);
-    cptr.stI32o(shk, $monst_msleeping, 0);
+    cptr.stBits(cptr.add(shk, $monst_msleeping), 7, 1, 0, 0);
     mon_learns_traps(shk, NHC.ALL_TRAPS);  /* we know all the traps already */
     cptr.st1o(
         eshkp,
@@ -1687,25 +1765,37 @@ function shkinit(shp, sroom) {
  */
 function stock_room_goodpos(sroom, rmno, sh, sx, sy) {
     if (cptr.ld1so(sroom, $mkroom_irregular)) {
-        if ((cptr.ldI32o3(
-            svl,
-            sx,
-            $sizeof_rm_x21,
-            sy,
-            $sizeof_rm,
-            $instance_globals_saved_l_level + $rm_edge
-        ) &
-            1) |
-            0 ||
-                ((cptr.ldI32o3(
-                    svl,
-                    sx,
-                    $sizeof_rm_x21,
+        if (cptr.ldBits(
+            cptr.add(
+                cptr.add(
+                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), sx, $sizeof_rm_x21),
                     sy,
-                    $sizeof_rm,
-                    $instance_globals_saved_l_level + $rm_roomno
-                ) &
-                    63) |
+                    $sizeof_rm
+                ),
+                $rm_edge
+            ),
+            6,
+            1,
+            0
+        ) |
+            0 ||
+                (cptr.ldBits(
+                    cptr.add(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(svl, $instance_globals_saved_l_level),
+                                sx,
+                                $sizeof_rm_x21
+                            ),
+                            sy,
+                            $sizeof_rm
+                        ),
+                        $rm_roomno
+                    ),
+                    0,
+                    6,
+                    0
+                ) |
                     0) !=
                     rmno ||
                 distmin(
@@ -1798,24 +1888,33 @@ export function stock_room(shp_indx, sroom) {
         $sizeof_coord,
         $nhcoord_y
     );
-    if (((cptr.ldI32o3(
-        svl,
-        sx,
-        $sizeof_rm_x21,
-        sy,
-        $sizeof_rm,
-        $instance_globals_saved_l_level + $rm_flags
-    ) &
-        31) |
+    if ((cptr.ldBits(
+        cptr.add(
+            cptr.add(
+                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), sx, $sizeof_rm_x21),
+                sy,
+                $sizeof_rm
+            ),
+            $rm_flags
+        ),
+        0,
+        5,
+        0
+    ) |
         0) ==
             NHM.D_NODOOR) {
-        cptr.stI32o3(
-            svl,
-            sx,
-            $sizeof_rm_x21,
-            sy,
-            $sizeof_rm,
-            $instance_globals_saved_l_level + $rm_flags,
+        cptr.stBits(
+            cptr.add(
+                cptr.add(
+                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), sx, $sizeof_rm_x21),
+                    sy,
+                    $sizeof_rm
+                ),
+                $rm_flags
+            ),
+            0,
+            5,
+            0,
             NHM.D_ISOPEN
         );
         newsym(i16(sx), i16(sy));
@@ -1836,36 +1935,49 @@ export function stock_room(shp_indx, sroom) {
         ));  /* .typ = DOOR */
         newsym(i16(sx), i16(sy));
     }
-    if (((cptr.ldI32o3(
-        svl,
-        sx,
-        $sizeof_rm_x21,
-        sy,
-        $sizeof_rm,
-        $instance_globals_saved_l_level + $rm_flags
-    ) &
-        31) |
+    if ((cptr.ldBits(
+        cptr.add(
+            cptr.add(
+                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), sx, $sizeof_rm_x21),
+                sy,
+                $sizeof_rm
+            ),
+            $rm_flags
+        ),
+        0,
+        5,
+        0
+    ) |
         0) &
             NHM.D_TRAPPED)
-        cptr.stI32o3(
-            svl,
-            sx,
-            $sizeof_rm_x21,
-            sy,
-            $sizeof_rm,
-            $instance_globals_saved_l_level + $rm_flags,
+        cptr.stBits(
+            cptr.add(
+                cptr.add(
+                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), sx, $sizeof_rm_x21),
+                    sy,
+                    $sizeof_rm
+                ),
+                $rm_flags
+            ),
+            0,
+            5,
+            0,
             NHM.D_LOCKED
         );
 
-    if (((cptr.ldI32o3(
-        svl,
-        sx,
-        $sizeof_rm_x21,
-        sy,
-        $sizeof_rm,
-        $instance_globals_saved_l_level + $rm_flags
-    ) &
-        31) |
+    if ((cptr.ldBits(
+        cptr.add(
+            cptr.add(
+                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), sx, $sizeof_rm_x21),
+                sy,
+                $sizeof_rm
+            ),
+            $rm_flags
+        ),
+        0,
+        5,
+        0
+    ) |
         0) ==
             NHM.D_LOCKED) {
         let m = sx;
@@ -1913,7 +2025,7 @@ export function stock_room(shp_indx, sroom) {
     }
 
     if (cptr.ld1so(svc, $context_info_tribute + $tribute_info_enabled) &&
-            !(cptr.ldI32o(svc, $context_info_tribute + $tribute_info_bookstock) & 1)) {
+            !cptr.ldBits(cptr.add(svc, $context_info_tribute + $tribute_info_bookstock), 0, 1, 0)) {
         /*
          * Out of the number of spots where we're actually
          * going to put stuff, randomly single out one in particular.
@@ -1952,7 +2064,13 @@ export function stock_room(shp_indx, sroom) {
         mongone(mtmp);
     }
 
-    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop, 1);
+    cptr.stBits(
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
+        0,
+        1,
+        0,
+        1
+    );
 }
 
 /* does shkp's shop stock this item type? */
@@ -2031,14 +2149,14 @@ export function Shknam(mtmp) {
 /** C ref: shknam.c:856 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function shkname(mtmp) {
     let nam;
-    let save_isshk = (cptr.ldI32o(mtmp, $monst_isshk) & 1);
+    let save_isshk = cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0);
 
-    cptr.stI32o(mtmp, $monst_isshk, 0);  /* don't want mon_nam() calling shkname() */
+    cptr.stBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0, 0);  /* don't want mon_nam() calling shkname() */
     /* get a modifiable name buffer along with fallback result */
     nam = noit_mon_nam(mtmp);
-    cptr.stI32o(mtmp, $monst_isshk, save_isshk);
+    cptr.stBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0, save_isshk);
 
-    if (!(cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0)) {
         impossible(__s_shkname_s_is_not_a_shopkeeper, nam);
     } else if (!has_eshk(mtmp)) {
         panic(__s_shkname_shopkeeper_s_lacks_eshk_data, nam);
@@ -2097,7 +2215,7 @@ export function is_izchak(shkp, override_hallucination) {
 
     if (Hallucination() && !override_hallucination)
         return 0;
-    if (!(cptr.ldI32o(shkp, $monst_isshk) & 1))
+    if (!cptr.ldBits(cptr.add(shkp, $monst_isshk), 4, 1, 0))
         return 0;
     /* outside of town, Izchak becomes just an ordinary shopkeeper */
     if (!in_town(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my)))

@@ -1788,7 +1788,7 @@ function wizkit_addinv(obj) {
     /* subset of starting inventory pre-ID */
     observe_object(obj);
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
-        cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() */
+        cptr.stBits(cptr.add(obj, $obj_bknown), 2, 1, 0, 1);  /* ok to bypass set_bknown() */
     /* same criteria as lift_object()'s check for available inventory slot */
     if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
             inv_cnt(0) >= NHC.invlet_basic &&
@@ -1861,21 +1861,27 @@ function fopen_sym_file() {
 export function read_sym_file(which_set) {
     let fp;
 
-    cptr.stI32o2(
-        gs,
-        which_set,
-        $sizeof_symsetentry,
-        $instance_globals_s_symset + $symsetentry_explicitly,
+    cptr.stBits(
+        cptr.add(
+            cptr.add(cptr.add(gs, $instance_globals_s_symset), which_set, $sizeof_symsetentry),
+            $symsetentry_explicitly
+        ),
+        3,
+        1,
+        0,
         0
     );
     if (!(fp = fopen_sym_file()))
         return 0;
 
-    cptr.stI32o2(
-        gs,
-        which_set,
-        $sizeof_symsetentry,
-        $instance_globals_s_symset + $symsetentry_explicitly,
+    cptr.stBits(
+        cptr.add(
+            cptr.add(cptr.add(gs, $instance_globals_s_symset), which_set, $sizeof_symsetentry),
+            $symsetentry_explicitly
+        ),
+        3,
+        1,
+        0,
         1
     );
     cptr.st1o(
@@ -1933,11 +1939,18 @@ export function read_sym_file(which_set) {
             $sizeof_symsetentry,
             $instance_globals_s_symset + $symsetentry_name
         )) {
-            cptr.stI32o2(
-                gs,
-                which_set,
-                $sizeof_symsetentry,
-                $instance_globals_s_symset + $symsetentry_explicitly,
+            cptr.stBits(
+                cptr.add(
+                    cptr.add(
+                        cptr.add(gs, $instance_globals_s_symset),
+                        which_set,
+                        $sizeof_symsetentry
+                    ),
+                    $symsetentry_explicitly
+                ),
+                3,
+                1,
+                0,
                 0
             );
             return 0;

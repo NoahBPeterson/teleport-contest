@@ -310,7 +310,13 @@ export async function runBootGame(opts) {
   // The canonical sessions were captured under tmux, whose pty line discipline
   // maps incoming CR to LF (ICRNL) before the game reads it. The recorder's
   // pipe feed replicates that (record-session.mjs); so must we.
-  for (const ch of moves) inputQueue.push(ch === '\r' ? 10 : ch.charCodeAt(0));
+  // Each UTF-16 code unit of the moves string is one key, sent as its low
+  // byte, as record-session.mjs does (Buffer.from(moves[i], 'latin1')). Keys
+  // up to U+00FF are unchanged; an emoji is two keys.
+  for (let i = 0; i < moves.length; i++) {
+    const c = moves.charCodeAt(i);
+    inputQueue.push(c === 13 ? 10 : c & 0xff);
+  }
 
   const g = globalThis;
   const cptr = await import('../cptr.js');
