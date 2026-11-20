@@ -466,7 +466,7 @@ function* throne_sit_effect() {
         ) &
             2048n) !=
             0n) ||
-                cptr.ldBits(cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth), 3, 2, 0) | 0)
+                (cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3) | 0)
             (yield* You_feel(__s_very_comfortable_here));
         else
             (yield* You_feel(__s_somehow_out_of_place));
@@ -602,7 +602,7 @@ function* special_throne_effect(effect) {
                     ) -
                         1) | 0))
                 );
-                if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
+                if ((cptr.ldI32o(u, $you_uhave) & 1))
                     (yield* You_feel(__s_extremely_disoriented_for_a_moment));
                 else
                     (yield* schedule_goto(
@@ -694,7 +694,7 @@ function* lay_an_egg() {
         (yield* You(__s_don_t_have_enough_energy_to_lay_an_egg));
         return NHM.ECMD_OK;
     } else if (eggs_in_water(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
-        if (!((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
+        if (!(((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ||
                 (((cptr.ldI16o(
                     (cptr.add(
                         svd,
@@ -770,7 +770,7 @@ export function* dosit() {
             (yield* You(__s_are_already_sitting_on_s, (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
             return NHM.ECMD_OK;
         }
-        if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
+        if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
                 ((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
@@ -778,10 +778,10 @@ export function* dosit() {
                     256n) !=
                     0n) &&
                 cptr.ldI32o(u, $you_umonnum) != NHC.PM_TRAPPER)
-            cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);  /* no longer on the ceiling */
+            cptr.stI32o(u, $you_uundetected, 0);  /* no longer on the ceiling */
 
         if (!can_reach_floor(0)) {
-            if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+            if ((cptr.ldI32o(u, $you_uswallow) & 1))
                 (yield* There(__s_are_no_seats_in_here));
             else if (Levitation())
                 (yield* You(__s_tumble_in_place));
@@ -947,7 +947,7 @@ export function* dosit() {
                 (yield* You(__s_pct_s_dot, Flying() ? __s_land : __s_sit_down));
                 (yield* dotrap(trap, NHM.VIASITTING));
             }
-        } else if (((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
+        } else if ((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ||
             (((cptr.ldI16o(
                 (cptr.add(
                     svd,

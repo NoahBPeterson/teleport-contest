@@ -513,7 +513,7 @@ export function toggle_displacement(obj, oldprop, on) {
     if (!oldprop &&
             !(cptr.ldI64o2(u, NHC.DISPLACED, $sizeof_prop, $you_uprops + $prop_intrinsic)) &&
             !(cptr.ldI64o2(u, NHC.DISPLACED, $sizeof_prop, $you_uprops + $prop_blocked)) &&
-            ((!Blind() && !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) && !Invisible()) ||
+            ((!Blind() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !Invisible()) ||
                 (Unblind_telepat() || (Blind_telepat() && Blind()) || Detect_monsters()))) {
         if (obj)
             discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1);
@@ -553,11 +553,11 @@ export function Boots_on() {
 
             /* spoteffects() doesn't get called here; pooleffects() is called
                during movement and u.uinwater is already False after setworn() */
-            if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
+            if ((cptr.ldI32o(u, $you_uinwater) & 1))
                 spoteffects(1);
             /* init'd in accessory_or_armor_on() and only used here */
             if (cptr.ld1uo(gw, $instance_globals_w_wasinwater)) {
-                if (!cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
+                if (!(cptr.ldI32o(u, $you_uinwater) & 1))
                     discover_object(NHC.WATER_WALKING_BOOTS, 1, 1, 1);
                 cptr.st1o(gw, $instance_globals_w_wasinwater, 0);
             }
@@ -3292,11 +3292,7 @@ function accessory_or_armor_on(obj) {
          *
         obj->known = 1;
          */
-        cptr.st1o(
-            gw,
-            $instance_globals_w_wasinwater,
-            uchar(cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
-        );  /* for WWALKING; Boots_on() is too late */
+        cptr.st1o(gw, $instance_globals_w_wasinwater, uchar((cptr.ldI32o(u, $you_uinwater) & 1)));  /* for WWALKING; Boots_on() is too late */
         setworn(obj.v, mask.v);
         /* if there's no delay, we'll execute 'afternmv' immediately */
         if (cptr.eq(obj.v, uarm.v))
@@ -3678,7 +3674,7 @@ export function stuck_ring(ring, otyp) {
         if (welded(uwep.v) &&
                 ((cptr.eq(
                     ring,
-                    (((cptr.ldBits(cptr.add(u, $you_uhandedness), 7, 1, 0) | 0) == NHM.LEFT_HANDED)
+                    ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
                         ? uleft.v
                         : uright.v)
                 )) ||
@@ -3732,7 +3728,7 @@ function select_off(otmp) {
         if (welded(uwep.v) &&
                 ((cptr.eq(
                     otmp,
-                    (((cptr.ldBits(cptr.add(u, $you_uhandedness), 7, 1, 0) | 0) == NHM.LEFT_HANDED)
+                    ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
                         ? uleft.v
                         : uright.v)
                 )) ||

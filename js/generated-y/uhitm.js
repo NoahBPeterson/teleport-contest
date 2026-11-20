@@ -843,8 +843,7 @@ export function* attack_checks(mtmp, wep) {
         cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n
     );
 
-    if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
-            (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))
+    if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))
         return 0;
 
     if (cptr.ld1so(svc, $context_info_forcefight)) {
@@ -1368,7 +1367,7 @@ export function* do_attack(mtmp) {
                 $instance_globals_saved_l_level
             )) ==
                 NHC.GLYPH_INVIS_OFF) &&
-            !(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+            !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                 (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))
         (yield* map_invisible(
             i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)),
@@ -1431,13 +1430,13 @@ function* known_hitum(mon, weapon, mhit, rollneeded, armorpenalty, uattk, dierol
             /* monster still alive */
             if (!rn2(25) &&
                     cptr.ldI32o(mon, $monst_mhp) < ((cptr.ldI32o(mon, $monst_mhpmax) / 2) | 0) &&
-                    !(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+                    !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))) {
                 /* maybe should regurgitate if swallowed? */
                 (yield* monflee(mon, !rn2(3) ? rnd(100) : 0, 0, 1));
 
                 if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mon) &&
-                        !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
+                        !(cptr.ldI32o(u, $you_uswallow) & 1) &&
                         !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
                     (yield* set_ustuck(null));
             }
@@ -1637,7 +1636,7 @@ function* hitum(mon, uattk) {
        cleave return value reflects status of primary target ('mon') */
     if (is_art(uwep.v, NHC.ART_CLEAVER) &&
             !cptr.ld1so(u, $you_twoweap) &&
-            !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
+            !(cptr.ldI32o(u, $you_uswallow) & 1) &&
             !cptr.ldPtro(u, $you_ustuck) &&
             !((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))
         return (yield* hitum_cleave(mon, uattk));
@@ -1654,7 +1653,7 @@ function* hitum(mon, uattk) {
     tmp = (yield* find_roll_to_hit(mon, cptr.ld1u(uattk), uwep.v, attknum, armorpenalty));
     mon_maybe_unparalyze(mon);
     dieroll = rnd(20);
-    mhit.v = (tmp > dieroll || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ? 1 : 0);
+    mhit.v = (tmp > dieroll || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? 1 : 0);
     if (tmp > dieroll)
         (yield* exercise(NHC.A_DEX, 1));
 
@@ -1690,7 +1689,7 @@ function* hitum(mon, uattk) {
         tmp = (yield* find_roll_to_hit(mon, cptr.ld1u(uattk), uswapwep.v, attknum, armorpenalty));
         mon_maybe_unparalyze(mon);
         dieroll = rnd(20);
-        mhit.v = (tmp > dieroll || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ? 1 : 0);
+        mhit.v = (tmp > dieroll || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? 1 : 0);
         malive = (yield* known_hitum(mon, secondwep, mhit, tmp, armorpenalty.v, uattk, dieroll));
         /* second passive counter-attack only occurs if second attack hits */
         if (mhit.v)
@@ -3511,7 +3510,7 @@ function* steal_it(mdef, mattk) {
         /* 5.0: this uses hero's base gender rather than nymph femininity
            but was using hardcoded pronouns She/her for target monster;
            switch to dynamic pronoun */
-        if (gender(mdef) == (cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0) &&
+        if (gender(mdef) == ((cptr.ldI32o(u, $you_mfemale) & 1) | 0) &&
                 cptr.ld1so(
                     cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
                     $permonst_mlet
@@ -4335,7 +4334,7 @@ export function* mhitm_ad_tlpt(magr, mattk, mdef, mhm) {
         } else {
             let nambuf = new Uint8Array(256);
             let u_saw_mon = schar((canseemon(mdef) ||
-                (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+                ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                     (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef))))
                     ? 1
                     : 0));
@@ -4345,7 +4344,7 @@ export function* mhitm_ad_tlpt(magr, mattk, mdef, mhm) {
             if ((yield* u_teleport_mon(mdef, 0)) &&
                     u_saw_mon &&
                     !(canseemon(mdef) ||
-                        (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+                        ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                             (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef))))))
                 (yield* pline(__s_s_suddenly_disappears, cptr.decay(nambuf)));
             if (cptr.ldI32(mhm) >= cptr.ldI32o(mdef, $monst_mhp)) {
@@ -7154,7 +7153,7 @@ function* gulpum(mdef, mattk) {
         return NHM.M_ATTK_MISS;
 
     if (!(u_digest && cptr.ldI32o(u, $you_uhunger) >= 1500) &&
-            !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+            !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (!flaming(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             for (otmp = cptr.ldPtro(mdef, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
                 void (yield* snuff_lit(otmp));
@@ -7925,9 +7924,7 @@ function* hmonas(mon) {
             tmp = (yield* find_roll_to_hit(mon, NHM.AT_WEAP, weapon, attknum, armorpenalty));
             mon_maybe_unparalyze(mon);
             dieroll = rnd(20);
-            dhit.v = (tmp > dieroll || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0
-                    ? 1
-                    : 0);
+            dhit.v = (tmp > dieroll || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? 1 : 0);
             if (multi_weap > 1)
                 cptr.stI32o(
                     gt,
@@ -8047,16 +8044,14 @@ function* hmonas(mon) {
             tmp = (yield* find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty));
             mon_maybe_unparalyze(mon);
             dieroll = rnd(20);
-            dhit.v = (tmp > dieroll || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0
-                    ? 1
-                    : 0);
+            dhit.v = (tmp > dieroll || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? 1 : 0);
             if (dhit.v) { __pc = 45; continue; }
             __pc = 46; continue;
         }
         case 45: {
             silverhit.v = 0n;
             verb = null;  /* verb or body part */
-            if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
+            if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
                     (compat = could_seduce(
                         cptr.add(gy, $instance_globals_y_youmonst),
                         mon,
@@ -8206,7 +8201,7 @@ function* hmonas(mon) {
             )));
             unconcerned = schar((byhand && !(yield* can_be_strangled(mon)) ? 1 : 0));
             if (sticks(cptr.ldPtro(mon, $monst_data)) ||
-                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
                     cptr.ld1so(gn, $instance_globals_n_notonhead) ||
                     (byhand &&
                         (uwep.v ||
@@ -8227,7 +8222,7 @@ function* hmonas(mon) {
                     uwep.v &&
                     cptr.ldPtro(u, $you_ustuck) &&
                     !(sticks(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)) ||
-                        cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0))
+                        (cptr.ldI32o(u, $you_uswallow) & 1) | 0))
                 (yield* uunstick());
             { __pc = 6; continue; }
         }

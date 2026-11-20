@@ -2029,8 +2029,7 @@ function fill_ordinary_room(croom, bonus_items) {
            while a monster was on the stairs. Conclusion:
            we have to check for monsters on the stairs anyway. */
 
-        if ((cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 || !rn2(3)) &&
-                somexyspace(croom, pos)) {
+        if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || !rn2(3)) && somexyspace(croom, pos)) {
             tmonst = makemon(null, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), NHM.MM_NOGRP);
             if (tmonst &&
                     cptr.eq(

@@ -88,12 +88,13 @@ const $Gender_him = FLD.Gender_him, $Role_mnum = FLD.Role_mnum,
       $sizeof_Gender = FLD.sizeof_Gender, $sizeof_objclass = FLD.sizeof_objclass,
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
       $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21, $trap_tseen = FLD.trap_tseen,
-      $trap_ttyp = FLD.trap_ttyp, $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_dx = FLD.you_dx,
-      $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_uevent = FLD.you_uevent,
-      $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel,
-      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
-      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
-      $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
+      $trap_ttyp = FLD.trap_ttyp, $u_event_uheard_tune = FLD.u_event_uheard_tune,
+      $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_dx = FLD.you_dx, $you_dy = FLD.you_dy,
+      $you_dz = FLD.you_dz, $you_uevent = FLD.you_uevent, $you_uinwater = FLD.you_uinwater,
+      $you_ulevel = FLD.you_ulevel, $you_umonnum = FLD.you_umonnum,
+      $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops,
+      $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed,
+      $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
       $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -435,7 +436,7 @@ function charm_monsters(distance) {
     let mtmp;
     let mtmp2;
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+    if ((cptr.ldI32o(u, $you_uswallow) & 1))
         distance = 0;
 
     for (
@@ -1287,7 +1288,7 @@ export function do_play_instrument(instr) {
         if (c != 110)
             return do_improvisation(instr) ? NHM.ECMD_TIME : NHM.ECMD_OK;
 
-        if ((cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) | 0) == 2)
+        if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) == 2)
             c = yn_function(__s_play_the_passtune, cptr.decay(ynqchars), 113, 1);
         if (c == 113) {
             break __lbl_nevermind;
@@ -1352,7 +1353,7 @@ export function do_play_instrument(instr) {
                             continue;
                         if (find_drawbridge(x, y)) {
                             /* tune now fully known */
-                            cptr.stBits(cptr.add(u, $you_uevent), 6, 2, 0, 2);
+                            cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 2);
                             record_achievement(NHC.ACH_TUNE);
                             if (cptr.ld1so3(
                                 svl,
@@ -1370,8 +1371,8 @@ export function do_play_instrument(instr) {
                         }
                     }
             } else if (!Deaf()) {
-                if ((cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) | 0) < 1)
-                    cptr.stBits(cptr.add(u, $you_uevent), 6, 2, 0, 1);
+                if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) < 1)
+                    cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 1);
                 /* Okay, it wasn't the right tune, but perhaps
                  * we can give the player some hints like in the
                  * Mastermind game */
@@ -1463,7 +1464,7 @@ export function do_play_instrument(instr) {
                            correct notes followed by excess; otherwise,
                            tune would have matched above */
                         if (gears == 5) {
-                            cptr.stBits(cptr.add(u, $you_uevent), 6, 2, 0, 2);
+                            cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 2);
                             record_achievement(NHC.ACH_TUNE);
                         }
                     }

@@ -2627,7 +2627,7 @@ function seffect_taming(sobjp) {
     let results;
     let vis_results;
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         candidates = 1;
         results = (vis_results = maybe_tame(cptr.ldPtro(u, $you_ustuck), sobj));
     } else {
@@ -2941,7 +2941,7 @@ function seffect_earth(sobjp) {
         let nboulders = 0;
 
         /* Identify the scroll */
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             You_hear(__s_rumbling);
         } else {
             if (!avoid_ceiling(cptr.add(u, $you_uz))) {
@@ -3411,7 +3411,7 @@ export function drop_boulder_on_player(confused, helmet_protects, byu, skip_uswa
     let otmp2;
 
     /* hit monster if swallowed */
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && !skip_uswallow) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !skip_uswallow) {
         drop_boulder_on_monster(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), confused, byu);
         return;
     }
@@ -3517,7 +3517,7 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
             pline(__s_s_is_hit_by_s, Monnam(mtmp), doname(otmp2));
             if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !canspotmon(mtmp))
                 map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-        } else if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+        } else if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                 (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))
             You_hear(
                 __s_something_hit_s_s_over_your_s,
@@ -3566,7 +3566,7 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
             wakeup(mtmp, byu);
         }
         wake_nearto(x, y, 16);
-    } else if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+    } else if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
             (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))) {
         obfree(otmp2, null);
         /* fall through to player */
@@ -3700,8 +3700,8 @@ export function litroom(on, obj) {
         (cptr.ldI32o(obj, $obj_blessed) & 1) | 0
             ? 1
             : 0));
-    let no_op = schar((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
-        (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
+    let no_op = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+        ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ||
         (((cptr.ldI16o(
             (cptr.add(
                 svd,
@@ -3759,7 +3759,7 @@ export function litroom(on, obj) {
                swallowed won't be affected--the interior is still lit */
             if (still_lit)
                 pline_The(__s_ambient_light_seems_dimmer);
-            else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+            else if ((cptr.ldI32o(u, $you_uswallow) & 1))
                 pline(__s_it_seems_even_darker_in_here_than_before);
             else
                 You(__s_are_surrounded_by_darkness);
@@ -3775,7 +3775,7 @@ export function litroom(on, obj) {
                     impact_arti_light(otmp, 0, schar((!Blind())));
             }
         }
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             if (Blind())
                 ;  /* no feedback */
             else if ((dmgtype_fromattack(
@@ -4541,7 +4541,7 @@ export function punish(sobj) {
      *  Place ball & chain if not swallowed.  If swallowed, the ball & chain
      *  variables will be set at the next call to placebc().
      */
-    if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
         placebc();
         if (Blind())
             set_bc(1);  /* set up ball and chain variables */

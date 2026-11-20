@@ -2088,7 +2088,7 @@ export function u_init_misc() {
 
     /* zero u, including pointer values --
      * necessary when aborting from a failed restore */
-    void __builtin___memset_chk(u, 0, 2760n, __builtin_object_size(u, 0));
+    void __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
     cptr.stPtro(u, $you_ustuck, null);
     void __builtin___memset_chk(ubirthday, 0, 8n, __builtin_object_size(ubirthday, 0));
     void __builtin___memset_chk(urealtime, 0, 24n, __builtin_object_size(urealtime, 0));
@@ -2170,13 +2170,7 @@ export function u_init_misc() {
         );  /* set PermaBlind */
 
     /* roughly based on distribution in human population */
-    cptr.stBits(
-        cptr.add(u, $you_uhandedness),
-        7,
-        1,
-        0,
-        (rn2(10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0
-    );
+    cptr.stI32o(u, $you_uhandedness, (rn2(10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
 
     max_rank_sz();  /* set max str size for class ranks */
 

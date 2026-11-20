@@ -81,6 +81,8 @@ const $context_info_made_amulet = FLD.context_info_made_amulet,
       $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev,
       $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
       $u_event_invoked = FLD.u_event_invoked, $u_event_udemigod = FLD.u_event_udemigod,
+      $u_have_bell = FLD.u_have_bell, $u_have_book = FLD.u_have_book,
+      $u_have_menorah = FLD.u_have_menorah, $u_have_questart = FLD.u_have_questart,
       $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_udg_cnt = FLD.you_udg_cnt,
       $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave, $you_uhp = FLD.you_uhp,
       $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops,
@@ -385,15 +387,15 @@ function on_ground(otyp) {
 function you_have(mask) {
     switch (mask) {
         case NHM.M3_WANTSAMUL:
-            return schar(cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0));
+            return schar((cptr.ldI32o(u, $you_uhave) & 1));
         case NHM.M3_WANTSBELL:
-            return schar(cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0));
+            return schar((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1));
         case NHM.M3_WANTSCAND:
-            return schar(cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0));
+            return schar((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1));
         case NHM.M3_WANTSBOOK:
-            return schar(cptr.ldBits(cptr.add(u, $you_uhave), 2, 1, 0));
+            return schar((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1));
         case NHM.M3_WANTSARTI:
-            return schar(cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0));
+            return schar((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1));
         default:
             break;
     }
@@ -471,7 +473,7 @@ function* strategy(mtmp) {
         if ((strat = (yield* target_on(NHM.M3_WANTSAMUL, mtmp))) != 0n)
             return strat;
 
-    if (cptr.ldBits(cptr.add(u, $you_uevent + $u_event_invoked), 1, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1)) {
         if ((strat = (yield* target_on(NHM.M3_WANTSARTI, mtmp))) != 0n)
             return strat;
         if ((strat = (yield* target_on(NHM.M3_WANTSBOOK, mtmp))) != 0n)
@@ -549,7 +551,7 @@ export function* tactics(mtmp) {
         case 134217728n:
             mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
 
-            if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+            if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                     cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp))
                 (yield* expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 1));
 
@@ -737,7 +739,7 @@ export function* clonewiz() {
             $monst_msleeping,
             cptr.st1o(mtmp2, $monst_mtame, schar(cptr.stI32o(mtmp2, $monst_mpeaceful, 0)))
         );
-        if (!cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) && rn2(2)) {
+        if (!(cptr.ldI32o(u, $you_uhave) & 1) && rn2(2)) {
             void (yield* add_to_minv(mtmp2, (yield* mksobj(NHC.FAKE_AMULET_OF_YENDOR, 1, 0))));
         }
         if (!Protection_from_shape_changers()) {
@@ -1154,8 +1156,8 @@ export function wizdeadorgone() {
         $context_info_no_of_wizards,
         cptr.ldI32o(svc, $context_info_no_of_wizards) + -1
     )) - (-1);
-    if (!cptr.ldBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0)) {
-        cptr.stBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0, 1);
+    if (!(cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1)) {
+        cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);
         cptr.stI32o(u, $you_udg_cnt, (rn2(250) + 50) >>> 0);
     }
 }
@@ -1213,7 +1215,7 @@ export function* cuss(mtmp) {
     if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1)) {
         if (!rn2(5)) {
             (yield* pline(__s_s_laughs_fiendishly, (yield* Monnam(mtmp))));
-        } else if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 && !rn2(28)) {
+        } else if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && !rn2(28)) {
             ;
             (yield* verbalize(__s_relinquish_the_amulet_s, cptr.ldPtro(random_insult, rn2(28), 8)));
         } else if (cptr.ldI32o(u, $you_uhp) < 5 && !rn2(2)) {

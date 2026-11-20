@@ -806,7 +806,7 @@ export function itemactions(otmp) {
         $instance_globals_saved_l_level + $rm_typ
     )) ==
         NHC.ALTAR) &&
-            !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+            !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         /* FIXME: this doesn't match #offer's likely candidates, which don't
            include corpses on Astral and don't include amulets off Astral */
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)

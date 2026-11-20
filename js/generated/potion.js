@@ -592,24 +592,12 @@ export function make_sick(xtime, cause, talk, type) {
             cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SICK, $sizeof_prop), $prop_intrinsic),
             xtime
         );
-        cptr.stBits(
-            cptr.add(u, $you_usick_type),
-            0,
-            2,
-            0,
-            cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | type
-        );
+        cptr.stI32o(u, $you_usick_type, cptr.ldI32o(u, $you_usick_type) | type);
         cptr.st1(disp, 1);
-    } else if (old && (type & (cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0))) {
+    } else if (old && (type & ((cptr.ldI32o(u, $you_usick_type) & 3) | 0))) {
         /* was sick, now not */
-        cptr.stBits(
-            cptr.add(u, $you_usick_type),
-            0,
-            2,
-            0,
-            cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) & ~type
-        );
-        if (cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0)) {
+        cptr.stI32o(u, $you_usick_type, cptr.ldI32o(u, $you_usick_type) & ~type);
+        if ((cptr.ldI32o(u, $you_usick_type) & 3)) {
             if (talk)
                 You_feel(__s_somewhat_better);
             set_itimeout(
@@ -917,7 +905,7 @@ export function make_hallucinated(xtime, talk, mask) {
         if (!Hallucination())
             eatmupdate();
 
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             swallowed(0);  /* redraw swallow display */
         } else {
             /* The see_* routines should be called *before* the pline. */
@@ -1077,8 +1065,7 @@ export function dodrink() {
             ++drink_ok_extra;
         }
         /* Or are you surrounded by water? */
-        if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
-                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
             if (yn_function(__s_drink_the_water_around_you, cptr.decay(ynchars), 110, 1) == 121) {
                 pline(__s_do_you_know_what_lives_in_this_water);
                 return NHM.ECMD_TIME;
@@ -1678,7 +1665,7 @@ function peffect_monster_detection(otmp) {
             }
         }
         /* if swallowed or underwater, fall through to uncursed case */
-        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) && !Underwater()) {
+        if (!(cptr.ldI32o(u, $you_uswallow) & 1) && !Underwater()) {
             see_monsters();
             if (cptr.ldI32o(gp, $instance_globals_p_potion_unkn))
                 You_feel(__s_lonely);
@@ -1872,7 +1859,7 @@ function peffect_gain_level(otmp) {
         )) - (1);
         /* they went up a level */
         if (on_lvl_1
-                ? cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0
+                ? (cptr.ldI32o(u, $you_uhave) & 1) | 0
                 : Can_rise_up(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz))) {
             let newlev;
             let newlevel = cptr.alloc(4);

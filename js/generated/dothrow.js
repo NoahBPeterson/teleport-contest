@@ -1138,8 +1138,8 @@ export function hitfloor(obj, verbosely) {
                 $instance_globals_saved_l_level + $rm_typ
             )) <=
                 NHC.DRAWBRIDGE_UP)) ||
-            cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 ||
-            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
+            (cptr.ldI32o(u, $you_uinwater) & 1) | 0 ||
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
         dropy(obj);
         return;
     }
@@ -1548,7 +1548,7 @@ export function hurtle_step(arg, x, y) {
        has a first-time entry message, or leaving shop with unpaid goods */
     check_special_room(0);
 
-    if (is_pool(x, y) && !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
+    if (is_pool(x, y) && !(cptr.ldI32o(u, $you_uinwater) & 1)) {
         if (is_waterwall(x, y) ||
                 !(Levitation() ||
                     Flying() ||
@@ -2617,7 +2617,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
     /* NOTE:  No early returns after this point or returning_missile
        will be left with a stale pointer. */
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (cptr.eq(obj.v, uball.v)) {
             cptr.stI16o(uball.v, $obj_ox, cptr.stI16o(uchain.v, $obj_ox, cptr.ldI16(u)));
             cptr.stI16o(uball.v, $obj_oy, cptr.stI16o(uchain.v, $obj_oy, cptr.ldI16o(u, $you_uy)));
@@ -2966,7 +2966,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
         /* missile has already been handled */
         if (tethered_weapon)
             tmp_at(-7, 0);
-    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+    } else if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
             !cptr.ldPtro(iflags, $instance_flags_returning_missile)) {
         swallowit(obj.v);
         return;
@@ -3037,7 +3037,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
                         );
                     }
 
-                    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+                    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
                         swallowit(obj.v);
                         return;
                     }
@@ -3058,7 +3058,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
                    capability back anyway, quivered or not shouldn't matter */
                 pline(__s_s_to_return, Tobjnam(obj.v, __s_fail));
 
-                if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+                if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
                     swallowit(obj.v);
                     return;
                 }
@@ -3634,7 +3634,7 @@ export function thitmonst(mon, obj) {
     let disttmp;  /* distance modifier */
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let hmode;
-    let guaranteed_hit = schar((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+    let guaranteed_hit = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon)))
             ? 1
             : 0));
@@ -3800,7 +3800,7 @@ export function thitmonst(mon, obj) {
             pline(__s_s_catches_s, Some_Monnam(mon), the(xname(obj)));
             /* leader will keep tossed invocation item after you've done the
                invocation and it's become unnecessary for completion.. */
-            if ((cptr.ldBits(cptr.add(u, $you_uevent + $u_event_invoked), 1, 1, 0) | 0 &&
+            if (((cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1) | 0 &&
                 cptr.ldBits(
                     cptr.add(
                         cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
@@ -3980,9 +3980,7 @@ export function thitmonst(mon, obj) {
 
             exercise(NHC.A_DEX, 1);
             if (!hmon(mon, obj, hmode, dieroll)) {
-                if (was_swallowed &&
-                        !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
-                        cptr.eq(obj, uball.v))
+                if (was_swallowed && !(cptr.ldI32o(u, $you_uswallow) & 1) && cptr.eq(obj, uball.v))
                     return 1;  /* already did placebc() */
             }
         } else {
@@ -4040,7 +4038,7 @@ export function thitmonst(mon, obj) {
             if (((cptr.ldU64o((md), $permonst_mflags1) & 262144n) != 0n)) {
                 minstapetrify(cptr.ldPtro(u, $you_ustuck), 1);
                 /* Don't leave a cockatrice corpse available in a statue */
-                if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+                if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
                     delobj(obj);
                     return 1;
                 }
@@ -4547,7 +4545,7 @@ function throw_gold(obj) {
         return NHM.ECMD_CANCEL;
     }
     freeinv(obj.v);
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         let swallower = mon_nam(cptr.ldPtro(u, $you_ustuck));
 
         if ((dmgtype_fromattack(

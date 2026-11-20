@@ -3152,7 +3152,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 NHM.IN_SIGHT) !=
                 0)) ||
         (youattack &&
-            (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+            ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                 (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))) &&
             !Blind())
             ? 1
@@ -3270,7 +3270,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             wepdesc = __s_the_razor_sharp_blade;
             /* not really beheading, but so close, why add another SPFX */
             if (youattack &&
-                    (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+                    ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef))))) {
                 You(__s_slice_s_wide_open, mon_nam(mdef));
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
@@ -3327,7 +3327,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                     ))) {
 
             if (youattack &&
-                    (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+                    ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))))
                 return 0;
             wepdesc = cptr.ldPtro2(
@@ -3340,7 +3340,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 if (!((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 32768n) ==
                     0n) ||
                         cptr.ld1so(gn, $instance_globals_n_notonhead) ||
-                        cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
+                        (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
                     if (youattack)
                         pline(__s_somehow_you_miss_s_wildly, mon_nam(mdef));
                     else if (vis)
@@ -3715,7 +3715,7 @@ function invoke_create_portal(obj) {
             cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_dunlev_ureached)
         );
 
-    if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 ||
+    if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ||
             (cptr.ldI16((cptr.add(u, $you_uz))) ==
                 cptr.ldI16((cptr.add(
                     svd,

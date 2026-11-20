@@ -550,7 +550,7 @@ export function* self_lookat(outbuf) {
     );
     if (cptr.ldPtro(u, $you_usteed))
         void cptr.sprintf(eos(outbuf), __s_mounted_on_s, (yield* y_monnam(cptr.ldPtro(u, $you_usteed))));
-    if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 ||
+    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 ||
             (Upolyd() && U_AP_TYPE()) ||
             visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         (yield* mhidden_description(cptr.add(gy, $instance_globals_y_youmonst), 11, eos(outbuf)));
@@ -681,7 +681,7 @@ export function* mhidden_description(mon, mhid_flags, outbuf) {
                 void cptr.strcat(outbuf, what);
             }
         } else if (isyou
-                ? cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0
+                ? (cptr.ldI32o(u, $you_uundetected) & 1) | 0
                 : (cptr.ldI32o(mon, $monst_mundetected) & 1) | 0) {
             void cptr.strcpy(outbuf, __s_hiding);
             if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 128n) != 0n)) {
@@ -1035,7 +1035,7 @@ function* look_at_monster(buf, monbuf, mtmp, x, y) {
         name
     );
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
                 (cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0)
             void cptr.strcat(
                 buf,
@@ -1434,8 +1434,8 @@ function* lookat(x, y, buf, monbuf) {
     glyph = glyph_at(x, y);
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
             ((Blind() ||
-                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
-                (!Invisible() && !cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))) ||
+                (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
                 (Unblind_telepat() || Detect_monsters())) &&
             !((cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0 &&
                 glyph ==
@@ -1467,9 +1467,9 @@ function* lookat(x, y, buf, monbuf) {
            (even if you could also see yourself via other means).
            Sensing self while blind or swallowed is treated as if it
            were by normal vision (cf canseeself()). */
-        if ((Invisible() || cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0) &&
+        if ((Invisible() || (cptr.ldI32o(u, $you_uundetected) & 1) | 0) &&
                 !Blind() &&
-                !(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+                !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
                     (cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0)) {
             let how = 0;
 
@@ -1491,7 +1491,7 @@ function* lookat(x, y, buf, monbuf) {
                     ((how & 4) >>> 0) ? __s_monster_detection : __s_empty
                 );
         }
-    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         /* when swallowed, we're only called for spots adjacent to hero,
            and blindness doesn't prevent hero from feeling what holds him */
         void cptr.sprintf(buf, __s_interior_of_s, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck))));
@@ -1530,7 +1530,7 @@ function* lookat(x, y, buf, monbuf) {
     } else if (((glyph) == NHC.GLYPH_NOTHING_OFF)) {
         void cptr.strcpy(buf, __s_dark_part_of_a_room);
     } else if (((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) {
-        if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
                 !(((cptr.ldI16o(
                     (cptr.add(
                         svd,
@@ -1671,7 +1671,7 @@ function* lookat(x, y, buf, monbuf) {
                 )) {
                     void cptr.strcpy(buf, __s_unexplored);
                     break;
-                } else if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+                } else if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
                         !(((cptr.ldI16o(
                             (cptr.add(
                                 svd,
@@ -2302,7 +2302,7 @@ export function* do_screen_description(cc, looked, sym, out_str, firstmatch, for
     let found = 0;  /* count of matching syms found */
     let hit_trap = cptr.box(0);
     let need_to_look = 0;
-    let submerged = schar(((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+    let submerged = schar((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
         !(((cptr.ldI16o(
             (cptr.add(
                 svd,
@@ -2361,7 +2361,7 @@ export function* do_screen_description(cc, looked, sym, out_str, firstmatch, for
     x_str = null;
     if (!looked) {
         ;  /* skip special handling */
-    } else if (((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 || submerged) &&
+    } else if ((((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || submerged) &&
         !(dist2(
             ((cptr.ldI16(cc))),
             ((cptr.ldI16o(cc, $nhcoord_y))),
@@ -3165,7 +3165,7 @@ export function* do_look(mode, click_cc) {
                     __s_something_else_by_symbol_or_name,
                     NHM.MENU_ITEMFLAGS_NONE
                 ));
-                if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) && !Hallucination()) {
+                if (!(cptr.ldI32o(u, $you_uswallow) & 1) && !Hallucination()) {
                     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
                     (yield* add_menu_str(win, __s_empty));
                     /* these options work sensibly for swallowed case, but
@@ -3540,9 +3540,8 @@ function* look_all(nearby, do_mons) {
 
                     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
                             ((Blind() ||
-                                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
-                                (!Invisible() &&
-                                    !cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))) ||
+                                (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                                (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
                                 (Unblind_telepat() || Detect_monsters()))) {
                         void (yield* self_lookat(cptr.decay(lookbuf)));
                         ++count;
@@ -3600,9 +3599,8 @@ function* look_all(nearby, do_mons) {
                                     cmode
                                 )
                                 : (!((Blind() ||
-                                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
-                                    (!Invisible() &&
-                                        !cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))) ||
+                                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                                    (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
                                     (Unblind_telepat() || Detect_monsters()))
                                     ? __s_your_position
                                     : __s_you)

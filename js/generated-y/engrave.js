@@ -519,7 +519,7 @@ export function wipeout_text(engr, cnt, seed) {
 export function can_reach_floor(check_pit) {
     let t;
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
             (cptr.ldPtro(u, $you_ustuck) &&
                 !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
                 attacktype(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), NHM.AT_HUGS)) ||
@@ -566,7 +566,7 @@ export function can_reach_floor(check_pit) {
     if (cptr.ldPtro(u, $you_usteed) &&
             (cptr.ldI16o2(u, NHC.P_RIDING, $sizeof_skills, $you_weapon_skills)) < NHC.P_BASIC)
         return 0;
-    if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
+    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
             ceiling_hider(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
         return 0;
 
@@ -961,7 +961,7 @@ function stylus_ok(obj) {
 function* u_can_engrave() {
     let levtyp = SURFACE_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (((cptr.ldU64o(
             (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
             $permonst_mflags1
@@ -1050,7 +1050,7 @@ function doengrave_ctx_init(de) {
     cptr.st1o(
         de,
         $_doengrave_ctx_jello,
-        schar((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+        schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
             !(((cptr.ldU64o(
                 (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
                 $permonst_mflags1

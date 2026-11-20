@@ -6426,7 +6426,7 @@ function wizterrainwish(d) {
 
         /* hero started at <x,y> but might not be there anymore (create
            lava, decline to die, and get teleported away to safety) */
-        if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 &&
+        if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 &&
                 !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             set_uinwater(0);  /* u.uinwater = 0; leave the water */
             docrt();

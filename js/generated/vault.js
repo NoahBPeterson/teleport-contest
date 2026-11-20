@@ -968,7 +968,7 @@ export function invault() {
             map_invisible(cptr.ldI16o(guard, $monst_mx), cptr.ldI16o(guard, $monst_my));
         }
 
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             /* can't interrogate hero, don't interrogate engulfer */
             if (!Deaf()) {
                 ;
@@ -979,8 +979,7 @@ export function invault() {
             mongone(guard);
             return;
         }
-        if (U_AP_TYPE() == NHC.M_AP_OBJECT ||
-                cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0) {
+        if (U_AP_TYPE() == NHC.M_AP_OBJECT || (cptr.ldI32o(u, $you_uundetected) & 1) | 0) {
             if (U_AP_TYPE() == NHC.M_AP_OBJECT &&
                     cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) !=
                         NHC.GOLD_PIECE)
@@ -2034,7 +2033,7 @@ export function gd_move(grd) {
                 if (!(cptr.ldI32o(egrd, $egd_gddone) & 1) &&
                         !rn2(10) &&
                         !Deaf() &&
-                        !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
+                        !(cptr.ldI32o(u, $you_uswallow) & 1) &&
                         !(cptr.ldPtro(u, $you_ustuck) &&
                             !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
                     ;

@@ -262,7 +262,7 @@ const $RoleName_f = FLD.RoleName_f, $Role_mnum = FLD.Role_mnum,
       $trap_once = FLD.trap_once, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
       $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty, $trap_vl = FLD.trap_vl,
       $u_conduct_sokocheat = FLD.u_conduct_sokocheat, $u_event_invoked = FLD.u_event_invoked,
-      $u_roleplay_deaf = FLD.u_roleplay_deaf,
+      $u_have_questart = FLD.u_have_questart, $u_roleplay_deaf = FLD.u_roleplay_deaf,
       $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
       $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
       $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
@@ -1176,7 +1176,7 @@ export function erode_obj(otmp, ostr, type, ef_flags) {
                 cptr.ldI16o(u, $you_uy)
             ) <=
                 2) &&
-                (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0))
+                ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0))
             ? 1
             : 0));
 
@@ -1478,7 +1478,7 @@ function dng_bottom(lev) {
         /* if the invocation hasn't been performed yet, the vibrating square
            level is effectively the bottom of Gehennom; the sanctum level is
            out of reach until after the invocation */
-        if (!cptr.ldBits(cptr.add(u, $you_uevent + $u_event_invoked), 1, 1, 0))
+        if (!(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1))
             bottom = (bottom - 1) | 0;
     }
     return bottom;
@@ -1753,7 +1753,7 @@ export function fall_through(td, ftflags) {
                     16n) !=
                     0n) ||
                 (ceiling_hider(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
-                    cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0)) &&
+                    (cptr.ldI32o(u, $you_uundetected) & 1) | 0)) &&
                 !((ftflags & NHM.TOOKPLUNGE) >>> 0))) {
         dont_fall = __s_don_t_fall_in;
     } else if (cptr.ld1uo(
@@ -2099,7 +2099,7 @@ export function animate_statue(statue, x, y, cause, fail_reason) {
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_objects
             ) !== null))
-        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
+        cptr.stI32o(u, $you_uundetected, 0);
 
     if (fail_reason)
         cptr.stI32(fail_reason, NHM.AS_OK);
@@ -6387,9 +6387,9 @@ export function float_up() {
         } else {
             You(__s_float_up_slightly_but_your_s_is_still, body_part(NHC.LEG));
         }
-    } else if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
+    } else if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
         spoteffects(1);
-    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         /* FIXME: this isn't correct for trapper/lurker above */
         if (((cptr.ldU64o(
             (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
@@ -6518,7 +6518,7 @@ export function float_down(hmask, emask) {
             return 1;
         }
     }
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         You(
             __s_float_down_but_you_are_still_s,
             (dmgtype_fromattack(
@@ -6557,7 +6557,7 @@ export function float_down(hmask, emask) {
     }
     /* check for falling into pool - added by GAN 10/20/86 */
     if (!Flying()) {
-        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) && cptr.ldPtro(u, $you_ustuck)) {
+        if (!(cptr.ldI32o(u, $you_uswallow) & 1) && cptr.ldPtro(u, $you_ustuck)) {
             if (sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
                 You(
                     __s_aren_t_able_to_maintain_your_hold_on_s,
@@ -6598,7 +6598,7 @@ export function float_down(hmask, emask) {
                             )
                         )))) &&
                 !Swimming() &&
-                !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
+                !(cptr.ldI32o(u, $you_uinwater) & 1))
             no_msg = drown();
 
         if (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
@@ -6646,7 +6646,7 @@ export function float_down(hmask, emask) {
                 !no_msg) {
             You_feel(__s_heavier);
             /* u.uinwater msgs already in spoteffects()/drown() */
-        } else if (!cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) && !no_msg) {
+        } else if (!(cptr.ldI32o(u, $you_uinwater) & 1) && !no_msg) {
             if (!(emask & 1048576n)) {
                 if ((cptr.ldI32o(
                     svl,
@@ -6744,7 +6744,7 @@ export function float_down(hmask, emask) {
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
                     )
                 ))) &&
-            !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
+            !(cptr.ldI32o(u, $you_uswallow) & 1) &&
             on_level(cptr.add(u, $you_uz), current_dungeon_level))
         void pickup(1);
     return 1;
@@ -6830,7 +6830,7 @@ function dofiretrap(box) {
 
     if ((box && !(cptr.ld1so((box), $obj_where) == NHM.OBJ_INVENT))
             ? is_pool(cptr.ldI16o(box, $obj_ox), cptr.ldI16o(box, $obj_oy))
-            : (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0) {
+            : ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0) {
         pline(
             __s_a_cascade_of_steamy_bubbles_erupts_from,
             the(box ? xname(box) : surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
@@ -7847,7 +7847,7 @@ export function rescued_from_terrain(how) {
                 You(
                     __s_s_s_s__4,
                     cptr.decay(__static_rescued_from_terrain_find_yourself),
-                    cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 ? __s_in : __s_on,
+                    (cptr.ldI32o(u, $you_uinwater) & 1) | 0 ? __s_in : __s_on,
                     hliquid(__s_water)
                 );
                 mesggiven = 1;
@@ -7888,7 +7888,7 @@ export function drown() {
 
     feel_newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* in case Blind, map the water here */
     /* happily wading in the same contiguous pool */
-    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 &&
+    if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 &&
             is_pool(
                 i16(((cptr.ldI16(u) - cptr.ldI32o(u, $you_dx)) | 0)),
                 i16(((cptr.ldI16o(u, $you_uy) - cptr.ldI32o(u, $you_dy)) | 0))
@@ -7901,7 +7901,7 @@ export function drown() {
             return 0;
     }
 
-    if (!cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
+    if (!(cptr.ldI32o(u, $you_uinwater) & 1)) {
         You(
             __s_s_into_the_s_c,
             is_solid ? __s_plunge : __s_fall,
@@ -8070,7 +8070,7 @@ export function drown() {
         pline(__s_you_re_still_drowning);
     }
 
-    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
+    if ((cptr.ldI32o(u, $you_uinwater) & 1))
         set_uinwater(0);  /* u.uinwater = 0 */
     rescued_from_terrain(NHC.DROWNING);
     return 1;
@@ -8237,7 +8237,7 @@ function untrap_prob(ttmp) {
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE)) {
         if (rn2(60) < cptr.ldI32o(u, $you_ulevel))
             chance--;
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0) | 0 && chance > 1)
+        if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 && chance > 1)
             chance--;
     } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_RANGER) &&
             chance > 1)
@@ -10540,7 +10540,7 @@ export function sink_into_lava() {
         ;
     } else if (!is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
         reset_utrap(0);  /* this shouldn't happen either */
-    } else if (!cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
+    } else if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
         /* ordinarily we'd have to be fire resistant to survive long
            enough to become stuck in lava, but it can happen without
            resistance if water walking boots allow survival and then
@@ -10728,7 +10728,7 @@ export function trapname(ttyp, override) {
 
         if (nameidx == total_names) {
             let fem = schar((Upolyd()
-                    ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
+                    ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
                     : cptr.ld1so(flags, $flag_female)));
 
             /* inspired by "tourist trap" */

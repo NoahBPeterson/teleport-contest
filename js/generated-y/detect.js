@@ -317,32 +317,20 @@ let dummytrap = cptr.alloc($sizeof_trap);
    return True iff any change occurred */
 /** C ref: detect.c:70 @returns {CInt} */
 function unconstrain_map() {
-    let res = schar((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 ||
-        cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0) | 0 ||
-        cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0
+    let res = schar(((cptr.ldI32o(u, $you_uinwater) & 1) | 0 ||
+        (cptr.ldI32o(u, $you_uburied) & 1) | 0 ||
+        (cptr.ldI32o(u, $you_uswallow) & 1) | 0
             ? 1
             : 0));
 
     /* bring Underwater, buried, or swallowed hero to normal map;
        bypass set_uinwater() */
-    cptr.stI32o(
-        iflags,
-        $instance_flags_save_uinwater,
-        cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)
-    ),
-            cptr.stBits(cptr.add(u, $you_uinwater), 1, 1, 0, 0);
-    cptr.stI32o(
-        iflags,
-        $instance_flags_save_uburied,
-        cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0)
-    ),
-            cptr.stBits(cptr.add(u, $you_uburied), 5, 1, 0, 0);
-    cptr.stI32o(
-        iflags,
-        $instance_flags_save_uswallow,
-        cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)
-    ),
-            cptr.stBits(cptr.add(u, $you_uswallow), 0, 1, 0, 0);
+    cptr.stI32o(iflags, $instance_flags_save_uinwater, (cptr.ldI32o(u, $you_uinwater) & 1)),
+            cptr.stI32o(u, $you_uinwater, 0);
+    cptr.stI32o(iflags, $instance_flags_save_uburied, (cptr.ldI32o(u, $you_uburied) & 1)),
+            cptr.stI32o(u, $you_uburied, 0);
+    cptr.stI32o(iflags, $instance_flags_save_uswallow, (cptr.ldI32o(u, $you_uswallow) & 1)),
+            cptr.stI32o(u, $you_uswallow, 0);
 
     return res;
 }
@@ -351,29 +339,11 @@ function unconstrain_map() {
 /** C ref: detect.c:85 */
 function reconstrain_map() {
     /* if was in water and taken out, put back; bypass set_uinwater() */
-    cptr.stBits(
-        cptr.add(u, $you_uinwater),
-        1,
-        1,
-        0,
-        (cptr.ldI32o(iflags, $instance_flags_save_uinwater) & 1)
-    ),
+    cptr.stI32o(u, $you_uinwater, (cptr.ldI32o(iflags, $instance_flags_save_uinwater) & 1)),
             cptr.stI32o(iflags, $instance_flags_save_uinwater, 0);
-    cptr.stBits(
-        cptr.add(u, $you_uburied),
-        5,
-        1,
-        0,
-        (cptr.ldI32o(iflags, $instance_flags_save_uburied) & 1)
-    ),
+    cptr.stI32o(u, $you_uburied, (cptr.ldI32o(iflags, $instance_flags_save_uburied) & 1)),
             cptr.stI32o(iflags, $instance_flags_save_uburied, 0);
-    cptr.stBits(
-        cptr.add(u, $you_uswallow),
-        0,
-        1,
-        0,
-        (cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1)
-    ),
+    cptr.stI32o(u, $you_uswallow, (cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1)),
             cptr.stI32o(iflags, $instance_flags_save_uswallow, 0);
 }
 
@@ -383,7 +353,7 @@ function* map_redisplay() {
     (yield* docrt());  /* redraw the screen to remove unseen traps from the map */
     if (Underwater())
         (yield* under_water(2));
-    if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0))
+    if ((cptr.ldI32o(u, $you_uburied) & 1))
         (yield* under_ground(2));
 }
 
@@ -997,9 +967,9 @@ export function* food_detect(sobj) {
             (yield* docrt());
             (yield* You(__s_sense_a_lack_of_s_nearby, what));
             if (sobj && (cptr.ldI32o(sobj, $obj_blessed) & 1) | 0) {
-                if (!cptr.ldBits(cptr.add(u, $you_uedibility), 6, 1, 0))
+                if (!(cptr.ldI32o(u, $you_uedibility) & 1))
                     (yield* Your(__s_s_starts_to_tingle, (yield* body_part(NHC.NOSE))));
-                cptr.stBits(cptr.add(u, $you_uedibility), 6, 1, 0, 1);
+                cptr.stI32o(u, $you_uedibility, 1);
             }
         } else if (sobj) {
             let buf = new Uint8Array(256);
@@ -1009,18 +979,18 @@ export function* food_detect(sobj) {
                 __s_your_s_twitches_s,
                 (yield* body_part(NHC.NOSE)),
                 ((cptr.ldI32o(sobj, $obj_blessed) & 1) | 0 &&
-                    !cptr.ldBits(cptr.add(u, $you_uedibility), 6, 1, 0))
+                    !(cptr.ldI32o(u, $you_uedibility) & 1))
                     ? __s_then_starts_to_tingle
                     : __s_empty
             );
             if ((cptr.ldI32o(sobj, $obj_blessed) & 1) | 0 &&
-                    !cptr.ldBits(cptr.add(u, $you_uedibility), 6, 1, 0)) {
+                    !(cptr.ldI32o(u, $you_uedibility) & 1)) {
                 let savebeginner = cptr.ld1so(flags, $flag_beginner);
 
                 cptr.st1o(flags, $flag_beginner, 0);  /* prevent non-delivery of message */
                 (yield* strange_feeling(sobj, cptr.decay(buf)));
                 cptr.st1o(flags, $flag_beginner, savebeginner);
-                cptr.stBits(cptr.add(u, $you_uedibility), 6, 1, 0, 1);
+                cptr.stI32o(u, $you_uedibility, 1);
             } else
                 (yield* strange_feeling(sobj, cptr.decay(buf)));
         }
@@ -1029,9 +999,9 @@ export function* food_detect(sobj) {
         cptr.st1o(gk, $instance_globals_k_known, 1);
         (yield* You(__s_s_s_nearby, sobj ? __s_smell : __s_sense, what));
         if (sobj && (cptr.ldI32o(sobj, $obj_blessed) & 1) | 0) {
-            if (!cptr.ldBits(cptr.add(u, $you_uedibility), 6, 1, 0))
+            if (!(cptr.ldI32o(u, $you_uedibility) & 1))
                 (yield* Your(__s_s_starts_to_tingle, (yield* body_part(NHC.NOSE))));
-            cptr.stBits(cptr.add(u, $you_uedibility), 6, 1, 0, 1);
+            cptr.stI32o(u, $you_uedibility, 1);
         }
     } else {
         let temp;
@@ -1077,12 +1047,10 @@ export function* food_detect(sobj) {
                 (yield* Your(
                     __s_s_s_to_tingle_and_you_smell_s,
                     (yield* body_part(NHC.NOSE)),
-                    cptr.ldBits(cptr.add(u, $you_uedibility), 6, 1, 0) | 0
-                        ? __s_continues
-                        : __s_starts,
+                    (cptr.ldI32o(u, $you_uedibility) & 1) | 0 ? __s_continues : __s_starts,
                     what
                 ));
-                cptr.stBits(cptr.add(u, $you_uedibility), 6, 1, 0, 1);
+                cptr.stI32o(u, $you_uedibility, 1);
             } else
                 (yield* Your(__s_s_tingles_and_you_smell_s, (yield* body_part(NHC.NOSE)), what));
         } else
@@ -1412,7 +1380,7 @@ export function* monster_detect(otmp, mclass) {
     } else {
         let unconstrained;
         let woken = 0;
-        let swallowed = cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0);  /* before unconstrain_map() */
+        let swallowed = (cptr.ldI32o(u, $you_uswallow) & 1);  /* before unconstrain_map() */
 
         (yield* cls());
         unconstrained = unconstrain_map();
@@ -2527,7 +2495,7 @@ export function* do_vicinity_map(sobj) {
         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(u, $you_uy), 8),
         cptr.ldI16(u)
     ));
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+    if ((cptr.ldI32o(u, $you_uswallow) & 1))
         cptr.st1o(
             cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(u, $you_uy), 8),
             cptr.ldI16(u),
@@ -3472,7 +3440,7 @@ export function* findit() {
      *  normal display, where found traps might be covered by objects).
      */
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+    if ((cptr.ldI32o(u, $you_uswallow) & 1))
         return 0;
     void __builtin___memset_chk(found, 0, 12n, __builtin_object_size(found, 0));
     (yield* do_clear_area(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.BOLT_LIM, findone, found));
@@ -3583,7 +3551,7 @@ export function* findit() {
 export function* openit() {
     let num = cptr.box(0);
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if ((dmgtype_fromattack(
             (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
             NHM.AD_DGST,
@@ -3930,7 +3898,7 @@ export function* dosearch0(aflag) {
     let trap;
     let mtmp;
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (!aflag)
             (yield* Norep(__s_what_are_you_looking_for_the_exit));
     } else {
@@ -4678,7 +4646,7 @@ export function* reveal_terrain(which_subset) {
         let keep_traps = schar((((which_subset & NHM.TER_TRP) >>> 0) != 0));
         let keep_objs = schar((((which_subset & NHM.TER_OBJ) >>> 0) != 0));
         let keep_mons = schar((((which_subset & NHM.TER_MON) >>> 0) != 0));  /* not used */
-        let swallowed = cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0);  /* before unconstrain_map() */
+        let swallowed = (cptr.ldI32o(u, $you_uswallow) & 1);  /* before unconstrain_map() */
         let default_sym = uchar(((cptr.ldI32o(
             svl,
             $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal

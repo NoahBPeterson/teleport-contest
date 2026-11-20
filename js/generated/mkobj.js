@@ -3857,7 +3857,7 @@ export function hornoplenty(horn, tipping, targetbox) {
         if (!tipping) {
             obj = hold_another_object(
                 obj,
-                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0
+                (cptr.ldI32o(u, $you_uswallow) & 1) | 0
                     ? __s_oops_s_out_of_your_reach
                     : (((((cptr.ldI16o(
                         (cptr.add(

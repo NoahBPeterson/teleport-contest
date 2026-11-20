@@ -2933,7 +2933,7 @@ function m_lined_up(mtarg, mtmp) {
     if (utarget &&
             Upolyd() &&
             rn2(25) &&
-            (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 ||
+            ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 ||
                 (U_AP_TYPE() != NHC.M_AP_NOTHING && U_AP_TYPE() != NHC.M_AP_MONSTER)))
         return 0;
 

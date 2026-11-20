@@ -4693,8 +4693,7 @@ function special_stock(obj, shkp, quietly) {
         NHC.CANDLESHOP &&
             cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
         if (!quietly) {
-            if (is_izchak(shkp, 1) &&
-                    !cptr.ldBits(cptr.add(u, $you_uevent + $u_event_invoked), 1, 1, 0)) {
+            if (is_izchak(shkp, 1) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1)) {
                 if (Deaf() ||
                         (helpless(shkp) ||
                             cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <=
@@ -5321,9 +5320,7 @@ function append_honorific(buf) {
         buf,
         cptr.ldPtro(
             __static_append_honorific_honored,
-            (rn2((5 - 1) | 0) +
-                (cptr.ldBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0) | 0)) |
-                0,
+            (rn2((5 - 1) | 0) + ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0)) | 0,
             8
         )
     );
@@ -6777,7 +6774,7 @@ function litter_scatter(litter, x, y, shkp) {
     {
         /* Scatter objects haphazardly into the shop */
         if (Punished() &&
-                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
+                !(cptr.ldI32o(u, $you_uswallow) & 1) &&
                 ((cptr.ldI16o(uchain.v, $obj_ox) == x && cptr.ldI16o(uchain.v, $obj_oy) == y) ||
                     (cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR &&
                         cptr.ldI16o(uball.v, $obj_ox) == x &&

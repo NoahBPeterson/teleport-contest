@@ -287,7 +287,8 @@ const $Gender_his = FLD.Gender_his, $NhRegion_glyph = FLD.NhRegion_glyph,
       $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
       $sizeof_shclass = FLD.sizeof_shclass, $stairway_sy = FLD.stairway_sy,
       $trap_launch = FLD.trap_launch, $trap_ttyp = FLD.trap_ttyp,
-      $u_conduct_killer = FLD.u_conduct_killer, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+      $u_conduct_killer = FLD.u_conduct_killer, $u_event_qcompleted = FLD.u_event_qcompleted,
+      $u_roleplay_deaf = FLD.u_roleplay_deaf,
       $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
       $you_mh = FLD.you_mh, $you_ualign = FLD.you_ualign, $you_ublessed = FLD.you_ublessed,
       $you_uconduct = FLD.you_uconduct, $you_uevent = FLD.you_uevent,
@@ -1016,9 +1017,9 @@ export function* m_poisongas_ok(mtmp) {
             attacktype_fordmg(cptr.ldPtro(mtmp, $monst_data), NHM.AT_BREA, NHM.AD_RBRE))
         return NHM.M_POISONGAS_OK;
     if (is_you &&
-            (cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0) | 0 ||
+            ((cptr.ldI32o(u, $you_uinvulnerable) & 1) | 0 ||
                 Breathless() ||
-                (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0))
+                ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0))
         return NHM.M_POISONGAS_OK;
     if (is_you ? Poison_resistance() : (yield* Resists_Elem(mtmp, NHC.POISON_RES)))
         return NHM.M_POISONGAS_MINOR;
@@ -1851,7 +1852,7 @@ function* minliquid_core(mtmp) {
                     /* hero used fire to melt ice that monster was on */
                     (yield* You(__s_drown_s, (yield* mon_nam(mtmp))));
             }
-            if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+            if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                     (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))) {
                 /* This can happen after a purple worm plucks you off a
                    flying steed while you are over water. */
@@ -3398,7 +3399,7 @@ export function* mfndpos(mon, data, flag) {
                     continue;
                 if (((ntyp) == NHC.DOOR) &&
                         !((((cptr.ldU64o((mdat), $permonst_mflags1) & 4n) != 0n) || can_fog(mon)) &&
-                            !(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+                            !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                                 (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))) &&
                         (((((cptr.ldI32o3(
                             svl,
@@ -4477,7 +4478,7 @@ function* vamprises(mtmp) {
         /* mtmp==u.ustuck can happen if previously a fog cloud or if
            poly'd hero is hugging a vampire bat */
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
-            if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+            if ((cptr.ldI32o(u, $you_uswallow) & 1))
                 (yield* expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 0));
             else
                 (yield* uunstick());
@@ -5081,8 +5082,7 @@ export function* monstone(mdef) {
         (yield* newsym(x, y));
     /* we don't currently trap the hero in the statue in this case but we
        could */
-    if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
-            (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))))
+    if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))))
         wasinside = 1;
     (yield* mondead(mdef));
     if (wasinside) {
@@ -5188,7 +5188,7 @@ export function* set_ustuck(mtmp) {
     cptr.st1(disp, 1);
     cptr.stPtro(u, $you_ustuck, mtmp);
     if (!cptr.ldPtro(u, $you_ustuck)) {
-        cptr.stBits(cptr.add(u, $you_uswallow), 0, 1, 0, 0);
+        cptr.stI32o(u, $you_uswallow, 0);
         cptr.stI32o(u, $you_uswldtim, 0);
     }
 }
@@ -5197,7 +5197,7 @@ export function* set_ustuck(mtmp) {
 export function* unstuck(mtmp) {
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
         let ptr = cptr.ldPtro(mtmp, $monst_data);
-        let swallowed = cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0);
+        let swallowed = (cptr.ldI32o(u, $you_uswallow) & 1);
 
         /* do this first so that docrt()'s botl update is accurate;
            clears u.uswallow as well as setting u.ustuck to Null */
@@ -5243,7 +5243,7 @@ export function* xkilled(mtmp, xkill_flags) {
     let otmp;
     let t;
     let be_sad;
-    let wasinside = schar((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+    let wasinside = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))
             ? 1
             : 0));
@@ -5544,7 +5544,7 @@ export function* xkilled(mtmp, xkill_flags) {
         change_luck(-20);
         (yield* pline(
             __s_that_was_sa_bad_idea,
-            cptr.ldBits(cptr.add(u, $you_uevent), 5, 1, 0) | 0 ? __s_probably : __s_empty
+            (cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 ? __s_probably : __s_empty
         ));
         if (!cptr.ld1so(svc, $context_info_mon_moving))
             (yield* iter_mons(anger_quest_guardians));
@@ -5675,7 +5675,7 @@ export function* vamp_stone(mtmp) {
             set_mon_min_mhpmax(mtmp, 10);  /* mtmp->mhpmax=max(m_lev+1,10) */
             cptr.stI32o(mtmp, $monst_mhp, cptr.ldI32o(mtmp, $monst_mhpmax));
             /* this can happen if previously a fog cloud */
-            if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+            if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                     (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))
                 (yield* expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 0));
             if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4n) != 0n) &&
@@ -6947,7 +6947,7 @@ export function* maybe_unhide_at(x, y) {
         trapped = schar((cptr.ldI32o(mtmp, $monst_mtrapped) & 1));
     } else if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
         mtmp = cptr.add(gy, $instance_globals_y_youmonst);
-        undetected = schar(cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0));
+        undetected = schar((cptr.ldI32o(u, $you_uundetected) & 1));
         trapped = schar(cptr.ldI32o(u, $you_utrap));
     } else {
         return;
@@ -7066,8 +7066,8 @@ export function* hideunder(mtmp) {
     }
 
     if (is_u) {
-        oldundetctd = schar(((cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0) != 0));
-        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, (undetected ? 1 : 0) >>> 0);
+        oldundetctd = schar((((cptr.ldI32o(u, $you_uundetected) & 1) | 0) != 0));
+        cptr.stI32o(u, $you_uundetected, (undetected ? 1 : 0) >>> 0);
     } else {
         if (seeit)
             seenmon = (yield* y_monnam(mtmp));
@@ -7969,7 +7969,7 @@ export function* newcham(mtmp, mdat, ncflags) {
     if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1))
         void (yield* hideunder(mtmp));
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             if (!attacktype(mdat, NHM.AT_ENGL)) {
                 /* Does mdat care? */
                 if (!(cptr.ld1so((mdat), $permonst_mlet) == NHC.S_GHOST) &&

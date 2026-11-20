@@ -269,8 +269,7 @@ export function tp_sensemon(mon) {
 
 /** C ref: display.c:173 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function sensemon(mon) {
-    return ((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
-        cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
+    return ((!(cptr.ldI32o(u, $you_uswallow) & 1) || cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
         (!Underwater() ||
             (dist2(
                 (cptr.ldI16o((mon), $monst_mx)),
@@ -446,7 +445,7 @@ export function is_safemon(mon) {
                 : 0)) &&
             ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) &&
                 !(cptr.ldI32o(mon, $monst_mundetected) & 1))) ||
-            ((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
+            ((!(cptr.ldI32o(u, $you_uswallow) & 1) ||
                 cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
                 (!Underwater() ||
                     (dist2(
@@ -1672,7 +1671,7 @@ function display_monster(x, y, mon, sightflags, worm_tail) {
             NHC.M_AP_NOTHING));
     let sensed = (mon_mimic &&
         (Protection_from_shape_changers() ||
-            ((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
+            ((!(cptr.ldI32o(u, $you_uswallow) & 1) ||
                 cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
                 (!Underwater() ||
                     (dist2(
@@ -2009,7 +2008,7 @@ function mon_overrides_region(mon, mx, my) {
     let r;
 
     /* this is redundant because newsym() doesn't call us when swallowed */
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
             (!mon || !cptr.eq(mon, cptr.ldPtro(u, $you_ustuck))))
         return 0;
 
@@ -2017,7 +2016,7 @@ function mon_overrides_region(mon, mx, my) {
         /* when not a worm tail, show mon if sensed rather than seen */
         if (mx == cptr.ldI16o(mon, $monst_mx) &&
                 my == cptr.ldI16o(mon, $monst_my) &&
-                (((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
+                (((!(cptr.ldI32o(u, $you_uswallow) & 1) ||
                     cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
                     (!Underwater() ||
                         (dist2(
@@ -2175,7 +2174,7 @@ export function feel_location(x, y) {
 
     /* The hero can't feel non pool locations while under water
        except for lava and ice. */
-    if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
             !(((cptr.ldI16o(
                 (cptr.add(
                     svd,
@@ -2569,7 +2568,7 @@ export function feel_location(x, y) {
                 $instance_globals_saved_l_level + $dlevel_t_monsters
             ))) !==
                 null &&
-            ((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
+            ((!(cptr.ldI32o(u, $you_uswallow) & 1) ||
                 cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
                 (!Underwater() ||
                     (dist2(
@@ -2673,7 +2672,7 @@ export function newsym(x, y) {
     }
 
     /* only permit updating the hero when swallowed */
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
             show_glyph(
                 cptr.ldI16(u),
@@ -2817,7 +2816,7 @@ export function newsym(x, y) {
             );
         return;
     }
-    if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
             !(((cptr.ldI16o(
                 (cptr.add(
                     svd,
@@ -2912,8 +2911,8 @@ export function newsym(x, y) {
 
         if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
             let see_self = ((Blind() ||
-                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
-                (!Invisible() && !cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))) ||
+                (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
                 (Unblind_telepat() || Detect_monsters())
                     ? 1
                     : 0);
@@ -3407,8 +3406,8 @@ export function newsym(x, y) {
                 feel_location(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* forces an update */
 
                 if (((Blind() ||
-                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
-                    (!Invisible() && !cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))) ||
+                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                    (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
                         (Unblind_telepat() || Detect_monsters())))
                     show_glyph(
                         cptr.ldI16(u),
@@ -4606,7 +4605,7 @@ export function under_water(mode) {
             cptr.add(u, $you_uz),
             cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)
         ))) ||
-            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
         return;
 
     /* full update */
@@ -4666,7 +4665,7 @@ let __static_under_ground_dela = 0; /** C ref: display.c:1447 — signed char (f
 export function under_ground(mode) {
 
     /* swallowing has a higher precedence than under ground */
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+    if ((cptr.ldI32o(u, $you_uswallow) & 1))
         return;
 
     /* full update */
@@ -4969,11 +4968,11 @@ export function docrt_flags(refresh_flags) {
             redraw_map(0);
             break __lbl_post_map;
         }
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             swallowed(1);
             break __lbl_post_map;
         }
-        if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
                 !(((cptr.ldI16o(
                     (cptr.add(
                         svd,
@@ -4995,7 +4994,7 @@ export function docrt_flags(refresh_flags) {
             under_water(1);
             break __lbl_post_map;
         }
-        if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uburied) & 1)) {
             under_ground(1);
             break __lbl_post_map;
         }

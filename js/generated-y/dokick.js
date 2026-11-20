@@ -2311,7 +2311,7 @@ export function* dokick() {
             NHC.S_LIZARD) {
         (yield* Your(__s_legs_cannot_kick_effectively));
         no_kick = 1;
-    } else if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 && !rn2(2)) {
+    } else if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 && !rn2(2)) {
         (yield* Your(__s_slow_motion_kick_doesn_t_hit_anything));
         no_kick = 1;
     } else if (cptr.ldI32o(u, $you_utrap)) {
@@ -2356,7 +2356,7 @@ export function* dokick() {
     else
         avrg_attrib = ((((acurrstr()) + (acurr(NHC.A_DEX)) + (acurr(NHC.A_CON))) | 0) / 3) | 0;
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         switch (rn2(3)) {
             case 0:
                 (yield* You_cant(__s_move_your_s, (yield* body_part(NHC.LEG))));
@@ -2512,7 +2512,7 @@ export function* dokick() {
                 cptr.ldI16o(mtmp, $monst_mx) == x &&
                 cptr.ldI16o(mtmp, $monst_my) == y &&
                 !((glyph) == NHC.GLYPH_INVIS_OFF) &&
-                !(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+                !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
                     (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))) {
             (yield* map_invisible(x, y));
         }
@@ -2557,7 +2557,7 @@ export function* dokick() {
         cptr.ld1so(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ) == NHC.LAVAWALL
         ? 1
         : 0) ^
-            !!cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
+            !!(cptr.ldI32o(u, $you_uinwater) & 1)) {
         /* objects normally can't be removed from water by kicking */
         (yield* You(__s_splash_some_s_around, hliquid(is_pool(x, y) ? __s_water : __s_lava)));
         /* pretend the kick is fast enough for lava not to burn */

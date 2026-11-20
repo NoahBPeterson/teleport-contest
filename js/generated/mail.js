@@ -650,7 +650,7 @@ export function ckmailstatus() {
     ck_server_admin_msg();
 
     if (!mailbox ||
-            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
             !cptr.ld1so(flags, $flag_biff) ||
             cptr.ldI64o(svm, $instance_globals_saved_m_moves) <
                 BigInt.asIntN(64, laststattime + 50n))

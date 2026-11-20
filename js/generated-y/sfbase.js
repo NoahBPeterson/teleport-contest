@@ -2860,7 +2860,7 @@ export function* sfi_trap(nhfp, d_trap, myname) {
  */
 export function* sfo_you(nhfp, d_you, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 2760n, 1, (yield* complex_dump(d_you)));
+        sf_log(nhfp, myname, 2864n, 1, (yield* complex_dump(d_you)));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(
             sfoprocs,
@@ -2914,7 +2914,7 @@ export function* sfi_you(nhfp, d_you, myname) {
             (yield* sfo_you(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_you, myname));
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 2760n, 1, (yield* complex_dump(d_you)));
+            sf_log(nhfp, myname, 2864n, 1, (yield* complex_dump(d_you)));
     }
 }
 

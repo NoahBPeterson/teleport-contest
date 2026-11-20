@@ -55,11 +55,13 @@ const $align_record = FLD.align_record, $branch_end1 = FLD.branch_end1,
       $q_score_not_ready = FLD.q_score_not_ready, $q_score_pissed_off = FLD.q_score_pissed_off,
       $q_score_touched_artifact = FLD.q_score_touched_artifact,
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
-      $trap_ttyp = FLD.trap_ttyp, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-      $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase,
-      $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave, $you_ulevel = FLD.you_ulevel,
-      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy,
-      $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
+      $trap_ttyp = FLD.trap_ttyp, $u_event_qcompleted = FLD.u_event_qcompleted,
+      $u_event_qexpelled = FLD.u_event_qexpelled, $u_have_questart = FLD.u_have_questart,
+      $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_ualign = FLD.you_ualign,
+      $you_ualignbase = FLD.you_ualignbase, $you_uevent = FLD.you_uevent,
+      $you_uhave = FLD.you_uhave, $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops,
+      $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz,
+      $you_uz0 = FLD.you_uz0;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_firsttime = cptr.lit("firsttime");
@@ -170,7 +172,7 @@ function on_goal() {
 
 /** C ref: quest.c:90 */
 export function onquest() {
-    if (cptr.ldBits(cptr.add(u, $you_uevent), 5, 1, 0) | 0 ||
+    if ((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 ||
             (on_level(cptr.add(u, $you_uz0), cptr.add(u, $you_uz))))
         return;
     if (!Is_special(cptr.add(u, $you_uz)))
@@ -315,7 +317,7 @@ function expulsion(seal) {
     let br;
     let dest;
     let t;
-    let portal_flag = cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0
+    let portal_flag = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0
             ? NHC.UTOTYPE_NONE
             : NHC.UTOTYPE_PORTAL;
 
@@ -328,9 +330,9 @@ function expulsion(seal) {
     nomul(0);  /* stop running */
     schedule_goto(dest, portal_flag, null, null);
     if (seal) {
-        let reexpelled = cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0;
+        let reexpelled = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0;
 
-        cptr.stBits(cptr.add(u, $you_uevent), 4, 1, 0, 1);
+        cptr.stI32o(u, $you_uevent + $u_event_qexpelled, 1);
         remdun_mapseen(quest_dnum());
         /* Delete the near portal now; the far (main dungeon side)
            portal will be deleted as part of arrival on that level.
@@ -376,7 +378,7 @@ export function finish_quest(obj) {
         return;
     }
 
-    if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uhave) & 1)) {
         /* has the amulet in inventory -- most likely the player has already
            completed the quest and stopped in on her way back up, but it's not
            impossible to have gotten the amulet before formally presenting the
@@ -398,7 +400,7 @@ export function finish_quest(obj) {
     cptr.stI32o(svq, $q_score_got_thanks, 1);
 
     if (obj) {
-        cptr.stBits(cptr.add(u, $you_uevent), 5, 1, 0, 1);  /* you did it! */
+        cptr.stI32o(u, $you_uevent + $u_event_qcompleted, 1);  /* you did it! */
         /* behave as if leader imparts sufficient info about the
            quest artifact */
         fully_identify_obj(obj);
@@ -413,7 +415,7 @@ function chat_with_leader(mtmp) {
         return;
 
     /*  Rule 0: Cheater checks. */
-    if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0) | 0 &&
+    if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 &&
             !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
         cptr.stI32o(svq, $q_score_cheater, 1);
 
@@ -422,13 +424,13 @@ function chat_with_leader(mtmp) {
      */
     if (((cptr.ldI32o(svq, $q_score_got_thanks) & 1))) {
         /* Rule 1: You've gone back with/without the amulet. */
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
+        if ((cptr.ldI32o(u, $you_uhave) & 1))
             finish_quest(null);
         else
             qt_pager(__s_posthanks);
 
         /* Rule 3: You've got the artifact and are back to return it. */
-    } else if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0)) {
+    } else if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1)) {
         let otmp;
 
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
@@ -537,7 +539,7 @@ function chat_with_nemesis() {
 /** C ref: quest.c:403 */
 export function nemesis_speaks() {
     if (!((cptr.ldI32o(svq, $q_score_in_battle) & 1))) {
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0))
+        if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
             qt_pager(__s_nemesis_wantsit);
         else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) == 1 ||
                 !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
@@ -573,7 +575,7 @@ export function nemesis_stinks(mx, my) {
 /** C ref: quest.c:441 */
 function chat_with_guardian() {
     /*  These guys/gals really don't have much to say... */
-    if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0) | 0 &&
+    if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 &&
             ((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1)) | 0)
         qt_pager(__s_guardtalk_after);
     else

@@ -127,7 +127,7 @@ export function Antimagic() {
 
 /** C: include/hack.h — the `BALL_IN_MON` macro body */
 export function BALL_IN_MON() {
-    return (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+    return ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
         uball.v &&
         cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FREE
         ? 1
@@ -226,7 +226,7 @@ export function Breathless() {
 
 /** C: include/hack.h — the `CHAIN_IN_MON` macro body */
 export function CHAIN_IN_MON() {
-    return (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+    return ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
         uchain.v &&
         cptr.ld1so(uchain.v, $obj_where) == NHM.OBJ_FREE
         ? 1
@@ -1014,12 +1014,12 @@ export function Teleportation() {
 
 /** C: include/you.h — the `ULEFTY` macro body */
 export function ULEFTY() {
-    return ((cptr.ldBits(cptr.add(u, $you_uhandedness), 7, 1, 0) | 0) == NHM.LEFT_HANDED);
+    return (((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED);
 }
 
 /** C: include/you.h — the `URIGHTY` macro body */
 export function URIGHTY() {
-    return ((cptr.ldBits(cptr.add(u, $you_uhandedness), 7, 1, 0) | 0) == NHM.RIGHT_HANDED);
+    return (((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.RIGHT_HANDED);
 }
 
 /** C: include/monst.h — the `U_AP_TYPE` macro body */
@@ -1030,7 +1030,7 @@ export function U_AP_TYPE() {
 /** C: include/you.h — the `Ugender` macro body */
 export function Ugender() {
     return (((cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_umonster))
-        ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
+        ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
         : cptr.ld1so(flags, $flag_female))
         ? 1
         : 0);
@@ -1055,7 +1055,7 @@ export function Undead_warning() {
 }
 
 /** C: include/youprop.h — the `Underwater` macro body */
-export function Underwater() { return (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)); }
+export function Underwater() { return ((cptr.ldI32o(u, $you_uinwater) & 1)); }
 
 /** C: include/you.h — the `Upolyd` macro body */
 export function Upolyd() { return (cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_umonster)); }

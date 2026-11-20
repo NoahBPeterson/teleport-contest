@@ -205,6 +205,8 @@ const $NHFILE_mode = FLD.NHFILE_mode, $Race_mnum = FLD.Race_mnum,
       $tmplevel_flags = FLD.tmplevel_flags, $tmplevel_lev = FLD.tmplevel_lev,
       $tmplevel_rndlevs = FLD.tmplevel_rndlevs, $trap_tseen = FLD.trap_tseen,
       $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
+      $u_event_qcalled = FLD.u_event_qcalled, $u_event_qcompleted = FLD.u_event_qcompleted,
+      $u_event_qexpelled = FLD.u_event_qexpelled, $u_event_uheard_tune = FLD.u_event_uheard_tune,
       $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
       $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
       $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
@@ -2534,7 +2536,7 @@ export function prev_level(at_stairs) {
         /* (Just make sure it doesn't go above depth 1) */
         if (!cptr.ldI16o(u, $you_uz) &&
                 cptr.ldI16o(u, $you_uz + $d_level_dlevel) == 1 &&
-                !cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
+                !(cptr.ldI32o(u, $you_uhave) & 1))
             done(NHC.ESCAPED);
         else {
             cptr.stI16(newlevel, cptr.ldI16o(stway, $stairway_tolev));
@@ -2610,7 +2612,7 @@ export function u_on_newpos(x, y) {
     cptr.stI16(u, x);
     cptr.stI16o(u, $you_uy, y);
     cliparound()(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-    cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
+    cptr.stI32o(u, $you_uundetected, 0);
     /* ridden steed always shares hero's location */
     if (cptr.ldPtro(u, $you_usteed))
         cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_mx, cptr.ldI16(u)),
@@ -2626,7 +2628,7 @@ export function u_on_newpos(x, y) {
     } else {
         /* still on same level; might have come close enough to
            generic object(s) to redisplay them as specific objects */
-        if (!Blind() && !Hallucination() && !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+        if (!Blind() && !Hallucination() && !(cptr.ldI32o(u, $you_uswallow) & 1))
             see_nearby_objects();
     }
     earth_sense();
@@ -2935,7 +2937,7 @@ export function surface(x, y) {
     let levtyp = SURFACE_AT(x, y);
 
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
-            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
             ((cptr.ldU64o(
                 (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
                 $permonst_mflags1
@@ -2977,7 +2979,7 @@ export function surface(x, y) {
                 ? __s_air_bubble
                 : ((levtyp == NHC.CLOUD) ? __s_cloud : __s_air);
     else if (is_pool(x, y))
-        return ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+        return (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
             !(((cptr.ldI16o(
                 (cptr.add(
                     svd,
@@ -3380,7 +3382,7 @@ export function level_difficulty() {
             $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level
         )) +
                 ((cptr.ldI32o(u, $you_ulevel) / 2) | 0)) | 0));
-    } else if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0)) {
+    } else if ((cptr.ldI32o(u, $you_uhave) & 1)) {
         res = deepest_lev_reached(0);
     } else {
         res = i16(depth(cptr.add(u, $you_uz)));
@@ -4900,9 +4902,9 @@ export function recalc_mapseen() {
         mptr,
         $mapseen_flags + $mapseen_flags_quest_summons,
         (at_dgn_entrance(__s_the_quest) &&
-            cptr.ldBits(cptr.add(u, $you_uevent), 3, 1, 0) | 0 &&
-            !(cptr.ldBits(cptr.add(u, $you_uevent), 5, 1, 0) | 0 ||
-                cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0 ||
+            (cptr.ldI32o(u, $you_uevent + $u_event_qcalled) & 1) | 0 &&
+            !((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 ||
+                (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 ||
                 (cptr.ldI32o(svq, $q_score_leader_is_dead) & 1) | 0)
             ? 1
             : 0) >>> 0
@@ -5280,7 +5282,7 @@ function seen_string(x, obj) {
 function br_string2(br) {
     /* Special case: quest portal says closed if kicked from quest */
     let closed_portal = schar((cptr.ldI16o(br, $branch_end2) == quest_dnum() &&
-        cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0
+        (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0
             ? 1
             : 0));
 
@@ -5358,10 +5360,10 @@ function shop_string(rtype) {
 function tunesuffix(mptr, outbuf, bsz) {
     cptr.st1(outbuf, 0);
     if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_castletune) & 1) | 0 &&
-            cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) | 0) {
+            (cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) {
         let tmp = new Uint8Array(256);
 
-        if ((cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) | 0) == 2)
+        if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) == 2)
             void cptr.sprintf(cptr.decay(tmp), __s_notes_s, svt);
         else
             void cptr.strcpy(cptr.decay(tmp), __s_5_note_tune);
@@ -5752,7 +5754,7 @@ function print_mapseen(win, mptr, final, how, printdun) {
             __s_sp6,
             (cptr.ldI32o(mptr, $mapseen_flags) & 1) | 0 ? __s_no_way_back : __s_empty
         );
-        if (cptr.ldBits(cptr.add(u, $you_uevent), 5, 1, 0))
+        if ((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1))
             void cptr.sprintf(cptr.decay(buf), __s_scompleted_quest_for_s, __s_sp6, ldrname());
         else if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_questing) & 1))
             void cptr.sprintf(cptr.decay(buf), __s_sgiven_quest_by_s, __s_sp6, ldrname());

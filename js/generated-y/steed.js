@@ -236,8 +236,8 @@ export function* use_saddle(otmp) {
         return NHM.ECMD_OK;
 
     /* Select an animal */
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
-            (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
+    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+            ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ||
             !(yield* getdir(null))) {
         (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
         return NHM.ECMD_CANCEL;
@@ -543,7 +543,7 @@ export function* mount_steed(mtmp, force) {
         (yield* You(__s_couldn_t_ride_s_let_alone_its_tail, (yield* a_monnam(mtmp))));
         return 0;
     }
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
             cptr.ldPtro(u, $you_ustuck) ||
             cptr.ldI32o(u, $you_utrap) ||
             Punished() ||
@@ -555,7 +555,7 @@ export function* mount_steed(mtmp, force) {
                 NHM.TEST_MOVE
             ))) {
         if (Punished() ||
-                !(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+                !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
                     cptr.ldPtro(u, $you_ustuck) ||
                     cptr.ldI32o(u, $you_utrap)))
             (yield* You(__s_are_unable_to_swing_your_s_over, (yield* body_part(NHC.LEG))));
@@ -619,7 +619,7 @@ export function* mount_steed(mtmp, force) {
         return 0;
     }
     if (!force &&
-            (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+            ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
             !((cptr.ldU64o((ptr), $permonst_mflags1) & 2n) != 0n)) {
         (yield* You_cant(__s_ride_that_creature_while_under_s, hliquid(__s_water)));
         return 0;
@@ -1198,9 +1198,7 @@ export function* dismount_steed(reason) {
         /* Set hero's and/or steed's positions.  Usually try moving the
            hero first.  Note: for DISMOUNT_ENGULFED, caller hasn't set
            u.uswallow yet but has set u.ustuck. */
-        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
-                !cptr.ldPtro(u, $you_ustuck) &&
-                have_spot) {
+        if (!(cptr.ldI32o(u, $you_uswallow) & 1) && !cptr.ldPtro(u, $you_ustuck) && have_spot) {
             let mdat = cptr.ldPtro(mtmp, $monst_data);
 
             /* The steed may drop into water/lava */

@@ -144,13 +144,13 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum, $Role_petnum = F
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
       $sizeof_skills = FLD.sizeof_skills, $stairway_sy = FLD.stairway_sy,
       $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
-      $u_conduct_pets = FLD.u_conduct_pets, $u_roleplay_pauper = FLD.u_roleplay_pauper,
-      $you_uconduct = FLD.you_uconduct, $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave,
-      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
-      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
-      $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
-      $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0,
-      $you_weapon_skills = FLD.you_weapon_skills;
+      $u_conduct_pets = FLD.u_conduct_pets, $u_event_qexpelled = FLD.u_event_qexpelled,
+      $u_roleplay_pauper = FLD.u_roleplay_pauper, $you_uconduct = FLD.you_uconduct,
+      $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave, $you_umonnum = FLD.you_umonnum,
+      $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops,
+      $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed,
+      $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy,
+      $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0, $you_weapon_skills = FLD.you_weapon_skills;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_obtained_s_first_pet_s = cptr.lit("obtained %s first pet (%s)");
@@ -876,7 +876,7 @@ export function mon_arrive(mtmp, when) {
                 /* debugfuzzer returns from or enters another branch */
                 xlocale = cptr.ldI16(stway), ylocale = cptr.ldI16o(stway, $stairway_sy);
                 break;
-            } else if (!(cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0 &&
+            } else if (!((cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 &&
                     ((((cptr.ldI16o(
                         (cptr.add(
                             svd,
@@ -1190,8 +1190,7 @@ export function keepdogs(pets_only) {
             cptr.stI32o(mtmp, $monst_mcanmove, 1);
         }
         if (((monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && levl_follower(mtmp)) ||
-            (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 &&
-                (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0)) &&
+            ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0)) &&
                 (!helpless(mtmp) || (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))) &&
                 !(cptr.ldU64o(mtmp, $monst_mstrategy) & 536870912n)) {
             let num_segs;
@@ -1706,7 +1705,7 @@ export function tamedog(mtmp, obj, givemsg) {
 
     /* make grabber let go now, whether it becomes tame or not */
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+        if ((cptr.ldI32o(u, $you_uswallow) & 1))
             expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 1);
         else if (!(Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
             unstuck(mtmp);

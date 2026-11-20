@@ -90,11 +90,12 @@ const $dlevel_t_monlist = FLD.dlevel_t_monlist, $flag_female = FLD.flag_female,
       $prop_intrinsic = FLD.prop_intrinsic, $rm_roomno = FLD.rm_roomno,
       $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
       $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
-      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $you_twoweap = FLD.you_twoweap,
-      $you_uhandedness = FLD.you_uhandedness, $you_uhave = FLD.you_uhave,
-      $you_uprops = FLD.you_uprops, $you_ushops = FLD.you_ushops, $you_usteed = FLD.you_usteed,
-      $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
-      $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy;
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $u_have_bell = FLD.u_have_bell,
+      $u_have_book = FLD.u_have_book, $u_have_menorah = FLD.u_have_menorah,
+      $you_twoweap = FLD.you_twoweap, $you_uhandedness = FLD.you_uhandedness,
+      $you_uhave = FLD.you_uhave, $you_uprops = FLD.you_uprops, $you_ushops = FLD.you_ushops,
+      $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
+      $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_your = cptr.lit("your");
@@ -760,16 +761,14 @@ export function* steal(mtmp, objnambuf) {
                     cptr.ldI64o(otmp, $obj_owornmask)) ||
                     (cptr.eq(
                         otmp,
-                        (((cptr.ldBits(cptr.add(u, $you_uhandedness), 7, 1, 0) | 0) ==
-                            NHM.LEFT_HANDED)
+                        ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
                             ? uleft.v
                             : uright.v)
                     ) &&
                         (yield* welded(uwep.v))) ||
                     (cptr.eq(
                         otmp,
-                        (((cptr.ldBits(cptr.add(u, $you_uhandedness), 7, 1, 0) | 0) ==
-                            NHM.LEFT_HANDED)
+                        ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
                             ? uright.v
                             : uleft.v)
                     ) &&
@@ -1041,7 +1040,7 @@ export function* mpickobj(mtmp, otmp) {
        the light to be extinguished rather than letting it shine through */
     if (obj_sheds_light(otmp) && attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_ENGL)) {
         /* this is probably a burning object that you dropped or threw */
-        if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+        if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
             (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) &&
                 !Blind())
             (yield* pline(__s_s_out, (yield* Tobjnam(otmp, __s_go))));
@@ -1106,15 +1105,15 @@ export function* stealamulet(mtmp) {
 
     if (!otmp) {
         /* if we didn't find any quest artifact, find another valuable item */
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uhave) & 1)) {
             real = NHC.AMULET_OF_YENDOR;
             fake = NHC.FAKE_AMULET_OF_YENDOR;
-        } else if (cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0)) {
+        } else if ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1)) {
             real = NHC.BELL_OF_OPENING;
             fake = NHC.BELL;
-        } else if (cptr.ldBits(cptr.add(u, $you_uhave), 2, 1, 0)) {
+        } else if ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1)) {
             real = NHC.SPE_BOOK_OF_THE_DEAD;
-        } else if (cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0)) {
+        } else if ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1)) {
             real = NHC.CANDELABRUM_OF_INVOCATION;
         } else
             return;  /* you have nothing of special interest */

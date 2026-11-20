@@ -687,8 +687,8 @@ export function dosounds() {
 
     if (Deaf() ||
             !cptr.ld1s(flags) ||
-            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
-            (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0)
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+            ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
         return;
 
     hallu = Hallucination() ? 1 : 0;
@@ -2064,7 +2064,7 @@ function dochat() {
         You_cant(__s_speak_you_re_choking);
         return NHM.ECMD_OK;
     }
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         pline(__s_they_won_t_hear_you_out_there);
         return NHM.ECMD_OK;
     }

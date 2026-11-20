@@ -439,7 +439,7 @@ export function goodpos(x, y, mtmp, gpflags) {
         if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
                 !cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) &&
                 (!cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) ||
-                    !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) &&
+                    !(cptr.ldI32o(u, $you_uswallow) & 1)) &&
                 (!cptr.ldPtro(u, $you_usteed) || !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))))
             return 0;
     }
@@ -888,7 +888,7 @@ export function teleds(nux, nuy, teleds_flags) {
             unplacebc();  /* have to move the ball */
     }
     reset_utrap(0);
-    was_swallowed = cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0);  /* set_ustuck(Null) clears uswallow */
+    was_swallowed = (cptr.ldI32o(u, $you_uswallow) & 1);  /* set_ustuck(Null) clears uswallow */
     set_ustuck(null);
     cptr.stI16o(u, $you_ux0, cptr.ldI16(u));
     cptr.stI16o(u, $you_uy0, cptr.ldI16o(u, $you_uy));
@@ -1346,8 +1346,7 @@ export function scrolltele(scroll) {
     if (!Blinded())
         make_blinded(0n, 0);
 
-    if ((cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 ||
-        On_W_tower_level(cptr.add(u, $you_uz))) &&
+    if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || On_W_tower_level(cptr.add(u, $you_uz))) &&
             !rn2(3)) {
         You_feel(__s_disoriented_for_a_moment);
         /* don't discover the scroll [at least not yet for wizard override];
@@ -1749,7 +1748,7 @@ export function level_tele() {
                 schedule_goto(newlevel, NHC.UTOTYPE_NONE, null, null);
                 return;
             }
-            if ((cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 ||
+            if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 ||
                 (cptr.ldI16((cptr.add(u, $you_uz))) ==
                     cptr.ldI16((cptr.add(
                         svd,
@@ -1854,7 +1853,7 @@ export function level_tele() {
                                 $dgn_topology_d_astral_level
                         ))))) {
 
-                if (!cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) &&
+                if (!(cptr.ldI32o(u, $you_uhave) & 1) &&
                         (amu = mksobj(NHC.AMULET_OF_YENDOR, 1, 0)) !== null) {
                     /* ordinarily we'd use hold_another_object()
                        for something like this, but we don't want
@@ -2130,7 +2129,7 @@ export function level_tele() {
                  */
                 if (!wizard() &&
                         In_hell(cptr.add(u, $you_uz)) &&
-                        !cptr.ldBits(cptr.add(u, $you_uevent + $u_event_invoked), 1, 1, 0) &&
+                        !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1) &&
                         newlev >= deepest) {
                     newlev = (deepest - 1) | 0;
                     pline(__s_sorry);
@@ -2207,7 +2206,7 @@ export function domagicportal(ttmp) {
             svd,
             $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
         )))) &&
-            !cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0)) {
+            !(cptr.ldI32o(u, $you_uhave) & 1)) {
         You_feel(__s_dizzy_for_a_moment_but_nothing_happens);
         return;
     }
@@ -2537,7 +2536,7 @@ function rloc_to_core(mtmp, x, y, rlocflags) {
         place_worm_tail_randomly(mtmp, x, y);
 
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             u_on_newpos(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
             check_special_room(0);
             docrt();
@@ -3257,8 +3256,7 @@ export function random_teleport_level() {
                 (cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start) -
                     1)) | 0;
         /* can't reach Sanctum if the invocation hasn't been performed */
-        if (In_hell(cptr.add(u, $you_uz)) &&
-                !cptr.ldBits(cptr.add(u, $you_uevent + $u_event_invoked), 1, 1, 0))
+        if (In_hell(cptr.add(u, $you_uz)) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1))
             max_depth = (max_depth - 1) | 0;
     }
 
@@ -3313,7 +3311,7 @@ export function u_teleport_mon(mtmp, give_feedback) {
         if (give_feedback)
             pline(__s_s_resists_your_magic, Monnam(mtmp));
         return 0;
-    } else if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+    } else if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) &&
             noteleport_level(mtmp)) {
         if (give_feedback)

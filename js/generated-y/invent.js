@@ -212,6 +212,8 @@ const $Loot_disco = FLD.Loot_disco, $Loot_inuse = FLD.Loot_inuse,
       $to_core_maxslot = FLD.to_core_maxslot, $to_core_needcols = FLD.to_core_needcols,
       $to_core_needrows = FLD.to_core_needrows, $trap_tseen = FLD.trap_tseen,
       $trap_ttyp = FLD.trap_ttyp, $u_conduct_literate = FLD.u_conduct_literate,
+      $u_have_bell = FLD.u_have_bell, $u_have_book = FLD.u_have_book,
+      $u_have_menorah = FLD.u_have_menorah, $u_have_questart = FLD.u_have_questart,
       $u_roleplay_numrerolls = FLD.u_roleplay_numrerolls,
       $win_request_info_t_fromcore = FLD.win_request_info_t_fromcore,
       $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
@@ -1636,30 +1638,30 @@ export function* addinv_core1(obj) {
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
         cptr.st1(disp, 1);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
+        if ((cptr.ldI32o(u, $you_uhave) & 1))
             (yield* impossible(__s_already_have_amulet));
-        cptr.stBits(cptr.add(u, $you_uhave), 0, 1, 0, 1);
+        cptr.stI32o(u, $you_uhave, 1);
         (yield* record_achievement(NHC.ACH_AMUL));
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0))
+        if ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1))
             (yield* impossible(__s_already_have_candelabrum));
-        cptr.stBits(cptr.add(u, $you_uhave), 3, 1, 0, 1);
+        cptr.stI32o(u, $you_uhave + $u_have_menorah, 1);
         (yield* record_achievement(NHC.ACH_CNDL));
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING) {
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0))
+        if ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1))
             (yield* impossible(__s_already_have_silver_bell));
-        cptr.stBits(cptr.add(u, $you_uhave), 1, 1, 0, 1);
+        cptr.stI32o(u, $you_uhave + $u_have_bell, 1);
         (yield* record_achievement(NHC.ACH_BELL));
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
-        if (cptr.ldBits(cptr.add(u, $you_uhave), 2, 1, 0))
+        if ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1))
             (yield* impossible(__s_already_have_the_book));
-        cptr.stBits(cptr.add(u, $you_uhave), 2, 1, 0, 1);
+        cptr.stI32o(u, $you_uhave + $u_have_book, 1);
         (yield* record_achievement(NHC.ACH_BOOK));
     } else if (cptr.ld1so(obj, $obj_oartifact)) {
         if (is_quest_artifact(obj)) {
-            if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0))
+            if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
                 (yield* impossible(__s_already_have_quest_artifact));
-            cptr.stBits(cptr.add(u, $you_uhave), 4, 1, 0, 1);
+            cptr.stI32o(u, $you_uhave + $u_have_questart, 1);
             (yield* artitouch(obj));
         }
         (yield* set_artifact_intrinsic(obj, 1, 4096n));
@@ -1999,7 +2001,7 @@ export function* hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
     if (drop_fmt)
         (yield* pline(drop_fmt, drop_arg));
     cptr.stI32o(obj, $obj_nomerge, 0);
-    if (can_reach_floor(1) || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
+    if (can_reach_floor(1) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
         (yield* dropx(obj));
     } else {
         (yield* freeinv(obj));
@@ -2054,26 +2056,26 @@ export function* freeinv_core(obj) {
         cptr.st1(disp, 1);
         return;
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
-        if (!cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
+        if (!(cptr.ldI32o(u, $you_uhave) & 1))
             (yield* impossible(__s_don_t_have_amulet));
-        cptr.stBits(cptr.add(u, $you_uhave), 0, 1, 0, 0);
+        cptr.stI32o(u, $you_uhave, 0);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
-        if (!cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0))
+        if (!(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1))
             (yield* impossible(__s_don_t_have_candelabrum));
-        cptr.stBits(cptr.add(u, $you_uhave), 3, 1, 0, 0);
+        cptr.stI32o(u, $you_uhave + $u_have_menorah, 0);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING) {
-        if (!cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0))
+        if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1))
             (yield* impossible(__s_don_t_have_silver_bell));
-        cptr.stBits(cptr.add(u, $you_uhave), 1, 1, 0, 0);
+        cptr.stI32o(u, $you_uhave + $u_have_bell, 0);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
-        if (!cptr.ldBits(cptr.add(u, $you_uhave), 2, 1, 0))
+        if (!(cptr.ldI32o(u, $you_uhave + $u_have_book) & 1))
             (yield* impossible(__s_don_t_have_the_book));
-        cptr.stBits(cptr.add(u, $you_uhave), 2, 1, 0, 0);
+        cptr.stI32o(u, $you_uhave + $u_have_book, 0);
     } else if (cptr.ld1so(obj, $obj_oartifact)) {
         if (is_quest_artifact(obj)) {
-            if (!cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0))
+            if (!(cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
                 (yield* impossible(__s_don_t_have_quest_artifact));
-            cptr.stBits(cptr.add(u, $you_uhave), 4, 1, 0, 0);
+            cptr.stI32o(u, $you_uhave + $u_have_questart, 0);
         }
         (yield* set_artifact_intrinsic(obj, 0, 4096n));
     }
@@ -5914,7 +5916,7 @@ export function* look_here(obj_cnt, lookhere_flags) {
         obj_cnt >= cptr.ldI32o(flags, $flag_pile_limit)
             ? 1
             : 0));
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         let mtmp = cptr.ldPtro(u, $you_ustuck);
 
         /*
@@ -5997,7 +5999,7 @@ export function* look_here(obj_cnt, lookhere_flags) {
     dfeature = (yield* dfeature_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(fbuf2)));
     if (dfeature &&
             !strcmp(dfeature, __s_pool_of_water) &&
-            (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0)
+            ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
         dfeature = null;
 
     if (Blind()) {
@@ -6717,7 +6719,7 @@ export function* useupf(obj, numused) {
     }
     (yield* delobj(otmp));
     if (at_u &&
-            cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
+            (cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
@@ -7356,8 +7358,7 @@ export function* display_minventory(mon, dflags, title) {
     let selected = cptr.box(null);
     let do_all = (dflags & NHM.MINV_ALL) != 0;
     let incl_hero = (do_all &&
-        (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
-            (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))
+        ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))
             ? 1
             : 0);
     let have_inv = (cptr.ldPtro(mon, $monst_minvent) !== null);

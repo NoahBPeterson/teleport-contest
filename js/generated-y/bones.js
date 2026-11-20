@@ -605,7 +605,7 @@ export function can_make_bones() {
         return 0;
     if (no_bones_level(cptr.add(u, $you_uz)))
         return 0;  /* no bones for specific levels */
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         return 0;  /* no bones when swallowed */
     }
     if (!Is_branchlev(cptr.add(u, $you_uz))) {
@@ -852,12 +852,12 @@ export function* savebones(how, when, corpse) {
             cptr.stI32o(
                 (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
                 $ebones_demigod,
-                cptr.ldBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0)
+                (cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1)
             );
             cptr.stI32o(
                 (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
                 $ebones_crowned,
-                cptr.ldBits(cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth), 3, 2, 0)
+                (cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3)
             );
         }
     }

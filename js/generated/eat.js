@@ -4212,7 +4212,7 @@ function fpostfx(otmp) {
                 you_unwere(1);
             break;
         case NHC.CARROT:
-            if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
+            if (!(cptr.ldI32o(u, $you_uswallow) & 1) ||
                     !attacktype_fordmg(
                         cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
                         NHM.AT_ENGL,
@@ -4721,12 +4721,12 @@ export function doeat() {
     if (check_capacity(null))
         return NHM.ECMD_OK;
 
-    if (cptr.ldBits(cptr.add(u, $you_uedibility), 6, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uedibility) & 1)) {
         let res = edibility_prompts(otmp.v);
 
         if (res) {
             Your(__s_s_stops_tingling_and_your_sense_of, body_part(NHC.NOSE));
-            cptr.stBits(cptr.add(u, $you_uedibility), 6, 1, 0, 0);
+            cptr.stI32o(u, $you_uedibility, 0);
             if (res == 1)
                 return NHM.ECMD_OK;
         }
@@ -5189,7 +5189,7 @@ function bite() {
 export function gethungry() {
     let accessorytime;
 
-    if (cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0) | 0 ||
+    if ((cptr.ldI32o(u, $you_uinvulnerable) & 1) | 0 ||
             cptr.ld1so(iflags, $instance_flags_debug_hunger))
         return;  /* you don't feel hungrier */
 
@@ -5326,7 +5326,7 @@ export function gethungry() {
                     (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
                 break;
             case 16:
-                if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
+                if ((cptr.ldI32o(u, $you_uhave) & 1))
                     (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
                 break;
             default:
@@ -5960,9 +5960,7 @@ export function vomit() {
            dealing with some esoteric body_part() */
         Your(__s_jaw_gapes_convulsively);
     } else {
-        if (Sick() &&
-                ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) &
-                    NHM.SICK_VOMITABLE) != 0)
+        if (Sick() && (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE) != 0)
             make_sick(0n, null, 1, NHM.SICK_VOMITABLE);
         /* if not enough in stomach to actually vomit then dry heave;
            vomiting_dialog() gives a vomit message when its countdown

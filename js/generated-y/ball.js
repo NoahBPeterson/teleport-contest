@@ -215,7 +215,7 @@ function* placebc_core() {
 
 /** C ref: ball.c:147 */
 function* unplacebc_core() {
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if ((((cptr.ldI16o(
             (cptr.add(
                 svd,
@@ -346,7 +346,7 @@ function* bc_order() {
     if (cptr.ldI16o(uchain.v, $obj_ox) != cptr.ldI16o(uball.v, $obj_ox) ||
             cptr.ldI16o(uchain.v, $obj_oy) != cptr.ldI16o(uball.v, $obj_oy) ||
             (cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) ||
-            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
         return 0;
 
     for (
@@ -383,7 +383,7 @@ export function* set_bc(already_blind) {
     cptr.stI32o(u, $you_bc_order, (yield* bc_order()));  /* get the order */
     cptr.stI32o(u, $you_bc_felt, ball_on_floor ? 3 : NHM.BC_CHAIN);  /* felt */
 
-    if (already_blind || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
+    if (already_blind || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
         cptr.stI32o(
             u,
             $you_cglyph,

@@ -861,7 +861,7 @@ function* sickness_dialogue() {
             cptr.ldPtro(sickness_texts, BigInt.asIntN(64, BigInt(3) - i), 8)
         );
         /* change the message slightly for food poisoning */
-        if (((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_NONVOMITABLE) == 0)
+        if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) == 0)
             void strsubst(cptr.decay(buf), __s_illness, __s_sickness);
         if (Hallucination() && (yield* strstri(cptr.decay(buf), __s_death_s_door))) {
             /* youmonst: for Hallucination, mhe()'s mon argument isn't used */
@@ -1249,8 +1249,7 @@ export function* nh_timeout() {
 
     if (cptr.ld1so(u, $you_uluck) != baseluck &&
             cptr.ldI64o(svm, $instance_globals_saved_m_moves) %
-                BigInt(((cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 ||
-                    cptr.ldI32o(u, $you_ugangr))
+                BigInt((((cptr.ldI32o(u, $you_uhave) & 1) | 0 || cptr.ldI32o(u, $you_ugangr))
                     ? 300
                     : 600)) ==
                 0n) {
@@ -1267,7 +1266,7 @@ export function* nh_timeout() {
         else if (cptr.ld1so(u, $you_uluck) < baseluck && (nostone || time_luck > 0))
             cptr.postinc1(cptr.add(u, $you_uluck));
     }
-    if (cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0))
+    if ((cptr.ldI32o(u, $you_uinvulnerable) & 1))
         return;  /* things past this point could kill you */
     if (Stoned())
         (yield* stoned_dialogue());
@@ -1384,8 +1383,7 @@ export function* nh_timeout() {
                 case 17n:
                     /* hero might be able to bounce back from food poisoning,
                        but not other forms of illness */
-                    if (((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) &
-                        NHM.SICK_NONVOMITABLE) ==
+                    if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) ==
                         0 &&
                             rn2(100) < (acurr(NHC.A_CON))) {
                         (yield* You(__s_have_recovered_from_your_illness));
@@ -1422,7 +1420,7 @@ export function* nh_timeout() {
                         }
                     }
                     (yield* done_timeout(NHC.POISONING, NHC.SICK));
-                    cptr.stBits(cptr.add(u, $you_usick_type), 0, 2, 0, 0);
+                    cptr.stI32o(u, $you_usick_type, 0);
                     break;
                 case 64n:
                     if (!Very_fast())
@@ -1692,7 +1690,7 @@ export function* nh_timeout() {
                     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
                     void cptr.strcpy(
                         cptr.add(svk, $kinfo_name),
-                        (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0)) | 0
+                        ((cptr.ldI32o(u, $you_uburied) & 1)) | 0
                             ? __s_suffocation
                             : __s_strangulation
                     );
@@ -2111,7 +2109,7 @@ function* slip_or_trip() {
 
     if (otmp &&
             on_foot &&
-            !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) &&
+            !(cptr.ldI32o(u, $you_uinwater) & 1) &&
             is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         otmp = null;
 
@@ -2856,7 +2854,7 @@ export function* do_storms() {
             ((rn2(20) + 30) | 0)
         );
         cptr.st1(disp, 1);
-        if (!cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
+        if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
             (yield* stop_occupation());
             nomul(-3);
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_hiding_from_thunderstorm);

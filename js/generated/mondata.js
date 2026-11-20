@@ -592,7 +592,7 @@ export function can_blnd(magr, mdef, aatyp, obj) {
             } else
                 return 0;  /* other objects cannot cause blindness yet */
             if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
-                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
+                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
                 return 0;  /* can't affect eyes while inside monster */
             break;
         case NHM.AT_ENGL:
@@ -610,7 +610,7 @@ export function can_blnd(magr, mdef, aatyp, obj) {
             if (is_you && ublindf.v)
                 return 0;
             if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
-                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
+                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
                 return 0;  /* can't affect eyes while inside monster */
             check_visor = 1;
             break;
@@ -1686,8 +1686,7 @@ export function levl_follower(mtmp) {
     /* stalking types follow, but won't when fleeing unless you hold
        the Amulet */
     return schar(((cptr.ldU64o(cptr.ldPtro(mtmp, $monst_data), $permonst_mflags2) & 16777216n) &&
-        (!(cptr.ldI32o(mtmp, $monst_mflee) & 1) ||
-            cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0)
+        (!(cptr.ldI32o(mtmp, $monst_mflee) & 1) || (cptr.ldI32o(u, $you_uhave) & 1) | 0)
             ? 1
             : 0));
 }
@@ -2190,7 +2189,7 @@ export function cvt_prop_to_mseenres(prop) {
 export function monstseesu(seenres) {
     let mtmp;
 
-    if (seenres == 0n || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
+    if (seenres == 0n || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
         return;
 
     for (
@@ -2225,7 +2224,7 @@ export function monstseesu(seenres) {
 export function monstunseesu(seenres) {
     let mtmp;
 
-    if (seenres == 0n || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
+    if (seenres == 0n || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
         return;
 
     for (

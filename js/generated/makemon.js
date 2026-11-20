@@ -2054,7 +2054,7 @@ export function makemon(ptr, x, y, mmflags) {
             break;
         case NHC.S_JABBERWOCK:
         case NHC.S_NYMPH:
-            if (rn2(5) && !cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
+            if (rn2(5) && !(cptr.ldI32o(u, $you_uhave) & 1))
                 cptr.stI32o(mtmp, $monst_msleeping, 1);
             break;
         case NHC.S_ORC:
@@ -2134,7 +2134,7 @@ export function makemon(ptr, x, y, mmflags) {
             mndx == NHC.PM_WUMPUS ||
             mndx == NHC.PM_LONG_WORM ||
             mndx == NHC.PM_GIANT_EEL) &&
-                !cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) && rn2(5))
+                !(cptr.ldI32o(u, $you_uhave) & 1) && rn2(5))
             cptr.stI32o(mtmp, $monst_msleeping, 1);
     } else {
         if (byyou) {
@@ -2376,7 +2376,7 @@ export function create_critters(cnt, mptr, neverask) {
         /* if in water, try to encourage an aquatic monster
            by finding and then specifying another wet location */
         if (!mptr &&
-                cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 &&
+                (cptr.ldI32o(u, $you_uinwater) & 1) | 0 &&
                 enexto(c, x, y, cptr.add(mons, NHC.PM_GIANT_EEL, $sizeof_permonst)))
             x = cptr.ldI16(c), y = cptr.ldI16o(c, $nhcoord_y);
 
@@ -3338,7 +3338,7 @@ export function peace_minded(ptr) {
         return 0;
 
     /* Negative monster hostile to player with Amulet. */
-    if (mal < NHM.A_NEUTRAL && cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0)
+    if (mal < NHM.A_NEUTRAL && (cptr.ldI32o(u, $you_uhave) & 1) | 0)
         return 0;
 
     /* minions are hostile to players that have strayed at all */

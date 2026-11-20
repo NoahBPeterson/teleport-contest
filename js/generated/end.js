@@ -423,7 +423,7 @@ export function done2() {
         if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
             nomul(0);
         if (cptr.ldI64o(gm, $instance_globals_m_multi) == 0n) {
-            cptr.stBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0, 0);  /* avoid ctrl-C bug -dlc */
+            cptr.stI32o(u, $you_uinvulnerable, 0);  /* avoid ctrl-C bug -dlc */
             cptr.stI64o(u, $you_usleep, 0n);
         }
 
@@ -998,7 +998,7 @@ function savelife(how) {
     curs_on_u();
     if (!cptr.ld1so(svc, $context_info_mon_moving))
         endmultishot(0);
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         /* might drop hero onto a trap that kills her all over again */
         expels(
             cptr.ldPtro(u, $you_ustuck),
@@ -1819,7 +1819,7 @@ function really_done(how) {
             outrip()(endwin, how, endtime);
     } else
         cptr.stI32o(program_state, $sinfo_stopprint, 1);  /* just avoid any more output */
-    if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uhave) & 1)) {
         void cptr.strcat(cptr.add(svk, $kinfo_name), __s_with_the_amulet);
     } else if (how == NHC.ESCAPED) {
         if ((((cptr.ldI16o(

@@ -2871,7 +2871,7 @@ function* nhl_gamestate(L) {
         )
                 ? __assert_rtn(__s_nhl_gamestate, __s_nhlua_c, 1906, __s_gg_gmst_ubak_null)
                 : void 0);
-        void cptr.memcpy(u, cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), 2760n);
+        void cptr.memcpy(u, cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), 2864n);
         (__builtin_expect(
             BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_disco), (null))))),
             0n
@@ -2923,8 +2923,8 @@ function* nhl_gamestate(L) {
             cptr.stPtro(gg, $instance_globals_g_gmst_invent, otmp);
         }
         cptr.stI32o(gl, $instance_globals_l_lastinvnr, 51);  /* next inv letter to try to use will be 'a' */
-        cptr.stPtro(gg, $instance_globals_g_gmst_ubak, (yield* alloc(2760)));
-        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), u, 2760n);
+        cptr.stPtro(gg, $instance_globals_g_gmst_ubak, (yield* alloc(2864)));
+        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), u, 2864n);
         cptr.stPtro(gg, $instance_globals_g_gmst_disco, (yield* alloc(962)));
         void cptr.memcpy(
             cptr.ldPtro(gg, $instance_globals_g_gmst_disco),
@@ -3247,7 +3247,7 @@ function* nhl_meta_u_index(L) {
         (yield* lua_pushinteger(L, cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
         return 1;
     } else if (!strcmp(tkey, __s_uhave_amulet)) {
-        (yield* lua_pushinteger(L, BigInt(cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) >>> 0)));
+        (yield* lua_pushinteger(L, BigInt((cptr.ldI32o(u, $you_uhave) & 1) >>> 0)));
         return 1;
     } else if (!strcmp(tkey, __s_depth)) {
         (yield* lua_pushinteger(L, BigInt(depth(cptr.add(u, $you_uz)))));

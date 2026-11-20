@@ -705,7 +705,7 @@ function do_mgivenname() {
         ));
 
     /* Allow you to name the monster that has swallowed you */
-    if (!mtmp && cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
+    if (!mtmp && (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
         let glyph = glyph_at(i16(cx), i16(cy));
 
         if (glyph_is_swallow(glyph)) {
@@ -1323,7 +1323,7 @@ function namefloorobj() {
     void cptr.sprintf(
         cptr.decay(buf),
         __s_object_on_map_or_for_one_s_you,
-        (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
+        ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
@@ -1382,7 +1382,7 @@ function namefloorobj() {
             unames,
             0,
             ((Upolyd()
-                ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
+                ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
                 : cptr.ld1so(flags, $flag_female)) &&
                 cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
                 ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)
@@ -1567,8 +1567,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
     if (article == NHM.ARTICLE_YOUR && !cptr.ld1so(mtmp, $monst_mtame))
         article = NHM.ARTICLE_THE;
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
-            cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
         /*
          * This monster has become important, for the moment anyway.
          * As the hero's consumer, it is worthy of ARTICLE_THE.
@@ -1587,7 +1586,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
         article != NHM.ARTICLE_YOUR &&
         !cptr.ldI32(program_state) &&
         !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)) &&
-        !(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+        !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
             (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) &&
         !(suppress & NHM.SUPPRESS_IT)
             ? 1
@@ -2112,9 +2111,7 @@ export function Mgender(mtmp) {
     let mgender = NHC.MALE;
 
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
-        if (Upolyd()
-                ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
-                : cptr.ld1so(flags, $flag_female))
+        if (Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female))
             mgender = NHC.FEMALE;
     } else if ((cptr.ldI32o(mtmp, $monst_female) & 1)) {
         mgender = NHC.FEMALE;

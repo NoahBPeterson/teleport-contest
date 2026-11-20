@@ -975,7 +975,7 @@ export function find_defensive(mtmp, tryescape) {
                 !m_next2u(mtmp) &&
                 m_next2m(mtmp))
             return 0;
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && stuck)
+        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && stuck)
             return 0;
 
         /*
@@ -1768,7 +1768,7 @@ export function use_defensive(mtmp) {
                         ? null
                         : cptr.add(
                             mons,
-                            cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0
+                            (cptr.ldI32o(u, $you_uinwater) & 1) | 0
                                 ? NHC.PM_GIANT_EEL
                                 : NHC.PM_CROCODILE,
                             $sizeof_permonst
@@ -1811,7 +1811,7 @@ export function use_defensive(mtmp) {
                 else if (is_pool(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
                     fish = cptr.add(
                         mons,
-                        cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0
+                        (cptr.ldI32o(u, $you_uinwater) & 1) | 0
                             ? NHC.PM_GIANT_EEL
                             : NHC.PM_CROCODILE,
                         $sizeof_permonst
@@ -2389,7 +2389,7 @@ export function find_offensive(mtmp) {
             ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n) ||
             ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 8192n) != 0n))
         return 0;
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+    if ((cptr.ldI32o(u, $you_uswallow) & 1))
         return 0;
     if (in_your_sanctuary(mtmp, 0, 0))
         return 0;
@@ -3380,7 +3380,7 @@ export function find_misc(mtmp) {
     if (((cptr.ldU64o((mdat), $permonst_mflags1) & 262144n) != 0n) ||
             ((cptr.ldU64o((mdat), $permonst_mflags1) & 65536n) != 0n))
         return 0;
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && stuck)
+    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && stuck)
         return 0;
 
     /* We arbitrarily limit to times when a player is nearby for the
@@ -3476,7 +3476,7 @@ export function find_misc(mtmp) {
                 ((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) &&
                     (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy)) &&
                 m_next2u(mtmp) &&
-                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
+                !(cptr.ldI32o(u, $you_uswallow) & 1) &&
                 (canletgo(uwep.v, __s_empty) ||
                     (cptr.ld1so(u, $you_twoweap) && canletgo(uswapwep.v, __s_empty)))) {
             cptr.stPtro(gm, $instance_globals_m_m + $musable_misc, obj);

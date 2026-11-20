@@ -869,7 +869,7 @@ function dig() {
     );
     /* perhaps a nymph stole your pick-axe while you were busy digging */
     /* or perhaps you teleported away */
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
             !uwep.v ||
             (!ispick && !is_axe(uwep.v)) ||
             !on_level(
@@ -2064,7 +2064,7 @@ export function use_pick_axe(obj) {
         let dirch = cmd_from_dir(dir, NHC.MV_WALK);
 
         /* filter out useless directions */
-        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             ;  /* all directions are viable when swallowed */
         } else if (movecmd(dirch, NHC.MV_WALK)) {
             /* normal direction, within plane of the level map */
@@ -2121,8 +2121,7 @@ export function use_pick_axe2(obj) {
     let ispick = schar(is_pick(obj));
     let verbing = ispick ? __s_digging : __s_chopping;
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
-            do_attack(cptr.ldPtro(u, $you_ustuck))) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && do_attack(cptr.ldPtro(u, $you_ustuck))) {
         ;  /* return 1 */
     } else if (Underwater()) {
         pline(__s_turbulence_torpedoes_your_s_attempts, verbing);
@@ -2707,7 +2706,7 @@ export function zap_dig() {
      * 3.6.0: from a PIT: dig one adjacent pit.
      */
 
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         mtmp = cptr.ldPtro(u, $you_ustuck);
 
         if (!is_whirly(cptr.ldPtro(mtmp, $monst_data))) {
@@ -3501,7 +3500,7 @@ export function rot_corpse(arg, timeout) {
                 ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n)) {
             cptr.stI32o(mtmp, $monst_mundetected, 0);
         } else if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
-                cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
+                (cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
                 ((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1

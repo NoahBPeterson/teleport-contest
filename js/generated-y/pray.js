@@ -161,6 +161,7 @@ const $Gender_him = FLD.Gender_him, $Gender_his = FLD.Gender_his, $Race_adj = FL
       $u_event_gehennom_entered = FLD.u_event_gehennom_entered,
       $u_event_udemigod = FLD.u_event_udemigod,
       $u_event_uhand_of_elbereth = FLD.u_event_uhand_of_elbereth,
+      $u_event_uheard_tune = FLD.u_event_uheard_tune,
       $u_event_uopened_dbridge = FLD.u_event_uopened_dbridge,
       $u_roleplay_deaf = FLD.u_roleplay_deaf,
       $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
@@ -701,7 +702,7 @@ function* in_trouble() {
 
     if (BlindedTimeout() > 1n &&
             !(HBlinded() & -16777216n) &&
-            (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
+            (!(cptr.ldI32o(u, $you_uswallow) & 1) ||
                 !attacktype_fordmg(
                     cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
                     NHM.AT_ENGL,
@@ -1098,7 +1099,7 @@ function* fix_worst_trouble(trouble) {
  */
 /** C ref: pray.c:610 — @param {CInt} resp_god */
 function* god_zaps_you(resp_god) {
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         (yield* pline(__s_suddenly_a_bolt_of_lightning_comes_down));
         (yield* pline(__s_it_strikes_s, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
         if (!(yield* Resists_Elem(cptr.ldPtro(u, $you_ustuck), NHC.SHOCK_RES))) {
@@ -1132,7 +1133,7 @@ function* god_zaps_you(resp_god) {
     }
 
     (yield* pline(__s_s_is_not_deterred, (yield* align_gname(resp_god))));
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         (yield* pline(__s_a_wide_angle_disintegration_beam_aimed, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
         if (!(yield* Resists_Elem(cptr.ldPtro(u, $you_ustuck), NHC.DISINT_RES))) {
             (yield* pline(__s_s_disintegrates_into_a_pile_of_dust, (yield* Monnam(cptr.ldPtro(u, $you_ustuck)))));
@@ -1392,7 +1393,7 @@ function* angrygods(resp_god) {
 function* at_your_feet(str) {
     if (Blind())
         str = cptr.ldPtro(c_common_strings, $c_common_strings_c_Something);
-    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
+    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         /* barrier between you and the floor */
         (yield* pline(
             __s_s_s_into_s_s,
@@ -1486,13 +1487,13 @@ function* gcrownu() {
     already_exists = (in_hand = 0);  /* lint suppression */
     switch (cptr.ld1so(u, $you_ualign)) {
         case NHM.A_LAWFUL:
-            cptr.stBits(cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth), 3, 2, 0, 1);
+            cptr.stI32o(u, $you_uevent + $u_event_uhand_of_elbereth, 1);
             ;
             (yield* verbalize(__s_i_crown_thee_the_hand_of_elbereth));
             (yield* livelog_printf(8n, __s_was_crowned_the_hand_of_elbereth_by_s, (yield* u_gname())));
             break;
         case NHM.A_NEUTRAL:
-            cptr.stBits(cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth), 3, 2, 0, 2);
+            cptr.stI32o(u, $you_uevent + $u_event_uhand_of_elbereth, 2);
             in_hand = is_art(uwep.v, NHC.ART_VORPAL_BLADE);
             already_exists = exist_artifact(NHC.LONG_SWORD, artiname(NHC.ART_VORPAL_BLADE));
             ;
@@ -1500,7 +1501,7 @@ function* gcrownu() {
             (yield* livelog_printf(8n, __s_became_s_envoy_of_balance, (yield* s_suffix((yield* u_gname())))));
             break;
         case -1:
-            cptr.stBits(cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth), 3, 2, 0, 3);
+            cptr.stI32o(u, $you_uevent + $u_event_uhand_of_elbereth, 3);
             in_hand = is_art(uwep.v, NHC.ART_STORMBRINGER);
             already_exists = exist_artifact(NHC.RUNESWORD, artiname(NHC.ART_STORMBRINGER));
             what = (((already_exists && !in_hand) || class_gift != NHC.STRANGE_OBJECT)
@@ -1960,14 +1961,9 @@ function* pleased(g_align) {
                    skip if you've solved it via mastermind or destroyed the
                    drawbridge (both set uopened_dbridge) or if you've already
                    travelled past the Valley of the Dead (gehennom_entered) */
-                if (!cptr.ldBits(cptr.add(u, $you_uevent + $u_event_uopened_dbridge), 0, 1, 0) &&
-                        !cptr.ldBits(
-                            cptr.add(u, $you_uevent + $u_event_gehennom_entered),
-                            2,
-                            1,
-                            0
-                        )) {
-                    if ((cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) | 0) < 1) {
+                if (!(cptr.ldI32o(u, $you_uevent + $u_event_uopened_dbridge) & 1) &&
+                        !(cptr.ldI32o(u, $you_uevent + $u_event_gehennom_entered) & 1)) {
+                    if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) < 1) {
                         (yield* godvoice(g_align, null));
                         ;
                         (yield* verbalize(
@@ -1982,24 +1978,20 @@ function* pleased(g_align) {
                         ));
                         ;
                         (yield* verbalize(__s_to_enter_the_castle_thou_must_play_the));
-                        (cptr.stBits(
-                            cptr.add(u, $you_uevent),
-                            6,
-                            2,
-                            0,
-                            cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) + 1
+                        (cptr.stI32o(
+                            u,
+                            $you_uevent + $u_event_uheard_tune,
+                            cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) + 1
                         )) - (1);
                         break;
-                    } else if ((cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) | 0) < 2) {
+                    } else if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) < 2) {
                         ;
                         (yield* You_hear(__s_a_divine_music));
                         (yield* pline(__s_it_sounds_like_s, svt));
-                        (cptr.stBits(
-                            cptr.add(u, $you_uevent),
-                            6,
-                            2,
-                            0,
-                            cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) + 1
+                        (cptr.stI32o(
+                            u,
+                            $you_uevent + $u_event_uheard_tune,
+                            cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) + 1
                         )) - (1);
                         (yield* record_achievement(NHC.ACH_TUNE));
                         break;
@@ -2171,12 +2163,7 @@ function* pleased(g_align) {
             case 7:
             case 8:
                 if (cptr.ldI32o(u, $you_ualign + $align_record) >= 20 &&
-                        !cptr.ldBits(
-                            cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth),
-                            3,
-                            2,
-                            0
-                        )) {
+                        !(cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3)) {
                     (yield* gcrownu());
                     break;
                 }
@@ -2191,8 +2178,8 @@ function* pleased(g_align) {
         }
 
     cptr.stI32o(u, $you_ublesscnt, rnz(350));
-    kick_on_butt = cptr.ldBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0) | 0 ? 1 : 0;
-    if (cptr.ldBits(cptr.add(u, $you_uevent + $u_event_uhand_of_elbereth), 3, 2, 0))
+    kick_on_butt = (cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 ? 1 : 0;
+    if ((cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3))
         kick_on_butt++;
     if (kick_on_butt)
         cptr.stI32o(
@@ -2446,7 +2433,7 @@ function* offer_real_amulet(otmp, altaralign) {
         /*NOTREACHED*/
     } else {
         /* You've won the game!  Feedback-wise, it's a bit of a let down. */
-        cptr.stBits(cptr.add(u, $you_uevent + $u_event_ascended), 7, 1, 0, 1);
+        cptr.stI32o(u, $you_uevent + $u_event_ascended, 1);
         adjalign(10);
         (yield* pline(__s_an_invisible_choir_sings_and_you_are));
         (yield* godvoice(altaralign, __s_mortal_thou_hast_done_well));
@@ -2920,7 +2907,7 @@ export function* dosacrifice() {
         $instance_globals_saved_l_level + $rm_typ
     )) ==
         NHC.ALTAR) ||
-            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
         (yield* You(__s_are_not_s_an_altar, (Levitation() || Flying()) ? __s_over : __s_on));
         return NHM.ECMD_OK;
     } else if (HConfusion() || HStun()) {
@@ -3483,7 +3470,7 @@ export function* dopray() {
         /* if you've been true to your god you can't die while you pray */
         if (!Blind())
             (yield* You(__s_are_surrounded_by_a_shimmering_light));
-        cptr.stBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0, 1);
+        cptr.stI32o(u, $you_uinvulnerable, 1);
     }
 
     return NHM.ECMD_TIME;
@@ -3493,7 +3480,7 @@ export function* dopray() {
 function* prayer_done() {
     let alignment = cptr.ld1so(gp, $instance_globals_p_p_aligntyp);
 
-    cptr.stBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0, 0);
+    cptr.stI32o(u, $you_uinvulnerable, 0);
     if (cptr.ldI32o(gp, $instance_globals_p_p_type) == -2) {
         /* praying at an unaligned altar, not necessarily in Gehennom */
         (yield* You(__s_s_diabolical_laughter_all_around_you, !Deaf() ? __s_hear : __s_intuit));
