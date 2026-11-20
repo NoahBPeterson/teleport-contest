@@ -85,7 +85,7 @@ const $Gender_he = FLD.Gender_he, $Race_hatemask = FLD.Race_hatemask,
       $context_info_current_fruit = FLD.context_info_current_fruit,
       $context_info_mon_moving = FLD.context_info_mon_moving,
       $context_info_no_of_wizards = FLD.context_info_no_of_wizards, $coord_y = FLD.coord_y,
-      $d_level_dlevel = FLD.d_level_dlevel,
+      $d_flags_align = FLD.d_flags_align, $d_level_dlevel = FLD.d_level_dlevel,
       $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
       $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
       $dgn_topology_d_earth_level = FLD.dgn_topology_d_earth_level,
@@ -1786,15 +1786,11 @@ export function makemon(ptr, x, y, mmflags) {
     cptr.stI16(cc, cptr.stI16o(cc, $nhcoord_y, 0));
 
     if (cptr.ld1so(iflags, $instance_flags_debug_mongen) ||
-            (!cptr.ldBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_rndmongen
-                ),
-                6,
-                1,
-                0
-            ) && !ptr))
+            (!(cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_rndmongen
+            ) &
+                1) && !ptr))
         return null;
 
     /* if caller wants random location, do it here */
@@ -1934,10 +1930,10 @@ export function makemon(ptr, x, y, mmflags) {
         cptr.stI32o(mtmp, $monst_female, 0);
     else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_LEADER &&
             quest_info(NHC.MS_LEADER) == mndx)
-        cptr.stI32o(mtmp, $monst_female, cptr.ldBits(cptr.add(svq, $q_score_ldrgend), 5, 2, 0));
+        cptr.stI32o(mtmp, $monst_female, (cptr.ldI32o(svq, $q_score_ldrgend) & 3));
     else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_NEMESIS &&
             quest_info(NHC.MS_NEMESIS) == mndx)
-        cptr.stI32o(mtmp, $monst_female, cptr.ldBits(cptr.add(svq, $q_score_nemgend), 7, 2, 0));
+        cptr.stI32o(mtmp, $monst_female, (cptr.ldI32o(svq, $q_score_nemgend) & 3));
     else
         cptr.stI32o(mtmp, $monst_female, (femaleok ? rn2(2) : 0) >>> 0);
 
@@ -2058,7 +2054,7 @@ export function makemon(ptr, x, y, mmflags) {
             break;
         case NHC.S_JABBERWOCK:
         case NHC.S_NYMPH:
-            if (rn2(5) && !(cptr.ldI32o(u, $you_uhave) & 1))
+            if (rn2(5) && !cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
                 cptr.stI32o(mtmp, $monst_msleeping, 1);
             break;
         case NHC.S_ORC:
@@ -2138,7 +2134,7 @@ export function makemon(ptr, x, y, mmflags) {
             mndx == NHC.PM_WUMPUS ||
             mndx == NHC.PM_LONG_WORM ||
             mndx == NHC.PM_GIANT_EEL) &&
-                !(cptr.ldI32o(u, $you_uhave) & 1) && rn2(5))
+                !cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) && rn2(5))
             cptr.stI32o(mtmp, $monst_msleeping, 1);
     } else {
         if (byyou) {
@@ -2380,7 +2376,7 @@ export function create_critters(cnt, mptr, neverask) {
         /* if in water, try to encourage an aquatic monster
            by finding and then specifying another wet location */
         if (!mptr &&
-                (cptr.ldI32o(u, $you_uinwater) & 1) | 0 &&
+                cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 &&
                 enexto(c, x, y, cptr.add(mons, NHC.PM_GIANT_EEL, $sizeof_permonst)))
             x = cptr.ldI16(c), y = cptr.ldI16o(c, $nhcoord_y);
 
@@ -2432,13 +2428,14 @@ function align_shift(ptr) {
         __static_align_shift_oldmoves = cptr.ldI64o(svm, $instance_globals_saved_m_moves);
     }
     switch ((__static_align_shift_lev)
-            ? cptr.ldBits(cptr.add(__static_align_shift_lev, $s_level_flags), 4, 3, 0) | 0
-            : cptr.ldBits(
-                cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon), $dungeon_flags),
-                4,
-                3,
-                0
-            ) |
+            ? (cptr.ldI32o(__static_align_shift_lev, $s_level_flags + $d_flags_align) & 7) | 0
+            : (cptr.ldI32o2(
+                svd,
+                cptr.ldI16o(u, $you_uz),
+                $sizeof_dungeon,
+                $dungeon_flags + $d_flags_align
+            ) &
+                7) |
                 0) {
         default:
         case NHM.AM_NONE:
@@ -3341,7 +3338,7 @@ export function peace_minded(ptr) {
         return 0;
 
     /* Negative monster hostile to player with Amulet. */
-    if (mal < NHM.A_NEUTRAL && (cptr.ldI32o(u, $you_uhave) & 1) | 0)
+    if (mal < NHM.A_NEUTRAL && cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0)
         return 0;
 
     /* minions are hostile to players that have strayed at all */
@@ -3649,15 +3646,11 @@ export function set_mimic_sym(mtmp) {
                     )))
                         ? NHC.S_vwall
                         : NHC.S_vcdoor) >>> 0;
-        } else if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-            ),
-            0,
-            1,
-            0
-        ) |
+        } else if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+        ) &
+            1) |
             0 &&
                 !(In_mines(cptr.add(u, $you_uz)) &&
                     in_town(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) &&
@@ -3821,13 +3814,15 @@ export function bagotricks(bag, tipping, seencount) {
         );
         /* now known to be empty if sufficiently discovered */
         if ((cptr.ldI32o(bag, $obj_dknown) & 1) | 0 &&
-                (cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(bag, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_name_known
-                ) &
-                    1) |
+                cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(bag, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_name_known
+                    ),
+                    0,
+                    1,
+                    0
+                ) |
                     0) {
             cptr.stI32o(bag, $obj_cknown, 1);
             update_inventory();  /* for perm_invent */

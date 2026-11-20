@@ -422,35 +422,63 @@ function* l_obj_objects_to_table(L) {
     (yield* nhl_add_table_entry_int(
         L,
         __s_name_known,
-        BigInt((cptr.ldI32o(o, $objclass_oc_name_known) & 1) >>> 0)
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_name_known), 0, 1, 0) >>> 0)
     ));
-    (yield* nhl_add_table_entry_int(L, __s_merge, BigInt((cptr.ldI32o(o, $objclass_oc_merge) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_merge,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_merge), 1, 1, 0) >>> 0)
+    ));
     (yield* nhl_add_table_entry_int(
         L,
         __s_uses_known,
-        BigInt((cptr.ldI32o(o, $objclass_oc_uses_known) & 1) >>> 0)
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_uses_known), 2, 1, 0) >>> 0)
     ));
     (yield* nhl_add_table_entry_int(
         L,
         __s_encountered,
-        BigInt((cptr.ldI32o(o, $objclass_oc_encountered) & 1) >>> 0)
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_encountered), 3, 1, 0) >>> 0)
     ));
-    (yield* nhl_add_table_entry_int(L, __s_magic, BigInt((cptr.ldI32o(o, $objclass_oc_magic) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_magic,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_magic), 4, 1, 0) >>> 0)
+    ));
     (yield* nhl_add_table_entry_int(
         L,
         __s_charged,
-        BigInt((cptr.ldI32o(o, $objclass_oc_charged) & 1) >>> 0)
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_charged), 5, 1, 0) >>> 0)
     ));
-    (yield* nhl_add_table_entry_int(L, __s_unique, BigInt((cptr.ldI32o(o, $objclass_oc_unique) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_nowish, BigInt((cptr.ldI32o(o, $objclass_oc_nowish) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_big, BigInt((cptr.ldI32o(o, $objclass_oc_big) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_unique,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_unique), 6, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_nowish,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_nowish), 7, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_big,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_big), 0, 1, 0) >>> 0)
+    ));
     /* TODO: oc_bimanual, oc_bulky */
-    (yield* nhl_add_table_entry_int(L, __s_tough, BigInt((cptr.ldI32o(o, $objclass_oc_tough) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_dir, BigInt((cptr.ldI32o(o, $objclass_oc_dir) & 7) >>> 0)));  /* TODO: convert to text */
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_tough,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_tough), 1, 1, 0) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_dir,
+        BigInt(cptr.ldBits(cptr.add(o, $objclass_oc_dir), 0, 3, 0) >>> 0)
+    ));  /* TODO: convert to text */
     (yield* nhl_add_table_entry_str(
         L,
         __s_material,
-        cptr.ldPtro(materialnm, (cptr.ldI32o(o, $objclass_oc_material) & 31), 8)
+        cptr.ldPtro(materialnm, cptr.ldBits(cptr.add(o, $objclass_oc_material), 3, 5, 0), 8)
     ));
     /* TODO: oc_subtyp, oc_skill, oc_armcat */
     (yield* nhl_add_table_entry_int(L, __s_oprop, BigInt(cptr.ld1uo(o, $objclass_oc_oprop) >>> 0)));

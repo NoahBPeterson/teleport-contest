@@ -1145,7 +1145,13 @@ function veggy_item(obj, otyp) {
     }
 
     if (oclass == NHC.FOOD_CLASS) {
-        if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) ==
+        if ((cptr.ldBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+            3,
+            5,
+            0
+        ) |
+            0) ==
             NHC.VEGGY ||
                 otyp == NHC.EGG)
             return 1;
@@ -1235,7 +1241,7 @@ function mkshobj_at(shp, sx, sy, mkspecl) {
         let novel = mksobj_at(NHC.SPE_NOVEL, i16(sx), i16(sy), 0, 0);
 
         if (novel)
-            cptr.stBits(cptr.add(svc, $context_info_tribute + $tribute_info_bookstock), 0, 1, 0, 1);
+            cptr.stI32o(svc, $context_info_tribute + $tribute_info_bookstock, 1);
         return;
     }
 
@@ -1277,7 +1283,7 @@ function nameshk(shk, nlp) {
     if (cptr.eq(nlp, shklight) &&
             In_mines(cptr.add(u, $you_uz)) &&
             (sptr = Is_special(cptr.add(u, $you_uz))) !== null &&
-            cptr.ldBits(cptr.add(sptr, $s_level_flags), 0, 1, 0) | 0) {
+            (cptr.ldI32o(sptr, $s_level_flags) & 1) | 0) {
         /* special-case minetown lighting shk */
         shname = __s_izchak;
         cptr.stI32o(shk, $monst_female, 0);
@@ -1913,7 +1919,7 @@ export function stock_room(shp_indx, sroom) {
     }
 
     if (cptr.ld1so(svc, $context_info_tribute + $tribute_info_enabled) &&
-            !cptr.ldBits(cptr.add(svc, $context_info_tribute + $tribute_info_bookstock), 0, 1, 0)) {
+            !(cptr.ldI32o(svc, $context_info_tribute + $tribute_info_bookstock) & 1)) {
         /*
          * Out of the number of spots where we're actually
          * going to put stuff, randomly single out one in particular.
@@ -1952,13 +1958,7 @@ export function stock_room(shp_indx, sroom) {
         mongone(mtmp);
     }
 
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
-        0,
-        1,
-        0,
-        1
-    );
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop, 1);
 }
 
 /* does shkp's shop stock this item type? */

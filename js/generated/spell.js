@@ -146,9 +146,7 @@ const $Gender_him = FLD.Gender_him, $Role_mnum = FLD.Role_mnum, $Role_spelarmr =
       $spell_sp_know = FLD.spell_sp_know, $spell_sp_lev = FLD.spell_sp_lev,
       $tport_hideaway_tport_indx = FLD.tport_hideaway_tport_indx,
       $u_conduct_literate = FLD.u_conduct_literate, $u_event_invoked = FLD.u_event_invoked,
-      $u_event_read_tribute = FLD.u_event_read_tribute, $u_event_udemigod = FLD.u_event_udemigod,
-      $u_have_bell = FLD.u_have_bell, $u_have_menorah = FLD.u_have_menorah,
-      $u_roleplay_pauper = FLD.u_roleplay_pauper,
+      $u_event_udemigod = FLD.u_event_udemigod, $u_roleplay_pauper = FLD.u_roleplay_pauper,
       $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
       $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
       $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
@@ -504,14 +502,14 @@ function deadbook(book2) {
                 return;
             }
 
-            if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) ||
-                    !(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1)) {
+            if (!cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0) ||
+                    !cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0)) {
                 pline(__s_a_chill_runs_down_your_s, body_part(NHC.SPINE));
-                if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1)) {
+                if (!cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0)) {
                     ;
                     You_hear(__s_a_faint_chime);
                 }
-                if (!(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1))
+                if (!cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0))
                     pline(__s_vlad_s_doppelganger_is_amused);
                 return;
             }
@@ -562,11 +560,11 @@ function deadbook(book2) {
 
             /* successful invocation */
             mkinvokearea();
-            cptr.stI32o(u, $you_uevent + $u_event_invoked, 1);
+            cptr.stBits(cptr.add(u, $you_uevent + $u_event_invoked), 1, 1, 0, 1);
             record_achievement(NHC.ACH_INVK);
             /* in case you haven't killed the Wizard yet, behave as if
                you just did */
-            cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);  /* wizdeadorgone() */
+            cptr.stBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0, 1);  /* wizdeadorgone() */
             if (!cptr.ldI32o(u, $you_udg_cnt) || cptr.ldI32o(u, $you_udg_cnt) > soon)
                 cptr.stI32o(u, $you_udg_cnt, soon);
             __pc = 7;
@@ -702,7 +700,12 @@ function learn() {
 
     void cptr.sprintf(
         cptr.decay(splname),
-        (cptr.ldI32o2(objects, booktype, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
+        cptr.ldBits(
+            cptr.add(cptr.add(objects, booktype, $sizeof_objclass), $objclass_oc_name_known),
+            0,
+            1,
+            0
+        ) | 0
             ? __s_quot_pct_s_quot
             : __s_the_s_spell,
         (cptr.ldPtro(
@@ -860,12 +863,12 @@ export function study_book(spellbook) {
 
                 check_unpaid(spellbook);
                 discover_object((booktype), 1, 1, 1);
-                if (!(cptr.ldI32o(u, $you_uevent + $u_event_read_tribute) & 1)) {
+                if (!cptr.ldBits(cptr.add(u, $you_uevent), 2, 1, 0)) {
                     record_achievement(NHC.ACH_NOVL);
                     /* give bonus of 20 xp and 4*20+0 pts */
                     more_experienced(20, 0);
                     newexplevel();
-                    cptr.stI32o(u, $you_uevent + $u_event_read_tribute, 1);  /* only once */
+                    cptr.stBits(cptr.add(u, $you_uevent), 2, 1, 0, 1);  /* only once */
                 }
             }
             return 1;
@@ -1503,7 +1506,7 @@ function cast_chain_lightning() {
         Hallucination() ? rn2_on_display_rng(6) : 5
     );
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         // TODO: damage the engulfer
         return;
     }
@@ -1703,7 +1706,7 @@ function cast_protection() {
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_typ
                 );
-                atmosphere = (pm && (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+                atmosphere = (pm && cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
                         ? ((cptr.eq(pm, cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst)))
                             ? __s_mist
                             : (is_whirly(pm)
@@ -1713,7 +1716,7 @@ function cast_protection() {
                                     : (((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n)
                                         ? __s_maw
                                         : __s_ooze))))
-                        : ((cptr.ldI32o(u, $you_uinwater) & 1) | 0
+                        : (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0
                             ? hliquid(__s_water)
                             : ((rmtyp == NHC.CLOUD)
                                 ? __s_cloud
@@ -1865,7 +1868,8 @@ function spelleffects_check(spell, res, energy) {
        in and no turn will be consumed; however, when it does kick in,
        the attempt may fail due to lack of energy after the draining, in
        which case a turn will be used up in addition to the energy loss */
-    if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && cptr.ldI32o(u, $you_uen) >= cptr.ldI32(energy)) {
+    if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 &&
+            cptr.ldI32o(u, $you_uen) >= cptr.ldI32(energy)) {
         You_feel(__s_the_amulet_draining_your_energy_away);
         /* this used to be 'energy += rnd(2 * energy)' (without 'res'),
            so if amulet-induced cost was more than u.uen, nothing
@@ -2062,7 +2066,7 @@ export function spelleffects(spell_otyp, atme, force) {
                                     $instance_globals_saved_l_level + $rm_typ
                                 )) <=
                                     NHC.DBWALL) ||
-                                (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+                                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
                             /* Spell is reflected back to center */
                             cptr.stI32o(u, $you_dx, cptr.ldI16(cc));
                             cptr.stI32o(u, $you_dy, cptr.ldI16o(cc, $nhcoord_y));
@@ -2094,7 +2098,13 @@ export function spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_EXTRA_HEALING:
         case NHC.SPE_DRAIN_LIFE:
         case NHC.SPE_STONE_TO_FLESH:
-            if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) !=
+            if ((cptr.ldBits(
+                cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_dir),
+                0,
+                3,
+                0
+            ) |
+                0) !=
                     NHM.NODIR) {
                 if (otyp == NHC.SPE_HEALING || otyp == NHC.SPE_EXTRA_HEALING) {
                     /* healing and extra healing are actually potion effects,
@@ -2326,7 +2336,7 @@ function throwspell() {
     let uc = cptr.alloc(4);
     let mtmp;
 
-    if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         pline(__s_you_re_joking_in_this_weather);
         return 0;
     } else if ((((cptr.ldI16o(
@@ -2366,7 +2376,7 @@ function throwspell() {
             10) {
         pline_The(__s_spell_dissipates_over_the_distance);
         return 0;
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         pline_The(__s_spell_is_cut_short);
         exercise(NHC.A_WIS, 0);  /* What were you THINKING! */
         cptr.stI32o(u, $you_dx, 0);

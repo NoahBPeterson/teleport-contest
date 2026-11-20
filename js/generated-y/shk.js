@@ -801,14 +801,9 @@ export function* shkgone(mtmp) {
         (yield* discard_damage_owned_by(mtmp));
         cptr.stPtro(sroom, $mkroom_resident, null);
         if (!search_special(-2))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
-                ),
-                0,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop,
                 0
             );
 
@@ -2376,13 +2371,7 @@ function* home_shk(shkp, killkops) {
     );
 
     void (yield* mnearto(shkp, x, y, 1, NHM.RLOC_NOMSG));
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
-        0,
-        1,
-        0,
-        1
-    );
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop, 1);
     if (killkops) {
         (yield* kops_gone(1));
         (yield* pacify_guards());
@@ -4379,9 +4368,21 @@ export function oid_price_adjustment(obj, oid) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
 
     if (!((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
-        (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) &&
+        cptr.ldBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+            0,
+            1,
+            0
+        ) |
+            0) &&
             (cptr.ld1so(obj, $obj_oclass) != NHC.GEM_CLASS ||
-                ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) !=
+                (cptr.ldBits(
+                    cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+                    3,
+                    5,
+                    0
+                ) |
+                    0) !=
                     NHC.GLASS)) {
         res = ((u32mod(oid, 4)) == 0);  /* id%4 ==0 -> +1, ==1..3 -> 0 */
     }
@@ -4412,21 +4413,25 @@ function* get_cost(obj, shkp) {
     /* shopkeeper may notice if the player isn't very knowledgeable -
        especially when gem prices are concerned */
     if (!(cptr.ldI32o(obj, $obj_dknown) & 1) ||
-            !(cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_name_known
-            ) &
-                1)) {
+            !cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_name_known
+                ),
+                0,
+                1,
+                0
+            )) {
         if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS &&
-                ((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_material
-                ) &
-                    31) |
+                (cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_material
+                    ),
+                    3,
+                    5,
+                    0
+                ) |
                     0) ==
                     NHC.GLASS) {
             let i;
@@ -4693,7 +4698,8 @@ function* special_stock(obj, shkp, quietly) {
         NHC.CANDLESHOP &&
             cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
         if (!quietly) {
-            if (is_izchak(shkp, 1) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1)) {
+            if (is_izchak(shkp, 1) &&
+                    !cptr.ldBits(cptr.add(u, $you_uevent + $u_event_invoked), 1, 1, 0)) {
                 if (Deaf() ||
                         (helpless(shkp) ||
                             cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <=
@@ -4772,31 +4778,37 @@ function* set_cost(obj, shkp) {
     /* shopkeeper may notice if the player isn't very knowledgeable -
        especially when gem prices are concerned */
     if (!(cptr.ldI32o(obj, $obj_dknown) & 1) ||
-            !(cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_name_known
-            ) &
-                1)) {
+            !cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_name_known
+                ),
+                0,
+                1,
+                0
+            )) {
         if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) {
             /* different shop keepers give different prices */
-            if (((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) &
-                31) |
+            if ((cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_material
+                ),
+                3,
+                5,
+                0
+            ) |
                 0) ==
                 NHC.GEMSTONE ||
-                    ((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                    (cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) ==
                         NHC.GLASS) {
                 tmp = BigInt((u32mod(
@@ -5062,8 +5074,15 @@ function* shk_names_obj(shkp, obj, fmt, amt, arg) {
      * scrolls/books (that is, blank and mail), but only if the
      * object is within the shk's area of interest/expertise.
      */
-    if (!(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_magic) &
-        1) &&
+    if (!cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_magic
+        ),
+        4,
+        1,
+        0
+    ) &&
             saleable(shkp, obj) &&
             (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS ||
                 cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS ||
@@ -5071,12 +5090,15 @@ function* shk_names_obj(shkp, obj, fmt, amt, arg) {
                 cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS ||
                 cptr.ldI16o(obj, $obj_otyp) == NHC.MIRROR)) {
         was_unknown = schar(was_unknown |
-                !(cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_name_known
-                ) & 1));
+                !cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_name_known
+                    ),
+                    0,
+                    1,
+                    0
+                ));
         (yield* discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1));
     }
     obj_name = (yield* paydoname(obj));
@@ -5304,7 +5326,9 @@ function append_honorific(buf) {
         buf,
         cptr.ldPtro(
             __static_append_honorific_honored,
-            (rn2((5 - 1) | 0) + ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0)) | 0,
+            (rn2((5 - 1) | 0) +
+                (cptr.ldBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0) | 0)) |
+                0,
             8
         )
     );
@@ -6758,7 +6782,7 @@ function* litter_scatter(litter, x, y, shkp) {
     {
         /* Scatter objects haphazardly into the shop */
         if (Punished() &&
-                !(cptr.ldI32o(u, $you_uswallow) & 1) &&
+                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
                 ((cptr.ldI16o(uchain.v, $obj_ox) == x && cptr.ldI16o(uchain.v, $obj_oy) == y) ||
                     (cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR &&
                         cptr.ldI16o(uball.v, $obj_ox) == x &&
@@ -6893,12 +6917,12 @@ function* repair_damage(shkp, tmp_dam, catchup) {
 
     ttmp = t_at(x, y);
     if (ttmp) {
-        switch (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) {
+        switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
             case NHC.LANDMINE:
             case NHC.BEAR_TRAP:
                 /* convert to an object */
                 otmp = (yield* mksobj(
-                    ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.LANDMINE)
+                    (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.LANDMINE)
                         ? NHC.LAND_MINE
                         : NHC.BEARTRAP,
                     1,
@@ -6915,7 +6939,7 @@ function* repair_damage(shkp, tmp_dam, catchup) {
                                 cptr.ldI16o(shkp, $monst_my)
                             ) <= 2)
                         (yield* pline(__s_s_untraps_s, (yield* Shknam(shkp)), (yield* ansimpleoname(otmp))));
-                    else if (cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0 &&
+                    else if ((cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
                             ((cptr.ld1uo(
                                 cptr.ldPtro(
                                     cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -6927,7 +6951,7 @@ function* repair_damage(shkp, tmp_dam, catchup) {
                                 NHM.IN_SIGHT) != 0))
                         (yield* pline(
                             __s_the_s_vanishes,
-                            (yield* trapname(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0, 1))
+                            (yield* trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1))
                         ));
                 }
                 void (yield* mpickobj(shkp, otmp));
@@ -6936,7 +6960,7 @@ function* repair_damage(shkp, tmp_dam, catchup) {
             case NHC.PIT:
             case NHC.SPIKED_PIT:
                 if (!catchup &&
-                        cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0 &&
+                        (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
                         ((cptr.ld1uo(
                             cptr.ldPtro(
                                 cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -6948,12 +6972,12 @@ function* repair_damage(shkp, tmp_dam, catchup) {
                             NHM.IN_SIGHT) != 0))
                     (yield* pline(
                         __s_the_s_is_filled_in,
-                        (yield* trapname(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0, 1))
+                        (yield* trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1))
                     ));
                 break;
             default:
                 if (!catchup &&
-                        cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0 &&
+                        (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
                         ((cptr.ld1uo(
                             cptr.ldPtro(
                                 cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -6965,7 +6989,7 @@ function* repair_damage(shkp, tmp_dam, catchup) {
                             NHM.IN_SIGHT) != 0))
                     (yield* pline(
                         __s_the_s_vanishes,
-                        (yield* trapname(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0, 1))
+                        (yield* trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1))
                     ));
                 break;
         }
@@ -7794,12 +7818,10 @@ export function* costly_spot(x, y) {
     let shkp;
     let eshkp;
 
-    if (!cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
-        0,
-        1,
-        0
-    ))
+    if (!(cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
+    ) & 1))
         return 0;
     shkp = (yield* shop_keeper(cptr.ld1s((yield* in_rooms(x, y, NHC.SHOPBASE)))));
     if (!shkp || !(yield* inhishop(shkp)))
@@ -7978,18 +8000,24 @@ function shk_embellish(itm, cost) {
                     o = cptr.ld1so(itm, $obj_oclass);
                 if (o == NHC.FOOD_CLASS)
                     return __s_gourmets_delight;
-                if ((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(itm, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_name_known
-                ) & 1) | 0
-                        ? (cptr.ldI32o2(
-                            objects,
-                            cptr.ldI16o(itm, $obj_otyp),
-                            $sizeof_objclass,
-                            $objclass_oc_magic
-                        ) & 1) | 0
+                if (cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(itm, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_name_known
+                    ),
+                    0,
+                    1,
+                    0
+                ) | 0
+                        ? cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, cptr.ldI16o(itm, $obj_otyp), $sizeof_objclass),
+                                $objclass_oc_magic
+                            ),
+                            4,
+                            1,
+                            0
+                        ) | 0
                         : (o == NHC.AMULET_CLASS ||
                             o == NHC.RING_CLASS ||
                             o == NHC.WAND_CLASS ||
@@ -8283,13 +8311,15 @@ export function* check_unpaid_usage(otmp, altusage) {
     if (!(cptr.ldI32o(otmp, $obj_unpaid) & 1) ||
             !cptr.ld1so(u, $you_ushops) ||
             (cptr.ld1so(otmp, $obj_spe) <= 0 &&
-                (cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(otmp, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_charged
-                ) &
-                    1) | 0))
+                cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_charged
+                    ),
+                    5,
+                    1,
+                    0
+                ) | 0))
         return;
     shkp = (yield* shop_keeper(cptr.ld1so(u, $you_ushops)));
     if (!shkp || !(yield* inhishop(shkp)))

@@ -654,12 +654,15 @@ let getobj_else = 0;
 export function is_edible(obj) {
     /* protect invocation tools but not Rider corpses (handled elsewhere)*/
     /* if (obj->oclass != FOOD_CLASS && obj_resists(obj, 0, 0)) */
-    if ((cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(obj, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_unique
-    ) & 1))
+    if (cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_unique
+        ),
+        6,
+        1,
+        0
+    ))
         return 0;
     /* above also prevents the Amulet from being eaten, so we must never
        allow fake amulets to be eaten either [which is already the case] */
@@ -682,13 +685,15 @@ export function is_edible(obj) {
                 cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
                 cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)
             ) ||
-                (((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_material
-                ) &
-                    31) |
+                ((cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_material
+                    ),
+                    3,
+                    5,
+                    0
+                ) |
                     0) ==
                     NHC.IRON)))
         return 1;
@@ -702,13 +707,15 @@ export function is_edible(obj) {
                 : 0));
 
     if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GELATINOUS_CUBE &&
-            (((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) &
-                31) |
+            ((cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_material
+                ),
+                3,
+                5,
+                0
+            ) |
                 0) <=
                 NHC.WOOD) &&
             !(cptr.ldPtro((obj), $obj_cobj) !== null))
@@ -740,71 +747,71 @@ export function* init_uhunger() {
 /** C ref: eat.c:138 — struct undefined {  } (memory model v0.5) */
 
 /** C ref: eat.c:143 — struct (unnamed struct at eat.c:138:14)[16] */
-const tintxts = cptr.alloc(16 * 16);
+const tintxts = cptr.alloc(16 * 24);
 cptr.stPtro(tintxts, 0, __s_rotten);
 cptr.stI32o(tintxts, 8, -50);
-cptr.stBits(cptr.add(tintxts, 12), 0, 1, 0, 0);
-cptr.stBits(cptr.add(tintxts, 12), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 16, __s_homemade);
-cptr.stI32o(tintxts, 24, 50);
-cptr.stBits(cptr.add(tintxts, 28), 0, 1, 0, 1);
-cptr.stBits(cptr.add(tintxts, 28), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 32, __s_soup_made_from);
-cptr.stI32o(tintxts, 40, 20);
-cptr.stBits(cptr.add(tintxts, 44), 0, 1, 0, 1);
-cptr.stBits(cptr.add(tintxts, 44), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 48, __s_french_fried);
-cptr.stI32o(tintxts, 56, 40);
-cptr.stBits(cptr.add(tintxts, 60), 0, 1, 0, 0);
-cptr.stBits(cptr.add(tintxts, 60), 1, 1, 0, 1);
-cptr.stPtro(tintxts, 64, __s_pickled);
-cptr.stI32o(tintxts, 72, 40);
-cptr.stBits(cptr.add(tintxts, 76), 0, 1, 0, 1);
-cptr.stBits(cptr.add(tintxts, 76), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 80, __s_boiled);
-cptr.stI32o(tintxts, 88, 50);
-cptr.stBits(cptr.add(tintxts, 92), 0, 1, 0, 1);
-cptr.stBits(cptr.add(tintxts, 92), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 96, __s_smoked);
-cptr.stI32o(tintxts, 104, 50);
-cptr.stBits(cptr.add(tintxts, 108), 0, 1, 0, 1);
-cptr.stBits(cptr.add(tintxts, 108), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 112, __s_dried);
-cptr.stI32o(tintxts, 120, 55);
-cptr.stBits(cptr.add(tintxts, 124), 0, 1, 0, 1);
-cptr.stBits(cptr.add(tintxts, 124), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 128, __s_deep_fried);
-cptr.stI32o(tintxts, 136, 60);
-cptr.stBits(cptr.add(tintxts, 140), 0, 1, 0, 0);
-cptr.stBits(cptr.add(tintxts, 140), 1, 1, 0, 1);
-cptr.stPtro(tintxts, 144, __s_szechuan);
-cptr.stI32o(tintxts, 152, 70);
-cptr.stBits(cptr.add(tintxts, 156), 0, 1, 0, 1);
-cptr.stBits(cptr.add(tintxts, 156), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 160, __s_broiled);
-cptr.stI32o(tintxts, 168, 80);
-cptr.stBits(cptr.add(tintxts, 172), 0, 1, 0, 0);
-cptr.stBits(cptr.add(tintxts, 172), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 176, __s_stir_fried);
-cptr.stI32o(tintxts, 184, 80);
-cptr.stBits(cptr.add(tintxts, 188), 0, 1, 0, 0);
-cptr.stBits(cptr.add(tintxts, 188), 1, 1, 0, 1);
-cptr.stPtro(tintxts, 192, __s_sauteed);
-cptr.stI32o(tintxts, 200, 95);
-cptr.stBits(cptr.add(tintxts, 204), 0, 1, 0, 0);
-cptr.stBits(cptr.add(tintxts, 204), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 208, __s_candied);
-cptr.stI32o(tintxts, 216, 100);
-cptr.stBits(cptr.add(tintxts, 220), 0, 1, 0, 1);
-cptr.stBits(cptr.add(tintxts, 220), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 224, __s_pureed);
-cptr.stI32o(tintxts, 232, 500);
-cptr.stBits(cptr.add(tintxts, 236), 0, 1, 0, 1);
-cptr.stBits(cptr.add(tintxts, 236), 1, 1, 0, 0);
-cptr.stPtro(tintxts, 240, __s_empty);
-cptr.stI32o(tintxts, 248, 0);
-cptr.stBits(cptr.add(tintxts, 252), 0, 1, 0, 0);
-cptr.stBits(cptr.add(tintxts, 252), 1, 1, 0, 0);
+cptr.stI32o(tintxts, 12, 0);
+cptr.stI32o(tintxts, 16, 0);
+cptr.stPtro(tintxts, 24, __s_homemade);
+cptr.stI32o(tintxts, 32, 50);
+cptr.stI32o(tintxts, 36, 1);
+cptr.stI32o(tintxts, 40, 0);
+cptr.stPtro(tintxts, 48, __s_soup_made_from);
+cptr.stI32o(tintxts, 56, 20);
+cptr.stI32o(tintxts, 60, 1);
+cptr.stI32o(tintxts, 64, 0);
+cptr.stPtro(tintxts, 72, __s_french_fried);
+cptr.stI32o(tintxts, 80, 40);
+cptr.stI32o(tintxts, 84, 0);
+cptr.stI32o(tintxts, 88, 1);
+cptr.stPtro(tintxts, 96, __s_pickled);
+cptr.stI32o(tintxts, 104, 40);
+cptr.stI32o(tintxts, 108, 1);
+cptr.stI32o(tintxts, 112, 0);
+cptr.stPtro(tintxts, 120, __s_boiled);
+cptr.stI32o(tintxts, 128, 50);
+cptr.stI32o(tintxts, 132, 1);
+cptr.stI32o(tintxts, 136, 0);
+cptr.stPtro(tintxts, 144, __s_smoked);
+cptr.stI32o(tintxts, 152, 50);
+cptr.stI32o(tintxts, 156, 1);
+cptr.stI32o(tintxts, 160, 0);
+cptr.stPtro(tintxts, 168, __s_dried);
+cptr.stI32o(tintxts, 176, 55);
+cptr.stI32o(tintxts, 180, 1);
+cptr.stI32o(tintxts, 184, 0);
+cptr.stPtro(tintxts, 192, __s_deep_fried);
+cptr.stI32o(tintxts, 200, 60);
+cptr.stI32o(tintxts, 204, 0);
+cptr.stI32o(tintxts, 208, 1);
+cptr.stPtro(tintxts, 216, __s_szechuan);
+cptr.stI32o(tintxts, 224, 70);
+cptr.stI32o(tintxts, 228, 1);
+cptr.stI32o(tintxts, 232, 0);
+cptr.stPtro(tintxts, 240, __s_broiled);
+cptr.stI32o(tintxts, 248, 80);
+cptr.stI32o(tintxts, 252, 0);
+cptr.stI32o(tintxts, 256, 0);
+cptr.stPtro(tintxts, 264, __s_stir_fried);
+cptr.stI32o(tintxts, 272, 80);
+cptr.stI32o(tintxts, 276, 0);
+cptr.stI32o(tintxts, 280, 1);
+cptr.stPtro(tintxts, 288, __s_sauteed);
+cptr.stI32o(tintxts, 296, 95);
+cptr.stI32o(tintxts, 300, 0);
+cptr.stI32o(tintxts, 304, 0);
+cptr.stPtro(tintxts, 312, __s_candied);
+cptr.stI32o(tintxts, 320, 100);
+cptr.stI32o(tintxts, 324, 1);
+cptr.stI32o(tintxts, 328, 0);
+cptr.stPtro(tintxts, 336, __s_pureed);
+cptr.stI32o(tintxts, 344, 500);
+cptr.stI32o(tintxts, 348, 1);
+cptr.stI32o(tintxts, 352, 0);
+cptr.stPtro(tintxts, 360, __s_empty);
+cptr.stI32o(tintxts, 368, 0);
+cptr.stI32o(tintxts, 372, 0);
+cptr.stI32o(tintxts, 376, 0);
 
 /* called after mimicking is over */
 /** C ref: eat.c:163 @returns {CInt} */
@@ -1004,8 +1011,8 @@ export function* reset_eat() {
     /* we only set a flag here - the actual reset process is done after
      * the round is spent eating.
      */
-    if (cptr.ldBits(cptr.add(svc, $context_info_victual + $victual_info_eating), 2, 1, 0) | 0 &&
-            !cptr.ldBits(cptr.add(svc, $context_info_victual + $victual_info_doreset), 3, 1, 0)) {
+    if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1) | 0 &&
+            !(cptr.ldI32o(svc, $context_info_victual + $victual_info_doreset) & 1)) {
         {
             if ((yield* debugcore(__s_eat_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -1013,7 +1020,7 @@ export function* reset_eat() {
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
-        cptr.stBits(cptr.add(svc, $context_info_victual + $victual_info_doreset), 3, 1, 0, 1);
+        cptr.stI32o(svc, $context_info_victual + $victual_info_doreset, 1);
     }
     return;
 }
@@ -1130,7 +1137,7 @@ function* touchfood(otmp) {
 /** C ref: eat.c:396 — @param {CPtr<struct obj>} obj */
 export function* food_disappears(obj) {
     if (cptr.eq(obj, cptr.ldPtro(svc, $context_info_victual)))
-        cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 32);  /* victual.piece = 0, .o_id = 0 */
+        cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);  /* victual.piece = 0, .o_id = 0 */
 
     if (cptr.ldI16o(obj, $obj_timed))
         (yield* obj_stop_timers(obj));
@@ -1179,17 +1186,13 @@ function* do_reset_eat() {
             (yield* recalc_wt());
         }
     }
-    cptr.stBits(
-        cptr.add(svc, $context_info_victual + $victual_info_fullwarn),
-        1,
-        1,
-        0,
-        cptr.stBits(
-            cptr.add(svc, $context_info_victual + $victual_info_eating),
-            2,
-            1,
-            0,
-            cptr.stBits(cptr.add(svc, $context_info_victual + $victual_info_doreset), 3, 1, 0, 0)
+    cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_fullwarn,
+        cptr.stI32o(
+            svc,
+            $context_info_victual + $victual_info_eating,
+            cptr.stI32o(svc, $context_info_victual + $victual_info_doreset, 0)
         )
     );
     /* Do not set canchoke to FALSE; if we continue eating the same object
@@ -1258,7 +1261,7 @@ function* eatfood() {
         (yield* do_reset_eat());
         return 0;
     }
-    if (!cptr.ldBits(cptr.add(svc, $context_info_victual + $victual_info_eating), 2, 1, 0))
+    if (!(cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1))
         return 0;
 
     if (cptr.stI32o(
@@ -1310,7 +1313,7 @@ function* done_eating(message) {
     else
         (yield* useupf(piece, 1n));
 
-    cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 32);  /* victual.piece = 0, .o_id = 0 */
+    cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);  /* victual.piece = 0, .o_id = 0 */
 }
 
 /** C ref: eat.c:576 — @param {CPtr<struct permonst>} pd */
@@ -1636,13 +1639,7 @@ function* cprefx(pm) {
             (yield* You(__s_turn_to_stone));
             (yield* done(NHC.STONING));
             if (cptr.ldPtro(svc, $context_info_victual))
-                cptr.stBits(
-                    cptr.add(svc, $context_info_victual + $victual_info_eating),
-                    2,
-                    1,
-                    0,
-                    0
-                );
+                cptr.stI32o(svc, $context_info_victual + $victual_info_eating, 0);
             return;  /* lifesaved */
         }
     }
@@ -1703,7 +1700,7 @@ function* cprefx(pm) {
                         cptr.ldI16o(cptr.ldPtro(svc, $context_info_victual), $obj_otyp) ==
                             NHC.CORPSE &&
                         (yield* revive_corpse(cptr.ldPtro(svc, $context_info_victual))))
-                    cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 32);  /* victual.piece=0, .o_id=0 */
+                    cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);  /* victual.piece=0, .o_id=0 */
                 return;
             }
         case NHC.PM_GREEN_SLIME:
@@ -2614,8 +2611,8 @@ export function* tin_variety_txt(s, tinvariety) {
     if (s && tinvariety) {
         cptr.stI32(tinvariety, -1);
         for (k = 0; k < ((16 - 1) | 0); ++k) {
-            l = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(tintxts, k, 16))));
-            if (!(yield* strncmpi(s, cptr.ldPtro(tintxts, k, 16), l)) &&
+            l = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(tintxts, k, 24))));
+            if (!(yield* strncmpi(s, cptr.ldPtro(tintxts, k, 24), l)) &&
                     (Number(BigInt.asIntN(32, cptr.strlen(s))) > l) &&
                     cptr.ld1so(s, l) == 32) {
                 cptr.stI32(tinvariety, k);
@@ -2649,10 +2646,10 @@ export function tin_details(obj, mnum, buf) {
                 cptr.ld1so(obj, $obj_spe) < 0) {
             if (r == NHM.ROTTEN_TIN || r == NHM.HOMEMADE_TIN) {
                 /* put these before the word tin */
-                void cptr.sprintf(cptr.decay(buf2), __s_s_s_of, cptr.ldPtro(tintxts, r, 16), buf);
+                void cptr.sprintf(cptr.decay(buf2), __s_s_s_of, cptr.ldPtro(tintxts, r, 24), buf);
                 void cptr.strcpy(buf, cptr.decay(buf2));
             } else {
-                void cptr.sprintf(eos(buf), __s_of_s, cptr.ldPtro(tintxts, r, 16));
+                void cptr.sprintf(eos(buf), __s_of_s, cptr.ldPtro(tintxts, r, 24));
             }
         } else {
             void cptr.strcpy(eos(buf), __s_of);
@@ -2688,7 +2685,7 @@ export function set_tin_variety(obj, forcetype) {
         if (r < 0 || r >= 16)
             r = NHM.ROTTEN_TIN;  /* shouldn't happen */
         while ((r == NHM.ROTTEN_TIN && !(cptr.ldI32o(obj, $obj_cursed) & 1)) ||
-                !cptr.ldBits(cptr.add(cptr.add(tintxts, r, 16), 12), 0, 1, 0))
+                !(cptr.ldI32o2(tintxts, r, 24, 12) & 1))
             r = rn2((16 - 1) | 0);
     } else if (forcetype >= 0 && forcetype < ((16 - 1) | 0)) {
         r = forcetype;
@@ -2827,11 +2824,11 @@ function* consume_tin(mesg) {
         }
 
         /* in case stop_occupation() was called on previous meal */
-        cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 32);  /* victual.piece = 0, .o_id = 0 */
+        cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);  /* victual.piece = 0, .o_id = 0 */
 
         (yield* You(
             __s_consume_s_s,
-            cptr.ldPtro(tintxts, r, 16),
+            cptr.ldPtro(tintxts, r, 24),
             cptr.ldPtro3(mons, mnum, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
         ));
 
@@ -2849,10 +2846,10 @@ function* consume_tin(mesg) {
         if (!cptr.ldPtro(svc, $context_info_tin))
             return;
 
-        if (cptr.ldI32o2(tintxts, r, 16, 8) < 0) {
+        if (cptr.ldI32o2(tintxts, r, 24, 8) < 0) {
             (yield* make_vomiting(BigInt(((rn2(15) + 10) | 0)), 0));
         } else {
-            nutamt = cptr.ldI32o2(tintxts, r, 16, 8);
+            nutamt = cptr.ldI32o2(tintxts, r, 24, 8);
             /* nutrition from a homemade tin (made from a single corpse)
                shouldn't be more than nutrition from the corresponding
                corpse; other tinning modes might use more than one corpse
@@ -2867,7 +2864,7 @@ function* consume_tin(mesg) {
             (yield* lesshungry(nutamt));
         }
 
-        if (cptr.ldBits(cptr.add(cptr.add(tintxts, r, 16), 12), 1, 1, 0)) {
+        if ((cptr.ldI32o2(tintxts, r, 24, 16) & 1)) {
             /* normal hero is !Glib, because you can't open tins when Glib,
                but one poly'd into metallivorous form might already be Glib;
                it's debatable whether a rock mole should have its paws made
@@ -2877,7 +2874,7 @@ function* consume_tin(mesg) {
             (yield* make_glib((alreadyglib + (rn2(11) + 5)) | 0));  /* 5..15 */
             (yield* pline(
                 __s_eating_s_food_made_your_s_s_slippery,
-                cptr.ldPtro(tintxts, r, 16),
+                cptr.ldPtro(tintxts, r, 24),
                 (yield* fingers_or_gloves(1)),
                 alreadyglib ? __s_even_more : __s_very
             ));
@@ -3471,24 +3468,17 @@ function* start_eating(otmp, already_partly_eaten) {
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
-    cptr.stBits(
-        cptr.add(svc, $context_info_victual + $victual_info_fullwarn),
-        1,
-        1,
-        0,
-        cptr.stBits(cptr.add(svc, $context_info_victual + $victual_info_doreset), 3, 1, 0, 0)
+    cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_fullwarn,
+        cptr.stI32o(svc, $context_info_victual + $victual_info_doreset, 0)
     );
-    cptr.stBits(cptr.add(svc, $context_info_victual + $victual_info_eating), 2, 1, 0, 1);
+    cptr.stI32o(svc, $context_info_victual + $victual_info_eating, 1);
 
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE || (cptr.ldI32o(otmp, $obj_globby) & 1) | 0) {
         (yield* cprefx(cptr.ldI32o(cptr.ldPtro(svc, $context_info_victual), $obj_corpsenm)));
         if (!cptr.ldPtro(svc, $context_info_victual) ||
-                !cptr.ldBits(
-                    cptr.add(svc, $context_info_victual + $victual_info_eating),
-                    2,
-                    1,
-                    0
-                )) {
+                !(cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1)) {
             /* rider revived, or hero died and was lifesaved */
             return;
         }
@@ -4079,7 +4069,7 @@ function* eatspecial() {
     set_occupation(eatfood, __s_eating_non_food, 0n);
     (yield* lesshungry(cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod)));
     cptr.stPtro(go, $instance_globals_o_occupation, null);
-    cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 32);  /* victual.piece = 0, .o_id = 0 */
+    cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);  /* victual.piece = 0, .o_id = 0 */
 
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS) {
         if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
@@ -4089,13 +4079,15 @@ function* eatspecial() {
         (yield* vault_gd_watching(NHM.GD_EATGOLD));
         return;
     }
-    if (((cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(otmp, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_material
-    ) &
-        31) |
+    if ((cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_material
+        ),
+        3,
+        5,
+        0
+    ) |
         0) ==
             NHC.PAPER) {
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SCR_MAIL)
@@ -4183,26 +4175,30 @@ function* foodword(otmp) {
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS)
         return __s_food;
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS &&
-            ((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(otmp, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) &
-                31) |
+            (cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_material
+                ),
+                3,
+                5,
+                0
+            ) |
                 0) ==
                 NHC.GLASS &&
             (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0)
         (yield* discover_object((cptr.ldI16o(otmp, $obj_otyp)), 1, 1, 1));
     return cptr.ldPtro(
         foodwords,
-        (cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(otmp, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_material
-        ) &
-            31),
+        cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_material
+            ),
+            3,
+            5,
+            0
+        ),
         8
     );
 }
@@ -4221,7 +4217,7 @@ function* fpostfx(otmp) {
                 (yield* you_unwere(1));
             break;
         case NHC.CARROT:
-            if (!(cptr.ldI32o(u, $you_uswallow) & 1) ||
+            if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
                     !attacktype_fordmg(
                         cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
                         NHM.AT_ENGL,
@@ -4362,13 +4358,15 @@ function* edibility_prompts(otmp) {
     /* 5.0: decaying globs don't become tainted anymore; in 3.6, they did */
     let cadaver = schar((cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE));
     let stoneorslime = 0;
-    let material = (cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(otmp, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_material
-    ) &
-            31) | 0;
+    let material = cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_material
+        ),
+        3,
+        5,
+        0
+    ) | 0;
     let mnum = cptr.ldI32o(otmp, $obj_corpsenm);
     let rotted = 0n;
 
@@ -4597,11 +4595,9 @@ function* doeat_nonfood(otmp) {
     cptr.stI32o(svc, $context_info_victual + $victual_info_o_id, cptr.ldI32o(otmp, $obj_o_id));
     /* Don't split it, we don't need to if it's 1 move */
     cptr.stI32o(svc, $context_info_victual + $victual_info_usedtime, 0);
-    cptr.stBits(
-        cptr.add(svc, $context_info_victual + $victual_info_canchoke),
-        0,
-        1,
-        0,
+    cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_canchoke,
         (cptr.ldI32o(u, $you_uhs) == NHC.SATIATED) >>> 0
     );
     /* Note: gold weighs 1 pt. for each 1000 pieces (see
@@ -4625,7 +4621,7 @@ function* doeat_nonfood(otmp) {
         nodelicious = 1;
     }
     cptr.stI32o(svc, $context_info_victual + $victual_info_nmod, basenutrit);
-    cptr.stBits(cptr.add(svc, $context_info_victual + $victual_info_eating), 2, 1, 0, 1);  /* needed for lesshungry() */
+    cptr.stI32o(svc, $context_info_victual + $victual_info_eating, 1);  /* needed for lesshungry() */
 
     if (!((cptr.stI64o(
         u,
@@ -4636,13 +4632,15 @@ function* doeat_nonfood(otmp) {
         ll_conduct++;
         (yield* livelog_printf(32n, __s_ate_for_the_first_time_s__2, (yield* food_xname(otmp, 0))));
     }
-    material = (cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(otmp, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_material
-    ) &
-            31) | 0;
+    material = cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_material
+        ),
+        3,
+        5,
+        0
+    ) | 0;
     if (material == NHC.LEATHER ||
             material == NHC.BONE ||
             material == NHC.DRAGON_HIDE ||
@@ -4675,13 +4673,15 @@ function* doeat_nonfood(otmp) {
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         void (yield* rottenfood(otmp));
         nodelicious = 1;
-    } else if (((cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(otmp, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_material
-    ) &
-        31) |
+    } else if ((cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_material
+        ),
+        3,
+        5,
+        0
+    ) |
         0) ==
             NHC.PAPER)
         nodelicious = 1;
@@ -4726,12 +4726,12 @@ export function* doeat() {
     if ((yield* check_capacity(null)))
         return NHM.ECMD_OK;
 
-    if ((cptr.ldI32o(u, $you_uedibility) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uedibility), 6, 1, 0)) {
         let res = (yield* edibility_prompts(otmp.v));
 
         if (res) {
             (yield* Your(__s_s_stops_tingling_and_your_sense_of, (yield* body_part(NHC.NOSE))));
-            cptr.stI32o(u, $you_uedibility, 0);
+            cptr.stBits(cptr.add(u, $you_uedibility), 6, 1, 0, 0);
             if (res == 1)
                 return NHM.ECMD_OK;
         }
@@ -4845,7 +4845,7 @@ export function* doeat() {
          * they shouldn't be able to choke now.
          */
         if (cptr.ldI32o(u, $you_uhs) != NHC.SATIATED)
-            cptr.stBits(cptr.add(svc, $context_info_victual + $victual_info_canchoke), 0, 1, 0, 0);
+            cptr.stI32o(svc, $context_info_victual + $victual_info_canchoke, 0);
         cptr.stI32o(svc, $context_info_victual + $victual_info_o_id, 0);
         otmp.v = (yield* touchfood(otmp.v));
         if (otmp.v) {
@@ -4913,7 +4913,7 @@ export function* doeat() {
 
         if (tmp == 2) {
             /* used up */
-            cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 32);  /* victual.piece=0, .o_id=0 */
+            cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);  /* victual.piece=0, .o_id=0 */
             return NHM.ECMD_TIME;
         } else if (tmp)
             dont_start = 1;
@@ -4922,13 +4922,15 @@ export function* doeat() {
         /* No checks for WAX, LEATHER, BONE, DRAGON_HIDE.  These are
          * all handled in the != FOOD_CLASS case, above.
          */
-        switch ((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(otmp.v, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_material
-        ) &
-            31) |
+        switch (cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(otmp.v, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_material
+            ),
+            3,
+            5,
+            0
+        ) |
                 0) {
             case NHC.FLESH:
                 if (!((cptr.stI64o(
@@ -5087,11 +5089,9 @@ export function* doeat() {
                 cptr.ldI32o(otmp.v, $obj_oeaten)
             ) | 0
         );
-    cptr.stBits(
-        cptr.add(svc, $context_info_victual + $victual_info_canchoke),
-        0,
-        1,
-        0,
+    cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_canchoke,
         (cptr.ldI32o(u, $you_uhs) == NHC.SATIATED) >>> 0
     );
 
@@ -5162,12 +5162,12 @@ function* bite() {
     /* hack to pacify static analyzer incorporated into gcc 12.2 */
     sa_victual(cptr.add(svc, $context_info_victual));
 
-    if (cptr.ldBits(cptr.add(svc, $context_info_victual + $victual_info_canchoke), 0, 1, 0) | 0 &&
+    if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_canchoke) & 1) | 0 &&
             cptr.ldI32o(u, $you_uhunger) >= 2000) {
         (yield* choke(cptr.ldPtro(svc, $context_info_victual)));
         return 1;
     }
-    if (cptr.ldBits(cptr.add(svc, $context_info_victual + $victual_info_doreset), 3, 1, 0)) {
+    if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_doreset) & 1)) {
         (yield* do_reset_eat());
         return 0;
     }
@@ -5194,7 +5194,7 @@ function* bite() {
 export function* gethungry() {
     let accessorytime;
 
-    if ((cptr.ldI32o(u, $you_uinvulnerable) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0) | 0 ||
             cptr.ld1so(iflags, $instance_flags_debug_hunger))
         return;  /* you don't feel hungrier */
 
@@ -5284,13 +5284,19 @@ export function* gethungry() {
                 if (uleft.v &&
                         cptr.ldI16o(uleft.v, $obj_otyp) != NHC.MEAT_RING &&
                         (cptr.ld1so(uleft.v, $obj_spe) ||
-                            !(cptr.ldI32o2(
-                                objects,
-                                cptr.ldI16o(uleft.v, $obj_otyp),
-                                $sizeof_objclass,
-                                $objclass_oc_charged
-                            ) &
-                                1) ||
+                            !cptr.ldBits(
+                                cptr.add(
+                                    cptr.add(
+                                        objects,
+                                        cptr.ldI16o(uleft.v, $obj_otyp),
+                                        $sizeof_objclass
+                                    ),
+                                    $objclass_oc_charged
+                                ),
+                                5,
+                                1,
+                                0
+                            ) ||
                             (cptr.ldI16o(uleft.v, $obj_otyp) == NHC.RIN_PROTECTION &&
                                 ((EProtection() & -131073n) == 0n ||
                                     ((EProtection() & -131073n) == 262144n &&
@@ -5307,19 +5313,25 @@ export function* gethungry() {
                 if (uright.v &&
                         cptr.ldI16o(uright.v, $obj_otyp) != NHC.MEAT_RING &&
                         (cptr.ld1so(uright.v, $obj_spe) ||
-                            !(cptr.ldI32o2(
-                                objects,
-                                cptr.ldI16o(uright.v, $obj_otyp),
-                                $sizeof_objclass,
-                                $objclass_oc_charged
-                            ) &
-                                1) ||
+                            !cptr.ldBits(
+                                cptr.add(
+                                    cptr.add(
+                                        objects,
+                                        cptr.ldI16o(uright.v, $obj_otyp),
+                                        $sizeof_objclass
+                                    ),
+                                    $objclass_oc_charged
+                                ),
+                                5,
+                                1,
+                                0
+                            ) ||
                             (cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_PROTECTION &&
                                 (EProtection() & -262145n) == 0n)))
                     (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
                 break;
             case 16:
-                if ((cptr.ldI32o(u, $you_uhave) & 1))
+                if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
                     (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
                 break;
             default:
@@ -5355,13 +5367,7 @@ export function* lesshungry(num) {
     cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + num) | 0);
     if (cptr.ldI32o(u, $you_uhunger) >= 2000) {
         if (!iseating ||
-                cptr.ldBits(
-                    cptr.add(svc, $context_info_victual + $victual_info_canchoke),
-                    0,
-                    1,
-                    0
-                ) |
-                    0) {
+                (cptr.ldI32o(svc, $context_info_victual + $victual_info_canchoke) & 1) | 0) {
             if (iseating) {
                 (yield* choke(cptr.ldPtro(svc, $context_info_victual)));
                 (yield* reset_eat());
@@ -5378,49 +5384,16 @@ export function* lesshungry(num) {
          */
         if (cptr.ldI32o(u, $you_uhunger) >= 1500 &&
                 !Hunger() &&
-                (!cptr.ldBits(
-                    cptr.add(svc, $context_info_victual + $victual_info_eating),
-                    2,
-                    1,
-                    0
-                ) ||
-                    (cptr.ldBits(
-                        cptr.add(svc, $context_info_victual + $victual_info_eating),
-                        2,
-                        1,
-                        0
-                    ) |
-                        0 &&
-                        !cptr.ldBits(
-                            cptr.add(svc, $context_info_victual + $victual_info_fullwarn),
-                            1,
-                            1,
-                            0
-                        )))) {
+                (!(cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1) ||
+                    ((cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1) | 0 &&
+                        !(cptr.ldI32o(svc, $context_info_victual + $victual_info_fullwarn) & 1)))) {
             (yield* pline(__s_you_re_having_a_hard_time_getting_all));
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_you_re_finally_finished);
-            if (!cptr.ldBits(
-                cptr.add(svc, $context_info_victual + $victual_info_eating),
-                2,
-                1,
-                0
-            )) {
+            if (!(cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1)) {
                 cptr.stI64o(gm, $instance_globals_m_multi, -2n);
             } else {
-                cptr.stBits(
-                    cptr.add(svc, $context_info_victual + $victual_info_fullwarn),
-                    1,
-                    1,
-                    0,
-                    1
-                );
-                if (cptr.ldBits(
-                    cptr.add(svc, $context_info_victual + $victual_info_canchoke),
-                    0,
-                    1,
-                    0
-                ) |
-                    0 &&
+                cptr.stI32o(svc, $context_info_victual + $victual_info_fullwarn, 1);
+                if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_canchoke) & 1) | 0 &&
                         ((cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) -
                             cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime)) |
                             0) >
@@ -5787,8 +5760,8 @@ export function* floorfood(verb, corpsecheck) {
             let ttmp = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 
             if (ttmp &&
-                    cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0 &&
-                    (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.BEAR_TRAP) {
+                    (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
+                    ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP) {
                 let u_in_beartrap = schar((cptr.ldI32o(u, $you_utrap) &&
                     cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP
                         ? 1
@@ -5992,7 +5965,9 @@ export function* vomit() {
            dealing with some esoteric body_part() */
         (yield* Your(__s_jaw_gapes_convulsively));
     } else {
-        if (Sick() && (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE) != 0)
+        if (Sick() &&
+                ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) &
+                    NHM.SICK_VOMITABLE) != 0)
             (yield* make_sick(0n, null, 1, NHM.SICK_VOMITABLE));
         /* if not enough in stomach to actually vomit then dry heave;
            vomiting_dialog() gives a vomit message when its countdown
@@ -6183,7 +6158,7 @@ export function* cant_finish_meal(corpse) {
     if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood &&
             cptr.eq(cptr.ldPtro(svc, $context_info_victual), corpse)) {
         /* normally performed by done_eating() */
-        cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 32);  /* victual.piece = 0, .o_id = 0 */
+        cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);  /* victual.piece = 0, .o_id = 0 */
 
         if (!cptr.ldI32o(corpse, $obj_oeaten))
             cptr.stI32o(corpse, $obj_oeaten, 1);  /* [see consume_oeaten()] */

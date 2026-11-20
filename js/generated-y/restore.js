@@ -389,7 +389,7 @@ function* restlevchn(nhfp) {
     (yield* sfi_int(nhfp, cnt, __s_levchn_lev_count));
     ;
     for (; cnt.v > 0; cnt.v--) {
-        tmplev = (yield* alloc(40));
+        tmplev = (yield* alloc(56));
         (yield* sfi_s_level(nhfp, tmplev, __s_levchn_s_level));
 
         if (!cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn))
@@ -840,7 +840,7 @@ function* ghostfruit(otmp) {
 function* restgamestate(nhfp) {
     let i;
     let newgameflags = cptr.alloc(208);
-    let newgamecontext = cptr.alloc(704);  /* all 0, but has some pointers */
+    let newgamecontext = cptr.alloc(720);  /* all 0, but has some pointers */
     let bc_obj;
     let timebuf = new Uint8Array(15);
     let uid = cptr.box(0n);
@@ -865,7 +865,7 @@ function* restgamestate(nhfp) {
             return 0;
         }
     }
-    cptr.memcpy(newgamecontext, svc, 704);  /* copy statically init'd context */
+    cptr.memcpy(newgamecontext, svc, 720);  /* copy statically init'd context */
     (yield* sfi_context_info(nhfp, svc, __s_gamestate_context));
     relative_time_to_moves(cptr.add(svc, $context_info_seer_turn));
     relative_time_to_moves(cptr.add(svc, $context_info_digging + $dig_info_lastdigtime));
@@ -963,7 +963,7 @@ function* restgamestate(nhfp) {
         cptr.st1o(iflags, $instance_flags_deferred_X, 0);
         cptr.st1o(iflags, $instance_flags_perm_invent, defer_perm_invent);
         cptr.memcpy(flags, newgameflags, 208);
-        cptr.memcpy(svc, newgamecontext, 704);
+        cptr.memcpy(svc, newgamecontext, 720);
         cptr.memcpy(
             cptr.add(gy, $instance_globals_y_youmonst),
             cptr.add(cg, $const_globals_zeromonst),
@@ -1487,7 +1487,7 @@ export function* getlev(nhfp, pid, lev) {
 
     cptr.stPtr(gf, null);
     for (; ; ) {
-        trap = (yield* alloc(32));
+        trap = (yield* alloc(40));
         (yield* sfi_trap(nhfp, trap, __s_trap));
         if (cptr.ldI16o(trap, $trap_tx) != 0) {
             if (cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE &&
@@ -1661,8 +1661,7 @@ export function* getlev(nhfp, pid, lev) {
                     break;
                 case NHM.BR_PORTAL:
                     for (trap = cptr.ldPtr(gf); trap; trap = cptr.ldPtr(trap))
-                        if ((cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) ==
-                                NHC.MAGIC_PORTAL)
+                        if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                             break;
                     if (!trap)
                         (yield* panic(__s_getlev_need_portal_but_none_found));
@@ -1675,7 +1674,7 @@ export function* getlev(nhfp, pid, lev) {
             /* Remove any dangling portals. */
             for (trap = cptr.ldPtr(gf); trap; trap = ttmp) {
                 ttmp = cptr.ldPtr(trap);
-                if ((cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.MAGIC_PORTAL)
+                if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                     (yield* deltrap(trap));
             }
         }

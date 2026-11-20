@@ -984,8 +984,7 @@ function* dog_goal(mtmp, edog, after, udist, whappr) {
                     /* assume at most one magic portal per level;
                        [should this be limited to known portals?] */
                     for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
-                        if ((cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) ==
-                                NHC.MAGIC_PORTAL) {
+                        if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL) {
                             if (dist2(
                                 (cptr.ldI16o(t, $trap_tx)),
                                 (cptr.ldI16o(t, $trap_ty)),
@@ -1851,7 +1850,7 @@ export function* dog_move(mtmp, after) {
                             /* 1/40 chance of stepping on it anyway, in case
                              * it has to pass one to follow the player...
                              */
-                            if (cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 && rn2(40))
+                            if ((cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && rn2(40))
                                 continue;
                         }
                     }
@@ -2001,15 +2000,11 @@ export function* dog_move(mtmp, after) {
                don't use glyph_at() here--it would return the pet but we want
                to know whether an object is remembered at this map location */
             let o = (!Hallucination() &&
-                cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-                    ),
-                    4,
-                    1,
-                    0
-                ) |
+                (cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+                ) &
+                    1) |
                     0 &&
                 (((cptr.ldI32o3(
                     svl,

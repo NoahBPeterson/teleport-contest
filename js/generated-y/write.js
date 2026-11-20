@@ -288,7 +288,13 @@ export function* dowrite(pen) {
                 (nm),
                 -1
             ))) {
-                if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
+                if (cptr.ldBits(
+                    cptr.add(cptr.add(objects, i, $sizeof_objclass), $objclass_oc_name_known),
+                    0,
+                    1,
+                    0
+                ) |
+                    0 ||
                         cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
                     break __lbl_found;
                 } else {
@@ -325,7 +331,15 @@ export function* dowrite(pen) {
                         -1
                     )) &&
                     !(real &&
-                        (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) |
+                        cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, i, $sizeof_objclass),
+                                $objclass_oc_name_known
+                            ),
+                            0,
+                            1,
+                            0
+                        ) |
                             0) &&
                     !rn2(++deferralchance)) {
                 deferred = i;
@@ -378,7 +392,12 @@ export function* dowrite(pen) {
         return NHM.ECMD_TIME;
     } else if (by_descr &&
             cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS &&
-            !(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1)) {
+            !cptr.ldBits(
+                cptr.add(cptr.add(objects, i, $sizeof_objclass), $objclass_oc_name_known),
+                0,
+                1,
+                0
+            )) {
         /* can't write unknown spellbooks by description */
         (yield* pline(__s_unfortunately_you_don_t_have_enough));
         return NHM.ECMD_TIME;
@@ -462,21 +481,25 @@ export function* dowrite(pen) {
         spell_knowledge = NHC.spe_Unknown;
     }
     /* if known, then either by-name or by-descr works */
-    if (!(cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(new_obj, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_name_known
-    ) &
-        1) &&
+    if (!cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_name_known
+        ),
+        0,
+        1,
+        0
+    ) &&
             !(by_descr &&
-                (cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(new_obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_encountered
-                ) &
-                    1) |
+                cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_encountered
+                    ),
+                    3,
+                    1,
+                    0
+                ) |
                     0) &&
             spell_knowledge != NHC.spe_Fresh &&
             rnl((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) &&
@@ -553,13 +576,15 @@ export function* dowrite(pen) {
        where the label associated with the type-name isn't known yet;
        but if writing by description, the description is always known */
     cptr.stI32o(new_obj, $obj_dknown, 0);
-    if ((cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(new_obj, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_name_known
-    ) &
-        1) |
+    if (cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_name_known
+        ),
+        0,
+        1,
+        0
+    ) |
         0 ||
             by_descr)
         (yield* observe_object(new_obj));

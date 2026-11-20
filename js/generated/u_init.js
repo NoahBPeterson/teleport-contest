@@ -1737,7 +1737,12 @@ function knows_class(sym) {
         }
 
         if (cptr.ld1so2(objects, ct, $sizeof_objclass, $objclass_oc_class) == sym &&
-                !(cptr.ldI32o2(objects, ct, $sizeof_objclass, $objclass_oc_magic) & 1))
+                !cptr.ldBits(
+                    cptr.add(cptr.add(objects, ct, $sizeof_objclass), $objclass_oc_magic),
+                    4,
+                    1,
+                    0
+                ))
             knows_object(ct, 0);
     }
 }
@@ -1859,7 +1864,12 @@ function u_init_role() {
             /* in order to assist non-Japanese speakers, pre-discover items
                that switch to Japanese names when playing as a Samurai */
             for (i = NHC.MAXOCLASSES; i < NHC.NUM_OBJECTS; ++i) {
-                if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_magic) & 1))
+                if (cptr.ldBits(
+                    cptr.add(cptr.add(objects, i, $sizeof_objclass), $objclass_oc_magic),
+                    4,
+                    1,
+                    0
+                ))
                     continue;
                 if (Japanese_item_name(i, null))
                     /* we don't override pauper here because that would give
@@ -2078,7 +2088,7 @@ export function u_init_misc() {
 
     /* zero u, including pointer values --
      * necessary when aborting from a failed restore */
-    void __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
+    void __builtin___memset_chk(u, 0, 2760n, __builtin_object_size(u, 0));
     cptr.stPtro(u, $you_ustuck, null);
     void __builtin___memset_chk(ubirthday, 0, 8n, __builtin_object_size(ubirthday, 0));
     void __builtin___memset_chk(urealtime, 0, 24n, __builtin_object_size(urealtime, 0));
@@ -2160,7 +2170,13 @@ export function u_init_misc() {
         );  /* set PermaBlind */
 
     /* roughly based on distribution in human population */
-    cptr.stI32o(u, $you_uhandedness, (rn2(10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
+    cptr.stBits(
+        cptr.add(u, $you_uhandedness),
+        7,
+        1,
+        0,
+        (rn2(10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0
+    );
 
     max_rank_sz();  /* set max str size for class ranks */
 
@@ -2386,12 +2402,15 @@ function ini_inv_adjust_obj(trop, obj) {
         /* no "blessed" or "identified" money */
         cptr.stI64o(obj, $obj_quan, cptr.ldI64o(u, $you_umoney0));
     } else {
-        if ((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(obj, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_uses_known
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_uses_known
+            ),
+            2,
+            1,
+            0
+        ))
             cptr.stI32o(obj, $obj_known, 1);
         /* not observe_object during startup, that's handled later */
         cptr.stI32o(
@@ -2428,13 +2447,15 @@ function ini_inv_adjust_obj(trop, obj) {
                 $objclass_oc_class
             ) ==
                 NHC.RING_CLASS &&
-                    (cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_charged
-                    ) &
-                        1) |
+                    cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_charged
+                        ),
+                        5,
+                        1,
+                        0
+                    ) |
                         0 &&
                     cptr.ld1so(obj, $obj_spe) <= 0)
                 cptr.st1o(obj, $obj_spe, schar(rne(3)));

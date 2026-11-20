@@ -570,7 +570,13 @@ export function dmgval(otmp, mon) {
             tmp = 0;
     }
 
-    if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) <=
+    if ((cptr.ldBits(
+        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+        3,
+        5,
+        0
+    ) |
+        0) <=
         NHC.LEATHER &&
             ((cptr.ldU64o((ptr), $permonst_mflags1) & 2097152n) != 0n))
         /* thick-skinned or scaled creatures don't feel it */
@@ -606,7 +612,13 @@ export function dmgval(otmp, mon) {
             bonus = (bonus + rnd(4)) | 0;
         if (is_axe(otmp) && (cptr.eq((ptr), cptr.add(mons, NHC.PM_WOOD_GOLEM, $sizeof_permonst))))
             bonus = (bonus + rnd(4)) | 0;
-        if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) ==
+        if ((cptr.ldBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+            3,
+            5,
+            0
+        ) |
+            0) ==
             NHC.SILVER &&
                 mon_hates_silver(mon))
             bonus = (bonus + rnd(20)) | 0;
@@ -677,13 +689,15 @@ export function special_dmgval(magr, mdef, armask, silverhit_p) {
            scales refer to color, not material) and the only way to hit
            with one--aside from throwing--is to wield it and perform a
            weapon hit, but we include a general check here */
-        if (((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(obj, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_material
-        ) &
-            31) |
+        if ((cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_material
+            ),
+            3,
+            5,
+            0
+        ) |
             0) ==
             NHC.SILVER &&
                 mon_hates_silver(mdef)) {
@@ -695,13 +709,15 @@ export function special_dmgval(magr, mdef, armask, silverhit_p) {
     } else if ((left_ring || right_ring) &&
             cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) {
         if (left_ring && uleft.v) {
-            if (((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(uleft.v, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) &
-                31) |
+            if ((cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(uleft.v, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_material
+                ),
+                3,
+                5,
+                0
+            ) |
                 0) ==
                 NHC.SILVER &&
                     mon_hates_silver(mdef)) {
@@ -710,13 +726,15 @@ export function special_dmgval(magr, mdef, armask, silverhit_p) {
             }
         }
         if (right_ring && uright.v) {
-            if (((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(uright.v, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) &
-                31) |
+            if ((cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(uright.v, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_material
+                ),
+                3,
+                5,
+                0
+            ) |
                 0) ==
                 NHC.SILVER &&
                     mon_hates_silver(mdef)) {
@@ -753,13 +771,23 @@ export function silver_sears(magr, mdef, silverhit) {
     let both;
     let l_dknown = schar((uleft.v && (cptr.ldI32o(uleft.v, $obj_dknown) & 1) | 0 ? 1 : 0));
     let r_dknown = schar((uright.v && (cptr.ldI32o(uright.v, $obj_dknown) & 1) | 0 ? 1 : 0));
-    let l_ag = schar((((cptr.ldI32o2(objects, ltyp, $sizeof_objclass, $objclass_oc_material) & 31) |
+    let l_ag = schar(((cptr.ldBits(
+        cptr.add(cptr.add(objects, ltyp, $sizeof_objclass), $objclass_oc_material),
+        3,
+        5,
+        0
+    ) |
         0) ==
         NHC.SILVER &&
         l_dknown
             ? 1
             : 0));
-    let r_ag = schar((((cptr.ldI32o2(objects, rtyp, $sizeof_objclass, $objclass_oc_material) & 31) |
+    let r_ag = schar(((cptr.ldBits(
+        cptr.add(cptr.add(objects, rtyp, $sizeof_objclass), $objclass_oc_material),
+        3,
+        5,
+        0
+    ) |
         0) ==
         NHC.SILVER &&
         r_dknown
@@ -867,7 +895,7 @@ cptr.stI32o(pwep, 48, NHC.LANCE);
 const arwep = cptr.alloc(1 * $sizeof_throw_and_return_weapon);
 cptr.stI16o(arwep, 0, NHC.AKLYS);
 cptr.stI32o(arwep, 0 + $throw_and_return_weapon_range, 16);
-cptr.stBits(cptr.add(arwep, 8), 0, 1, 0, 1);
+cptr.stI32o(arwep, 0 + $throw_and_return_weapon_tethered, 1);
 
 /**
  * C ref: weapon.c:520
@@ -954,20 +982,24 @@ export function select_rwep(mtmp) {
             if (((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 67108864n) !=
                 0n) &&
                 (cptr.ldI64o(mtmp, $monst_misc_worn_check) & 8n) == 0n) ||
-                !(cptr.ldI32o2(
-                    objects,
-                    cptr.ldI32o(pwep, i, 4),
-                    $sizeof_objclass,
-                    $objclass_oc_big
-                ) &
-                    1)) &&
-                    (((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI32o(pwep, i, 4),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                !cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI32o(pwep, i, 4), $sizeof_objclass),
+                        $objclass_oc_big
+                    ),
+                    0,
+                    1,
+                    0
+                )) &&
+                    ((cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI32o(pwep, i, 4), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) !=
                         NHC.SILVER ||
                         !mon_hates_silver(mtmp))) {
@@ -1008,15 +1040,24 @@ export function select_rwep(mtmp) {
                     NHM.COULD_SEE) !=
                     0)) {
             if ((((cptr.ldI64o(mtmp, $monst_misc_worn_check) & 8n) == 0n) ||
-                !(cptr.ldI32o2(objects, cptr.ldI16(arw), $sizeof_objclass, $objclass_oc_big) &
-                    1)) &&
-                    (((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16(arw),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                !cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16(arw), $sizeof_objclass),
+                        $objclass_oc_big
+                    ),
+                    0,
+                    1,
+                    0
+                )) &&
+                    ((cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16(arw), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) !=
                         NHC.SILVER ||
                         !mon_hates_silver(mtmp))) {
@@ -1189,12 +1230,15 @@ export function select_hwep(mtmp) {
                 cptr.ld1so(otmp, $obj_oartifact) &&
                 touch_artifact(otmp, mtmp) &&
                 ((strong && !wearing_shield) ||
-                    !(cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(otmp, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_big
-                    ) & 1)))
+                    !cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_big
+                        ),
+                        0,
+                        1,
+                        0
+                    )))
             return otmp;
     }
 
@@ -1221,15 +1265,24 @@ export function select_hwep(mtmp) {
                 !Resists_Elem(mtmp, NHC.STONE_RES))
             continue;
         if (((strong && !wearing_shield) ||
-            !(cptr.ldI32o2(objects, cptr.ldI16o(hwep, i, 2), $sizeof_objclass, $objclass_oc_big) &
-                1)) &&
-                (((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(hwep, i, 2),
-                    $sizeof_objclass,
-                    $objclass_oc_material
-                ) &
-                    31) |
+            !cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(hwep, i, 2), $sizeof_objclass),
+                    $objclass_oc_big
+                ),
+                0,
+                1,
+                0
+            )) &&
+                ((cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(hwep, i, 2), $sizeof_objclass),
+                        $objclass_oc_material
+                    ),
+                    3,
+                    5,
+                    0
+                ) |
                     0) !=
                     NHC.SILVER ||
                     !mon_hates_silver(mtmp)))
@@ -1423,8 +1476,7 @@ export function mon_wield_item(mon) {
 
             pline_mon(mon, __s_s_wields_s_c, Monnam(mon), doname(obj), exclaim ? 33 : 46);
             if ((arw = autoreturn_weapon(obj)) !== null &&
-                    (cptr.ldBits(cptr.add(arw, $throw_and_return_weapon_tethered), 0, 1, 0) |
-                        0) != 0)
+                    ((cptr.ldI32o(arw, $throw_and_return_weapon_tethered) & 1) | 0) != 0)
                 pline_mon(mon, __s_s_secures_the_tether_on_s, Monnam(mon), the(xname(obj)));
 
             /* 3.6.3: mwelded() predicate expects the object to have its

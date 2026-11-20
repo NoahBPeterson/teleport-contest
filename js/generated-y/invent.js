@@ -212,8 +212,6 @@ const $Loot_disco = FLD.Loot_disco, $Loot_inuse = FLD.Loot_inuse,
       $to_core_maxslot = FLD.to_core_maxslot, $to_core_needcols = FLD.to_core_needcols,
       $to_core_needrows = FLD.to_core_needrows, $trap_tseen = FLD.trap_tseen,
       $trap_ttyp = FLD.trap_ttyp, $u_conduct_literate = FLD.u_conduct_literate,
-      $u_have_bell = FLD.u_have_bell, $u_have_book = FLD.u_have_book,
-      $u_have_menorah = FLD.u_have_menorah, $u_have_questart = FLD.u_have_questart,
       $u_roleplay_numrerolls = FLD.u_roleplay_numrerolls,
       $win_request_info_t_fromcore = FLD.win_request_info_t_fromcore,
       $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
@@ -768,12 +766,12 @@ export function* loot_classify(sort_item, obj) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let oclass = cptr.ld1so(obj, $obj_oclass);
     let seen;
-    let discovered = schar(((cptr.ldI32o2(
-        objects,
-        otyp,
-        $sizeof_objclass,
-        $objclass_oc_name_known
-    ) & 1) | 0
+    let discovered = schar((cptr.ldBits(
+        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+        0,
+        1,
+        0
+    ) | 0
             ? 1
             : 0));
 
@@ -894,13 +892,15 @@ export function* loot_classify(sort_item, obj) {
              *  7) discovered gray stones ("touchstone"),
              *  8) seen rocks ("rock").
              */
-            switch ((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) &
-                31) |
+            switch (cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_material
+                ),
+                3,
+                5,
+                0
+            ) |
                     0) {
                 case NHC.GEMSTONE:
                     k = !seen ? 1 : (!discovered ? 2 : 3);
@@ -1201,13 +1201,15 @@ function* sortloot_cmp(vptr1, vptr2) {
            below the range of obj->spe.  oc_uses_known means that obj->known
            matters, which usually indirectly means that obj->spe is relevant.
            Lots of objects use obj->spe for some other purpose (see obj.h). */
-        if ((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(obj1, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_uses_known
-        ) &
-            1) |
+        if (cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(obj1, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_uses_known
+            ),
+            2,
+            1,
+            0
+        ) |
             0 &&
                 cptr.ld1so(obj1, $obj_oclass) != NHC.FOOD_CLASS) {
             val1 = (cptr.ldI32o(obj1, $obj_known) & 1) | 0 ? cptr.ld1so(obj1, $obj_spe) : -1000;
@@ -1634,30 +1636,30 @@ export function* addinv_core1(obj) {
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
         cptr.st1(disp, 1);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
-        if ((cptr.ldI32o(u, $you_uhave) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
             (yield* impossible(__s_already_have_amulet));
-        cptr.stI32o(u, $you_uhave, 1);
+        cptr.stBits(cptr.add(u, $you_uhave), 0, 1, 0, 1);
         (yield* record_achievement(NHC.ACH_AMUL));
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
-        if ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0))
             (yield* impossible(__s_already_have_candelabrum));
-        cptr.stI32o(u, $you_uhave + $u_have_menorah, 1);
+        cptr.stBits(cptr.add(u, $you_uhave), 3, 1, 0, 1);
         (yield* record_achievement(NHC.ACH_CNDL));
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING) {
-        if ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0))
             (yield* impossible(__s_already_have_silver_bell));
-        cptr.stI32o(u, $you_uhave + $u_have_bell, 1);
+        cptr.stBits(cptr.add(u, $you_uhave), 1, 1, 0, 1);
         (yield* record_achievement(NHC.ACH_BELL));
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
-        if ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uhave), 2, 1, 0))
             (yield* impossible(__s_already_have_the_book));
-        cptr.stI32o(u, $you_uhave + $u_have_book, 1);
+        cptr.stBits(cptr.add(u, $you_uhave), 2, 1, 0, 1);
         (yield* record_achievement(NHC.ACH_BOOK));
     } else if (cptr.ld1so(obj, $obj_oartifact)) {
         if (is_quest_artifact(obj)) {
-            if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
+            if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0))
                 (yield* impossible(__s_already_have_quest_artifact));
-            cptr.stI32o(u, $you_uhave + $u_have_questart, 1);
+            cptr.stBits(cptr.add(u, $you_uhave), 4, 1, 0, 1);
             (yield* artitouch(obj));
         }
         (yield* set_artifact_intrinsic(obj, 1, 4096n));
@@ -1709,13 +1711,15 @@ export function* addinv_core2(obj) {
             cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS &&
             cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_BLANK_PAPER &&
             !Blind() &&
-            !(cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_name_known
-            ) &
-                1)) {
+            !cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_name_known
+                ),
+                0,
+                1,
+                0
+            )) {
         (yield* observe_object(obj));
         (yield* pline(__s_you_decipher_the_label_on_s, (yield* yname(obj))));
         (yield* discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1));
@@ -1995,7 +1999,7 @@ export function* hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
     if (drop_fmt)
         (yield* pline(drop_fmt, drop_arg));
     cptr.stI32o(obj, $obj_nomerge, 0);
-    if (can_reach_floor(1) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+    if (can_reach_floor(1) || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
         (yield* dropx(obj));
     } else {
         (yield* freeinv(obj));
@@ -2050,26 +2054,26 @@ export function* freeinv_core(obj) {
         cptr.st1(disp, 1);
         return;
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
-        if (!(cptr.ldI32o(u, $you_uhave) & 1))
+        if (!cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
             (yield* impossible(__s_don_t_have_amulet));
-        cptr.stI32o(u, $you_uhave, 0);
+        cptr.stBits(cptr.add(u, $you_uhave), 0, 1, 0, 0);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
-        if (!(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1))
+        if (!cptr.ldBits(cptr.add(u, $you_uhave), 3, 1, 0))
             (yield* impossible(__s_don_t_have_candelabrum));
-        cptr.stI32o(u, $you_uhave + $u_have_menorah, 0);
+        cptr.stBits(cptr.add(u, $you_uhave), 3, 1, 0, 0);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING) {
-        if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1))
+        if (!cptr.ldBits(cptr.add(u, $you_uhave), 1, 1, 0))
             (yield* impossible(__s_don_t_have_silver_bell));
-        cptr.stI32o(u, $you_uhave + $u_have_bell, 0);
+        cptr.stBits(cptr.add(u, $you_uhave), 1, 1, 0, 0);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
-        if (!(cptr.ldI32o(u, $you_uhave + $u_have_book) & 1))
+        if (!cptr.ldBits(cptr.add(u, $you_uhave), 2, 1, 0))
             (yield* impossible(__s_don_t_have_the_book));
-        cptr.stI32o(u, $you_uhave + $u_have_book, 0);
+        cptr.stBits(cptr.add(u, $you_uhave), 2, 1, 0, 0);
     } else if (cptr.ld1so(obj, $obj_oartifact)) {
         if (is_quest_artifact(obj)) {
-            if (!(cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
+            if (!cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0))
                 (yield* impossible(__s_don_t_have_quest_artifact));
-            cptr.stI32o(u, $you_uhave + $u_have_questart, 0);
+            cptr.stBits(cptr.add(u, $you_uhave), 4, 1, 0, 0);
         }
         (yield* set_artifact_intrinsic(obj, 0, 4096n));
     }
@@ -5910,7 +5914,7 @@ export function* look_here(obj_cnt, lookhere_flags) {
         obj_cnt >= cptr.ldI32o(flags, $flag_pile_limit)
             ? 1
             : 0));
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         let mtmp = cptr.ldPtro(u, $you_ustuck);
 
         /*
@@ -5970,7 +5974,7 @@ export function* look_here(obj_cnt, lookhere_flags) {
                 reg_damg(reg) ? __s_poison_gas : __s_vapor
             );
         if ((trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null &&
-                !cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0))
+                !(cptr.ldI32o(trap, $trap_tseen) & 1))
             trap = (null);
 
         if (reg || trap)
@@ -5978,9 +5982,7 @@ export function* look_here(obj_cnt, lookhere_flags) {
                 __s_is_s_s_s_here,
                 reg ? cptr.decay(regbuf) : __s_empty,
                 (reg && trap) ? __s_and : __s_empty,
-                trap
-                    ? (yield* an((yield* trapname(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0, 0))))
-                    : __s_empty
+                trap ? (yield* an((yield* trapname((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0, 0)))) : __s_empty
             ));
     }
 
@@ -5995,7 +5997,7 @@ export function* look_here(obj_cnt, lookhere_flags) {
     dfeature = (yield* dfeature_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(fbuf2)));
     if (dfeature &&
             !strcmp(dfeature, __s_pool_of_water) &&
-            ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
+            (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0)
         dfeature = null;
 
     if (Blind()) {
@@ -6064,7 +6066,7 @@ export function* look_here(obj_cnt, lookhere_flags) {
                 skip_dfeature = 1;  /* terrain feature already identified */
         }
         trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-        if (!can_reach_floor(schar((trap && is_pit(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0))
+        if (!can_reach_floor(schar((trap && is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31))
                 ? 1
                 : 0)))) {
             (yield* pline(__s_but_you_can_t_reach_it));
@@ -6276,12 +6278,15 @@ export function* mergable(otmp, obj) {
             cptr.ldI16o(obj, $obj_otyp) != cptr.ldI16o(otmp, $obj_otyp) ||
             (cptr.ldI32o(obj, $obj_nomerge) & 1) | 0 ||
             (cptr.ldI32o(otmp, $obj_nomerge) & 1) | 0 ||
-            !(cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_merge
-            ) & 1))
+            !cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_merge
+                ),
+                1,
+                1,
+                0
+            ))
         return 0;
 
     /* coins of the same kind will always merge */
@@ -6712,7 +6717,7 @@ export function* useupf(obj, numused) {
     }
     (yield* delobj(otmp));
     if (at_u &&
-            (cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
+            cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
@@ -7351,7 +7356,8 @@ export function* display_minventory(mon, dflags, title) {
     let selected = cptr.box(null);
     let do_all = (dflags & NHM.MINV_ALL) != 0;
     let incl_hero = (do_all &&
-        ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))
+        (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+            (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))
             ? 1
             : 0);
     let have_inv = (cptr.ldPtro(mon, $monst_minvent) !== null);

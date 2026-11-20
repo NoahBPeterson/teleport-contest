@@ -339,16 +339,16 @@ export function dosave0() {
         /* we may get here via hangup signal, in which case we want to fix up
            a few of things before saving so that they won't be restored in
            an improper state; these will be no-ops for normal save sequence */
-        cptr.stI32o(u, $you_uinvulnerable, 0);
-        if (cptr.ldBits(cptr.add(iflags, $instance_flags_save_uswallow), 0, 1, 0))
-            cptr.stI32o(u, $you_uswallow, 1),
-                    cptr.stBits(cptr.add(iflags, $instance_flags_save_uswallow), 0, 1, 0, 0);
-        if (cptr.ldBits(cptr.add(iflags, $instance_flags_save_uinwater), 1, 1, 0))
-            cptr.stI32o(u, $you_uinwater, 1),
-                    cptr.stBits(cptr.add(iflags, $instance_flags_save_uinwater), 1, 1, 0, 0);  /* bypass set_uinwater() */
-        if (cptr.ldBits(cptr.add(iflags, $instance_flags_save_uburied), 2, 1, 0))
-            cptr.stI32o(u, $you_uburied, 1),
-                    cptr.stBits(cptr.add(iflags, $instance_flags_save_uburied), 2, 1, 0, 0);
+        cptr.stBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0, 0);
+        if ((cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1))
+            cptr.stBits(cptr.add(u, $you_uswallow), 0, 1, 0, 1),
+                    cptr.stI32o(iflags, $instance_flags_save_uswallow, 0);
+        if ((cptr.ldI32o(iflags, $instance_flags_save_uinwater) & 1))
+            cptr.stBits(cptr.add(u, $you_uinwater), 1, 1, 0, 1),
+                    cptr.stI32o(iflags, $instance_flags_save_uinwater, 0);  /* bypass set_uinwater() */
+        if ((cptr.ldI32o(iflags, $instance_flags_save_uburied) & 1))
+            cptr.stBits(cptr.add(u, $you_uburied), 5, 1, 0, 1),
+                    cptr.stI32o(iflags, $instance_flags_save_uburied, 0);
         /* extra handling for hangup save or panic save; without this,
            a thrown light source might trigger an "obj_is_local" panic;
            if a thrown or kicked object is in transit, put it on the map;
@@ -1251,7 +1251,7 @@ function savemon(nhfp, mtmp) {
                 buflen.v
             );
         }
-        buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)) ? 640 : 0;
+        buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)) ? 652 : 0;
         sfo_int(nhfp, buflen, __s_monst_egd_length);
         if (buflen.v > 0) {
             sfo_egd(
@@ -1313,7 +1313,7 @@ function savemon(nhfp, mtmp) {
                 $edog_hungrytime
             ));
         }
-        buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)) ? 28 : 0;
+        buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)) ? 36 : 0;
         sfo_int(nhfp, buflen, __s_monst_ebones_length);
         if (buflen.v > 0) {
             sfo_ebones(

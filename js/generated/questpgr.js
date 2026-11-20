@@ -324,12 +324,10 @@ function qtext_pronoun(who, which) {
                 : ((lwhich == 105) ? __s_them : ((lwhich == 106) ? __s_their : __s_query));
     } else {
         godgend = (who == 100)
-                ? cptr.ldBits(cptr.add(svq, $q_score_godgend), 1, 2, 0) | 0
+                ? (cptr.ldI32o(svq, $q_score_godgend) & 3) | 0
                 : ((who == 108)
-                    ? cptr.ldBits(cptr.add(svq, $q_score_ldrgend), 5, 2, 0) | 0
-                    : ((who == 110)
-                        ? cptr.ldBits(cptr.add(svq, $q_score_nemgend), 7, 2, 0) | 0
-                        : 2));  /* default to neuter */
+                    ? (cptr.ldI32o(svq, $q_score_ldrgend) & 3) | 0
+                    : ((who == 110) ? (cptr.ldI32o(svq, $q_score_nemgend) & 3) | 0 : 2));  /* default to neuter */
         pnoun = (lwhich == 104)
                 ? cptr.ldPtro2(genders, godgend, $sizeof_Gender, $Gender_he)
                 : ((lwhich == 105)

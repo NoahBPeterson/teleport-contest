@@ -676,15 +676,11 @@ export function bad_location(x, y, nlx, nly, nhx, nhy) {
             $instance_globals_saved_l_level + $rm_typ
         ) ==
             NHC.CORR &&
-            cptr.ldBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                ),
-                0,
-                1,
-                0
-            ) |
+            (cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+            ) &
+                1) |
                 0) ||
             cptr.ld1so3(
                 svl,
@@ -800,7 +796,7 @@ function put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev) {
                It might still fail if there's a dungeon feature here. */
             let t = t_at(x, y);
 
-            if (t && !undestroyable_trap(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0))) {
+            if (t && !undestroyable_trap((cptr.ldI32o(t, $trap_ttyp) & 31))) {
                 if (((mtmp = (cptr.ldPtro3(
                     svl,
                     x,
@@ -1297,14 +1293,9 @@ export function fixup_special() {
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
                     )
                 )))) {
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-            ),
-            4,
-            1,
-            0,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory,
             0
         );
         /* water level is an odd beast - it has to be set up
@@ -1511,14 +1502,9 @@ export function fixup_special() {
     } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) &&
             In_quest(cptr.add(u, $you_uz))) {
         /* less chance for undead corpses (lured from lower morgues) */
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
-            ),
-            6,
-            1,
-            0,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard,
             1
         );
     } else if ((((cptr.ldI16o(
@@ -1539,14 +1525,9 @@ export function fixup_special() {
                     $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
                 )
             )))) {
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
-            ),
-            6,
-            1,
-            0,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard,
             1
         );
     } else if (on_level(
@@ -1561,12 +1542,10 @@ export function fixup_special() {
     }
 
     if ((sp = Is_special(cptr.add(u, $you_uz))) !== null &&
-            cptr.ldBits(cptr.add(sp, $s_level_flags), 0, 1, 0) | 0)
-        cptr.stBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town),
-            3,
-            1,
-            0,
+            (cptr.ldI32o(sp, $s_level_flags) & 1) | 0)
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town,
             1
         );
 
@@ -1973,12 +1952,10 @@ export function create_maze(corrwid, wallthick, rmdeadends) {
     rdx = ((cptr.ldI32(gx) / scale) | 0);
     rdy = ((cptr.ldI32(gy) / scale) | 0);
 
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-        5,
-        1,
-        0
-    ))
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+    ) & 1))
         for (x = 2; x < (Math.imul(rdx, 2)); x++)
             for (y = 2; y < (Math.imul(rdy, 2)); y++)
                 cptr.st1o3(
@@ -2012,12 +1989,10 @@ export function create_maze(corrwid, wallthick, rmdeadends) {
     walkfrom(i16(cptr.ldI16(mm)), i16(cptr.ldI16o(mm, $nhcoord_y)), 0);
 
     if (rmdeadends)
-        maze_remove_deadends(i16(((cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-            5,
-            1,
-            0
-        )) | 0
+        maze_remove_deadends(i16((((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+        ) & 1)) | 0
                 ? NHC.CORR
                 : NHC.ROOM)));
 
@@ -2290,18 +2265,14 @@ export function makemaz(s) {
         impossible(__s_couldn_t_load_s_making_a_maze, cptr.decay(protofile));
     }
 
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev),
-        0,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev,
         1
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-        5,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze,
         (!rn2(3)) >>> 0
     );
 
@@ -2311,12 +2282,10 @@ export function makemaz(s) {
         create_maze(1, 1, 0);
     }
 
-    if (!cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-        5,
-        1,
-        0
-    ))
+    if (!(cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+    ) & 1))
         wallification(2, 2, i16(cptr.ldI32(gx)), i16(cptr.ldI32(gy)));
 
     mazexy(mm);
@@ -2343,12 +2312,10 @@ export function walkfrom(x, y, typ) {
     let dirs = cptr.alloc(4 * 4);
 
     if (!typ) {
-        if (cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-            5,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+        ) & 1))
             typ = NHC.CORR;
         else
             typ = NHC.ROOM;
@@ -2447,12 +2414,10 @@ export function walkfrom(x, y, typ) {
 export function mazexy(cc) {
     let x;
     let y;
-    let allowedtyp = (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-        5,
-        1,
-        0
-    ) | 0
+    let allowedtyp = ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+    ) & 1) | 0
             ? NHC.CORR
             : NHC.ROOM);
     let cpt = 0;
@@ -2540,15 +2505,10 @@ export function get_level_extends(left, top, right, bottom) {
     }
     xmin = i16(xmin -
             ((nonwall ||
-                !cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                    ),
-                    0,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                ) & 1))
                 ? 2
                 : 1));
     if (xmin < 0)
@@ -2572,15 +2532,10 @@ export function get_level_extends(left, top, right, bottom) {
     }
     xmax = i16(xmax +
             ((nonwall ||
-                !cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                    ),
-                    0,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                ) & 1))
                 ? 2
                 : 1));
     if (xmax >= NHM.COLNO)
@@ -2604,15 +2559,10 @@ export function get_level_extends(left, top, right, bottom) {
     }
     ymin = i16(ymin -
             ((nonwall ||
-                !cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                    ),
-                    0,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                ) & 1))
                 ? 2
                 : 1));
 
@@ -2634,15 +2584,10 @@ export function get_level_extends(left, top, right, bottom) {
     }
     ymax = i16(ymax +
             ((nonwall ||
-                !cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                    ),
-                    0,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+                ) & 1))
                 ? 2
                 : 1));
 
@@ -3026,7 +2971,7 @@ export function movebubbles() {
                             cptr.stI16o(mon, $monst_mx, cptr.stI16o(mon, $monst_my, 0));
                             cptr.stI64o(mon, $monst_mstate, cptr.ldI64o(mon, $monst_mstate) | 16n);
                         }
-                        if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
+                        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
                                 ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
                             cons = alloc(24);
                             cptr.stI16o(cons, $container_x, x);
@@ -3373,13 +3318,7 @@ function set_wportal() {
             cptr.ldPtr(cptr.ldPtro(gw, $instance_globals_w_wportal))
         )
     )
-        if ((cptr.ldBits(
-            cptr.add(cptr.ldPtro(gw, $instance_globals_w_wportal), $trap_ttyp),
-            0,
-            5,
-            0
-        ) |
-            0) ==
+        if (((cptr.ldI32o(cptr.ldPtro(gw, $instance_globals_w_wportal), $trap_ttyp) & 31) | 0) ==
                 NHC.MAGIC_PORTAL)
             return;
     impossible(__s_set_wportal_no_portal);

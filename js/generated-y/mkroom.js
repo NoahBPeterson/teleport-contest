@@ -370,15 +370,11 @@ export function* fill_zoo(sroom) {
     sh = cptr.ldI32o(sroom, $mkroom_fdoor);
     __sw_1: switch (type) {
         case NHC.COURT:
-            if (cptr.ldBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                ),
-                0,
-                1,
-                0
-            )) {
+            if ((cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+            ) &
+                    1)) {
                 for (tx = cptr.ldI16(sroom); tx <= cptr.ldI16o(sroom, $mkroom_hx); tx++)
                     for (
                         ty = cptr.ldI16o(sroom, $mkroom_ly);
@@ -658,75 +654,45 @@ export function* fill_zoo(sroom) {
                 (yield* add_to_container(chest, gold));
                 cptr.stI32o(chest, $obj_owt, (yield* weight(chest)) >>> 0);
                 cptr.st1o(chest, $obj_spe, 2);  /* so it can be found later */
-                cptr.stBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court
-                    ),
-                    3,
-                    1,
-                    0,
+                cptr.stI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court,
                     1
                 );
                 break;
             }
         case NHC.BARRACKS:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks
-                ),
-                6,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks,
                 1
             );
             break;
         case NHC.ZOO:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo
-                ),
-                2,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo,
                 1
             );
             break;
         case NHC.MORGUE:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue
-                ),
-                4,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue,
                 1
             );
             break;
         case NHC.SWAMP:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
-                ),
-                0,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp,
                 1
             );
             break;
         case NHC.BEEHIVE:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive
-                ),
-                5,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive,
                 1
             );
             break;
@@ -755,13 +721,7 @@ export function* mkundead(mm, revive_corpses, mm_flags) {
                     !(yield* revive(otmp, 0))))
             void (yield* makemon(mdat, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), mm_flags >>> 0));
     }
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard),
-        6,
-        1,
-        0,
-        1
-    );  /* reduced chance for undead corpse */
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard, 1);  /* reduced chance for undead corpse */
 }
 
 /** C ref: mkroom.c:478 @returns {CPtr<struct permonst>} */
@@ -932,14 +892,9 @@ function* mkswamp() {
                         void (yield* makemon((yield* mkclass(NHC.S_FUNGUS, 0)), sx, sy, NHM.NO_MM_FLAGS));
                 }
             }
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
-            ),
-            0,
-            1,
-            0,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp,
             1
         );
     }
@@ -1012,13 +967,7 @@ function* mktemple() {
         0
     ));
     cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) | NHM.AM_SHRINE);
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple),
-        7,
-        1,
-        0,
-        1
-    );
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple, 1);
 }
 
 /** C ref: mkroom.c:623 — @param {CInt} sx @param {CInt} sy @returns {CInt} */

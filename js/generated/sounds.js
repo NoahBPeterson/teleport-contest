@@ -687,8 +687,8 @@ export function dosounds() {
 
     if (Deaf() ||
             !cptr.ld1s(flags) ||
-            (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
-            ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
+            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+            (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0)
         return;
 
     hallu = Hallucination() ? 1 : 0;
@@ -700,46 +700,38 @@ export function dosounds() {
             !rn2(300)) {
         You_hear(__s_pct_s, cptr.ldPtro(__static_dosounds_sink_msg, (rn2(2) + hallu) | 0, 8));
     }
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court),
-        3,
-        1,
-        0
-    ) |
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court
+    ) &
+        1) |
         0 &&
             !rn2(200)) {
         if (get_iter_mons(throne_mon_sound))
             return;
     }
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp),
-        0,
-        1,
-        0
-    ) |
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
+    ) &
+        1) |
         0 &&
             !rn2(200)) {
         You(__s_pct_s, cptr.ldPtro(__static_dosounds_swamp_msg, (rn2(2) + hallu) | 0, 8));
         return;
     }
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault),
-        1,
-        1,
-        0
-    ) |
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault
+    ) &
+        1) |
         0 &&
             !rn2(200)) {
         if (!(sroom = search_special(NHC.VAULT))) {
             /* strange ... */
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault
-                ),
-                1,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault,
                 0
             );
             return;
@@ -783,34 +775,31 @@ export function dosounds() {
             }
         return;
     }
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive),
-        5,
-        1,
-        0
-    ) |
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive
+    ) &
+        1) |
         0 &&
             !rn2(200)) {
         if (get_iter_mons(beehive_mon_sound))
             return;
     }
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue),
-        4,
-        1,
-        0
-    ) |
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue
+    ) &
+        1) |
         0 &&
             !rn2(200)) {
         if (get_iter_mons(morgue_mon_sound))
             return;
     }
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks),
-        6,
-        1,
-        0
-    ) |
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks
+    ) &
+        1) |
         0 &&
             !rn2(200)) {
         let count = 0;
@@ -833,35 +822,25 @@ export function dosounds() {
             }
         }
     }
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo),
-        2,
-        1,
-        0
-    ) |
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo) &
+        1) |
         0 &&
             !rn2(200)) {
         if (get_iter_mons(zoo_mon_sound))
             return;
     }
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
-        0,
-        1,
-        0
-    ) |
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
+    ) &
+        1) |
         0 &&
             !rn2(200)) {
         if (!(sroom = search_special(-2))) {
             /* strange... */
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
-                ),
-                0,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop,
                 0
             );
             return;
@@ -879,12 +858,11 @@ export function dosounds() {
         }
         return;
     }
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple),
-        7,
-        1,
-        0
-    ) |
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple
+    ) &
+        1) |
         0 &&
             !rn2(200) &&
             !((((cptr.ldI16o(
@@ -1829,7 +1807,7 @@ export function domonnoise(mtmp) {
                 let t = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
 
                 if (t)
-                    cptr.stBits(cptr.add(t, $trap_tseen), 5, 1, 0, 1);
+                    cptr.stI32o(t, $trap_tseen, 1);
                 verbl_msg = __s_i_m_trapped;
             } else if (cptr.ldI32o(mtmp, $monst_mhp) < ((cptr.ldI32o(mtmp, $monst_mhpmax) / 2) | 0))
                 pline_msg = __s_asks_for_a_potion_of_healing;
@@ -1989,12 +1967,8 @@ export function domonnoise(mtmp) {
 
                 /* 3.6 tribute */
                 if (ms_Death &&
-                        !cptr.ldBits(
-                            cptr.add(svc, $context_info_tribute + $tribute_info_Deathnotice),
-                            1,
-                            1,
-                            0
-                        ) &&
+                        !(cptr.ldI32o(svc, $context_info_tribute + $tribute_info_Deathnotice) &
+                            1) &&
                         (book = u_have_novel()) !== null) {
                     if ((tribtitle = noveltitle(cptr.add(book, $obj_corpsenm))) !== null) {
                         void cptr.sprintf(
@@ -2011,13 +1985,7 @@ export function domonnoise(mtmp) {
                             );
                         verbl_msg = cptr.decay(verbuf);
                     }
-                    cptr.stBits(
-                        cptr.add(svc, $context_info_tribute + $tribute_info_Deathnotice),
-                        1,
-                        1,
-                        0,
-                        1
-                    );
+                    cptr.stI32o(svc, $context_info_tribute + $tribute_info_Deathnotice, 1);
                 } else if (ms_Death && rn2(3) && Death_quote(cptr.decay(verbuf), 256)) {
                     verbl_msg = cptr.decay(verbuf);
                     /* end of tribute addition */
@@ -2096,7 +2064,7 @@ function dochat() {
         You_cant(__s_speak_you_re_choking);
         return NHM.ECMD_OK;
     }
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         pline(__s_they_won_t_hear_you_out_there);
         return NHM.ECMD_OK;
     }

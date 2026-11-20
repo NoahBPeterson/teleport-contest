@@ -92,13 +92,12 @@ const $Gender_him = FLD.Gender_him, $Role_mnum = FLD.Role_mnum,
       $sizeof_Gender = FLD.sizeof_Gender, $sizeof_objclass = FLD.sizeof_objclass,
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
       $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21, $trap_tseen = FLD.trap_tseen,
-      $trap_ttyp = FLD.trap_ttyp, $u_event_uheard_tune = FLD.u_event_uheard_tune,
-      $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_dx = FLD.you_dx, $you_dy = FLD.you_dy,
-      $you_dz = FLD.you_dz, $you_uevent = FLD.you_uevent, $you_uinwater = FLD.you_uinwater,
-      $you_ulevel = FLD.you_ulevel, $you_umonnum = FLD.you_umonnum,
-      $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops,
-      $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed,
-      $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
+      $trap_ttyp = FLD.trap_ttyp, $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_dx = FLD.you_dx,
+      $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_uevent = FLD.you_uevent,
+      $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel,
+      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+      $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
       $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -440,7 +439,7 @@ function* charm_monsters(distance) {
     let mtmp;
     let mtmp2;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1))
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
         distance = 0;
 
     for (
@@ -480,7 +479,7 @@ function* do_pit(x, y, tu_pit) {
     chasm = (yield* maketrap(x, y, NHC.PIT));
     if (!chasm)
         return;  /* no pit if portal at that location */
-    cptr.stBits(cptr.add(chasm, $trap_tseen), 5, 1, 0, 1);
+    cptr.stI32o(chasm, $trap_tseen, 1);
 
     mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));  /* (redundant?) */
     if ((otmp = sobj_at(NHC.BOULDER, x, y)) !== null) {
@@ -666,7 +665,7 @@ function* do_earthquake(force) {
     let tu_pit = 0;
 
     if (trap_at_u)
-        tu_pit = is_pit(cptr.ldBits(cptr.add(trap_at_u, $trap_ttyp), 0, 5, 0)) >>> 0;
+        tu_pit = is_pit((cptr.ldI32o(trap_at_u, $trap_ttyp) & 31)) >>> 0;
     if (force > 13)
         force = 13;
     start_x = (cptr.ldI16(u) - (Math.imul(force, 2))) | 0;
@@ -973,13 +972,15 @@ function* do_improvisation(instr) {
 
     /* if won't yield special effect, make sound of mundane counterpart */
     if (!do_spec || cptr.ld1so(instr, $obj_spe) <= 0)
-        while ((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(itmp, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_magic
-        ) &
-                1)) {
+        while (cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(itmp, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_magic
+            ),
+            4,
+            1,
+            0
+        )) {
             cptr.stI16o(itmp, $obj_otyp, cptr.ldI16o(itmp, $obj_otyp) - 1);
             mundane = 1;
         }
@@ -1290,7 +1291,7 @@ export function* do_play_instrument(instr) {
         if (c != 110)
             return (yield* do_improvisation(instr)) ? NHM.ECMD_TIME : NHM.ECMD_OK;
 
-        if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) == 2)
+        if ((cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) | 0) == 2)
             c = (yield* yn_function(__s_play_the_passtune, cptr.decay(ynqchars), 113, 1));
         if (c == 113) {
             break __lbl_nevermind;
@@ -1355,7 +1356,7 @@ export function* do_play_instrument(instr) {
                             continue;
                         if (find_drawbridge(x, y)) {
                             /* tune now fully known */
-                            cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 2);
+                            cptr.stBits(cptr.add(u, $you_uevent), 6, 2, 0, 2);
                             (yield* record_achievement(NHC.ACH_TUNE));
                             if (cptr.ld1so3(
                                 svl,
@@ -1373,8 +1374,8 @@ export function* do_play_instrument(instr) {
                         }
                     }
             } else if (!Deaf()) {
-                if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) < 1)
-                    cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 1);
+                if ((cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) | 0) < 1)
+                    cptr.stBits(cptr.add(u, $you_uevent), 6, 2, 0, 1);
                 /* Okay, it wasn't the right tune, but perhaps
                  * we can give the player some hints like in the
                  * Mastermind game */
@@ -1466,7 +1467,7 @@ export function* do_play_instrument(instr) {
                            correct notes followed by excess; otherwise,
                            tune would have matched above */
                         if (gears == 5) {
-                            cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 2);
+                            cptr.stBits(cptr.add(u, $you_uevent), 6, 2, 0, 2);
                             (yield* record_achievement(NHC.ACH_TUNE));
                         }
                     }

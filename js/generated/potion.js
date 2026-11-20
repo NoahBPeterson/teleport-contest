@@ -592,12 +592,24 @@ export function make_sick(xtime, cause, talk, type) {
             cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SICK, $sizeof_prop), $prop_intrinsic),
             xtime
         );
-        cptr.stI32o(u, $you_usick_type, cptr.ldI32o(u, $you_usick_type) | type);
+        cptr.stBits(
+            cptr.add(u, $you_usick_type),
+            0,
+            2,
+            0,
+            cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | type
+        );
         cptr.st1(disp, 1);
-    } else if (old && (type & ((cptr.ldI32o(u, $you_usick_type) & 3) | 0))) {
+    } else if (old && (type & (cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0))) {
         /* was sick, now not */
-        cptr.stI32o(u, $you_usick_type, cptr.ldI32o(u, $you_usick_type) & ~type);
-        if ((cptr.ldI32o(u, $you_usick_type) & 3)) {
+        cptr.stBits(
+            cptr.add(u, $you_usick_type),
+            0,
+            2,
+            0,
+            cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) & ~type
+        );
+        if (cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0)) {
             if (talk)
                 You_feel(__s_somewhat_better);
             set_itimeout(
@@ -905,7 +917,7 @@ export function make_hallucinated(xtime, talk, mask) {
         if (!Hallucination())
             eatmupdate();
 
-        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             swallowed(0);  /* redraw swallow display */
         } else {
             /* The see_* routines should be called *before* the pline. */
@@ -1065,7 +1077,8 @@ export function dodrink() {
             ++drink_ok_extra;
         }
         /* Or are you surrounded by water? */
-        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
+                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             if (yn_function(__s_drink_the_water_around_you, cptr.decay(ynchars), 110, 1) == 121) {
                 pline(__s_do_you_know_what_lives_in_this_water);
                 return NHM.ECMD_TIME;
@@ -1174,13 +1187,15 @@ export function dopotion(otmp) {
         You(__s_have_a_s_feeling_for_a_moment_then_it, Hallucination() ? __s_normal : __s_peculiar);
     }
     if ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 &&
-            !(cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(otmp, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_name_known
-            ) &
-                1)) {
+            !cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_name_known
+                ),
+                0,
+                1,
+                0
+            )) {
         if (!cptr.ldI32o(gp, $instance_globals_p_potion_unkn)) {
             discover_object((cptr.ldI16o(otmp, $obj_otyp)), 1, 1, 1);
             more_experienced(0, 10);
@@ -1663,7 +1678,7 @@ function peffect_monster_detection(otmp) {
             }
         }
         /* if swallowed or underwater, fall through to uncursed case */
-        if (!(cptr.ldI32o(u, $you_uswallow) & 1) && !Underwater()) {
+        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) && !Underwater()) {
             see_monsters();
             if (cptr.ldI32o(gp, $instance_globals_p_potion_unkn))
                 You_feel(__s_lonely);
@@ -1857,7 +1872,7 @@ function peffect_gain_level(otmp) {
         )) - (1);
         /* they went up a level */
         if (on_lvl_1
-                ? (cptr.ldI32o(u, $you_uhave) & 1) | 0
+                ? cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0
                 : Can_rise_up(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz))) {
             let newlev;
             let newlevel = cptr.alloc(4);
@@ -3773,21 +3788,31 @@ function potion_dip(obj, potion) {
             mixture = mixtype(obj, potion);
 
             magic = schar(((mixture != NHC.STRANGE_OBJECT)
-                    ? (cptr.ldI32o2(objects, mixture, $sizeof_objclass, $objclass_oc_magic) & 1) | 0
-                    : ((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_magic
-                    ) &
-                        1) |
-                        0 ||
-                        (cptr.ldI32o2(
-                            objects,
-                            cptr.ldI16o(potion, $obj_otyp),
-                            $sizeof_objclass,
+                    ? cptr.ldBits(
+                        cptr.add(cptr.add(objects, mixture, $sizeof_objclass), $objclass_oc_magic),
+                        4,
+                        1,
+                        0
+                    ) | 0
+                    : (cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
                             $objclass_oc_magic
-                        ) & 1) | 0
+                        ),
+                        4,
+                        1,
+                        0
+                    ) |
+                        0 ||
+                        cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, cptr.ldI16o(potion, $obj_otyp), $sizeof_objclass),
+                                $objclass_oc_magic
+                            ),
+                            4,
+                            1,
+                            0
+                        ) | 0
                         ? 1
                         : 0)));
             void cptr.strcpy(cptr.decay(qbuf), __s_the);  /* assume full stack */
@@ -3971,13 +3996,15 @@ function potion_dip(obj, potion) {
                  * cracks.  Arrows, etc are classed as metallic due to arrowhead
                  * material, but dipping in oil shouldn't repair them.
                  */
-            } else if ((!(((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) &
-                31) |
+            } else if ((!((cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_material
+                ),
+                3,
+                5,
+                0
+            ) |
                 0) ==
                 NHC.IRON) &&
                 !is_corrodeable(obj)) ||
@@ -4135,8 +4162,15 @@ function potion_dip(obj, potion) {
                 pline(__s_something_happens);
 
             if (old_dknown &&
-                    !(cptr.ldI32o2(objects, old_otyp, $sizeof_objclass, $objclass_oc_name_known) &
-                        1) &&
+                    !cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, old_otyp, $sizeof_objclass),
+                            $objclass_oc_name_known
+                        ),
+                        0,
+                        1,
+                        0
+                    ) &&
                     !cptr.ldPtro2(objects, old_otyp, $sizeof_objclass, $objclass_oc_uname)) {
                 let fakeobj = cptr.alloc(216);
 

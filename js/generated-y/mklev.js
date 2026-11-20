@@ -1008,12 +1008,10 @@ function* join(a, b, nxcor) {
         dest,
         npoints,
         nxcor,
-        schar((cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal),
-            2,
-            1,
-            0
-        ) | 0
+        schar(((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
+        ) & 1) | 0
             ? NHC.ROOM
             : NHC.CORR)),
         NHC.STONE
@@ -1676,7 +1674,7 @@ function* makeniche(trap_type) {
                 ttmp = (yield* maketrap(xx.v, i16(((yy.v + dy.v) | 0)), trap_type));
                 if (ttmp) {
                     if (trap_type != NHC.ROCKTRAP)
-                        cptr.stBits(cptr.add(ttmp, $trap_once), 6, 1, 0, 1);
+                        cptr.stI32o(ttmp, $trap_once, 1);
                     if (cptr.ldPtro(trap_engravings, trap_type, 8)) {
                         (yield* make_engr_at(
                             xx.v,
@@ -1726,15 +1724,10 @@ function* makeniche(trap_type) {
                             1
                         ));
                 }
-                if (!cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-                    ),
-                    1,
-                    1,
-                    0
-                ))
+                if (!(cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
+                ) & 1))
                     void (yield* mksobj_at(NHC.SCR_TELEPORTATION, xx.v, i16(((yy.v + dy.v) | 0)), 1, 0));
                 if (!rn2(3))
                     void (yield* mkobj_at(NHC.RANDOM_CLASS, xx.v, i16(((yy.v + dy.v) | 0)), 1));
@@ -1748,12 +1741,11 @@ function* makeniche(trap_type) {
 function* make_niches() {
     let ct = rnd(((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >> 1) + 1) | 0);
     let dep = depth(cptr.add(u, $you_uz));
-    let ltptr = schar((!cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport),
-        1,
-        1,
-        0
-    ) &&
+    let ltptr = schar((!(cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
+    ) &
+        1) &&
         dep > 15
             ? 1
             : 0));
@@ -1875,208 +1867,81 @@ export function* clear_level_structures() {
 
     cptr.st1o(svl, $instance_globals_saved_l_level + $dlevel_t_flags, 0);
     cptr.st1o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nsinks, 0);
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
-        0,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault),
-        1,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo),
-        2,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court),
-        3,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue),
-        4,
-        1,
-        0,
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
-            ),
-            6,
-            1,
-            0,
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop, 0);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault, 0);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo, 0);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court, 0);
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard,
             0
         )
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive),
-        5,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive,
         0
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks),
-        6,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks,
         0
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple),
-        7,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp),
-        0,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport),
-        1,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor),
-        2,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap),
-        3,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory),
-        4,
-        1,
-        0,
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple, 0);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp, 0);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport, 0);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor, 0);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap, 0);
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory,
         1
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_shortsighted),
-        5,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_shortsighted,
         0
     );
-    cptr.stBits(
-        cptr.add(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-        ),
-        7,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules,
         0
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev),
-        0,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev,
         0
     );
-    cptr.stBits(
-        cptr.add(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev
-        ),
-        1,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev,
         0
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal),
-        2,
-        1,
-        0,
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal, 0);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town, 0);
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_wizard_bones,
         0
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_town),
-        3,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_wizard_bones),
-        4,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-        5,
-        1,
-        0,
-        0
-    );
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze, 0);
     cptr.st1o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_temperature,
         schar((In_hell(cptr.add(u, $you_uz)) ? 1 : 0))
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_rndmongen),
-        6,
-        1,
-        0,
-        1
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_deathdrops),
-        7,
-        1,
-        0,
-        1
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noautosearch),
-        0,
-        1,
-        0,
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_rndmongen, 1);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_deathdrops, 1);
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noautosearch,
         0
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles),
-        1,
-        1,
-        0,
-        0
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy),
-        2,
-        1,
-        0,
-        0
-    );
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles, 0);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy, 0);
     cptr.stI64o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until,
@@ -2169,7 +2034,8 @@ function* fill_ordinary_room(croom, bonus_items) {
            while a monster was on the stairs. Conclusion:
            we have to check for monsters on the stairs anyway. */
 
-        if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || !rn2(3)) && somexyspace(croom, pos)) {
+        if ((cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 || !rn2(3)) &&
+                somexyspace(croom, pos)) {
             tmonst = (yield* makemon(null, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), NHM.MM_NOGRP));
             if (tmonst &&
                     cptr.eq(
@@ -2823,16 +2689,9 @@ function* makelevel() {
                         NHC.VAULT,
                         0
                     ));
-                    cptr.stBits(
-                        cptr.add(
-                            svl,
-                            $instance_globals_saved_l_level +
-                                $dlevel_t_flags +
-                                $levelflags_has_vault
-                        ),
-                        1,
-                        1,
-                        0,
+                    cptr.stI32o(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault,
                         1
                     );
                     ++room_threshold;
@@ -2852,17 +2711,11 @@ function* makelevel() {
                         i16(((cptr.ldI16o(gv, $instance_globals_v_vault_x) + w.v) | 0)),
                         i16(((cptr.ldI16o(gv, $instance_globals_v_vault_y) + h.v) | 0))
                     ));
-                    if (!cptr.ldBits(
-                        cptr.add(
-                            svl,
-                            $instance_globals_saved_l_level +
-                                $dlevel_t_flags +
-                                $levelflags_noteleport
-                        ),
-                        1,
-                        1,
-                        0
-                    ) &&
+                    if (!(cptr.ldI32o(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
+                    ) &
+                        1) &&
                             !rn2(3))
                         (yield* makevtele());
                 }
@@ -3125,15 +2978,11 @@ export function* mineralize(kelp_pool, kelp_moat, goldprob, gemprob, skip_lvl_ch
                             $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
                         )
                     ))) ||
-                cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-                    ),
-                    2,
-                    1,
-                    0
-                ) |
+                (cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
+                ) &
+                    1) |
                     0 ||
                 ((sp = Is_special(cptr.add(u, $you_uz))) !== null &&
                     !(((cptr.ldI16o(
@@ -3146,7 +2995,7 @@ export function* mineralize(kelp_pool, kelp_moat, goldprob, gemprob, skip_lvl_ch
                             cptr.add(svd, $instance_globals_saved_d_dungeon_topology)
                         ))) &&
                     (!In_mines(cptr.add(u, $you_uz)) ||
-                        cptr.ldBits(cptr.add(sp, $s_level_flags), 0, 1, 0) | 0))))
+                        (cptr.ldI32o(sp, $s_level_flags) & 1) | 0))))
         return;
 
     /* basic level-related probabilities */
@@ -3318,28 +3167,20 @@ export function* level_finalize_topology() {
     /* has_morgue gets cleared once morgue is entered; graveyard stays
        set (graveyard might already be set even when has_morgue is clear
        [see fixup_special()], so don't update it unconditionally) */
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue),
-        4,
-        1,
-        0
-    ))
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
-            ),
-            6,
-            1,
-            0,
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue
+    ) & 1))
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard,
             1
         );
-    if (!cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev),
-        0,
-        1,
-        0
-    )) {
+    if (!(cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+    ) &
+            1)) {
         for (
             croom = cptr.add(svr, 0, $sizeof_mkroom);
             !cptr.eq(
@@ -3797,7 +3638,7 @@ function* mktrap_victim(ttmp) {
     let otmp = null;
     let victim_mnum;  /* race of the victim */
     let lvl = (yield* level_difficulty());
-    let kind = cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0;
+    let kind = (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0;
     let x = cptr.ldI16o(ttmp, $trap_tx);
     let y = cptr.ldI16o(ttmp, $trap_ty);
 
@@ -3856,7 +3697,7 @@ function* mktrap_victim(ttmp) {
         otmp = (yield* mkobj(poss_class, 0));
         (yield* curse(otmp));
         /* for mktrap_victim(), PIT is actually an exploded LANDMINE */
-        if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.PIT && breaktest(otmp)) {
+        if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.PIT && breaktest(otmp)) {
             /* landmine: if fragile object has been created, destroy it;
                don't worry about non-empty containers--they aren't
                breakable--nor about breakable contents of such */
@@ -3957,17 +3798,11 @@ function* traptype_rnd(mktrapflags) {
             break;
         case NHC.LEVEL_TELEP:
             if (lvl < 5 ||
-                    cptr.ldBits(
-                        cptr.add(
-                            svl,
-                            $instance_globals_saved_l_level +
-                                $dlevel_t_flags +
-                                $levelflags_noteleport
-                        ),
-                        1,
-                        1,
-                        0
-                    ) |
+                    (cptr.ldI32o(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
+                    ) &
+                        1) |
                         0 ||
                     single_level_branch(cptr.add(u, $you_uz)))
                 kind = NHC.NO_TRAP;
@@ -3994,15 +3829,10 @@ function* traptype_rnd(mktrapflags) {
                 kind = NHC.NO_TRAP;
             break;
         case NHC.TELEP_TRAP:
-            if (cptr.ldBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-                ),
-                1,
-                1,
-                0
-            ))
+            if ((cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
+            ) & 1))
                 kind = NHC.NO_TRAP;
             break;
         case NHC.HOLE:
@@ -4142,7 +3972,7 @@ export function* mktrap(num, mktrapflags, croom, tm) {
     t = (yield* maketrap(cptr.ldI16(m), cptr.ldI16o(m, $nhcoord_y), kind));
     /* we should always get type of trap we're asking for (occupied() test
        should prevent cases where that might not happen) but be paranoid */
-    kind = t ? cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0 : NHC.NO_TRAP;
+    kind = t ? (cptr.ldI32o(t, $trap_ttyp) & 31) | 0 : NHC.NO_TRAP;
 
     if (kind == NHC.WEB && !((mktrapflags & NHM.MKTRAP_NOSPIDERONWEB) >>> 0))
         void (yield* makemon(
@@ -4152,7 +3982,7 @@ export function* mktrap(num, mktrapflags, croom, tm) {
             NHM.NO_MM_FLAGS
         ));
     if (t && ((mktrapflags & NHM.MKTRAP_SEEN) >>> 0))
-        cptr.stBits(cptr.add(t, $trap_tseen), 5, 1, 0, 1);
+        cptr.stI32o(t, $trap_tseen, 1);
     if (kind == NHC.MAGIC_PORTAL &&
             (cptr.ldI16o(u, $you_ucamefrom) || cptr.ldI16o(u, $you_ucamefrom + $d_level_dlevel))) {
         assign_level(cptr.add(t, $trap_dst), cptr.add(u, $you_ucamefrom));
@@ -4195,8 +4025,8 @@ export function* mktrap(num, mktrapflags, croom, tm) {
         if (kind == NHC.LANDMINE) {
             /* if victim was killed by a land mine, we won't scatter objects;
                treat it as exploded, converting it into an unconcealed pit */
-            cptr.stBits(cptr.add(t, $trap_ttyp), 0, 5, 0, NHC.PIT);
-            cptr.stBits(cptr.add(t, $trap_tseen), 5, 1, 0, 1);
+            cptr.stI32o(t, $trap_ttyp, NHC.PIT);
+            cptr.stI32o(t, $trap_tseen, 1);
         }
         (yield* mktrap_victim(t));
     }
@@ -4681,7 +4511,7 @@ function* mkinvpos(x, y, dist) {
             cptr.st1o(lev, $rm_typ, NHC.ROOM);
             ttmp = (yield* maketrap(x, y, NHC.FIRE_TRAP));
             if (ttmp)
-                cptr.stBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0, 1);
+                cptr.stI32o(ttmp, $trap_tseen, 1);
             break;
         case 0:
         case 2:

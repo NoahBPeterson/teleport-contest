@@ -1087,7 +1087,7 @@ export function* obj_typename(otyp) {
         $objdescr_oc_descr
     ));
     let un = cptr.ldPtro(ocl, $objclass_oc_uname);
-    let nn = (cptr.ldI32o(ocl, $objclass_oc_name_known) & 1) | 0;
+    let nn = cptr.ldBits(cptr.add(ocl, $objclass_oc_name_known), 0, 1, 0) | 0;
 
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI)) {
         actualn = Japanese_item_name(otyp, actualn);
@@ -1152,8 +1152,15 @@ export function* obj_typename(otyp) {
             if (nn) {
                 void cptr.strcat(buf, actualn);
                 if ((otyp == NHC.FLINT ||
-                        (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) &
-                            31) |
+                        ((cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, otyp, $sizeof_objclass),
+                                $objclass_oc_material
+                            ),
+                            3,
+                            5,
+                            0
+                        ) |
                             0) ==
                             NHC.GEMSTONE &&
                             (otyp != NHC.DILITHIUM_CRYSTAL &&
@@ -1178,7 +1185,8 @@ export function* obj_typename(otyp) {
                 if (cptr.ld1so(ocl, $objclass_oc_class) == NHC.GEM_CLASS)
                     void cptr.strcat(
                         buf,
-                        (((cptr.ldI32o(ocl, $objclass_oc_material) & 31) | 0) == NHC.MINERAL)
+                        ((cptr.ldBits(cptr.add(ocl, $objclass_oc_material), 3, 5, 0) | 0) ==
+                            NHC.MINERAL)
                             ? __s_stone
                             : __s_gem
                     );
@@ -1189,7 +1197,7 @@ export function* obj_typename(otyp) {
     }
     /* here for ring/scroll/potion/wand */
     if (nn) {
-        if ((cptr.ldI32o(ocl, $objclass_oc_unique) & 1))
+        if (cptr.ldBits(cptr.add(ocl, $objclass_oc_unique), 6, 1, 0))
             void cptr.strcpy(buf, actualn);  /* avoid spellbook of Book of the Dead */
         else
             void cptr.sprintf(eos(buf), __s_of_s, actualn);
@@ -1240,15 +1248,27 @@ export function* safe_typename(otyp) {
         (yield* impossible(__s_safe_typename_s, res));
     } else {
         /* force it to be treated as fully discovered */
-        save_nameknown = (cptr.ldI32o2(
-            objects,
-            otyp,
-            $sizeof_objclass,
-            $objclass_oc_name_known
-        ) & 1);
-        cptr.stI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known, 1);
+        save_nameknown = cptr.ldBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+            0,
+            1,
+            0
+        );
+        cptr.stBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+            0,
+            1,
+            0,
+            1
+        );
         res = (yield* simple_typename(otyp));
-        cptr.stI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known, save_nameknown);
+        cptr.stBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+            0,
+            1,
+            0,
+            save_nameknown
+        );
     }
     return res;
 }
@@ -1534,7 +1554,7 @@ function* xname_flags(obj, cxn_flags) {
     __skip_nameit: {
         let typ = cptr.ldI16o(obj, $obj_otyp);
         let ocl = cptr.add(objects, typ, $sizeof_objclass);
-        let nn = (cptr.ldI32o(ocl, $objclass_oc_name_known) & 1) | 0;
+        let nn = cptr.ldBits(cptr.add(ocl, $objclass_oc_name_known), 0, 1, 0) | 0;
         let omndx = cptr.ldI32o(obj, $obj_corpsenm);
         let actualn = (cptr.ldPtro(obj_descr, cptr.ldI16((ocl)), $sizeof_objdescr));
         let dn = (cptr.ldPtro2(
@@ -1581,8 +1601,8 @@ function* xname_flags(obj, cxn_flags) {
          * and printing the wrong article gives away information.
          */
         if (!nn &&
-                (cptr.ldI32o(ocl, $objclass_oc_uses_known) & 1) | 0 &&
-                (cptr.ldI32o(ocl, $objclass_oc_unique) & 1) | 0)
+                cptr.ldBits(cptr.add(ocl, $objclass_oc_uses_known), 2, 1, 0) | 0 &&
+                cptr.ldBits(cptr.add(ocl, $objclass_oc_unique), 6, 1, 0) | 0)
             cptr.stI32o(obj, $obj_known, 0);
         if (!Blind() && !cptr.ldI32o(gd, $instance_globals_d_distantname))
             (yield* observe_object(obj));
@@ -1924,7 +1944,7 @@ function* xname_flags(obj, cxn_flags) {
                     void cptr.strcat(buf, actualn);
                 } else if (un) {
                     (yield* xcalled(buf, 176, __s_empty, un));
-                } else if ((cptr.ldI32o(ocl, $objclass_oc_magic) & 1)) {
+                } else if (cptr.ldBits(cptr.add(ocl, $objclass_oc_magic), 4, 1, 0)) {
                     void cptr.strcat(buf, __s_labeled);
                     void cptr.strcat(buf, dn);
                 } else {
@@ -1977,7 +1997,8 @@ function* xname_flags(obj, cxn_flags) {
                 break;
             case NHC.GEM_CLASS:
                 {
-                    let rock = (((cptr.ldI32o(ocl, $objclass_oc_material) & 31) | 0) == NHC.MINERAL)
+                    let rock = ((cptr.ldBits(cptr.add(ocl, $objclass_oc_material), 3, 5, 0) | 0) ==
+                        NHC.MINERAL)
                             ? __s_stone__2
                             : __s_gem__2;
 
@@ -1991,13 +2012,15 @@ function* xname_flags(obj, cxn_flags) {
                     } else {
                         void cptr.strcpy(buf, actualn);
                         if ((typ == NHC.FLINT ||
-                                (((cptr.ldI32o2(
-                                    objects,
-                                    typ,
-                                    $sizeof_objclass,
-                                    $objclass_oc_material
-                                ) &
-                                    31) |
+                                ((cptr.ldBits(
+                                    cptr.add(
+                                        cptr.add(objects, typ, $sizeof_objclass),
+                                        $objclass_oc_material
+                                    ),
+                                    3,
+                                    5,
+                                    0
+                                ) |
                                     0) ==
                                     NHC.GEMSTONE &&
                                     (typ != NHC.DILITHIUM_CRYSTAL &&
@@ -2188,7 +2211,7 @@ function* xname_flags(obj, cxn_flags) {
 function* minimal_xname(obj) {
     let bufp;
     let bareobj = cptr.alloc(216);
-    let saveobcls = cptr.alloc(120);
+    let saveobcls = cptr.alloc(72);
     let otyp = cptr.ldI16o(obj, $obj_otyp);
 
     /* suppress user-supplied name */
@@ -2199,15 +2222,34 @@ function* minimal_xname(obj) {
     );
     cptr.stPtro2(objects, otyp, $sizeof_objclass, $objclass_oc_uname, null);
     /* suppress actual name if object's description is unknown */
-    cptr.stI32o(
-        saveobcls,
-        $objclass_oc_name_known,
-        (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1)
+    cptr.stBits(
+        cptr.add(saveobcls, $objclass_oc_name_known),
+        0,
+        1,
+        0,
+        cptr.ldBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+            0,
+            1,
+            0
+        )
     );
     if (cptr.ldI32o(iflags, $instance_flags_override_ID))
-        cptr.stI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known, 1);
+        cptr.stBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+            0,
+            1,
+            0,
+            1
+        );
     else if (!(cptr.ldI32o(obj, $obj_dknown) & 1))
-        cptr.stI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known, 0);
+        cptr.stBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+            0,
+            1,
+            0,
+            0
+        );
 
     /* caveat: this makes a lot of assumptions about which fields
        are required in order for xname() to yield a sensible result */
@@ -2230,7 +2272,12 @@ function* minimal_xname(obj) {
         $obj_known,
         ((cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS)
             ? (cptr.ldI32o(obj, $obj_known) & 1) | 0
-            : !(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_uses_known) & 1)) >>> 0
+            : !cptr.ldBits(
+                cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_uses_known),
+                2,
+                1,
+                0
+            )) >>> 0
     );
     cptr.stI64o(bareobj, $obj_quan, 1n);  /* don't want plural */
     /* for a boulder, leave corpsenm as 0; non-zero produces "next boulder" */
@@ -2254,12 +2301,12 @@ function* minimal_xname(obj) {
         $objclass_oc_uname,
         cptr.ldPtro(saveobcls, $objclass_oc_uname)
     );
-    cptr.stI32o2(
-        objects,
-        otyp,
-        $sizeof_objclass,
-        $objclass_oc_name_known,
-        (cptr.ldI32o(saveobcls, $objclass_oc_name_known) & 1)
+    cptr.stBits(
+        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+        0,
+        1,
+        0,
+        cptr.ldBits(cptr.add(saveobcls, $objclass_oc_name_known), 0, 1, 0)
     );
     return bufp;
 }
@@ -2299,13 +2346,15 @@ export function the_unique_obj(obj) {
     else if (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !known)
         return 1;  /* lie */
     else
-        return schar(((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(obj, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_unique
-        ) &
-            1) |
+        return schar((cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_unique
+            ),
+            6,
+            1,
+            0
+        ) |
             0 &&
             (known || cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR)
                 ? 1
@@ -2361,13 +2410,15 @@ function add_erosion_words(obj, prefix) {
         }
         void cptr.strcat(
             prefix,
-            (((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) &
-                31) |
+            ((cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_material
+                ),
+                3,
+                5,
+                0
+            ) |
                 0) ==
                 NHC.IRON)
                 ? __s_rusty
@@ -2393,13 +2444,15 @@ function add_erosion_words(obj, prefix) {
             prefix,
             iscrys
                 ? __s_fixed
-                : ((((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_material
-                ) &
-                    31) |
+                : (((cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_material
+                    ),
+                    3,
+                    5,
+                    0
+                ) |
                     0) ==
                     NHC.IRON)
                     ? __s_rustproof
@@ -2579,13 +2632,15 @@ function* doname_base(obj, doname_flags) {
             if (bknown &&
                     cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
                     (cptr.ldI16o(obj, $obj_otyp) != NHC.POT_WATER ||
-                        !(cptr.ldI32o2(
-                            objects,
-                            NHC.POT_WATER,
-                            $sizeof_objclass,
-                            $objclass_oc_name_known
-                        ) &
-                            1) ||
+                        !cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, NHC.POT_WATER, $sizeof_objclass),
+                                $objclass_oc_name_known
+                            ),
+                            0,
+                            1,
+                            0
+                        ) ||
                         (!(cptr.ldI32o(obj, $obj_cursed) & 1) &&
                             !(cptr.ldI32o(obj, $obj_blessed) & 1)))) {
                 /* allow 'blessed clear potion' if we don't know it's holy water;
@@ -2597,13 +2652,19 @@ function* doname_base(obj, doname_flags) {
                     void cptr.strcat(cptr.decay(prefix), __s_blessed);
                 else if (!cptr.ld1so(flags, $flag_implicit_uncursed) ||
                         ((!known ||
-                            !(cptr.ldI32o2(
-                                objects,
-                                cptr.ldI16o(obj, $obj_otyp),
-                                $sizeof_objclass,
-                                $objclass_oc_charged
-                            ) &
-                                1) ||
+                            !cptr.ldBits(
+                                cptr.add(
+                                    cptr.add(
+                                        objects,
+                                        cptr.ldI16o(obj, $obj_otyp),
+                                        $sizeof_objclass
+                                    ),
+                                    $objclass_oc_charged
+                                ),
+                                5,
+                                1,
+                                0
+                            ) ||
                             cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS ||
                             cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS) &&
                             cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_MAIL &&
@@ -2897,13 +2958,15 @@ function* doname_base(obj, doname_flags) {
             continue;
         }
         case 19: {
-            if ((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_charged
-            ) &
-                    1)) { __pc = 25; continue; }
+            if (cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_charged
+                ),
+                5,
+                1,
+                0
+            )) { __pc = 25; continue; }
             __pc = 24; continue;
         }
         case 25: {
@@ -2989,13 +3052,15 @@ function* doname_base(obj, doname_flags) {
                             bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 }
             if (known &&
-                    (cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_charged
-                    ) &
-                        1) |
+                    cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_charged
+                        ),
+                        5,
+                        1,
+                        0
+                    ) |
                         0) {
                 void cptr.sprintf(
                     eos(cptr.decay(prefix)),
@@ -3377,13 +3442,15 @@ function* doname_base(obj, doname_flags) {
                                 bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                     }
                 } else if (cptr.ld1so(iflags, $instance_flags_pricequotes) &&
-                        !(cptr.ldI32o2(
-                            objects,
-                            cptr.ldI16o(obj, $obj_otyp),
-                            $sizeof_objclass,
-                            $objclass_oc_name_known
-                        ) &
-                            1)) {
+                        !cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                                $objclass_oc_name_known
+                            ),
+                            0,
+                            1,
+                            0
+                        )) {
                     append_price_quote(bp, bp_eos, cptr.ldI16o(obj, $obj_otyp));
                 }
 
@@ -3394,13 +3461,15 @@ function* doname_base(obj, doname_flags) {
                         1
                     );
             } else if (cptr.ld1so(iflags, $instance_flags_pricequotes) &&
-                    !(cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_name_known
-                    ) &
-                        1)) {
+                    !cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_name_known
+                        ),
+                        0,
+                        1,
+                        0
+                    )) {
                 append_price_quote(bp, bp_eos, cptr.ldI16o(obj, $obj_otyp));
             }
 
@@ -3543,12 +3612,15 @@ export function not_fully_identified(otmp) {
             !(cptr.ldI32o(otmp, $obj_dknown) & 1) ||
             (!(cptr.ldI32o(otmp, $obj_bknown) & 1) &&
                 cptr.ldI16o(otmp, $obj_otyp) != NHC.SCR_MAIL) ||
-            !(cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(otmp, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_name_known
-            ) & 1))
+            !cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_name_known
+                ),
+                0,
+                1,
+                0
+            ))
         return 1;
     if ((!(cptr.ldI32o(otmp, $obj_cknown) & 1) &&
         (Is_container(otmp) || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE)) ||
@@ -3735,17 +3807,23 @@ export function* killer_xname(obj) {
     if (!cptr.ld1so(obj, $obj_oartifact) && save_oname)
         cptr.stPtr(cptr.ldPtro((obj), $obj_oextra), null);
     /* temporarily identify the type of object */
-    save_ocknown = (cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(obj, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_name_known
-    ) & 1);
-    cptr.stI32o2(
-        objects,
-        cptr.ldI16o(obj, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_name_known,
+    save_ocknown = cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_name_known
+        ),
+        0,
+        1,
+        0
+    );
+    cptr.stBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_name_known
+        ),
+        0,
+        1,
+        0,
         1
     );
     save_ocuname = cptr.ldPtro2(
@@ -3778,11 +3856,14 @@ export function* killer_xname(obj) {
             !(yield* strstri(buf, __s_s_apos_sp)))
         buf = (obj_is_pname(obj) || the_unique_obj(obj)) ? (yield* the(buf)) : (yield* an(buf));
 
-    cptr.stI32o2(
-        objects,
-        cptr.ldI16o(obj, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_name_known,
+    cptr.stBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_name_known
+        ),
+        0,
+        1,
+        0,
         save_ocknown
     );
     cptr.stPtro2(
@@ -4348,7 +4429,13 @@ export function* ansimpleoname(obj) {
        any `known' and `dknown' checking necessary) */
     if (otyp == NHC.FAKE_AMULET_OF_YENDOR)
         otyp = NHC.AMULET_OF_YENDOR;
-    if ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_unique) & 1) | 0 &&
+    if (cptr.ldBits(
+        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_unique),
+        6,
+        1,
+        0
+    ) |
+        0 &&
             (cptr.ldPtro(
                 obj_descr,
                 cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))),
@@ -5884,7 +5971,7 @@ function* wizterrainwish(d) {
         if (((trap) == NHC.HOLE || (trap) == NHC.TRAPDOOR) && !Can_fall_thru(cptr.add(u, $you_uz)))
             trap = NHC.ROCKTRAP;
         if ((t = (yield* maketrap(x, y, trap))) !== null) {
-            trap = cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0;
+            trap = (cptr.ldI32o(t, $trap_ttyp) & 31) | 0;
             tname = (yield* trapname(trap, 1));
             (yield* pline(__s_s_s__6, (yield* An(tname)), (trap != NHC.MAGIC_PORTAL) ? __s_empty : __s_to_nowhere));
         } else {
@@ -6325,7 +6412,7 @@ function* wizterrainwish(d) {
             if (IS_FURNITURE(oldtyp))
                 count_level_features();
             if ((t = t_at(x, y)) !== null &&
-                    (cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) != NHC.MAGIC_PORTAL)
+                    ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) != NHC.MAGIC_PORTAL)
                 (yield* deltrap(t));
             madeterrain = 1;
         } else if (is_dbridge) {
@@ -6344,7 +6431,7 @@ function* wizterrainwish(d) {
 
         /* hero started at <x,y> but might not be there anymore (create
            lava, decline to die, and get teleported away to safety) */
-        if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 &&
+        if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 &&
                 !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             (yield* set_uinwater(0));  /* u.uinwater = 0; leave the water */
             (yield* docrt());
@@ -8349,12 +8436,19 @@ export function* readobjnam(bp, no_wish) {
                         break;
                     default:
                         /* catch any other non-wishable objects (venom) */
-                        if ((cptr.ldI32o2(
-                            objects,
-                            cptr.ldI32o(d, $_readobjnam_data_typ),
-                            $sizeof_objclass,
-                            $objclass_oc_nowish
-                        ) & 1))
+                        if (cptr.ldBits(
+                            cptr.add(
+                                cptr.add(
+                                    objects,
+                                    cptr.ldI32o(d, $_readobjnam_data_typ),
+                                    $sizeof_objclass
+                                ),
+                                $objclass_oc_nowish
+                            ),
+                            7,
+                            1,
+                            0
+                        ))
                             return null;
                         break;
                 }
@@ -8444,13 +8538,15 @@ export function* readobjnam(bp, no_wish) {
                 /* note: the owt assignment below will not change glob's weight */
                 cptr.stI32o(d, $_readobjnam_data_cnt, 0);
             } else if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 0) {
-                if ((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI32o(d, $_readobjnam_data_typ),
-                    $sizeof_objclass,
-                    $objclass_oc_merge
-                ) &
-                    1) |
+                if (cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI32o(d, $_readobjnam_data_typ), $sizeof_objclass),
+                        $objclass_oc_merge
+                    ),
+                    1,
+                    1,
+                    0
+                ) |
                     0 &&
                         (wizard() ||
                             cptr.ldI32o(d, $_readobjnam_data_cnt) < rnd(6) ||
@@ -8489,13 +8585,19 @@ export function* readobjnam(bp, no_wish) {
                     cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS ||
                     is_weptool(cptr.ldPtr(d)) ||
                     (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.RING_CLASS &&
-                        (cptr.ldI32o2(
-                            objects,
-                            cptr.ldI32o(d, $_readobjnam_data_typ),
-                            $sizeof_objclass,
-                            $objclass_oc_charged
-                        ) &
-                            1) |
+                        cptr.ldBits(
+                            cptr.add(
+                                cptr.add(
+                                    objects,
+                                    cptr.ldI32o(d, $_readobjnam_data_typ),
+                                    $sizeof_objclass
+                                ),
+                                $objclass_oc_charged
+                            ),
+                            5,
+                            1,
+                            0
+                        ) |
                             0)) {
                 if (cptr.ldI32o(d, $_readobjnam_data_spe) > rnd(5) &&
                         cptr.ldI32o(d, $_readobjnam_data_spe) > cptr.ld1so(cptr.ldPtr(d), $obj_spe))
@@ -8833,13 +8935,19 @@ export function* readobjnam(bp, no_wish) {
                 );
                 if (cptr.ldI32o(d, $_readobjnam_data_eroded) &&
                         (is_flammable(cptr.ldPtr(d)) ||
-                            (((cptr.ldI32o2(
-                                objects,
-                                cptr.ldI16o(cptr.ldPtr(d), $obj_otyp),
-                                $sizeof_objclass,
-                                $objclass_oc_material
-                            ) &
-                                31) |
+                            ((cptr.ldBits(
+                                cptr.add(
+                                    cptr.add(
+                                        objects,
+                                        cptr.ldI16o(cptr.ldPtr(d), $obj_otyp),
+                                        $sizeof_objclass
+                                    ),
+                                    $objclass_oc_material
+                                ),
+                                3,
+                                5,
+                                0
+                            ) |
                                 0) ==
                                 NHC.IRON) ||
                             is_crackable(cptr.ldPtr(d))))
@@ -9131,13 +9239,15 @@ export function cloak_simple_name(cloak) {
             case NHC.MUMMY_WRAPPING:
                 return __s_wrapping;
             case NHC.ALCHEMY_SMOCK:
-                return ((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(cloak, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_name_known
-                ) &
-                    1) |
+                return (cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(cloak, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_name_known
+                    ),
+                    0,
+                    1,
+                    0
+                ) |
                     0 &&
                     (cptr.ldI32o(cloak, $obj_dknown) & 1) | 0)
                         ? __s_smock
@@ -9185,7 +9295,12 @@ export function* gloves_simple_name(gloves) {
         ));
 
         if ((yield* strstri(
-            (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
+            cptr.ldBits(
+                cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+                0,
+                1,
+                0
+            ) | 0
                 ? actualn
                 : descrpn,
             cptr.decay(__static_gloves_simple_name_gauntlets)
@@ -9213,7 +9328,13 @@ export function* boots_simple_name(boots) {
         ));
 
         if ((yield* strstri(descrpn, cptr.decay(__static_boots_simple_name_shoes))) ||
-                ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 &&
+                (cptr.ldBits(
+                    cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
+                    0,
+                    1,
+                    0
+                ) |
+                    0 &&
                     (yield* strstri(actualn, cptr.decay(__static_boots_simple_name_shoes)))))
             return cptr.decay(__static_boots_simple_name_shoes);
     }

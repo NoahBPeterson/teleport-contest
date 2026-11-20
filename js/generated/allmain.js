@@ -392,7 +392,7 @@ function u_calc_moveamt(wtcap) {
 /* small chance of generating a new random monster */
 /** C ref: allmain.c:162 */
 function maybe_generate_rnd_mon() {
-    if (!rn2((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0
+    if (!rn2(cptr.ldBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0) | 0
             ? 25
             : ((depth(cptr.add(u, $you_uz)) >
                 depth(cptr.add(
@@ -531,7 +531,7 @@ export function moveloop_core() {
                  * requires that encumbrance and movement rate be
                  * recalculated.
                  */
-                if ((cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+                if (cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
                     /* for the moment at least, you're in tiptop shape */
                     mvl_wtcap = NHC.UNENCUMBERED;
                 } else if (!Upolyd()
@@ -559,7 +559,7 @@ export function moveloop_core() {
 
                 regen_pw(mvl_wtcap);
 
-                if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+                if (!cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
                     if (Teleportation() && !rn2(85)) {
                         let old_ux = cptr.ldI16(u);
                         let old_uy = cptr.ldI16o(u, $you_uy);
@@ -597,17 +597,13 @@ export function moveloop_core() {
                 }
 
                 if (Searching() &&
-                        !cptr.ldBits(
-                            cptr.add(
-                                svl,
-                                $instance_globals_saved_l_level +
-                                    $dlevel_t_flags +
-                                    $levelflags_noautosearch
-                            ),
-                            0,
-                            1,
-                            0
-                        ) &&
+                        !(cptr.ldI32o(
+                            svl,
+                            $instance_globals_saved_l_level +
+                                $dlevel_t_flags +
+                                $levelflags_noautosearch
+                        ) &
+                            1) &&
                         cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
                     void dosearch0(1);
                 if (Warning())
@@ -623,12 +619,12 @@ export function moveloop_core() {
                 age_spells();
                 exerchk();
                 invault();
-                if ((cptr.ldI32o(u, $you_uhave) & 1))
+                if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
                     amulet();
                 if (!rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0))
                     u_wipe_engr(rnd(3));
-                if ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 &&
-                        !(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+                if (cptr.ldBits(cptr.add(u, $you_uevent + $u_event_udemigod), 5, 1, 0) | 0 &&
+                        !cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
                     if (cptr.ldI32o(u, $you_udg_cnt))
                         (cptr.stI32o(u, $you_udg_cnt, cptr.ldI32o(u, $you_udg_cnt) + -1)) - (-1);
                     if (!cptr.ldI32o(u, $you_udg_cnt)) {
@@ -680,15 +676,10 @@ export function moveloop_core() {
                                 )
                             ))))
                     movebubbles();
-                else if (cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles
-                    ),
-                    1,
-                    1,
-                    0
-                ))
+                else if ((cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles
+                ) & 1))
                     fumaroles();
 
                 /* when immobile, count is in turns */
@@ -729,7 +720,7 @@ export function moveloop_core() {
             status_eval_next_unhilite();
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >=
                 cptr.ldI64o(svc, $context_info_seer_turn)) {
-            if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || Clairvoyant()) &&
+            if ((cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 || Clairvoyant()) &&
                     !(cptr.ldI16((cptr.add(u, $you_uz))) ==
                         cptr.ldI16((cptr.add(
                             svd,
@@ -764,7 +755,7 @@ export function moveloop_core() {
         /* vision while buried or underwater is updated here */
         if (Underwater())
             under_water(0);
-        else if ((cptr.ldI32o(u, $you_uburied) & 1))
+        else if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0))
             under_ground(0);
 
         see_nearby_monsters();
@@ -777,9 +768,9 @@ export function moveloop_core() {
     clear_splitobjs();
 
     /* the Amulet of Yendor gives a wish when initially picked up */
-    if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 &&
-            !(cptr.ldI32o(u, $you_uevent + $u_event_amulet_wish) & 1)) {
-        cptr.stI32o(u, $you_uevent + $u_event_amulet_wish, 1);
+    if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 &&
+            !cptr.ldBits(cptr.add(u, $you_uevent + $u_event_amulet_wish), 0, 1, 0)) {
+        cptr.stBits(cptr.add(u, $you_uevent + $u_event_amulet_wish), 0, 1, 0, 1);
         display_nhwindow()(WIN_MESSAGE.v, 1);
         urgent_pline(__s_the_amulet_is_bestowing_a_wish_upon_you);
         makewish();
@@ -792,7 +783,7 @@ export function moveloop_core() {
             see_monsters();
             see_objects();
             see_traps();
-            if ((cptr.ldI32o(u, $you_uswallow) & 1))
+            if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
                 swallowed(0);
         } else if (Unblind_telepat() || Warning() || Warn_of_mon() || any_visible_region()) {
             see_monsters();
@@ -1109,7 +1100,7 @@ export function newgame() {
     cptr.stI32o(svc, $context_info_warnlevel, 1);
     cptr.stI64o(svc, $context_info_next_attrib_check, 600n);  /* arbitrary first setting */
     cptr.st1o(svc, $context_info_tribute + $tribute_info_enabled, 1);  /* turn on 3.6 tributes    */
-    cptr.stU64o(svc, $context_info_tribute, 16n);
+    cptr.stU64o(svc, $context_info_tribute, 24n);
     get_nhuuid();
 
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++)
@@ -1218,7 +1209,7 @@ export function newgame() {
 export function welcome(new_game) {
     let buf = new Uint8Array(256);
     let currentgend = schar((Upolyd()
-            ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
+            ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
             : cptr.ld1so(flags, $flag_female)));
     let adrift = schar((cptr.ld1so(u, $you_ualign) !=
             cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)));

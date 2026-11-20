@@ -975,7 +975,7 @@ export function find_defensive(mtmp, tryescape) {
                 !m_next2u(mtmp) &&
                 m_next2m(mtmp))
             return 0;
-        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && stuck)
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && stuck)
             return 0;
 
         /*
@@ -1218,7 +1218,7 @@ export function find_defensive(mtmp, tryescape) {
                         onscary(xx, yy, mtmp))
                     continue;
                 /* use trap if it's the correct type */
-                if (is_hole(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0)) &&
+                if (is_hole((cptr.ldI32o(t, $trap_ttyp) & 31)) &&
                         !is_floater(cptr.ldPtro(mtmp, $monst_data)) &&
                         !(cptr.ldI32o(mtmp, $monst_isshk) & 1) &&
                         !(cptr.ldI32o(mtmp, $monst_isgd) & 1) &&
@@ -1228,7 +1228,7 @@ export function find_defensive(mtmp, tryescape) {
                     cptr.stI16o(gt, $instance_globals_t_trapy, yy);
                     cptr.stI32o(gm, $instance_globals_m_m + $musable_has_defense, 6);
                     break;  /* no need to look at any other spots */
-                } else if ((cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.TELEP_TRAP) {
+                } else if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.TELEP_TRAP) {
                     cptr.stI16o(gt, $instance_globals_t_trapx, xx);
                     cptr.stI16o(gt, $instance_globals_t_trapy, yy);
                     cptr.stI32o(gm, $instance_globals_m_m + $musable_has_defense, 7);
@@ -1253,9 +1253,9 @@ export function find_defensive(mtmp, tryescape) {
         /* kludge to cut down on trap destruction (particularly portals) */
         t = t_at(x, y);
         if (t &&
-                (is_pit(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0)) ||
-                    (cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.WEB ||
-                    (cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.BEAR_TRAP))
+                (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) ||
+                    ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.WEB ||
+                    ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP))
             t = null;  /* ok for monster to dig here */
         /* selection could be improved by collecting all possibilities
            into an array and then picking one at random */
@@ -1768,7 +1768,7 @@ export function use_defensive(mtmp) {
                         ? null
                         : cptr.add(
                             mons,
-                            (cptr.ldI32o(u, $you_uinwater) & 1) | 0
+                            cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0
                                 ? NHC.PM_GIANT_EEL
                                 : NHC.PM_CROCODILE,
                             $sizeof_permonst
@@ -1811,7 +1811,7 @@ export function use_defensive(mtmp) {
                 else if (is_pool(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
                     fish = cptr.add(
                         mons,
-                        (cptr.ldI32o(u, $you_uinwater) & 1) | 0
+                        cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0
                             ? NHC.PM_GIANT_EEL
                             : NHC.PM_CROCODILE,
                         $sizeof_permonst
@@ -1867,7 +1867,7 @@ export function use_defensive(mtmp) {
                         cptr.ldPtro2(c_common_strings, 0, 8, $c_common_strings_c_fakename),
                         locomotion(cptr.ldPtro(mtmp, $monst_data), __s_jump)
                     ),
-                    trapname(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0, 0)
+                    trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0)
                 );
             }
             /* if trap was in a concealed niche, it's no longer concealed */
@@ -2049,7 +2049,7 @@ export function use_defensive(mtmp) {
                         cptr.ldPtro2(c_common_strings, 0, 8, $c_common_strings_c_fakename),
                         locomotion(cptr.ldPtro(mtmp, $monst_data), __s_jump)
                     ),
-                    trapname(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0, 0)
+                    trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0)
                 );
             }
             /* if trap was in a concealed niche, it's no longer concealed */
@@ -2207,17 +2207,11 @@ export function rnd_defensive_item(mtmp) {
                         : NHC.POT_SICKNESS;
             case 7:
                 /* usually avoid digging in Sokoban */
-                if (cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level +
-                            $dlevel_t_flags +
-                            $levelflags_sokoban_rules
-                    ),
-                    7,
-                    1,
-                    0
-                ) |
+                if ((cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
+                ) &
+                    1) |
                         0 && rn2(4))
                     continue __lbl_try_again;
                 /* some creatures shouldn't dig down to another level when hurt */
@@ -2395,7 +2389,7 @@ export function find_offensive(mtmp) {
             ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n) ||
             ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 8192n) != 0n))
         return 0;
-    if ((cptr.ldI32o(u, $you_uswallow) & 1))
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
         return 0;
     if (in_your_sanctuary(mtmp, 0, 0))
         return 0;
@@ -3386,7 +3380,7 @@ export function find_misc(mtmp) {
     if (((cptr.ldU64o((mdat), $permonst_mflags1) & 262144n) != 0n) ||
             ((cptr.ldU64o((mdat), $permonst_mflags1) & 65536n) != 0n))
         return 0;
-    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && stuck)
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && stuck)
         return 0;
 
     /* We arbitrarily limit to times when a player is nearby for the
@@ -3433,7 +3427,7 @@ export function find_misc(mtmp) {
                             !onscary(xx, yy, mtmp)) {
                         /* use trap if it's the correct type and will
                            polymorph the monster */
-                        if ((cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.POLY_TRAP &&
+                        if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.POLY_TRAP &&
                                 !wearing_iron_shoes(mtmp)) {
                             cptr.stI16o(gt, $instance_globals_t_trapx, xx);
                             cptr.stI16o(gt, $instance_globals_t_trapy, yy);
@@ -3482,7 +3476,7 @@ export function find_misc(mtmp) {
                 ((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) &&
                     (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy)) &&
                 m_next2u(mtmp) &&
-                !(cptr.ldI32o(u, $you_uswallow) & 1) &&
+                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
                 (canletgo(uwep.v, __s_empty) ||
                     (cptr.ld1so(u, $you_twoweap) && canletgo(uswapwep.v, __s_empty)))) {
             cptr.stPtro(gm, $instance_globals_m_m + $musable_misc, obj);
@@ -3953,8 +3947,8 @@ export function use_misc(mtmp) {
                         cptr.ldPtro2(c_common_strings, 0, 8, $c_common_strings_c_fakename),
                         locomotion(cptr.ldPtro(mtmp, $monst_data), __s_jump)
                     ),
-                    cptr.ldBits(cptr.add(t, $trap_tseen), 5, 1, 0) | 0
-                        ? trapname(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0, 0)
+                    (cptr.ldI32o(t, $trap_tseen) & 1) | 0
+                        ? trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0)
                         : __s_hidden_trap
                 );
                 /* note: if mtmp is unseen because it is invisible, its new
@@ -4055,13 +4049,15 @@ export function use_misc(mtmp) {
                     return 1;
                 } else if (where_to == 3 &&
                         mon_hates_silver(mtmp) &&
-                        ((cptr.ldI32o2(
-                            objects,
-                            cptr.ldI16o(obj, $obj_otyp),
-                            $sizeof_objclass,
-                            $objclass_oc_material
-                        ) &
-                            31) |
+                        (cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                                $objclass_oc_material
+                            ),
+                            3,
+                            5,
+                            0
+                        ) |
                             0) ==
                             NHC.SILVER) {
                     /* this monster won't want to catch a silver
@@ -4348,7 +4344,13 @@ export function searches_for_item(mon, obj) {
                     $sizeof_permonst,
                     $permonst_difficulty
                 ) < 6));
-            if (((cptr.ldI32o2(objects, typ, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) ==
+            if ((cptr.ldBits(
+                cptr.add(cptr.add(objects, typ, $sizeof_objclass), $objclass_oc_dir),
+                0,
+                3,
+                0
+            ) |
+                0) ==
                 NHM.RAY ||
                     typ == NHC.WAN_STRIKING ||
                     typ == NHC.WAN_UNDEAD_TURNING ||
@@ -4761,7 +4763,7 @@ export function munslime(mon, by_you) {
                 return muse_unslime(mon, obj, null, by_you);
 
         if (((t = t_at(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) === null ||
-            (cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) != NHC.FIRE_TRAP) &&
+            ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) != NHC.FIRE_TRAP) &&
                 cptr.ld1so(mptr, $permonst_mmove) &&
                 !(cptr.ldI32o(mon, $monst_mtrapped) & 1)) {
             let xy = (function () {
@@ -4817,11 +4819,11 @@ export function munslime(mon, by_you) {
                     cptr.ldI16o(cptr.decay(xy[1]), idx, 2)
                 )) !==
                     null &&
-                        (cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.FIRE_TRAP)
+                        ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.FIRE_TRAP)
                     break;
             }
         }
-        if (t && (cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.FIRE_TRAP)
+        if (t && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.FIRE_TRAP)
             return muse_unslime(mon, hands_obj, t, by_you);
 
     }  /* MUSE */
@@ -4866,7 +4868,7 @@ function muse_unslime(mon, obj, trap, by_you) {
                 pline(
                     __s_s_triggers_s_fire_trap,
                     Mnam,
-                    cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 ? __s_the : __s_a
+                    (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 ? __s_the : __s_a
                 );
         } else {
             cptr.stPtro3(
@@ -4892,7 +4894,7 @@ function muse_unslime(mon, obj, trap, by_you) {
                         locomotion(cptr.ldPtro(mon, $monst_data), __s_move)
                     ),
                     is_floater(cptr.ldPtro(mon, $monst_data)) ? __s_over : __s_onto,
-                    cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 ? __s_the : __s_a
+                    (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 ? __s_the : __s_a
                 );
         }
         void mintrap(mon, NHM.FORCETRAP);

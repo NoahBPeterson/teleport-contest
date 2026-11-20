@@ -857,29 +857,21 @@ function* nhl_gettrap(L) {
             (yield* nhl_add_table_entry_int(
                 L,
                 __s_ttyp,
-                BigInt(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) >>> 0)
+                BigInt((cptr.ldI32o(ttmp, $trap_ttyp) & 31) >>> 0)
             ));
             (yield* nhl_add_table_entry_str(
                 L,
                 __s_ttyp_name,
-                get_trapname_bytype(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0)
+                get_trapname_bytype((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0)
             ));
-            (yield* nhl_add_table_entry_bool(
-                L,
-                __s_tseen,
-                schar(cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0))
-            ));
+            (yield* nhl_add_table_entry_bool(L, __s_tseen, schar((cptr.ldI32o(ttmp, $trap_tseen) & 1))));
             (yield* nhl_add_table_entry_bool(
                 L,
                 __s_madeby_u,
-                schar(cptr.ldBits(cptr.add(ttmp, $trap_madeby_u), 7, 1, 0))
+                schar((cptr.ldI32o(ttmp, $trap_madeby_u) & 1))
             ));
-            (yield* nhl_add_table_entry_bool(
-                L,
-                __s_once,
-                schar(cptr.ldBits(cptr.add(ttmp, $trap_once), 6, 1, 0))
-            ));
-            switch (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) {
+            (yield* nhl_add_table_entry_bool(L, __s_once, schar((cptr.ldI32o(ttmp, $trap_once) & 1))));
+            switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
                 case NHC.SQKY_BOARD:
                     (yield* nhl_add_table_entry_int(L, __s_tnote, BigInt(cptr.ldI16o(ttmp, $trap_vl))));
                     break;
@@ -2879,7 +2871,7 @@ function* nhl_gamestate(L) {
         )
                 ? __assert_rtn(__s_nhl_gamestate, __s_nhlua_c, 1906, __s_gg_gmst_ubak_null)
                 : void 0);
-        void cptr.memcpy(u, cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), 2864n);
+        void cptr.memcpy(u, cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), 2760n);
         (__builtin_expect(
             BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_disco), (null))))),
             0n
@@ -2900,7 +2892,7 @@ function* nhl_gamestate(L) {
         void cptr.memcpy(
             cptr.add(svm, $instance_globals_saved_m_mvitals),
             cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals),
-            1532n
+            4596n
         );
         /* clear user-given object type names */
         for (otyp = 0; otyp < NHC.NUM_OBJECTS; otyp++)
@@ -2931,19 +2923,19 @@ function* nhl_gamestate(L) {
             cptr.stPtro(gg, $instance_globals_g_gmst_invent, otmp);
         }
         cptr.stI32o(gl, $instance_globals_l_lastinvnr, 51);  /* next inv letter to try to use will be 'a' */
-        cptr.stPtro(gg, $instance_globals_g_gmst_ubak, (yield* alloc(2864)));
-        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), u, 2864n);
+        cptr.stPtro(gg, $instance_globals_g_gmst_ubak, (yield* alloc(2760)));
+        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), u, 2760n);
         cptr.stPtro(gg, $instance_globals_g_gmst_disco, (yield* alloc(962)));
         void cptr.memcpy(
             cptr.ldPtro(gg, $instance_globals_g_gmst_disco),
             cptr.add(svd, $instance_globals_saved_d_disco),
             962n
         );
-        cptr.stPtro(gg, $instance_globals_g_gmst_mvitals, (yield* alloc(1532)));
+        cptr.stPtro(gg, $instance_globals_g_gmst_mvitals, (yield* alloc(4596)));
         void cptr.memcpy(
             cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals),
             cptr.add(svm, $instance_globals_saved_m_mvitals),
-            1532n
+            4596n
         );
         void cptr.memcpy(cptr.add(gg, $instance_globals_g_gmst_spl_book), svs, 344n);
         void __builtin___memset_chk(svs, 0, 344n, __builtin_object_size(svs, 0));
@@ -3255,7 +3247,7 @@ function* nhl_meta_u_index(L) {
         (yield* lua_pushinteger(L, cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
         return 1;
     } else if (!strcmp(tkey, __s_uhave_amulet)) {
-        (yield* lua_pushinteger(L, BigInt((cptr.ldI32o(u, $you_uhave) & 1) >>> 0)));
+        (yield* lua_pushinteger(L, BigInt(cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) >>> 0)));
         return 1;
     } else if (!strcmp(tkey, __s_depth)) {
         (yield* lua_pushinteger(L, BigInt(depth(cptr.add(u, $you_uz)))));

@@ -1866,27 +1866,21 @@ function fopen_sym_file() {
 export function* read_sym_file(which_set) {
     let fp;
 
-    cptr.stBits(
-        cptr.add(
-            cptr.add(cptr.add(gs, $instance_globals_s_symset), which_set, $sizeof_symsetentry),
-            $symsetentry_explicitly
-        ),
-        3,
-        1,
-        0,
+    cptr.stI32o2(
+        gs,
+        which_set,
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_explicitly,
         0
     );
     if (!(fp = fopen_sym_file()))
         return 0;
 
-    cptr.stBits(
-        cptr.add(
-            cptr.add(cptr.add(gs, $instance_globals_s_symset), which_set, $sizeof_symsetentry),
-            $symsetentry_explicitly
-        ),
-        3,
-        1,
-        0,
+    cptr.stI32o2(
+        gs,
+        which_set,
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_explicitly,
         1
     );
     cptr.st1o(
@@ -1944,18 +1938,11 @@ export function* read_sym_file(which_set) {
             $sizeof_symsetentry,
             $instance_globals_s_symset + $symsetentry_name
         )) {
-            cptr.stBits(
-                cptr.add(
-                    cptr.add(
-                        cptr.add(gs, $instance_globals_s_symset),
-                        which_set,
-                        $sizeof_symsetentry
-                    ),
-                    $symsetentry_explicitly
-                ),
-                3,
-                1,
-                0,
+            cptr.stI32o2(
+                gs,
+                which_set,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_explicitly,
                 0
             );
             return 0;

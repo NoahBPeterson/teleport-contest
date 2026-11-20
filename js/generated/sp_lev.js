@@ -925,7 +925,7 @@ function map_cleanup() {
 
                 /* traps on liquid? */
                 if (((ttmp = t_at(x, y)) !== null) &&
-                        !undestroyable_trap(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0)))
+                        !undestroyable_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31)))
                     deltrap(ttmp);
 
                 /* engravings? */
@@ -949,15 +949,10 @@ function lvlfill_maze_grid(x1, y1, x2, y2, filling) {
 
     for (x = x1; x <= x2; x++)
         for (y = y1; y <= y2; y++) {
-            if (cptr.ldBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
-                ),
-                5,
-                1,
-                0
-            ))
+            if ((cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+            ) & 1))
                 cptr.st1o3(
                     svl,
                     x,
@@ -1296,8 +1291,7 @@ export function flip_level(flp, extras) {
                 $trap_ty,
                 i16(((maxy.v - (cptr.ldI16o(ttmp, $trap_ty)) + miny.v) | 0))
             );
-            if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) ==
-                    NHC.ROLLING_BOULDER_TRAP) {
+            if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.ROLLING_BOULDER_TRAP) {
                 cptr.stI16o(
                     ttmp,
                     $trap_launch + $nhcoord_y,
@@ -1308,8 +1302,7 @@ export function flip_level(flp, extras) {
                     $trap_vl + $nhcoord_y,
                     i16(((maxy.v - (cptr.ldI16o(ttmp, $trap_vl + $nhcoord_y)) + miny.v) | 0))
                 );
-            } else if (is_pit(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0)) &&
-                    cptr.ld1uo(ttmp, $trap_vl)) {
+            } else if (is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) && cptr.ld1uo(ttmp, $trap_vl)) {
                 cptr.st1o(
                     ttmp,
                     $trap_vl,
@@ -1323,8 +1316,7 @@ export function flip_level(flp, extras) {
                 $trap_tx,
                 i16(((maxx.v - (cptr.ldI16o(ttmp, $trap_tx)) + minx.v) | 0))
             );
-            if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) ==
-                    NHC.ROLLING_BOULDER_TRAP) {
+            if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.ROLLING_BOULDER_TRAP) {
                 cptr.stI16o(
                     ttmp,
                     $trap_launch,
@@ -1335,8 +1327,7 @@ export function flip_level(flp, extras) {
                     $trap_vl,
                     i16(((maxx.v - (cptr.ldI16o(ttmp, $trap_vl)) + minx.v) | 0))
                 );
-            } else if (is_pit(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0)) &&
-                    cptr.ld1uo(ttmp, $trap_vl)) {
+            } else if (is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) && cptr.ld1uo(ttmp, $trap_vl)) {
                 cptr.st1o(
                     ttmp,
                     $trap_vl,
@@ -2975,15 +2966,11 @@ function sel_set_wall_property(x, y, arg) {
                 $instance_globals_saved_l_level + $rm_typ
             )) ==
                 NHC.TREE ||
-                (cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-                    ),
-                    2,
-                    1,
-                    0
-                ) |
+                ((cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
+                ) &
+                    1) |
                     0 &&
                     (cptr.ld1so3(
                         svl,
@@ -3574,15 +3561,10 @@ function rndtrap() {
                 break;
             case NHC.LEVEL_TELEP:
             case NHC.TELEP_TRAP:
-                if (cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-                    ),
-                    1,
-                    1,
-                    0
-                ))
+                if ((cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
+                ) & 1))
                     rtrap = NHC.NO_TRAP;
                 break;
             case NHC.ROLLING_BOULDER_TRAP:
@@ -5108,13 +5090,15 @@ function create_object(o, croom) {
     cptr.stI32o(otmp, $obj_greased, (cptr.ldI16o(o, $object_greased) ? 1 : 0) >>> 0);
 
     if (cptr.ldI32o(o, $object_quan) > 0 &&
-            (cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(otmp, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_merge
-            ) &
-                1) |
+            cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_merge
+                ),
+                1,
+                1,
+                0
+            ) |
                 0) {
         cptr.stI64o(otmp, $obj_quan, BigInt(cptr.ldI32o(o, $object_quan)));
         cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
@@ -5414,14 +5398,9 @@ function create_altar(a, croom) {
                 ) |
                     NHM.AM_SANCTUM
             );
-        cptr.stBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple
-            ),
-            7,
-            1,
-            0,
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple,
             1
         );
     }
@@ -5777,14 +5756,9 @@ export function fill_special_room(croom) {
         /* Shop ? */
         if (cptr.ld1so(croom, $mkroom_rtype) >= NHC.SHOPBASE) {
             stock_room((cptr.ld1so(croom, $mkroom_rtype) - NHC.SHOPBASE) | 0, croom);
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
-                ),
-                0,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop,
                 1
             );
             return;
@@ -5820,98 +5794,58 @@ export function fill_special_room(croom) {
     }
     switch (cptr.ld1so(croom, $mkroom_rtype)) {
         case NHC.VAULT:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault
-                ),
-                1,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault,
                 1
             );
             break;
         case NHC.ZOO:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo
-                ),
-                2,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo,
                 1
             );
             break;
         case NHC.COURT:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court
-                ),
-                3,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court,
                 1
             );
             break;
         case NHC.MORGUE:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue
-                ),
-                4,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue,
                 1
             );
             break;
         case NHC.BEEHIVE:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive
-                ),
-                5,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive,
                 1
             );
             break;
         case NHC.BARRACKS:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks
-                ),
-                6,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks,
                 1
             );
             break;
         case NHC.TEMPLE:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple
-                ),
-                7,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple,
                 1
             );
             break;
         case NHC.SWAMP:
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
-                ),
-                0,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp,
                 1
             );
             break;
@@ -6141,8 +6075,8 @@ function fill_empty_maze() {
 
             maze1xy(mm, NHM.DRY);
             if ((ttmp = t_at(cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y))) !== null &&
-                    (is_pit(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0)) ||
-                        is_hole(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0))))
+                    (is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) ||
+                        is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31))))
                 continue;
             void mksobj_at(NHC.BOULDER, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1, 0);
         }
@@ -7180,12 +7114,15 @@ export function lspo_object(L) {
         quancnt--;
     } while ((quancnt > 0n) &&
             ((cptr.ldI16o(tmpobj, $object_id) > NHC.STRANGE_OBJECT) &&
-                !(cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(tmpobj, $object_id),
-                    $sizeof_objclass,
-                    $objclass_oc_merge
-                ) & 1)));
+                !cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(tmpobj, $object_id), $sizeof_objclass),
+                        $objclass_oc_merge
+                    ),
+                    1,
+                    1,
+                    0
+                )));
 
     if (lua_type(L, -1) == 6) {
         (lua_rotate(L, -2, -1), lua_settop(L, -2));
@@ -7222,104 +7159,59 @@ export function lspo_level_flags(L) {
         let s = (luaL_checklstring(L, (i), null));
 
         if (!strncmpi((s), (__s_noteleport), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-                ),
-                1,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport,
                 1
             );
         else if (!strncmpi((s), (__s_hardfloor), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor
-                ),
-                2,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor,
                 1
             );
         else if (!strncmpi((s), (__s_nommap), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap
-                ),
-                3,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap,
                 1
             );
         else if (!strncmpi((s), (__s_shortsighted), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_shortsighted
-                ),
-                5,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_shortsighted,
                 1
             );
         else if (!strncmpi((s), (__s_arboreal), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-                ),
-                2,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal,
                 1
             );
         else if (!strncmpi((s), (__s_mazelevel), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-                ),
-                0,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev,
                 1
             );
         else if (!strncmpi((s), (__s_shroud), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-                ),
-                4,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory,
                 1
             );
         else if (!strncmpi((s), (__s_graveyard), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
-                ),
-                6,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard,
                 1
             );
         else if (!strncmpi((s), (__s_icedpools), -1))
             icedpools = 1;
         else if (!strncmpi((s), (__s_corrmaze), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
-                ),
-                5,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze,
                 1
             );
         else if (!strncmpi((s), (__s_premapped), -1))
@@ -7327,14 +7219,9 @@ export function lspo_level_flags(L) {
         else if (!strncmpi((s), (__s_solidify), -1))
             cptr.st1o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_solidify, 1);
         else if (!strncmpi((s), (__s_sokoban), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-                ),
-                7,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules,
                 1
             );  /* svl.level.flags.sokoban_rules */
         else if (!strncmpi((s), (__s_inaccessibles), -1))
@@ -7372,58 +7259,33 @@ export function lspo_level_flags(L) {
                 -1
             );
         else if (!strncmpi((s), (__s_nomongen), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_rndmongen
-                ),
-                6,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_rndmongen,
                 0
             );
         else if (!strncmpi((s), (__s_nodeathdrops), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_deathdrops
-                ),
-                7,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_deathdrops,
                 0
             );
         else if (!strncmpi((s), (__s_noautosearch), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noautosearch
-                ),
-                0,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noautosearch,
                 1
             );
         else if (!strncmpi((s), (__s_fumaroles), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles
-                ),
-                1,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles,
                 1
             );
         else if (!strncmpi((s), (__s_stormy), -1))
-            cptr.stBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy
-                ),
-                2,
-                1,
-                0,
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy,
                 1
             );
         else {
@@ -7591,8 +7453,8 @@ export function lspo_engraving(L) {
     }
     ep = engr_at(x.v, y.v);
     if (ep) {
-        cptr.stBits(cptr.add(ep, $engr_guardobjects), 0, 1, 0, guardobjs);
-        cptr.stBits(cptr.add(ep, $engr_nowipeout), 1, 1, 0, (!wipeout) >>> 0);
+        cptr.stI32o(ep, $engr_guardobjects, guardobjs);
+        cptr.stI32o(ep, $engr_nowipeout, (!wipeout) >>> 0);
     }
     return 0;
 }
@@ -9765,8 +9627,8 @@ function ensure_way_out() {
     }
 
     while (ttmp) {
-        if ((undestroyable_trap(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0)) ||
-            is_hole(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0))) &&
+        if ((undestroyable_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) ||
+            is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) &&
                 !selection_getpoint(cptr.ldI16o(ttmp, $trap_tx), cptr.ldI16o(ttmp, $trap_ty), ov))
             selection_floodfill(ov, cptr.ldI16o(ttmp, $trap_tx), cptr.ldI16o(ttmp, $trap_ty), 1);
         ttmp = cptr.ldPtr(ttmp);
@@ -10636,12 +10498,10 @@ export function lspo_mazewalk(L) {
     }
 
     if (ftyp < 1) {
-        ftyp = i16((cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-            5,
-            1,
-            0
-        ) | 0
+        ftyp = i16(((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+        ) & 1) | 0
                 ? NHC.CORR
                 : NHC.ROOM));
     }
@@ -10921,12 +10781,10 @@ export function lspo_finalize_level(L) {
      * is currently not possible, we overload the corrmaze flag for this
      * purpose.
      */
-    if (!cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-        5,
-        1,
-        0
-    ))
+    if (!(cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+    ) & 1))
         wallification(1, 0, 79, 20);
 
     if (L)
@@ -11636,11 +11494,9 @@ function sp_level_coder_init() {
         __builtin_object_size(cptr.decay(SpLev_Map), 0)
     );
 
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev),
-        0,
-        1,
-        0,
+    cptr.stI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev,
         0
     );
     cptr.st1o(
@@ -11648,20 +11504,8 @@ function sp_level_coder_init() {
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_temperature,
         schar((In_hell(cptr.add(u, $you_uz)) ? 1 : 0))
     );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_rndmongen),
-        6,
-        1,
-        0,
-        1
-    );
-    cptr.stBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_deathdrops),
-        7,
-        1,
-        0,
-        1
-    );
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_rndmongen, 1);
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_deathdrops, 1);
 
     reset_xystart_size();
 
@@ -11803,12 +11647,10 @@ export function load_special(name) {
          * is currently not possible, we overload the corrmaze flag for this
          * purpose.
          */
-        if (!cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze),
-            5,
-            1,
-            0
-        ))
+        if (!(cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze
+        ) & 1))
             wallification(1, 0, 79, 20);
 
         flip_level_rnd(

@@ -228,8 +228,7 @@ const $NHFILE_mode = FLD.NHFILE_mode, $NHFILE_structlevel = FLD.NHFILE_structlev
       $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
       $u_conduct_gnostic = FLD.u_conduct_gnostic,
       $u_event_gehennom_entered = FLD.u_event_gehennom_entered,
-      $u_event_qcalled = FLD.u_event_qcalled, $u_event_qcompleted = FLD.u_event_qcompleted,
-      $u_event_qexpelled = FLD.u_event_qexpelled, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+      $u_roleplay_deaf = FLD.u_roleplay_deaf,
       $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch, $you_atemp = FLD.you_atemp,
       $you_dz = FLD.you_dz, $you_moreluck = FLD.you_moreluck, $you_ualign = FLD.you_ualign,
       $you_uconduct = FLD.you_uconduct, $you_ucreamed = FLD.you_ucreamed,
@@ -668,7 +667,7 @@ export function boulder_hits_pool(otmp, rx, ry, pushing) {
             }
         }
         if (!fills_up || !pushing) {
-            if (!(cptr.ldI32o(u, $you_uinwater) & 1)) {
+            if (!cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
                 if (pushing
                         ? !Blind()
                         : ((cptr.ld1uo(
@@ -695,7 +694,7 @@ export function boulder_hits_pool(otmp, rx, ry, pushing) {
             }
 
             if (fills_up &&
-                    (cptr.ldI32o(u, $you_uinwater) & 1) | 0 &&
+                    cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 &&
                     dist2((rx), (ry), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) == 0) {
                 set_uinwater(0);  /* u.uinwater = 0 */
                 docrt();
@@ -774,11 +773,11 @@ export function flooreffects(obj, x, y, verb) {
         res = 1;
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER &&
             (t = t_at(x, y)) !== null &&
-            (is_pit(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0)) ||
-                is_hole(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0)))) {
+            (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) ||
+                is_hole((cptr.ldI32o(t, $trap_ttyp) & 31)))) {
         __lbl_deletedwithboulder: {
-            ttyp = cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0;
-            tseen = schar((cptr.ldBits(cptr.add(t, $trap_tseen), 5, 1, 0) | 0 ? 1 : 0));
+            ttyp = (cptr.ldI32o(t, $trap_ttyp) & 31) | 0;
+            tseen = schar(((cptr.ldI32o(t, $trap_tseen) & 1) | 0 ? 1 : 0));
             if (((mtmp = (cptr.ldPtro3(
                 svl,
                 x,
@@ -927,7 +926,7 @@ export function flooreffects(obj, x, y, verb) {
     } else if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
             (t = t_at(x, y)) !== null &&
             (uteetering_at_seen_pit(t) || uescaped_shaft(t))) {
-        if (is_pit(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0))) {
+        if (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31))) {
             if (Blind() && !Deaf()) {
                 ;
                 You_hear(__s_s_tumble_downwards, the(xname(obj)));
@@ -937,7 +936,7 @@ export function flooreffects(obj, x, y, verb) {
                     Tobjnam(obj, __s_tumble),
                     cptr.ldPtro2(
                         c_common_strings,
-                        cptr.ldBits(cptr.add(t, $trap_madeby_u), 7, 1, 0),
+                        (cptr.ldI32o(t, $trap_madeby_u) & 1),
                         8,
                         $c_common_strings_c_the_your
                     )
@@ -1086,13 +1085,15 @@ export function doaltarobj(obj) {
  * already, prompt the player to call its object type. */
 /** C ref: do.c:395 — @param {CPtr<struct obj>} obj */
 export function trycall(obj) {
-    if (!(cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(obj, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_name_known
-    ) &
-        1) &&
+    if (!cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_name_known
+        ),
+        0,
+        1,
+        0
+    ) &&
             !cptr.ldPtro2(
                 objects,
                 cptr.ldI16o(obj, $obj_otyp),
@@ -1606,7 +1607,7 @@ function drop(obj) {
         setuswapwep(null);
     }
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* barrier between you and the floor */
         if (cptr.ld1so(flags, $flag_verbose)) {
             let onam_p;
@@ -1687,7 +1688,7 @@ function drop(obj) {
 /** C ref: do.c:786 — @param {CPtr<struct obj>} obj */
 export function dropx(obj) {
     freeinv(obj);
-    if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (ship_object(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0))
             return;
         if (((cptr.ld1so3(
@@ -1720,7 +1721,7 @@ export function dropz(obj, with_impact) {
     if (cptr.eq(obj, uswapwep.v))
         setuswapwep(null);
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* hero has dropped an item while inside an engulfer */
         if (!cptr.eq(obj, uball.v)) {
             /* moving shop item into engulfer's inventory treated as theft */
@@ -1739,12 +1740,10 @@ export function dropz(obj, with_impact) {
         impact_disturbs_zombies(obj, with_impact);
         if (cptr.eq(obj, uball.v))
             drop_ball(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-        else if (cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
-            0,
-            1,
-            0
-        ))
+        else if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
+        ) & 1))
             sellobj(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         stackobj(obj);
         if (Blind() && Levitation())
@@ -2079,11 +2078,11 @@ function menu_drop(retry) {
 /** C ref: do.c:1110 — @param {CPtr<char>} updn @returns {CInt} */
 function u_stuck_cannot_go(updn) {
     if (cptr.ldPtro(u, $you_ustuck)) {
-        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
                 !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             You(
                 __s_are_s_and_cannot_go_s,
-                !(cptr.ldI32o(u, $you_uswallow) & 1)
+                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)
                     ? __s_being_held
                     : ((dmgtype_fromattack(
                         (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
@@ -2234,8 +2233,8 @@ export function dodown() {
 
     if (Upolyd() &&
             ceiling_hider(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst)) &&
-            (cptr.ldI32o(u, $you_uundetected) & 1) | 0) {
-        cptr.stI32o(u, $you_uundetected, 0);
+            cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0) {
+        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
         if (Flying()) {
             You(__s_fly_out_of_hiding);
         } else {
@@ -2260,9 +2259,9 @@ export function dodown() {
             dotrap(trap, NHM.TOOKPLUNGE);
             return NHM.ECMD_TIME;
         } else if (!trap ||
-                !is_hole(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0)) ||
+                !is_hole((cptr.ldI32o(trap, $trap_ttyp) & 31)) ||
                 !Can_fall_thru(cptr.add(u, $you_uz)) ||
-                !cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0)) {
+                !(cptr.ldI32o(trap, $trap_tseen) & 1)) {
             if (cptr.ld1so(flags, $flag_autodig) &&
                     !cptr.ld1so(svc, $context_info_nopick) &&
                     uwep.v &&
@@ -2271,9 +2270,7 @@ export function dodown() {
             } else {
                 You_cant(
                     __s_go_down_here_s,
-                    (trap &&
-                        (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) ==
-                            NHC.VIBRATING_SQUARE)
+                    (trap && ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE)
                         ? __s_yet
                         : __s_empty
                 );
@@ -2285,13 +2282,13 @@ export function dodown() {
         cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level),
         cptr.add(u, $you_uz)
     ) &&
-            !(cptr.ldI32o(u, $you_uevent + $u_event_gehennom_entered) & 1)) {
+            !cptr.ldBits(cptr.add(u, $you_uevent + $u_event_gehennom_entered), 2, 1, 0)) {
         You(__s_are_standing_at_the_gate_to_gehennom);
         pline(__s_unspeakable_cruelty_and_harm_lurk_down);
         if (yn_function(__s_are_you_sure_you_want_to_enter, cptr.decay(ynchars), 110, 1) != 121)
             return NHM.ECMD_OK;
         pline(__s_so_be_it);
-        cptr.stI32o(u, $you_uevent + $u_event_gehennom_entered, 1);  /* don't ask again */
+        cptr.stBits(cptr.add(u, $you_uevent + $u_event_gehennom_entered), 2, 1, 0, 1);  /* don't ask again */
     }
 
     if (!next_to_u()) {
@@ -2300,7 +2297,7 @@ export function dodown() {
     }
 
     if (trap) {
-        let down_or_thru = (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.HOLE
+        let down_or_thru = ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.HOLE
                 ? __s_down
                 : __s_through;
         let actn = u_locomotion(__s_jump);
@@ -2334,9 +2331,7 @@ export function dodown() {
             __s_s_s_the_s,
             actn,
             down_or_thru,
-            (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.HOLE
-                ? __s_hole
-                : __s_trap_door
+            ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.HOLE ? __s_hole : __s_trap_door
         );
     }
     if (trap &&
@@ -2676,7 +2671,7 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
                     svd,
                     $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
                 ))))) {
-            if (!(cptr.ldI32o(u, $you_uhave) & 1))
+            if (!cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
                 return;  /* must have the Amulet */
             if (!wizard())
                 assign_level(
@@ -2720,7 +2715,7 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
      */
     if (In_hell(cptr.add(u, $you_uz)) &&
             up &&
-            (cptr.ldI32o(u, $you_uhave) & 1) | 0 &&
+            cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 &&
             !newdungeon &&
             !portal &&
             (dunlev(cptr.add(u, $you_uz)) < ((dunlevs_in_dungeon(cptr.add(u, $you_uz)) - 3) | 0))) {
@@ -2832,7 +2827,7 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
     fill_pit(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     set_ustuck(null);  /* clear u.ustuck and u.uswallow */
     set_uinwater(0);  /* u.uinwater = 0 */
-    cptr.stI32o(u, $you_uundetected, 0);  /* not hidden, even if means are available */
+    cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);  /* not hidden, even if means are available */
     if (!cptr.ld1so(iflags, $instance_flags_nofollowers))
         keepdogs(0);
     recalc_mapseen();  /* recalculate map overview before we leave the level */
@@ -3046,11 +3041,11 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
         let ttrap;
 
         for (ttrap = cptr.ldPtr(gf); ttrap; ttrap = cptr.ldPtr(ttrap))
-            if ((cptr.ldBits(cptr.add(ttrap, $trap_ttyp), 0, 5, 0) | 0) == NHC.MAGIC_PORTAL)
+            if (((cptr.ldI32o(ttrap, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                 break;
 
         if (!ttrap) {
-            if ((cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 &&
+            if (cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0 &&
                     ((((cptr.ldI16o(
                         (cptr.add(
                             svd,
@@ -3257,12 +3252,10 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
                     )
                 ))))
         movebubbles();
-    else if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles),
-        1,
-        1,
-        0
-    ))
+    else if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles
+    ) & 1))
         fumaroles();
 
     /* Reset the screen. */
@@ -3343,7 +3336,7 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level
                     )
                 ))))
-        cptr.stI32o(u, $you_uevent + $u_event_gehennom_entered, 1);
+        cptr.stBits(cptr.add(u, $you_uevent + $u_event_gehennom_entered), 2, 1, 0, 1);
 
     if (familiar)
         familiar_level_msg();
@@ -3366,7 +3359,7 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
                 )) {
             final_level();  /* guardian angel,&c */
             record_achievement(NHC.ACH_ASTR);  /* reached Astral level */
-        } else if (newdungeon && (cptr.ldI32o(u, $you_uhave) & 1) | 0) {
+        } else if (newdungeon && cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0) {
             resurrect();  /* force confrontation with Wizard */
         }
     } else if (In_quest(cptr.add(u, $you_uz))) {
@@ -3459,14 +3452,14 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
         /* main dungeon message from your quest leader */
         if (!In_quest(cptr.add(u, $you_uz0)) &&
                 at_dgn_entrance(__s_the_quest) &&
-                !((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 ||
-                    (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 ||
-                    cptr.ldBits(cptr.add(svq, $q_score_leader_is_dead), 3, 1, 0) | 0)) {
+                !(cptr.ldBits(cptr.add(u, $you_uevent), 5, 1, 0) | 0 ||
+                    cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0 ||
+                    (cptr.ldI32o(svq, $q_score_leader_is_dead) & 1) | 0)) {
             /* [TODO: copy of same TODO below; if an achievement for
                receiving quest call from leader gets added, that should
                come after logging new level entry] */
-            if (!(cptr.ldI32o(u, $you_uevent + $u_event_qcalled) & 1)) {
-                cptr.stI32o(u, $you_uevent + $u_event_qcalled, 1);
+            if (!cptr.ldBits(cptr.add(u, $you_uevent), 3, 1, 0)) {
+                cptr.stBits(cptr.add(u, $you_uevent), 3, 1, 0, 1);
                 /* main "leader needs help" message */
                 com_pager(__s_quest_portal);
             } else {
@@ -3882,7 +3875,7 @@ export function revive_corpse(corpse) {
 
                         ttmp = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
                         if (ttmp)
-                            cptr.stBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0, 1);
+                            cptr.stI32o(ttmp, $trap_tseen, 1);
                         pline(
                             __s_s_claws_itself_out_of_the_ground,
                             canspotmon(mtmp)

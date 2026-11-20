@@ -144,13 +144,13 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum, $Role_petnum = F
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
       $sizeof_skills = FLD.sizeof_skills, $stairway_sy = FLD.stairway_sy,
       $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
-      $u_conduct_pets = FLD.u_conduct_pets, $u_event_qexpelled = FLD.u_event_qexpelled,
-      $u_roleplay_pauper = FLD.u_roleplay_pauper, $you_uconduct = FLD.you_uconduct,
-      $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave, $you_umonnum = FLD.you_umonnum,
-      $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops,
-      $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed,
-      $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy,
-      $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0, $you_weapon_skills = FLD.you_weapon_skills;
+      $u_conduct_pets = FLD.u_conduct_pets, $u_roleplay_pauper = FLD.u_roleplay_pauper,
+      $you_uconduct = FLD.you_uconduct, $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave,
+      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+      $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
+      $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0,
+      $you_weapon_skills = FLD.you_weapon_skills;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_obtained_s_first_pet_s = cptr.lit("obtained %s first pet (%s)");
@@ -264,7 +264,7 @@ export function initedog(mtmp, everything) {
         cptr.stI32o(edogp, $edog_abuse, 0);
         cptr.stI32o(edogp, $edog_revivals, 0);
         cptr.stI32o(edogp, $edog_mhpmax_penalty, 0);
-        cptr.stBits(cptr.add(edogp, $edog_killed_by_u), 0, 1, 0, 0);
+        cptr.stI32o(edogp, $edog_killed_by_u, 0);
     } else {
         if (cptr.ldI32o(edogp, $edog_apport) <= 0)
             cptr.stI32o(edogp, $edog_apport, 1);
@@ -865,7 +865,7 @@ export function mon_arrive(mtmp, when) {
             }
             /* find the arrival portal */
             for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
-                if ((cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.MAGIC_PORTAL)
+                if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                     break;
             if (t) {
                 xlocale = cptr.ldI16o(t, $trap_tx), ylocale = cptr.ldI16o(t, $trap_ty);
@@ -876,7 +876,7 @@ export function mon_arrive(mtmp, when) {
                 /* debugfuzzer returns from or enters another branch */
                 xlocale = cptr.ldI16(stway), ylocale = cptr.ldI16o(stway, $stairway_sy);
                 break;
-            } else if (!((cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 &&
+            } else if (!(cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0 &&
                     ((((cptr.ldI16o(
                         (cptr.add(
                             svd,
@@ -1190,7 +1190,8 @@ export function keepdogs(pets_only) {
             cptr.stI32o(mtmp, $monst_mcanmove, 1);
         }
         if (((monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && levl_follower(mtmp)) ||
-            ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0)) &&
+            (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0 &&
+                (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0)) &&
                 (!helpless(mtmp) || (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))) &&
                 !(cptr.ldU64o(mtmp, $monst_mstrategy) & 536870912n)) {
             let num_segs;
@@ -1570,47 +1571,55 @@ export function dogfood(mon, obj) {
                     cptr.ldI16o(obj, $obj_otyp) == NHC.RIN_SLOW_DIGESTION)
                 return NHC.TABU;
             if (mon_hates_silver(mon) &&
-                    ((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                    (cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) ==
                         NHC.SILVER)
                 return NHC.TABU;
             if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)) &&
-                    (((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                    ((cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) <=
                         NHC.WOOD))
                 return NHC.ACCFOOD;
             if (((cptr.ldU64o((mptr), $permonst_mflags1) & 2147483648n) != 0n) &&
                     is_metallic(obj) &&
-                    ((((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                    (((cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) ==
                         NHC.IRON) ||
                         !cptr.eq(mptr, cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)))) {
                 /* Non-rustproofed ferrous-based metals are preferred. */
-                return ((((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_material
-                ) &
-                    31) |
+                return (((cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_material
+                    ),
+                    3,
+                    5,
+                    0
+                ) |
                     0) ==
                     NHC.IRON) &&
                     !(cptr.ldI32o(obj, $obj_oerodeproof) & 1))
@@ -1697,7 +1706,7 @@ export function tamedog(mtmp, obj, givemsg) {
 
     /* make grabber let go now, whether it becomes tame or not */
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
-        if ((cptr.ldI32o(u, $you_uswallow) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
             expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 1);
         else if (!(Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
             unstuck(mtmp);
@@ -1869,7 +1878,7 @@ export function wary_dog(mtmp, was_dead) {
     }
 
     if (edog &&
-            ((cptr.ldBits(cptr.add(edog, $edog_killed_by_u), 0, 1, 0) | 0) == 1 ||
+            (((cptr.ldI32o(edog, $edog_killed_by_u) & 1) | 0) == 1 ||
                 cptr.ldI32o(edog, $edog_abuse) > 2)) {
         cptr.stI32o(mtmp, $monst_mpeaceful, cptr.st1o(mtmp, $monst_mtame, 0));
         if (cptr.ldI32o(edog, $edog_abuse) >= 0 && cptr.ldI32o(edog, $edog_abuse) < 10)
@@ -1934,7 +1943,7 @@ export function wary_dog(mtmp, was_dead) {
     } else if (edog) {
         /* it's still a pet; start a clean pet-slate now */
         (cptr.stI32o(edog, $edog_revivals, cptr.ldI32o(edog, $edog_revivals) + 1)) - (1);
-        cptr.stBits(cptr.add(edog, $edog_killed_by_u), 0, 1, 0, 0);
+        cptr.stI32o(edog, $edog_killed_by_u, 0);
         cptr.stI32o(edog, $edog_abuse, 0);
         cptr.stI16o(edog, $edog_ogoal, cptr.stI16o(edog, $edog_ogoal + $nhcoord_y, -1));
         if (was_dead ||

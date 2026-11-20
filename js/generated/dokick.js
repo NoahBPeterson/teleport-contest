@@ -645,13 +645,15 @@ function kick_monster(mon, x, y) {
         if (Fumbling())
             clumsy = 1;
         else if (uarm.v &&
-                (cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(uarm.v, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_big
-                ) &
-                    1) |
+                cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(uarm.v, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_big
+                    ),
+                    0,
+                    1,
+                    0
+                ) |
                     0 &&
                 (acurr(NHC.A_DEX)) < rnd(25))
             clumsy = 1;
@@ -953,13 +955,15 @@ export function container_impact_dmg(obj, x, y) {
         let result = null;
 
         otmp2 = cptr.ldPtr(otmp);
-        if (((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(otmp, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_material
-        ) &
-            31) |
+        if ((cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_material
+            ),
+            3,
+            5,
+            0
+        ) |
             0) ==
             NHC.GLASS &&
                 cptr.ld1so(otmp, $obj_oclass) != NHC.GEM_CLASS &&
@@ -1071,22 +1075,20 @@ function really_kick_object(x, y) {
         return 0;
 
     if ((trap = t_at(x, y)) !== null) {
-        if ((is_pit(cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0)) && !Passes_walls()) ||
-                (cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.WEB) {
-            if (!cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0))
+        if ((is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31)) && !Passes_walls()) ||
+                ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.WEB) {
+            if (!(cptr.ldI32o(trap, $trap_tseen) & 1))
                 find_trap(trap);
             You_cant(
                 __s_kick_s_that_s_in_a_s,
                 cptr.ldPtro(c_common_strings, $c_common_strings_c_something),
                 Hallucination()
                     ? __s_tizzy
-                    : (((cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.WEB)
-                        ? __s_web
-                        : __s_pit)
+                    : ((((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.WEB) ? __s_web : __s_pit)
             );
             return 1;
         }
-        if ((cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0) == NHC.STATUE_TRAP) {
+        if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.STATUE_TRAP) {
             activate_statue_trap(trap, x, y, 0);
             return 1;
         }
@@ -2304,7 +2306,7 @@ export function dokick() {
             NHC.S_LIZARD) {
         Your(__s_legs_cannot_kick_effectively);
         no_kick = 1;
-    } else if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 && !rn2(2)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 && !rn2(2)) {
         Your(__s_slow_motion_kick_doesn_t_hit_anything);
         no_kick = 1;
     } else if (cptr.ldI32o(u, $you_utrap)) {
@@ -2349,7 +2351,7 @@ export function dokick() {
     else
         avrg_attrib = ((((acurrstr()) + (acurr(NHC.A_DEX)) + (acurr(NHC.A_CON))) | 0) / 3) | 0;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         switch (rn2(3)) {
             case 0:
                 You_cant(__s_move_your_s, body_part(NHC.LEG));
@@ -2505,7 +2507,7 @@ export function dokick() {
                 cptr.ldI16o(mtmp, $monst_mx) == x &&
                 cptr.ldI16o(mtmp, $monst_my) == y &&
                 !((glyph) == NHC.GLYPH_INVIS_OFF) &&
-                !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                !(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                     (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))) {
             map_invisible(x, y);
         }
@@ -2550,7 +2552,7 @@ export function dokick() {
         cptr.ld1so(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ) == NHC.LAVAWALL
         ? 1
         : 0) ^
-            !!(cptr.ldI32o(u, $you_uinwater) & 1)) {
+            !!cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         /* objects normally can't be removed from water by kicking */
         You(__s_splash_some_s_around, hliquid(is_pool(x, y) ? __s_water : __s_lava));
         /* pretend the kick is fast enough for lava not to burn */
@@ -2999,7 +3001,7 @@ export function ship_object(otmp, x, y, shop_floor_obj) {
        other things down before plugging the hole */
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BOULDER &&
             ((t = t_at(x, y)) !== null) &&
-            is_hole(cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0))) {
+            is_hole((cptr.ldI32o(t, $trap_ttyp) & 31))) {
         if (impact)
             impact_drop(otmp, x, y, 0);
         return 0;  /* let caller finish the drop */
@@ -3048,13 +3050,15 @@ export function ship_object(otmp, x, y, shop_floor_obj) {
     if (breaktest(otmp)) {
         let result;
 
-        if (((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(otmp, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_material
-        ) &
-            31) |
+        if ((cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_material
+            ),
+            3,
+            5,
+            0
+        ) |
             0) ==
             NHC.GLASS ||
                 cptr.ldI16o(otmp, $obj_otyp) == NHC.EXPENSIVE_CAMERA) {
@@ -3371,12 +3375,12 @@ export function down_gate(x, y) {
     }
     /* hole will always be flagged as seen; trap drop might or might not */
     if ((ttmp = t_at(x, y)) !== null &&
-            cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0) | 0 &&
-            is_hole(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0))) {
+            (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
+            is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) {
         cptr.stPtro(
             gg,
             $instance_globals_g_gate_str,
-            ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.TRAPDOOR)
+            (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR)
                 ? __s_through_the_trap_door
                 : __s_through_the_hole
         );

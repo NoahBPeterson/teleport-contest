@@ -1631,7 +1631,7 @@ cptr.st1o(init_svd, 0 + $dungeon_proto + 0, 0);
 cptr.st1o(init_svd, 0 + $dungeon_fill_lvl + 0, 0);
 cptr.st1o(init_svd, 0 + $dungeon_themerms + 0, 0);
 cptr.st1o(init_svd, 0 + $dungeon_boneid, 0);
-cptr.stBits(cptr.add(init_svd, 0 + $dungeon_flags), 0, 1, 0, 0);
+cptr.stI32o(init_svd, 0 + $dungeon_flags, 0);
 cptr.stI16o(init_svd, 0 + $dungeon_entry_lev, 0);
 cptr.stI16o(init_svd, 0 + $dungeon_num_dunlevs, 0);
 cptr.stI16o(init_svd, 0 + $dungeon_dunlev_ureached, 0);
@@ -1824,7 +1824,7 @@ cptr.st1o(init_svp, $instance_globals_saved_p_pl_fruit + 0, 0);
 
 /** C ref: decl.c:956 — struct instance_globals_saved_q */
 let init_svq = cptr.alloc($sizeof_instance_globals_saved_q);
-cptr.stBits(init_svq, 0, 1, 0, 0);
+cptr.stI32(init_svq, 0);
 
 /** C ref: decl.c:961 — struct instance_globals_saved_r */
 let init_svr = cptr.alloc($sizeof_instance_globals_saved_r);
@@ -2043,7 +2043,7 @@ export function decl_globals_init() {
     cptr.memcpy(gp, g_init_p, 536);
     cptr.memcpy(gq, g_init_q, 1);
     cptr.memcpy(gr, g_init_r, 408);
-    cptr.memcpy(gs, g_init_s, 1408);
+    cptr.memcpy(gs, g_init_s, 1424);
     cptr.memcpy(gt, g_init_t, 456);
     cptr.memcpy(gu, g_init_u, 440);
     cptr.memcpy(gv, g_init_v, 200);
@@ -2052,18 +2052,18 @@ export function decl_globals_init() {
     cptr.memcpy(gy, g_init_y, 352);
     cptr.memcpy(gz, g_init_z, 3);
     cptr.memcpy(svb, init_svb, 96);
-    cptr.memcpy(svc, init_svc, 704);
-    cptr.memcpy(svd, init_svd, 2584);
+    cptr.memcpy(svc, init_svc, 720);
+    cptr.memcpy(svd, init_svd, 2904);
     cptr.memcpy(sve, init_sve, 8);
     cptr.memcpy(svh, init_svh, 4);
     cptr.memcpy(svi, init_svi, 4);
     cptr.memcpy(svk, init_svk, 272);
-    cptr.memcpy(svl, init_svl, 89608);
-    cptr.memcpy(svm, init_svm, 1552);
+    cptr.memcpy(svl, init_svl, 89720);
+    cptr.memcpy(svm, init_svm, 4616);
     cptr.memcpy(svn, init_svn, 52);
     cptr.memcpy(svo, init_svo, 24);
     cptr.memcpy(svp, init_svp, 96);
-    cptr.memcpy(svq, init_svq, 8);
+    cptr.memcpy(svq, init_svq, 88);
     cptr.memcpy(svr, init_svr, 18368);
     cptr.memcpy(svs, init_svs, 352);
     cptr.memcpy(svt, init_svt, 16);
@@ -2288,10 +2288,10 @@ export function decl_globals_init() {
     cptr.stPtro(gs, $instance_globals_s_subrooms, cptr.add(svr, 41, $sizeof_mkroom));
 
     __builtin___memset_chk(flags, 0, 208n, __builtin_object_size(flags, 0));
-    __builtin___memset_chk(iflags, 0, 424n, __builtin_object_size(iflags, 0));
+    __builtin___memset_chk(iflags, 0, 432n, __builtin_object_size(iflags, 0));
     __builtin___memset_chk(a11y, 0, 16n, __builtin_object_size(a11y, 0));
     __builtin___memset_chk(disp, 0, 3n, __builtin_object_size(disp, 0));
-    __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
+    __builtin___memset_chk(u, 0, 2760n, __builtin_object_size(u, 0));
     __builtin___memset_chk(ubirthday, 0, 8n, __builtin_object_size(ubirthday, 0));
     __builtin___memset_chk(urealtime, 0, 24n, __builtin_object_size(urealtime, 0));
 

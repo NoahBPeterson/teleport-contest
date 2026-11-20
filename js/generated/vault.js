@@ -194,11 +194,11 @@ export function newegd(mtmp) {
     if (!cptr.ldPtro(mtmp, $monst_mextra))
         cptr.stPtro(mtmp, $monst_mextra, newmextra());
     if (!(cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd))) {
-        cptr.stPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd, alloc(640));
+        cptr.stPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd, alloc(652));
         void __builtin___memset_chk(
             (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)),
             0,
-            640n,
+            652n,
             __builtin_object_size((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)), 0)
         );
         cptr.stI32(
@@ -244,7 +244,7 @@ function clear_fcorr(grd, forceshow) {
         fcy = cptr.ldI16o2(egrd, fcbeg, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_fy);
         if (((cptr.ldI32o((grd), $monst_mhp) < 1) ||
             !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) &&
-                cptr.ldBits(cptr.add(egrd, $egd_gddone), 0, 1, 0) | 0)
+                (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0)
             forceshow = 1;
         if ((((fcx) == cptr.ldI16(u) && (fcy) == cptr.ldI16o(u, $you_uy)) &&
             !(cptr.ldI32o((grd), $monst_mhp) < 1)) ||
@@ -469,15 +469,10 @@ export function findgd() {
                     cptr.add(u, $you_uz)
                 )) {
             if (!cptr.ldI16o(mtmp, $monst_mx) &&
-                    !cptr.ldBits(
-                        cptr.add(
-                            (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)),
-                            $egd_gddone
-                        ),
-                        0,
-                        1,
-                        0
-                    ))
+                    !(cptr.ldI32o(
+                        (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)),
+                        $egd_gddone
+                    ) & 1))
                 cptr.stI32o(mtmp, $monst_mhp, cptr.ldI32o(mtmp, $monst_mhpmax));
             return mtmp;
         }
@@ -900,11 +895,9 @@ export function invault() {
         cptr.stI32o(guard, $monst_isgd, 1);
         cptr.stI32o(guard, $monst_mpeaceful, 1);
         set_malign(guard);
-        cptr.stBits(
-            cptr.add((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), $egd_gddone),
-            0,
-            1,
-            0,
+        cptr.stI32o(
+            (cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)),
+            $egd_gddone,
             0
         );
         cptr.stI16o(
@@ -975,7 +968,7 @@ export function invault() {
             map_invisible(cptr.ldI16o(guard, $monst_mx), cptr.ldI16o(guard, $monst_my));
         }
 
-        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             /* can't interrogate hero, don't interrogate engulfer */
             if (!Deaf()) {
                 ;
@@ -986,7 +979,8 @@ export function invault() {
             mongone(guard);
             return;
         }
-        if (U_AP_TYPE() == NHC.M_AP_OBJECT || (cptr.ldI32o(u, $you_uundetected) & 1) | 0) {
+        if (U_AP_TYPE() == NHC.M_AP_OBJECT ||
+                cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0) {
             if (U_AP_TYPE() == NHC.M_AP_OBJECT &&
                     cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) !=
                         NHC.GOLD_PIECE)
@@ -1736,8 +1730,8 @@ export function gd_move(grd) {
 
             if (semi_dead ||
                     !cptr.ldI16o(grd, $monst_mx) ||
-                    cptr.ldBits(cptr.add(egrd, $egd_gddone), 0, 1, 0) | 0) {
-                cptr.stBits(cptr.add(egrd, $egd_gddone), 0, 1, 0, 1);
+                    (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0) {
+                cptr.stI32o(egrd, $egd_gddone, 1);
                 return gd_move_cleanup(grd, semi_dead, 0);
             }
             {
@@ -1790,17 +1784,17 @@ export function gd_move(grd) {
                     Math.abs((cptr.ldI16o(egrd, $egd_ogy) - cptr.ldI16o(grd, $monst_my)) | 0) > 1)
                 return -1;  /* teleported guard - treat as monster */
 
-            if (cptr.ldBits(cptr.add(egrd, $egd_witness), 1, 2, 0)) {
+            if ((cptr.ldI32o(egrd, $egd_witness) & 3)) {
                 if (!Deaf()) {
                     ;
                     verbalize(
                         __s_how_dare_you_s_that_gold_scoundrel,
-                        ((cptr.ldBits(cptr.add(egrd, $egd_witness), 1, 2, 0) | 0) & NHM.GD_EATGOLD)
+                        (((cptr.ldI32o(egrd, $egd_witness) & 3) | 0) & NHM.GD_EATGOLD)
                             ? __s_consume
                             : __s_destroy
                     );
                 }
-                cptr.stBits(cptr.add(egrd, $egd_witness), 1, 2, 0, 0);
+                cptr.stI32o(egrd, $egd_witness, 0);
                 cptr.stI32o(grd, $monst_mpeaceful, 0);
                 return -1;
             }
@@ -1921,7 +1915,7 @@ export function gd_move(grd) {
                             ;
                             verbalize(__s_well_begone);
                         }
-                        cptr.stBits(cptr.add(egrd, $egd_gddone), 0, 1, 0, 1);
+                        cptr.stI32o(egrd, $egd_gddone, 1);
                         return gd_move_cleanup(grd, semi_dead, 0);
                     }
                 }
@@ -1934,7 +1928,7 @@ export function gd_move(grd) {
                             cptr.ldI16o(grd, $monst_mx),
                             cptr.ldI16o(grd, $monst_my)
                         ) &&
-                        !cptr.ldBits(cptr.add(egrd, $egd_gddone), 0, 1, 0) &&
+                        !(cptr.ldI32o(egrd, $egd_gddone) & 1) &&
                         !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
                         (cptr.ld1so3(
                             svl,
@@ -2028,7 +2022,7 @@ export function gd_move(grd) {
                 }
             /* new gold can appear if it was embedded in stone and hero kicks it
                (on even via wish and drop) so don't assume hero has been warned */
-            if (goldincorridor && !cptr.ldBits(cptr.add(egrd, $egd_gddone), 0, 1, 0)) {
+            if (goldincorridor && !(cptr.ldI32o(egrd, $egd_gddone) & 1)) {
                 gd_pick_corridor_gold(grd, m, n);
                 if (!(cptr.ldI32o(grd, $monst_mpeaceful) & 1))
                     return -1;
@@ -2036,11 +2030,11 @@ export function gd_move(grd) {
                 return 0;
             }
             if (um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1) ||
-                    cptr.ldBits(cptr.add(egrd, $egd_gddone), 0, 1, 0) | 0) {
-                if (!cptr.ldBits(cptr.add(egrd, $egd_gddone), 0, 1, 0) &&
+                    (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0) {
+                if (!(cptr.ldI32o(egrd, $egd_gddone) & 1) &&
                         !rn2(10) &&
                         !Deaf() &&
-                        !(cptr.ldI32o(u, $you_uswallow) & 1) &&
+                        !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
                         !(cptr.ldPtro(u, $you_ustuck) &&
                             !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
                     ;
@@ -2106,7 +2100,7 @@ export function gd_move(grd) {
         case 21: {
 
             /* seems we found a good place to leave him alone */
-            cptr.stBits(cptr.add(egrd, $egd_gddone), 0, 1, 0, 1);
+            cptr.stI32o(egrd, $egd_gddone, 1);
             if (((typ) >= NHC.DOOR)) { __pc = 24; continue; }
             __pc = 23; continue;
         }
@@ -2270,7 +2264,7 @@ export function gd_move(grd) {
             continue;
         }
         case 38: {
-            if (!cptr.ldBits(cptr.add(egrd, $egd_gddone), 0, 1, 0)) { __pc = 40; continue; }
+            if (!(cptr.ldI32o(egrd, $egd_gddone) & 1)) { __pc = 40; continue; }
             __pc = 39; continue;
         }
         case 40: {
@@ -2300,7 +2294,7 @@ export function gd_move(grd) {
         }
         case 4 /* newpos: */: {
             gd_mv_monaway(grd, nx, ny);
-            if (cptr.ldBits(cptr.add(egrd, $egd_gddone), 0, 1, 0))
+            if ((cptr.ldI32o(egrd, $egd_gddone) & 1))
                 return gd_move_cleanup(grd, semi_dead, 0);
             cptr.stI16o(egrd, $egd_ogx, cptr.ldI16o(grd, $monst_mx));  /* update old positions */
             cptr.stI16o(egrd, $egd_ogy, cptr.ldI16o(grd, $monst_my));
@@ -2457,14 +2451,9 @@ export function vault_gd_watching(activity) {
                     NHM.COULD_SEE) !=
                     0))) {
         if (activity == NHM.GD_EATGOLD || activity == NHM.GD_DESTROYGOLD)
-            cptr.stBits(
-                cptr.add(
-                    (cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)),
-                    $egd_witness
-                ),
-                1,
-                2,
-                0,
+            cptr.stI32o(
+                (cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)),
+                $egd_witness,
                 activity
             );
     }

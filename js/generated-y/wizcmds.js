@@ -105,7 +105,9 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum,
       $classic_representation_symidx = FLD.classic_representation_symidx,
       $const_globals_zeroany = FLD.const_globals_zeroany,
       $context_info_mon_moving = FLD.context_info_mon_moving,
-      $context_info_warntype = FLD.context_info_warntype, $d_level_dlevel = FLD.d_level_dlevel,
+      $context_info_warntype = FLD.context_info_warntype, $d_flags_hellish = FLD.d_flags_hellish,
+      $d_flags_maze_like = FLD.d_flags_maze_like, $d_flags_rogue_like = FLD.d_flags_rogue_like,
+      $d_level_dlevel = FLD.d_level_dlevel,
       $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
       $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
       $dgn_topology_d_mines_dnum = FLD.dgn_topology_d_mines_dnum,
@@ -616,7 +618,7 @@ export function* wiz_map() {
             cptr.stI64o2(u, NHC.HALLUC, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n)
         );
         for (t = cptr.ldPtr(gf); t !== null; t = cptr.ldPtr(t)) {
-            cptr.stBits(cptr.add(t, $trap_tseen), 5, 1, 0, 1);
+            cptr.stI32o(t, $trap_tseen, 1);
             (yield* map_trap(t, 1));
         }
         for (ep = head_engr.v; ep !== null; ep = cptr.ldPtr(ep)) {
@@ -740,7 +742,7 @@ export function* wiz_kill() {
                 }
                 break;
             }
-        } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             mtmp = (dist2(
                 ((cptr.ldI16(cc))),
                 ((cptr.ldI16o(cc, $nhcoord_y))),
@@ -772,7 +774,7 @@ export function* wiz_kill() {
                be referred to as "it" */
             let tame = !!cptr.ld1so(mtmp, $monst_mtame);
             let seen = (canspotmon(mtmp) ||
-                ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                     cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
                     ? 1
                     : 0);
@@ -1281,13 +1283,13 @@ export function* wiz_map_levltyp() {
             );
             /* special level flags (note: dungeon.def doesn't set `maze'
                or `hell' for any specific levels so those never show up) */
-            if (cptr.ldBits(cptr.add(slev, $s_level_flags), 2, 1, 0))
+            if ((cptr.ldI32o(slev, $s_level_flags + $d_flags_maze_like) & 1))
                 void cptr.strcat(cptr.decay(dsc), __s_mazelike);
-            if (cptr.ldBits(cptr.add(slev, $s_level_flags), 1, 1, 0))
+            if ((cptr.ldI32o(slev, $s_level_flags + $d_flags_hellish) & 1))
                 void cptr.strcat(cptr.decay(dsc), __s_hellish);
-            if (cptr.ldBits(cptr.add(slev, $s_level_flags), 0, 1, 0))
+            if ((cptr.ldI32o(slev, $s_level_flags) & 1))
                 void cptr.strcat(cptr.decay(dsc), __s_town);
-            if (cptr.ldBits(cptr.add(slev, $s_level_flags), 3, 1, 0))
+            if ((cptr.ldI32o(slev, $s_level_flags + $d_flags_rogue_like) & 1))
                 void cptr.strcat(cptr.decay(dsc), __s_roguelike);
             /* alignment currently omitted to save space */
         }
@@ -1309,174 +1311,96 @@ export function* wiz_map_levltyp() {
                     $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nsinks
                 )
             );
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault
-            ),
-            1,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_vault);
-        if (cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
-            0,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_shop);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple
-            ),
-            7,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_temple);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court
-            ),
-            3,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_throne);
-        if (cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo),
-            2,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_zoo);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue
-            ),
-            4,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_morgue);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks
-            ),
-            6,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_barracks);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive
-            ),
-            5,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_hive);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
-            ),
-            0,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_swamp);
         /* level flags */
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-            ),
-            1,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_notport);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor
-            ),
-            2,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_nodig);
-        if (cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap),
-            3,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_nommap);
-        if (!cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-            ),
-            4,
-            1,
-            0
-        ))
+        if (!(cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_nomem);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_shortsighted
-            ),
-            5,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_shortsighted
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_shortsight);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
-            ),
-            6,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_graveyard);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-            ),
-            0,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_maze);
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev
-            ),
-            1,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_cave);
-        if (cptr.ldBits(
-            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal),
-            2,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
+        ) & 1))
             void cptr.strcat(cptr.decay(dsc), __s_tree);
         if (Sokoban())
             void cptr.strcat(cptr.decay(dsc), __s_sokoban_rules);
@@ -1868,7 +1792,7 @@ export function* wiz_intrinsic() {
             else if (p.v == NHC.PROT_FROM_SHAPE_CHANGERS)
                 (yield* rescham());
             if (p.v == NHC.WWALKING || p.v == NHC.LEVITATION || p.v == NHC.FLYING) {
-                if ((cptr.ldI32o(u, $you_uinwater) & 1))
+                if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
                     void (yield* pooleffects(0));
             }
         }
@@ -2078,7 +2002,7 @@ function size_monst(mtmp, incl_wsegs) {
                     )) +
                         1)) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)))
-            sz = (sz + 640) | 0;
+            sz = (sz + 652) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)))
             sz = (sz + 56) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)))
@@ -2088,7 +2012,7 @@ function size_monst(mtmp, incl_wsegs) {
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)))
             sz = (sz + 64) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)))
-            sz = (sz + 28) | 0;
+            sz = (sz + 36) | 0;
         /* mextra->mcorpsenm doesn't point to more memory */
     }
     return sz;
@@ -2147,11 +2071,11 @@ function* misc_stats(win, total_count, total_size) {
     count.v = (size.v = 0n);
     for (tt = cptr.ldPtr(gf); tt; tt = cptr.ldPtr(tt)) {
         ++count.v;
-        size.v += 32n;
+        size.v += 40n;
     }
     cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
     cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
-    void cptr.sprintf(cptr.decay(hdrbuf), __s_traps_size_ld, 32n);
+    void cptr.sprintf(cptr.decay(hdrbuf), __s_traps_size_ld, 40n);
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
 
@@ -2305,12 +2229,12 @@ function* misc_stats(win, total_count, total_size) {
 function* you_sanity_check() {
     let mtmp;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !cptr.ldPtro(u, $you_ustuck)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && !cptr.ldPtro(u, $you_ustuck)) {
         /* this probably ought to be panic() */
         (yield* impossible(__s_sanity_check_swallowed_by_nothing));
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
         /* try to recover from whatever the problem is */
-        cptr.stI32o(u, $you_uswallow, 0);
+        cptr.stBits(cptr.add(u, $you_uswallow), 0, 1, 0, 0);
         cptr.stI32o(u, $you_uswldtim, 0);
         (yield* docrt());
     }

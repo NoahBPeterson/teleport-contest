@@ -274,7 +274,8 @@ export function tp_sensemon(mon) {
 
 /** C ref: display.c:173 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function sensemon(mon) {
-    return ((!(cptr.ldI32o(u, $you_uswallow) & 1) || cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
+    return ((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
+        cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
         (!Underwater() ||
             (dist2(
                 (cptr.ldI16o((mon), $monst_mx)),
@@ -450,7 +451,7 @@ export function is_safemon(mon) {
                 : 0)) &&
             ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) &&
                 !(cptr.ldI32o(mon, $monst_mundetected) & 1))) ||
-            ((!(cptr.ldI32o(u, $you_uswallow) & 1) ||
+            ((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
                 cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
                 (!Underwater() ||
                     (dist2(
@@ -810,12 +811,11 @@ export function* magic_map_background(x, y, show) {
                 glyph == (((NHC.S_litcorr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
             glyph = (((NHC.S_corr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0);
     }
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory),
-        4,
-        1,
-        0
-    ) |
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+    ) &
+        1) |
         0 &&
             (((cptr.ldI32(lev)) == NHC.GLYPH_UNEXPLORED_OFF) || glyph_is_cmap(cptr.ldI32(lev))))
         cptr.stI32(lev, glyph);
@@ -847,12 +847,10 @@ export function* magic_map_background(x, y, show) {
 export function* map_background(x, y, show) {
     let glyph = (yield* back_to_glyph(x, y));
 
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory),
-        4,
-        1,
-        0
-    ))
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+    ) & 1))
         cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, glyph);
     if (show)
         (yield* show_glyph(x, y, glyph));
@@ -868,19 +866,13 @@ export function* map_background(x, y, show) {
 export function* map_trap(trap, show) {
     let x = cptr.ldI16o(trap, $trap_tx);
     let y = cptr.ldI16o(trap, $trap_ty);
-    let glyph = (((((NHC.S_arrow_trap +
-        ((cptr.ldBits(cptr.add((trap), $trap_ttyp), 0, 5, 0) | 0)) -
-        1) |
-        0)) ==
+    let glyph = (((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1) | 0)) ==
         NHC.S_stone)
             ? NHC.GLYPH_CMAP_STONE_OFF
-            : (((((NHC.S_arrow_trap +
-                ((cptr.ldBits(cptr.add((trap), $trap_ttyp), 0, 5, 0) | 0)) -
-                1) |
-                0)) <=
+            : (((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1) | 0)) <=
                 NHC.S_trwall)
                 ? ((NHC.S_arrow_trap +
-                    ((cptr.ldBits(cptr.add((trap), $trap_ttyp), 0, 5, 0) | 0)) -
+                    (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) -
                     1 -
                     NHC.S_vwall +
                     (In_mines(cptr.add(u, $you_uz))
@@ -912,50 +904,44 @@ export function* map_trap(trap, show) {
                                 : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum())
                                     ? NHC.GLYPH_CMAP_SOKO_OFF
                                     : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
-                : (((((NHC.S_arrow_trap +
-                    ((cptr.ldBits(cptr.add((trap), $trap_ttyp), 0, 5, 0) | 0)) -
-                    1) |
+                : (((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1) |
                     0)) <
                     NHC.S_altar)
                     ? ((NHC.S_arrow_trap +
-                        ((cptr.ldBits(cptr.add((trap), $trap_ttyp), 0, 5, 0) | 0)) -
+                        (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) -
                         1 -
                         NHC.S_ndoor +
                         NHC.GLYPH_CMAP_A_OFF) | 0)
-                    : (((((NHC.S_arrow_trap +
-                        ((cptr.ldBits(cptr.add((trap), $trap_ttyp), 0, 5, 0) | 0)) -
-                        1) |
+                    : (((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1) |
                         0)) ==
                         NHC.S_altar)
                         ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
                         : (((((NHC.S_arrow_trap +
-                            ((cptr.ldBits(cptr.add((trap), $trap_ttyp), 0, 5, 0) | 0)) -
+                            (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) -
                             1) |
                             0)) <
                             ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
                             ? ((NHC.S_arrow_trap +
-                                ((cptr.ldBits(cptr.add((trap), $trap_ttyp), 0, 5, 0) | 0)) -
+                                (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) -
                                 1 -
                                 NHC.S_grave +
                                 NHC.GLYPH_CMAP_B_OFF) | 0)
                             : (((((NHC.S_arrow_trap +
-                                ((cptr.ldBits(cptr.add((trap), $trap_ttyp), 0, 5, 0) | 0)) -
+                                (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) -
                                 1) |
                                 0)) <=
                                 NHC.S_goodpos)
                                 ? ((NHC.S_arrow_trap +
-                                    ((cptr.ldBits(cptr.add((trap), $trap_ttyp), 0, 5, 0) | 0)) -
+                                    (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) -
                                     1 -
                                     NHC.S_digbeam +
                                     NHC.GLYPH_CMAP_C_OFF) | 0)
                                 : NHC.MAX_GLYPH))))));
 
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory),
-        4,
-        1,
-        0
-    ))
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+    ) & 1))
         cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, glyph);
     if (show)
         (yield* show_glyph(x, y, glyph));
@@ -1015,12 +1001,10 @@ export function* map_engraving(ep, show) {
                                 ? cmap_c_to_glyph(ep)
                                 : NHC.MAX_GLYPH))))));
 
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory),
-        4,
-        1,
-        0
-    ))
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+    ) & 1))
         cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, glyph);
     if (show)
         (yield* show_glyph(x, y, glyph));
@@ -1359,12 +1343,11 @@ export function* map_object(obj, show) {
         }
     }
 
-    if (cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory),
-        4,
-        1,
-        0
-    )) {
+    if ((cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+    ) &
+            1)) {
         /* MRKR: While hallucinating, statues are seen as random monsters */
         /*       but remembered as random objects.                        */
 
@@ -1414,15 +1397,10 @@ export function* map_object(obj, show) {
 /** C ref: display.c:378 — @param {CInt} x @param {CInt} y */
 export function* map_invisible(x, y) {
     if (x != cptr.ldI16(u) || y != cptr.ldI16o(u, $you_uy)) {
-        if (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-            ),
-            4,
-            1,
-            0
-        ))
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+        ) & 1))
             cptr.stI32o3(
                 svl,
                 x,
@@ -1469,16 +1447,14 @@ export function* unmap_object(x, y) {
     let trap;
     let ep;
 
-    if (!cptr.ldBits(
-        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory),
-        4,
-        1,
-        0
-    ))
+    if (!(cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+    ) & 1))
         return;
 
     if ((trap = t_at(x, y)) !== null &&
-            cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 &&
+            (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 &&
             !((is_pool(x, y) && !Underwater()) ||
                 (cptr.ld1so3(
                     svl,
@@ -1536,7 +1512,7 @@ export function* unmap_object(x, y) {
                         NHC.LAVAWALL))) {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
                     NHM.IN_SIGHT) != 0))
-                cptr.stBits(cptr.add(ep, $engr_erevealed), 3, 1, 0, 1);
+                cptr.stI32o(ep, $engr_erevealed, 1);
             (yield* map_engraving(ep, 0));
         } else {
             (yield* map_background(x, y, 0));
@@ -1596,7 +1572,7 @@ export function* map_location(x, y, show) {
                         NHC.LAVAWALL))) {
             (yield* map_object(obj, show));
         } else if ((trap = t_at(x, y)) &&
-                cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 &&
+                (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 &&
                 !((is_pool(x, y) && !Underwater()) ||
                     (cptr.ld1so3(
                         svl,
@@ -1619,7 +1595,7 @@ export function* map_location(x, y, show) {
             (yield* map_trap(trap, show));
         } else if (spot_shows_engravings(x, y) &&
                 (ml_ep = engr_at(x, y)) !== null &&
-                cptr.ldBits(cptr.add(ml_ep, $engr_erevealed), 3, 1, 0) | 0 &&
+                (cptr.ldI32o(ml_ep, $engr_erevealed) & 1) | 0 &&
                 !((is_pool(x, y) && !Underwater()) ||
                     (cptr.ld1so3(
                         svl,
@@ -1701,7 +1677,7 @@ function* display_monster(x, y, mon, sightflags, worm_tail) {
             NHC.M_AP_NOTHING));
     let sensed = (mon_mimic &&
         (Protection_from_shape_changers() ||
-            ((!(cptr.ldI32o(u, $you_uswallow) & 1) ||
+            ((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
                 cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
                 (!Underwater() ||
                     (dist2(
@@ -2038,7 +2014,7 @@ function mon_overrides_region(mon, mx, my) {
     let r;
 
     /* this is redundant because newsym() doesn't call us when swallowed */
-    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
             (!mon || !cptr.eq(mon, cptr.ldPtro(u, $you_ustuck))))
         return 0;
 
@@ -2046,7 +2022,7 @@ function mon_overrides_region(mon, mx, my) {
         /* when not a worm tail, show mon if sensed rather than seen */
         if (mx == cptr.ldI16o(mon, $monst_mx) &&
                 my == cptr.ldI16o(mon, $monst_my) &&
-                (((!(cptr.ldI32o(u, $you_uswallow) & 1) ||
+                (((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
                     cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
                     (!Underwater() ||
                         (dist2(
@@ -2204,7 +2180,7 @@ export function* feel_location(x, y) {
 
     /* The hero can't feel non pool locations while under water
        except for lava and ice. */
-    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+    if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
             !(((cptr.ldI16o(
                 (cptr.add(
                     svd,
@@ -2353,7 +2329,7 @@ export function* feel_location(x, y) {
         }
     } else {
         if ((ep = engr_at(x, y)) !== null && engr_can_be_felt(ep))
-            cptr.stBits(cptr.add(ep, $engr_erevealed), 3, 1, 0, 1);
+            cptr.stI32o(ep, $engr_erevealed, 1);
         {
 
             let obj;
@@ -2389,7 +2365,7 @@ export function* feel_location(x, y) {
                             NHC.LAVAWALL))) {
                 (yield* map_object(obj, 1));
             } else if ((trap = t_at(x, y)) &&
-                    cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 &&
+                    (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 &&
                     !((is_pool(x, y) && !Underwater()) ||
                         (cptr.ld1so3(
                             svl,
@@ -2412,7 +2388,7 @@ export function* feel_location(x, y) {
                 (yield* map_trap(trap, 1));
             } else if (spot_shows_engravings(x, y) &&
                     (ml_ep = engr_at(x, y)) !== null &&
-                    cptr.ldBits(cptr.add(ml_ep, $engr_erevealed), 3, 1, 0) | 0 &&
+                    (cptr.ldI32o(ml_ep, $engr_erevealed) & 1) | 0 &&
                     !((is_pool(x, y) && !Underwater()) ||
                         (cptr.ld1so3(
                             svl,
@@ -2598,7 +2574,7 @@ export function* feel_location(x, y) {
                 $instance_globals_saved_l_level + $dlevel_t_monsters
             ))) !==
                 null &&
-            ((!(cptr.ldI32o(u, $you_uswallow) & 1) ||
+            ((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
                 cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) &&
                 (!Underwater() ||
                     (dist2(
@@ -2702,7 +2678,7 @@ export function* newsym(x, y) {
     }
 
     /* only permit updating the hero when swallowed */
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
             (yield* show_glyph(
                 cptr.ldI16(u),
@@ -2846,7 +2822,7 @@ export function* newsym(x, y) {
             ));
         return;
     }
-    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+    if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
             !(((cptr.ldI16o(
                 (cptr.add(
                     svd,
@@ -2910,7 +2886,7 @@ export function* newsym(x, y) {
                 : 0));
 
         if ((ep = engr_at(x, y)) !== null)
-            cptr.stBits(cptr.add(ep, $engr_erevealed), 3, 1, 0, 1);  /* even when covered by objects or a monster */
+            cptr.stI32o(ep, $engr_erevealed, 1);  /* even when covered by objects or a monster */
         /*
          * Normal region shown only on accessible positions, but
          * poison clouds and steam clouds also shown above lava,
@@ -2941,8 +2917,8 @@ export function* newsym(x, y) {
 
         if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
             let see_self = ((Blind() ||
-                (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
-                (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
+                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+                (!Invisible() && !cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))) ||
                 (Unblind_telepat() || Detect_monsters())
                     ? 1
                     : 0);
@@ -2984,7 +2960,7 @@ export function* newsym(x, y) {
                                 NHC.LAVAWALL))) {
                     (yield* map_object(obj, !see_self));
                 } else if ((trap = t_at(x, y)) &&
-                        cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 &&
+                        (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 &&
                         !((is_pool(x, y) && !Underwater()) ||
                             (cptr.ld1so3(
                                 svl,
@@ -3007,7 +2983,7 @@ export function* newsym(x, y) {
                     (yield* map_trap(trap, !see_self));
                 } else if (spot_shows_engravings(x, y) &&
                         (ml_ep = engr_at(x, y)) !== null &&
-                        cptr.ldBits(cptr.add(ml_ep, $engr_erevealed), 3, 1, 0) | 0 &&
+                        (cptr.ldI32o(ml_ep, $engr_erevealed) & 1) | 0 &&
                         !((is_pool(x, y) && !Underwater()) ||
                             (cptr.ld1so3(
                                 svl,
@@ -3228,15 +3204,13 @@ export function* newsym(x, y) {
             if (mon && (see_it || (!worm_tail && Detect_monsters()))) {
                 if ((cptr.ldI32o(mon, $monst_mtrapped) & 1)) {
                     let trap = t_at(x, y);
-                    let tt = trap
-                            ? cptr.ldBits(cptr.add(trap, $trap_ttyp), 0, 5, 0) | 0
-                            : NHC.NO_TRAP;
+                    let tt = trap ? (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0 : NHC.NO_TRAP;
 
                     /* if monster is in a physical trap, you see trap too */
                     if (tt == NHC.BEAR_TRAP ||
                             ((tt) == NHC.PIT || (tt) == NHC.SPIKED_PIT) ||
                             tt == NHC.WEB)
-                        cptr.stBits(cptr.add(trap, $trap_tseen), 5, 1, 0, 1);
+                        cptr.stI32o(trap, $trap_tseen, 1);
                 }
                 {
                     let obj;  /* map under the monster */
@@ -3272,7 +3246,7 @@ export function* newsym(x, y) {
                                     NHC.LAVAWALL))) {
                         (yield* map_object(obj, show));
                     } else if ((trap = t_at(x, y)) &&
-                            cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 &&
+                            (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 &&
                             !((is_pool(x, y) && !Underwater()) ||
                                 (cptr.ld1so3(
                                     svl,
@@ -3295,7 +3269,7 @@ export function* newsym(x, y) {
                         (yield* map_trap(trap, show));
                     } else if (spot_shows_engravings(x, y) &&
                             (ml_ep = engr_at(x, y)) !== null &&
-                            cptr.ldBits(cptr.add(ml_ep, $engr_erevealed), 3, 1, 0) | 0 &&
+                            (cptr.ldI32o(ml_ep, $engr_erevealed) & 1) | 0 &&
                             !((is_pool(x, y) && !Underwater()) ||
                                 (cptr.ld1so3(
                                     svl,
@@ -3376,7 +3350,7 @@ export function* newsym(x, y) {
                                     NHC.LAVAWALL))) {
                         (yield* map_object(obj, 1));
                     } else if ((trap = t_at(x, y)) &&
-                            cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 &&
+                            (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 &&
                             !((is_pool(x, y) && !Underwater()) ||
                                 (cptr.ld1so3(
                                     svl,
@@ -3399,7 +3373,7 @@ export function* newsym(x, y) {
                         (yield* map_trap(trap, 1));
                     } else if (spot_shows_engravings(x, y) &&
                             (ml_ep = engr_at(x, y)) !== null &&
-                            cptr.ldBits(cptr.add(ml_ep, $engr_erevealed), 3, 1, 0) | 0 &&
+                            (cptr.ldI32o(ml_ep, $engr_erevealed) & 1) | 0 &&
                             !((is_pool(x, y) && !Underwater()) ||
                                 (cptr.ld1so3(
                                     svl,
@@ -3438,8 +3412,8 @@ export function* newsym(x, y) {
                 (yield* feel_location(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* forces an update */
 
                 if (((Blind() ||
-                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
-                    (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
+                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+                    (!Invisible() && !cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))) ||
                         (Unblind_telepat() || Detect_monsters())))
                     (yield* show_glyph(
                         cptr.ldI16(u),
@@ -4362,15 +4336,10 @@ export function* flash_glyph_at(x, y, tg, rpt) {
     cptr.stI32o(
         glyph,
         1,
-        (cptr.ldBits(
-            cptr.add(
-                svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-            ),
-            4,
-            1,
-            0
-        )) | 0
+        ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+        ) & 1)) | 0
             ? cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level)
             : (yield* back_to_glyph(x, y)),
         4
@@ -4642,7 +4611,7 @@ export function* under_water(mode) {
             cptr.add(u, $you_uz),
             cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)
         ))) ||
-            (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
         return;
 
     /* full update */
@@ -4702,7 +4671,7 @@ let __static_under_ground_dela = 0; /** C ref: display.c:1447 — signed char (f
 export function* under_ground(mode) {
 
     /* swallowing has a higher precedence than under ground */
-    if ((cptr.ldI32o(u, $you_uswallow) & 1))
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
         return;
 
     /* full update */
@@ -5005,11 +4974,11 @@ export function* docrt_flags(refresh_flags) {
             (yield* redraw_map(0));
             break __lbl_post_map;
         }
-        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             (yield* swallowed(1));
             break __lbl_post_map;
         }
-        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+        if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
                 !(((cptr.ldI16o(
                     (cptr.add(
                         svd,
@@ -5031,7 +5000,7 @@ export function* docrt_flags(refresh_flags) {
             (yield* under_water(1));
             break __lbl_post_map;
         }
-        if ((cptr.ldI32o(u, $you_uburied) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0)) {
             (yield* under_ground(1));
             break __lbl_post_map;
         }
@@ -5789,15 +5758,10 @@ export function* back_to_glyph(x, y) {
     switch (cptr.ld1so(ptr, $rm_typ)) {
         case NHC.SCORR:
         case NHC.STONE:
-            idx = cptr.ldBits(
-                cptr.add(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-                ),
-                2,
-                1,
-                0
-            ) | 0
+            idx = (cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
+            ) & 1) | 0
                     ? NHC.S_tree
                     : NHC.S_stone;
             break;
@@ -6100,15 +6064,10 @@ function* get_bkglyph_and_framecolor(x, y, bkglyph, framecolor) {
         switch (cptr.ld1so(lev, $rm_typ)) {
             case NHC.SCORR:
             case NHC.STONE:
-                idx = cptr.ldBits(
-                    cptr.add(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-                    ),
-                    2,
-                    1,
-                    0
-                ) | 0
+                idx = (cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
+                ) & 1) | 0
                         ? NHC.S_tree
                         : NHC.S_stone;
                 break;
@@ -6286,19 +6245,13 @@ export function map_glyphinfo(x, y, glyph, mgflags, glyphinfo) {
                 $instance_globals_s_symset + $symsetentry_handling
             ) ==
                 NHC.H_IBM)) &&
-                (cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            cptr.add(gs, $instance_globals_s_symset),
-                            cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
-                            $sizeof_symsetentry
-                        ),
-                        $symsetentry_nocolor
-                    ),
-                    0,
-                    1,
-                    0
-                ) |
+                ((cptr.ldI32o2(
+                    gs,
+                    cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_nocolor
+                ) &
+                    1) |
                     0) ==
                     0) {
             /* actually player should be yellow-on-gray if in corridor */
@@ -6406,19 +6359,12 @@ cptr.stI32o(wallcolors, 16, NHM.CLR_GRAY);
 function cmap_to_roguecolor(cmap) {
     let color = NHM.NO_COLOR;
 
-    if (cptr.ldBits(
-        cptr.add(
-            cptr.add(
-                cptr.add(gs, $instance_globals_s_symset),
-                cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
-                $sizeof_symsetentry
-            ),
-            $symsetentry_nocolor
-        ),
-        0,
-        1,
-        0
-    ))
+    if ((cptr.ldI32o2(
+        gs,
+        cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_nocolor
+    ) & 1))
         return NHM.NO_COLOR;
 
     if (cmap >= NHC.S_vwall && cmap <= NHC.S_hcdoor)
@@ -6471,19 +6417,13 @@ export function reset_glyphmap(trigger) {
             ? 1
             : 0));
     let has_rogue_color = schar((has_rogue_ibm_graphics &&
-        (cptr.ldBits(
-            cptr.add(
-                cptr.add(
-                    cptr.add(gs, $instance_globals_s_symset),
-                    cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
-                    $sizeof_symsetentry
-                ),
-                $symsetentry_nocolor
-            ),
-            0,
-            1,
-            0
-        ) | 0) == 0
+        ((cptr.ldI32o2(
+            gs,
+            cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+            $sizeof_symsetentry,
+            $instance_globals_s_symset + $symsetentry_nocolor
+        ) &
+            1) | 0) == 0
             ? 1
             : 0));
     if (trigger == NHC.gm_levelchange)

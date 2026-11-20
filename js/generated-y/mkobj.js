@@ -596,13 +596,15 @@ function mkobj_erosions(otmp) {
         } else {
             if (!rn2(80) &&
                     (is_flammable(otmp) ||
-                        (((cptr.ldI32o2(
-                            objects,
-                            cptr.ldI16o(otmp, $obj_otyp),
-                            $sizeof_objclass,
-                            $objclass_oc_material
-                        ) &
-                            31) |
+                        ((cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                                $objclass_oc_material
+                            ),
+                            3,
+                            5,
+                            0
+                        ) |
                             0) ==
                             NHC.IRON) ||
                         is_crackable(otmp))) {
@@ -1387,12 +1389,15 @@ export function clear_dknown(obj) {
     if ((cptr.ldI16o(obj, $obj_otyp) >= NHC.ELVEN_SHIELD &&
         cptr.ldI16o(obj, $obj_otyp) <= NHC.ORCISH_SHIELD) ||
             cptr.ldI16o(obj, $obj_otyp) == NHC.SHIELD_OF_REFLECTION ||
-            (cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_merge
-            ) & 1) | 0)
+            cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_merge
+                ),
+                1,
+                1,
+                0
+            ) | 0)
         cptr.stI32o(obj, $obj_dknown, 0);
     /* globs always have dknown flag set (to maximize merging) but for new
        object, globby flag won't be set yet so isn't available to check */
@@ -1416,12 +1421,15 @@ export function unknow_object(obj) {
     cptr.stI32o(
         obj,
         $obj_known,
-        ((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(obj, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_uses_known
-        ) & 1) | 0
+        (cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_uses_known
+            ),
+            2,
+            1,
+            0
+        ) | 0
             ? 0
             : 1) >>> 0
     );
@@ -1741,13 +1749,15 @@ function* mksobj_init(obj, artif) {
                     otmp,
                     $obj_spe,
                     schar(((rn2(5) +
-                        ((((cptr.ldI32o2(
-                            objects,
-                            cptr.ldI16o(otmp, $obj_otyp),
-                            $sizeof_objclass,
-                            $objclass_oc_dir
-                        ) &
-                            7) |
+                        (((cptr.ldBits(
+                            cptr.add(
+                                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                                $objclass_oc_dir
+                            ),
+                            0,
+                            3,
+                            0
+                        ) |
                             0) ==
                             NHM.NODIR)
                             ? 11
@@ -1757,13 +1767,15 @@ function* mksobj_init(obj, artif) {
             cptr.stI32o(otmp, $obj_recharged, 0);  /* used to control recharging */
             break;
         case NHC.RING_CLASS:
-            if ((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(otmp, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_charged
-            ) &
-                    1)) {
+            if (cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_charged
+                ),
+                5,
+                1,
+                0
+            )) {
                 (yield* blessorcurse(otmp, 3));
                 if (rn2(10)) {
                     if (rn2(10) && bcsign(otmp))
@@ -1927,7 +1939,13 @@ export function* mksobj(otyp, init, artif) {
     }
 
     /* unique objects may have an associated artifact entry */
-    if ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_unique) & 1) | 0 &&
+    if (cptr.ldBits(
+        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_unique),
+        6,
+        1,
+        0
+    ) |
+        0 &&
             !cptr.ld1so(otmp.v, $obj_oartifact)) {
         /* mk_artifact() with otmp and A_NONE will never return NULL */
         otmp.v = (yield* mk_artifact(otmp.v, -128, 99, 0));
@@ -3087,7 +3105,12 @@ export function* mk_named_object(objtype, ptr, x, y, nm) {
 /** C ref: mkobj.c:2270 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function is_flammable(otmp) {
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
-    let omat = (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0;
+    let omat = cptr.ldBits(
+        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+        3,
+        5,
+        0
+    ) | 0;
 
     /* Candles can be burned, but they're not flammable in the sense that
      * they can't get fire damage and it makes no sense for them to be
@@ -3107,12 +3130,29 @@ export function is_flammable(otmp) {
 export function is_rottable(otmp) {
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
 
-    return schar(((((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) |
+    return schar((((cptr.ldBits(
+        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+        3,
+        5,
+        0
+    ) |
         0) <=
         NHC.WOOD &&
-        ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) !=
+        (cptr.ldBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+            3,
+            5,
+            0
+        ) |
+            0) !=
             NHC.LIQUID) ||
-        ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) ==
+        (cptr.ldBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+            3,
+            5,
+            0
+        ) |
+            0) ==
             NHC.DRAGON_HIDE
             ? 1
             : 0));
@@ -3780,13 +3820,15 @@ export function* hornoplenty(horn, tipping, targetbox) {
         (yield* consume_obj_charge(horn, schar((!tipping))));
         if (!rn2(13)) {
             obj = (yield* mkobj(NHC.POTION_CLASS, 0));
-            if ((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_magic
-            ) &
-                    1)) {
+            if (cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_magic
+                ),
+                4,
+                1,
+                0
+            )) {
                 do {
                     cptr.stI16o(obj, $obj_otyp, i16(rnd_class(NHC.POT_BOOZE, NHC.POT_WATER)));
                 } while (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_SICKNESS);
@@ -3820,7 +3862,7 @@ export function* hornoplenty(horn, tipping, targetbox) {
         if (!tipping) {
             obj = (yield* hold_another_object(
                 obj,
-                (cptr.ldI32o(u, $you_uswallow) & 1) | 0
+                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0
                     ? __s_oops_s_out_of_your_reach
                     : (((((cptr.ldI16o(
                         (cptr.add(
@@ -4498,8 +4540,12 @@ export function init_dummyobj(obj, otyp, oquan) {
             $obj_known,
             ((cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS)
                 ? (cptr.ldI32o(obj, $obj_known) & 1) | 0
-                : !(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_uses_known) &
-                    1)) >>> 0
+                : !cptr.ldBits(
+                    cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_uses_known),
+                    2,
+                    1,
+                    0
+                )) >>> 0
         );
         cptr.stI64o(obj, $obj_quan, oquan ? oquan : 1n);
         cptr.stI32o(obj, $obj_corpsenm, NHC.NON_PM);  /* suppress statue and figurine details */

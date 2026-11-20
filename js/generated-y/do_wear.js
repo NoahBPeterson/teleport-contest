@@ -517,7 +517,7 @@ export function* toggle_displacement(obj, oldprop, on) {
     if (!oldprop &&
             !(cptr.ldI64o2(u, NHC.DISPLACED, $sizeof_prop, $you_uprops + $prop_intrinsic)) &&
             !(cptr.ldI64o2(u, NHC.DISPLACED, $sizeof_prop, $you_uprops + $prop_blocked)) &&
-            ((!Blind() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !Invisible()) ||
+            ((!Blind() && !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) && !Invisible()) ||
                 (Unblind_telepat() || (Blind_telepat() && Blind()) || Detect_monsters()))) {
         if (obj)
             (yield* discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1));
@@ -557,11 +557,11 @@ export function* Boots_on() {
 
             /* spoteffects() doesn't get called here; pooleffects() is called
                during movement and u.uinwater is already False after setworn() */
-            if ((cptr.ldI32o(u, $you_uinwater) & 1))
+            if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
                 (yield* spoteffects(1));
             /* init'd in accessory_or_armor_on() and only used here */
             if (cptr.ld1uo(gw, $instance_globals_w_wasinwater)) {
-                if (!(cptr.ldI32o(u, $you_uinwater) & 1))
+                if (!cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
                     (yield* discover_object(NHC.WATER_WALKING_BOOTS, 1, 1, 1));
                 cptr.st1o(gw, $instance_globals_w_wasinwater, 0);
             }
@@ -1882,7 +1882,12 @@ function* learnring(ring, observed) {
            effect (assumes there is at most one type for each effect),
            mark this ring as having been seen (no need for makeknown);
            otherwise if we have seen this ring, discover its type */
-        if ((cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_name_known) & 1))
+        if (cptr.ldBits(
+            cptr.add(cptr.add(objects, ringtype, $sizeof_objclass), $objclass_oc_name_known),
+            0,
+            1,
+            0
+        ))
             (yield* observe_object(ring));
         else if ((cptr.ldI32o(ring, $obj_dknown) & 1))
             (yield* discover_object((ringtype), 1, 1, 1));
@@ -1891,8 +1896,19 @@ function* learnring(ring, observed) {
     /* make enchantment of charged ring known (might be +0) and update
        perm invent window if we've seen this ring and know its type */
     if ((cptr.ldI32o(ring, $obj_dknown) & 1) | 0 &&
-            (cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) {
-        if ((cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_charged) & 1))
+            cptr.ldBits(
+                cptr.add(cptr.add(objects, ringtype, $sizeof_objclass), $objclass_oc_name_known),
+                0,
+                1,
+                0
+            ) |
+                0) {
+        if (cptr.ldBits(
+            cptr.add(cptr.add(objects, ringtype, $sizeof_objclass), $objclass_oc_charged),
+            5,
+            1,
+            0
+        ))
             cptr.stI32o(ring, $obj_known, 1);
         (yield* update_inventory());
     }
@@ -3280,7 +3296,11 @@ function* accessory_or_armor_on(obj) {
          *
         obj->known = 1;
          */
-        cptr.st1o(gw, $instance_globals_w_wasinwater, uchar((cptr.ldI32o(u, $you_uinwater) & 1)));  /* for WWALKING; Boots_on() is too late */
+        cptr.st1o(
+            gw,
+            $instance_globals_w_wasinwater,
+            uchar(cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
+        );  /* for WWALKING; Boots_on() is too late */
         (yield* setworn(obj.v, mask.v));
         /* if there's no delay, we'll execute 'afternmv' immediately */
         if (cptr.eq(obj.v, uarm.v))
@@ -3662,7 +3682,7 @@ export function* stuck_ring(ring, otyp) {
         if ((yield* welded(uwep.v)) &&
                 ((cptr.eq(
                     ring,
-                    ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
+                    (((cptr.ldBits(cptr.add(u, $you_uhandedness), 7, 1, 0) | 0) == NHM.LEFT_HANDED)
                         ? uleft.v
                         : uright.v)
                 )) ||
@@ -3716,7 +3736,7 @@ function* select_off(otmp) {
         if ((yield* welded(uwep.v)) &&
                 ((cptr.eq(
                     otmp,
-                    ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
+                    (((cptr.ldBits(cptr.add(u, $you_uhandedness), 7, 1, 0) | 0) == NHM.LEFT_HANDED)
                         ? uleft.v
                         : uright.v)
                 )) ||
@@ -4381,13 +4401,15 @@ export function* disintegrate_arm(atmp) {
 function obj_erode_type(otmp) {
     if (is_flammable(otmp))
         return NHM.ERODE_BURN;
-    else if ((((cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(otmp, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_material
-    ) &
-        31) |
+    else if (((cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_material
+        ),
+        3,
+        5,
+        0
+    ) |
         0) ==
             NHC.IRON))
         return NHM.ERODE_RUST;
