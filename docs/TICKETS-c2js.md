@@ -339,7 +339,7 @@ No implementation: `popen`, `pclose`, `execl`, `execv`, `execve`, `waitpid`, `se
 (4242). The game's recorded paths through these match. A standalone program using them gets
 wrong behavior, with no error.
 
-### C2JS-062: fixes from b768f36 to d54cbab are not in the judged `js/`. OPEN
+### C2JS-062: fixes from b768f36 to d54cbab are not in the judged `js/`. DONE (e6fa6de, 13121)
 `abf5717` put `js/` back to the Nov 4 build (`ed2c66e`), because the Nov 6 build scored 124
 held-out points lower and the cause wasn't found. Everything marked DONE (b768f36),
 DONE (5b37c5f), C2JS-047 to 057 and C2JS-060 is therefore missing from `js/` on main, though
@@ -492,7 +492,7 @@ one group of families new:
 | 5 | e835c28 | `bits` for `you`, `u_have`, `u_event`, `objclass` (499 functions vs main) | 13035 | 53 | 99.307% | 3002 | 99.9901% |
 | 6 | 0ad5a29 | `bits` for `objclass` only (193 functions vs main) | 13120 | 54 | 99.954% | 3006 | 99.9901% |
 | 7 | 00c420f | `bits` for `you` only (not `u_have`, `u_event`; 268 functions vs main) | 13035 | 53 | 99.307% | 3002 | 99.9901% |
-| 8 | (this) | all families new (as eb3e9b6) + the `bridge.mjs` fix | | | | | |
+| 8 | e6fa6de | all families new (as eb3e9b6) + the `bridge.mjs` fix | **13121** | 55 | 99.962% | 3006 | 99.9901% |
 
 So the bitfield family (packing, `ldBits`/`stBits`, C struct layout) carries the whole loss. On its
 own it also breaks one session that passes on both base and all-new, so some other family is
