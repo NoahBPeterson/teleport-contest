@@ -46,22 +46,18 @@ const $align_record = FLD.align_record, $branch_end1 = FLD.branch_end1,
       $monst_msleeping = FLD.monst_msleeping, $monst_mstrategy = FLD.monst_mstrategy,
       $obj_otyp = FLD.obj_otyp, $permonst_msound = FLD.permonst_msound,
       $prop_intrinsic = FLD.prop_intrinsic, $q_score_cheater = FLD.q_score_cheater,
-      $q_score_first_locate = FLD.q_score_first_locate, $q_score_got_quest = FLD.q_score_got_quest,
+      $q_score_first_locate = FLD.q_score_first_locate,
       $q_score_got_thanks = FLD.q_score_got_thanks, $q_score_in_battle = FLD.q_score_in_battle,
-      $q_score_killed_leader = FLD.q_score_killed_leader,
       $q_score_killed_nemesis = FLD.q_score_killed_nemesis,
       $q_score_leader_m_id = FLD.q_score_leader_m_id, $q_score_made_goal = FLD.q_score_made_goal,
-      $q_score_met_leader = FLD.q_score_met_leader, $q_score_met_nemesis = FLD.q_score_met_nemesis,
-      $q_score_not_ready = FLD.q_score_not_ready, $q_score_pissed_off = FLD.q_score_pissed_off,
+      $q_score_met_nemesis = FLD.q_score_met_nemesis,
       $q_score_touched_artifact = FLD.q_score_touched_artifact,
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
-      $trap_ttyp = FLD.trap_ttyp, $u_event_qcompleted = FLD.u_event_qcompleted,
-      $u_event_qexpelled = FLD.u_event_qexpelled, $u_have_questart = FLD.u_have_questart,
-      $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_ualign = FLD.you_ualign,
-      $you_ualignbase = FLD.you_ualignbase, $you_uevent = FLD.you_uevent,
-      $you_uhave = FLD.you_uhave, $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops,
-      $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz,
-      $you_uz0 = FLD.you_uz0;
+      $trap_ttyp = FLD.trap_ttyp, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+      $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase,
+      $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave, $you_ulevel = FLD.you_ulevel,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy,
+      $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_firsttime = cptr.lit("firsttime");
@@ -110,13 +106,13 @@ const __s_quest_chat_unknown_quest_character_s = cptr.lit("quest_chat: Unknown q
 
 /** C ref: quest.c:26 */
 function on_start() {
-    if (!((cptr.ldI32(svq) & 1))) {
+    if (!(cptr.ldBits(svq, 0, 1, 0))) {
         qt_pager(__s_firsttime);
-        cptr.stI32(svq, 1);
+        cptr.stBits(svq, 0, 1, 0, 1);
     } else if ((cptr.ldI16o(u, $you_uz0) != cptr.ldI16o(u, $you_uz)) ||
             (cptr.ldI16o(u, $you_uz0 + $d_level_dlevel) <
                 cptr.ldI16o(u, $you_uz + $d_level_dlevel))) {
-        if ((((cptr.ldI32o(svq, $q_score_not_ready) & 7)) | 0) <= 2)
+        if (((cptr.ldBits(svq, 2, 3, 0)) | 0) <= 2)
             qt_pager(__s_nexttime);
         else
             qt_pager(__s_othertime);
@@ -130,15 +126,15 @@ function on_locate() {
     let from_above = schar((cptr.ldI16o(u, $you_uz0 + $d_level_dlevel) <
             cptr.ldI16o(u, $you_uz + $d_level_dlevel)));
 
-    if (((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))) {
+    if ((cptr.ldBits(cptr.add(svq, $q_score_killed_nemesis), 7, 1, 0))) {
         return;
-    } else if (!((cptr.ldI32o(svq, $q_score_first_locate) & 1))) {
+    } else if (!(cptr.ldBits(cptr.add(svq, $q_score_first_locate), 0, 1, 0))) {
         if (from_above)
             qt_pager(__s_locate_first);
         /* if we've arrived from below this will be a lie, but there won't
            be any point in delivering the message upon a return visit from
            above later since the level has now been seen */
-        cptr.stI32o(svq, $q_score_first_locate, 1);
+        cptr.stBits(cptr.add(svq, $q_score_first_locate), 0, 1, 0, 1);
     } else {
         if (from_above)
             qt_pager(__s_locate_next);
@@ -147,11 +143,11 @@ function on_locate() {
 
 /** C ref: quest.c:62 */
 function on_goal() {
-    if (((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))) {
+    if ((cptr.ldBits(cptr.add(svq, $q_score_killed_nemesis), 7, 1, 0))) {
         return;
-    } else if (!((cptr.ldI32o(svq, $q_score_made_goal) & 7))) {
+    } else if (!(cptr.ldBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0))) {
         qt_pager(__s_goal_first);
-        cptr.stI32o(svq, $q_score_made_goal, 1);
+        cptr.stBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0, 1);
     } else {
         /*
          * Some QT_NEXTGOAL messages reference the quest artifact;
@@ -165,14 +161,17 @@ function on_goal() {
         let qarti = find_quest_artifact(whichobjchains);
 
         qt_pager(qarti ? __s_goal_next : __s_goal_alt);
-        if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
-            (cptr.stI32o(svq, $q_score_made_goal, cptr.ldI32o(svq, $q_score_made_goal) + 1)) - (1);
+        if (((cptr.ldBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0)) | 0) < 7)
+            ((old_) => (
+                cptr.stBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0, old_ + 1),
+                old_
+            ))(cptr.ldBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0));
     }
 }
 
 /** C ref: quest.c:90 */
 export function onquest() {
-    if ((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(u, $you_uevent), 5, 1, 0) | 0 ||
             (on_level(cptr.add(u, $you_uz0), cptr.add(u, $you_uz))))
         return;
     if (!Is_special(cptr.add(u, $you_uz)))
@@ -231,28 +230,28 @@ export function onquest() {
 
 /** C ref: quest.c:107 */
 export function nemdead() {
-    if (!((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))) {
-        cptr.stI32o(svq, $q_score_killed_nemesis, 1);
+    if (!(cptr.ldBits(cptr.add(svq, $q_score_killed_nemesis), 7, 1, 0))) {
+        cptr.stBits(cptr.add(svq, $q_score_killed_nemesis), 7, 1, 0, 1);
         qt_pager(__s_killed_nemesis);
     }
 }
 
 /** C ref: quest.c:116 */
 export function leaddead() {
-    if (!((cptr.ldI32o(svq, $q_score_killed_leader) & 1))) {
-        cptr.stI32o(svq, $q_score_killed_leader, 1);
+    if (!(cptr.ldBits(svq, 7, 1, 0))) {
+        cptr.stBits(svq, 7, 1, 0, 1);
         /* TODO: qt_pager("killed_leader"); ? */
     }
 }
 
 /** C ref: quest.c:125 — @param {CPtr<struct obj>} obj */
 export function artitouch(obj) {
-    if (!((cptr.ldI32o(svq, $q_score_touched_artifact) & 1))) {
+    if (!(cptr.ldBits(cptr.add(svq, $q_score_touched_artifact), 2, 1, 0))) {
         /* in case we haven't seen the item yet (ie, currently blinded),
            this quest message describes it by name so mark it as seen */
         observe_object(obj);
         /* only give this message once */
-        cptr.stI32o(svq, $q_score_touched_artifact, 1);
+        cptr.stBits(cptr.add(svq, $q_score_touched_artifact), 2, 1, 0, 1);
         qt_pager(__s_gotit);
         exercise(NHC.A_WIS, 1);
     }
@@ -261,10 +260,10 @@ export function artitouch(obj) {
 /* external hook for do.c (level change check) */
 /** C ref: quest.c:140 @returns {CInt} */
 export function ok_to_quest() {
-    return schar((((((cptr.ldI32o(svq, $q_score_got_quest) & 1)) | 0 ||
-        ((cptr.ldI32o(svq, $q_score_got_thanks) & 1)) | 0) &&
+    return schar(((((cptr.ldBits(svq, 6, 1, 0)) | 0 ||
+        (cptr.ldBits(cptr.add(svq, $q_score_got_thanks), 4, 1, 0)) | 0) &&
         is_pure(0) > 0) ||
-        ((cptr.ldI32o(svq, $q_score_killed_leader) & 1)) | 0
+        (cptr.ldBits(svq, 7, 1, 0)) | 0
             ? 1
             : 0));
 }
@@ -317,7 +316,7 @@ function expulsion(seal) {
     let br;
     let dest;
     let t;
-    let portal_flag = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0
+    let portal_flag = cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0
             ? NHC.UTOTYPE_NONE
             : NHC.UTOTYPE_PORTAL;
 
@@ -330,16 +329,16 @@ function expulsion(seal) {
     nomul(0);  /* stop running */
     schedule_goto(dest, portal_flag, null, null);
     if (seal) {
-        let reexpelled = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0;
+        let reexpelled = cptr.ldBits(cptr.add(u, $you_uevent), 4, 1, 0) | 0;
 
-        cptr.stI32o(u, $you_uevent + $u_event_qexpelled, 1);
+        cptr.stBits(cptr.add(u, $you_uevent), 4, 1, 0, 1);
         remdun_mapseen(quest_dnum());
         /* Delete the near portal now; the far (main dungeon side)
            portal will be deleted as part of arrival on that level.
            If monster movement is in progress, any who haven't moved
            yet will now miss out on a chance to wander through it... */
         for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
-            if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
+            if ((cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) == NHC.MAGIC_PORTAL)
                 break;
         if (t)
             deltrap(t);  /* (display might be briefly out of sync) */
@@ -378,7 +377,7 @@ export function finish_quest(obj) {
         return;
     }
 
-    if ((cptr.ldI32o(u, $you_uhave) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0)) {
         /* has the amulet in inventory -- most likely the player has already
            completed the quest and stopped in on her way back up, but it's not
            impossible to have gotten the amulet before formally presenting the
@@ -391,16 +390,18 @@ export function finish_quest(obj) {
         }
     } else {
         /* normal quest completion; threw artifact or walked up carrying it */
-        qt_pager(!((cptr.ldI32o(svq, $q_score_got_thanks) & 1)) ? __s_offeredit : __s_offeredit2);
+        qt_pager(!(cptr.ldBits(cptr.add(svq, $q_score_got_thanks), 4, 1, 0))
+                ? __s_offeredit
+                : __s_offeredit2);
         /* should have obtained bell during quest;
            if not, suggest returning for it now */
         if ((otmp = carrying(NHC.BELL_OF_OPENING)) === null)
             com_pager(__s_quest_complete_no_bell);
     }
-    cptr.stI32o(svq, $q_score_got_thanks, 1);
+    cptr.stBits(cptr.add(svq, $q_score_got_thanks), 4, 1, 0, 1);
 
     if (obj) {
-        cptr.stI32o(u, $you_uevent + $u_event_qcompleted, 1);  /* you did it! */
+        cptr.stBits(cptr.add(u, $you_uevent), 5, 1, 0, 1);  /* you did it! */
         /* behave as if leader imparts sufficient info about the
            quest artifact */
         fully_identify_obj(obj);
@@ -410,27 +411,26 @@ export function finish_quest(obj) {
 
 /** C ref: quest.c:282 — @param {CPtr<struct monst>} mtmp */
 function chat_with_leader(mtmp) {
-    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) ||
-            ((cptr.ldI32o(svq, $q_score_pissed_off) & 1)) | 0)
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) || (cptr.ldBits(svq, 5, 1, 0)) | 0)
         return;
 
     /*  Rule 0: Cheater checks. */
-    if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 &&
-            !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
-        cptr.stI32o(svq, $q_score_cheater, 1);
+    if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0) | 0 &&
+            !(cptr.ldBits(cptr.add(svq, $q_score_met_nemesis), 6, 1, 0)))
+        cptr.stBits(cptr.add(svq, $q_score_cheater), 1, 1, 0, 1);
 
     /*  It is possible for you to get the amulet without completing
      *  the quest.  If so, try to induce the player to quest.
      */
-    if (((cptr.ldI32o(svq, $q_score_got_thanks) & 1))) {
+    if ((cptr.ldBits(cptr.add(svq, $q_score_got_thanks), 4, 1, 0))) {
         /* Rule 1: You've gone back with/without the amulet. */
-        if ((cptr.ldI32o(u, $you_uhave) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0))
             finish_quest(null);
         else
             qt_pager(__s_posthanks);
 
         /* Rule 3: You've got the artifact and are back to return it. */
-    } else if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0)) {
         let otmp;
 
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
@@ -440,17 +440,17 @@ function chat_with_leader(mtmp) {
         finish_quest(otmp);
 
         /* Rule 4: You haven't got the artifact yet. */
-    } else if (((cptr.ldI32o(svq, $q_score_got_quest) & 1))) {
+    } else if ((cptr.ldBits(svq, 6, 1, 0))) {
         qt_pager(__s_encourage);
 
         /* Rule 5: You aren't yet acceptable - or are you? */
     } else {
         let purity = 0;
 
-        if (!((cptr.ldI32o(svq, $q_score_met_leader) & 1))) {
+        if (!(cptr.ldBits(svq, 1, 1, 0))) {
             qt_pager(__s_leader_first);
-            cptr.stI32o(svq, $q_score_met_leader, 1);
-            cptr.stI32o(svq, $q_score_not_ready, 0);
+            cptr.stBits(svq, 1, 1, 0, 1);
+            cptr.stBits(svq, 2, 3, 0, 0);
         } else
             qt_pager(__s_leader_next);
 
@@ -467,9 +467,9 @@ function chat_with_leader(mtmp) {
             exercise(NHC.A_WIS, 1);
             expulsion(0);
         } else if ((purity = is_pure(1)) < 0) {
-            if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1))) {
+            if (!(cptr.ldBits(svq, 5, 1, 0))) {
                 com_pager(__s_banished);
-                cptr.stI32o(svq, $q_score_pissed_off, 1);
+                cptr.stBits(svq, 5, 1, 0, 1);
                 expulsion(0);
 
                 /* being expelled is hardly an achievement but none of the
@@ -478,13 +478,13 @@ function chat_with_leader(mtmp) {
             }
         } else if (purity == 0) {
             qt_pager(__s_badalign);
-            cptr.stI32o(svq, $q_score_not_ready, 1);
+            cptr.stBits(svq, 2, 3, 0, 1);
             exercise(NHC.A_WIS, 1);
             expulsion(0);
         } else {
             qt_pager(__s_assignquest);
             exercise(NHC.A_WIS, 1);
-            cptr.stI32o(svq, $q_score_got_quest, 1);
+            cptr.stBits(svq, 6, 1, 0, 1);
 
             /* phrasing is a bit clumsy but allows #chronicle to provide a
                clue to players who are reaching the quest for first time;
@@ -498,14 +498,14 @@ function chat_with_leader(mtmp) {
 /** C ref: quest.c:371 — @param {CPtr<struct monst>} mtmp */
 export function leader_speaks(mtmp) {
     /* maybe you attacked leader? */
-    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-        if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1))) {
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0)) {
+        if (!(cptr.ldBits(svq, 5, 1, 0))) {
             /* again, don't end it permanently if the leader gets angry
              * since you're going to have to kill him to go questing... :)
              * ...but do only show this crap once. */
             qt_pager(__s_leader_last);
         }
-        cptr.stI32o(svq, $q_score_pissed_off, 1);
+        cptr.stBits(svq, 5, 1, 0, 1);
         cptr.stU64o(
             mtmp,
             $monst_mstrategy,
@@ -520,7 +520,7 @@ export function leader_speaks(mtmp) {
     ))
         return;
 
-    if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1)))
+    if (!(cptr.ldBits(svq, 5, 1, 0)))
         chat_with_leader(mtmp);
 }
 
@@ -528,31 +528,33 @@ export function leader_speaks(mtmp) {
 function chat_with_nemesis() {
     /*  The nemesis will do most of the talking, but... */
     qt_pager(__s_discourage);
-    if (!((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
-        ((cptr.stI32o(
-            svq,
-            $q_score_met_nemesis,
-            cptr.ldI32o(svq, $q_score_met_nemesis) + 1
-        )) - (1));
+    if (!(cptr.ldBits(cptr.add(svq, $q_score_met_nemesis), 6, 1, 0)))
+        (((old_) => (
+            cptr.stBits(cptr.add(svq, $q_score_met_nemesis), 6, 1, 0, old_ + 1),
+            old_
+        ))(cptr.ldBits(cptr.add(svq, $q_score_met_nemesis), 6, 1, 0)));
 }
 
 /** C ref: quest.c:403 */
 export function nemesis_speaks() {
-    if (!((cptr.ldI32o(svq, $q_score_in_battle) & 1))) {
-        if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
+    if (!(cptr.ldBits(cptr.add(svq, $q_score_in_battle), 0, 1, 0))) {
+        if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0))
             qt_pager(__s_nemesis_wantsit);
-        else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) == 1 ||
-                !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
+        else if (((cptr.ldBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0)) | 0) == 1 ||
+                !(cptr.ldBits(cptr.add(svq, $q_score_met_nemesis), 6, 1, 0)))
             qt_pager(__s_nemesis_first);
-        else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 4)
+        else if (((cptr.ldBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0)) | 0) < 4)
             qt_pager(__s_nemesis_next);
-        else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
+        else if (((cptr.ldBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0)) | 0) < 7)
             qt_pager(__s_nemesis_other);
         else if (!rn2(5))
             qt_pager(__s_discourage);
-        if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
-            (cptr.stI32o(svq, $q_score_made_goal, cptr.ldI32o(svq, $q_score_made_goal) + 1)) - (1);
-        cptr.stI32o(svq, $q_score_met_nemesis, 1);
+        if (((cptr.ldBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0)) | 0) < 7)
+            ((old_) => (
+                cptr.stBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0, old_ + 1),
+                old_
+            ))(cptr.ldBits(cptr.add(svq, $q_score_made_goal), 3, 3, 0));
+        cptr.stBits(cptr.add(svq, $q_score_met_nemesis), 6, 1, 0, 1);
     } else if (!rn2(5))
         qt_pager(__s_discourage);
 }
@@ -575,8 +577,8 @@ export function nemesis_stinks(mx, my) {
 /** C ref: quest.c:441 */
 function chat_with_guardian() {
     /*  These guys/gals really don't have much to say... */
-    if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 &&
-            ((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1)) | 0)
+    if (cptr.ldBits(cptr.add(u, $you_uhave), 4, 1, 0) | 0 &&
+            (cptr.ldBits(cptr.add(svq, $q_score_killed_nemesis), 7, 1, 0)) | 0)
         qt_pager(__s_guardtalk_after);
     else
         qt_pager(__s_guardtalk_before);
@@ -599,7 +601,7 @@ function prisoner_speaks(mtmp) {
             $monst_mstrategy,
             cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n
         );
-        cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+        cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
 
         /* Your god is happy... */
         adjalign(3);
@@ -612,10 +614,10 @@ function prisoner_speaks(mtmp) {
 
 /** C ref: quest.c:473 — @param {CPtr<struct monst>} mtmp */
 export function quest_chat(mtmp) {
-    if (cptr.ldI32o(mtmp, $monst_m_id) == (cptr.ldI32o(svq, $q_score_leader_m_id))) {
+    if (cptr.ldI32o(mtmp, $monst_m_id) >>> 0 == (cptr.ldI32o(svq, $q_score_leader_m_id) >>> 0)) {
         chat_with_leader(mtmp);
         /* leader might have become pissed during the chat */
-        if (((cptr.ldI32o(svq, $q_score_pissed_off) & 1)))
+        if ((cptr.ldBits(svq, 5, 1, 0)))
             setmangry(mtmp, 0);
         return;
     }
@@ -633,7 +635,7 @@ export function quest_chat(mtmp) {
 
 /** C ref: quest.c:495 — @param {CPtr<struct monst>} mtmp */
 export function quest_talk(mtmp) {
-    if (cptr.ldI32o(mtmp, $monst_m_id) == (cptr.ldI32o(svq, $q_score_leader_m_id))) {
+    if (cptr.ldI32o(mtmp, $monst_m_id) >>> 0 == (cptr.ldI32o(svq, $q_score_leader_m_id) >>> 0)) {
         leader_speaks(mtmp);
         return;
     }
@@ -652,9 +654,11 @@ export function quest_talk(mtmp) {
 /** C ref: quest.c:514 — @param {CPtr<struct monst>} mtmp */
 export function quest_stat_check(mtmp) {
     if (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_NEMESIS)
-        cptr.stI32o(
-            svq,
-            $q_score_in_battle,
+        cptr.stBits(
+            cptr.add(svq, $q_score_in_battle),
+            0,
+            1,
+            0,
             (!helpless(mtmp) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? 1 : 0) >>> 0
         );
 }

@@ -292,7 +292,7 @@ export function luaL_argerror(L, arg, extramsg) {
                 extramsg
             );
     }
-    if (cptr.eq(cptr.ldPtro(ar, $lua_Debug_name), (null)))
+    if (cptr.eq(cptr.ldPtro(ar, $lua_Debug_name), cptr.byteView((null))))
         cptr.stPtro(
             ar,
             $lua_Debug_name,
@@ -724,13 +724,13 @@ function prepbuffsize(B, sz, boxidx) {
         let newsize = newbuffsize(B, sz);
         /* create larger buffer */
         if ((!cptr.eq(cptr.ldPtr((B)), cptr.add((B), $luaL_Buffer_init))))
-            newbuff = resizebox(L, boxidx, newsize);  /* resize it */
+            newbuff = cptr.byteView(resizebox(L, boxidx, newsize));  /* resize it */
         else {
             (lua_rotate(L, (boxidx), -1), lua_settop(L, -2));  /* remove placeholder */
             newbox(L);  /* create a new box */
             lua_rotate(L, (boxidx), 1);  /* move box to its intended position */
             lua_toclose(L, boxidx);
-            newbuff = resizebox(L, boxidx, newsize);
+            newbuff = cptr.byteView(resizebox(L, boxidx, newsize));
             cptr.memcpy(
                 newbuff,
                 cptr.ldPtr(B),
@@ -766,7 +766,11 @@ export function luaL_addlstring(B, s, l) {
     if (l > 0n) {
         let b = prepbuffsize(B, l, -1);
         cptr.memcpy(b, s, BigInt.asUintN(64, l * 1n));
-        (cptr.stU64o((B), $luaL_Buffer_n, cptr.ldU64o((B), $luaL_Buffer_n) + (l)));
+        (cptr.stU64o(
+            (B),
+            $luaL_Buffer_n,
+            BigInt.asUintN(64, cptr.ldU64o((B), $luaL_Buffer_n) + (l))
+        ));
     }
 }
 
@@ -787,7 +791,7 @@ export function luaL_pushresult(B) {
 
 /** C ref: lauxlib.c:607 — @param {CPtr<luaL_Buffer>} B @param {CLongLong} sz */
 export function luaL_pushresultsize(B, sz) {
-    (cptr.stU64o((B), $luaL_Buffer_n, cptr.ldU64o((B), $luaL_Buffer_n) + (sz)));
+    (cptr.stU64o((B), $luaL_Buffer_n, BigInt.asUintN(64, cptr.ldU64o((B), $luaL_Buffer_n) + (sz))));
     luaL_pushresult(B);
 }
 
@@ -803,11 +807,15 @@ export function luaL_pushresultsize(B, sz) {
 /** C ref: lauxlib.c:622 — @param {CPtr<luaL_Buffer>} B */
 export function luaL_addvalue(B) {
     let L = cptr.ldPtro(B, $luaL_Buffer_L);
-    let len = cptr.box(0n);
+    let len = cptr.box(0n, "u64");
     let s = lua_tolstring(L, -1, len);
     let b = prepbuffsize(B, len.v, -2);
     cptr.memcpy(b, s, BigInt.asUintN(64, len.v * 1n));
-    (cptr.stU64o((B), $luaL_Buffer_n, cptr.ldU64o((B), $luaL_Buffer_n) + (len.v)));
+    (cptr.stU64o(
+        (B),
+        $luaL_Buffer_n,
+        BigInt.asUintN(64, cptr.ldU64o((B), $luaL_Buffer_n) + (len.v))
+    ));
     lua_settop(L, -2);  /* pop string */
 }
 
@@ -972,12 +980,13 @@ function skipcomment(f, cp) {
  * @returns {CInt}
  */
 export function luaL_loadfilex(L, filename, mode) {
+    let __r1;
     let lf = cptr.alloc(1040);
     let status;
     let readstatus;
     let c = cptr.box(0);
     let fnameindex = (lua_gettop(L) + 1) | 0;  /* index of filename on the stack */
-    if (cptr.eq(filename, (null))) {
+    if (cptr.eq(filename, cptr.byteView((null)))) {
         lua_pushstring(L, __s_stdin);
         cptr.stPtro(lf, $LoadF_f, __stdinp);
     } else {
@@ -1001,7 +1010,10 @@ export function luaL_loadfilex(L, filename, mode) {
         }
     }
     if (c.v != -1)
-        cptr.st1o2(lf, (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - (1), 1, $LoadF_buff, schar(c.v));  /* 'c' is the first character of the stream */
+        (
+            __r1 = schar(c.v),
+            cptr.st1o2(lf, (cptr.stI32(lf, cptr.ldI32(lf) + 1)) - (1), 1, $LoadF_buff, __r1)
+        );  /* 'c' is the first character of the stream */
     cptr.stI32(__error(), 0);
     status = lua_load(L, getF, lf, lua_tolstring(L, -1, null), mode);
     readstatus = ferror(cptr.ldPtro(lf, $LoadF_f));
@@ -1164,18 +1176,18 @@ export function luaL_tolstring(L, idx, len) {
 /** C ref: lauxlib.c:942 — @param {CPtr<lua_State>} L @param {CPtr<luaL_Reg>} l @param {CInt} nup */
 export function luaL_setfuncs(L, l, nup) {
     luaL_checkstack(L, nup, __s_too_many_upvalues);
-    for (; !cptr.eq(cptr.ldPtr(l), (null)); l = cptr.add(l, 1, 16)) {
+    for (; !cptr.eq(cptr.ldPtr(l), cptr.byteView((null))); l = cptr.add(l, 1, 16)) {
         if (cptr.ldPtro(l, $luaL_Reg_func) === (null))
             lua_pushboolean(L, 0);
         else {
             let i;
             for (i = 0; i < nup; i++)
-                lua_pushvalue(L, -nup);
+                lua_pushvalue(L, -nup | 0);
             lua_pushcclosure(L, cptr.ldPtro(l, $luaL_Reg_func), nup);  /* closure with those upvalues */
         }
-        lua_setfield(L, -((nup + 2) | 0), cptr.ldPtr(l));
+        lua_setfield(L, -((nup + 2) | 0) | 0, cptr.ldPtr(l));
     }
-    lua_settop(L, (-(nup) - 1) | 0);  /* remove upvalues */
+    lua_settop(L, ((-(nup) | 0) - 1) | 0);  /* remove upvalues */
 }
 
 /*
@@ -1243,7 +1255,7 @@ export function luaL_requiref(L, modname, openf, glb) {
 export function luaL_addgsub(b, s, p, r) {
     let wild;
     let l = cptr.strlen(p);
-    while (!cptr.eq((wild = cptr.strstr(s, p)), (null))) {
+    while (!cptr.eq((wild = cptr.strstr(s, p)), cptr.byteView((null)))) {
         luaL_addlstring(b, s, BigInt.asUintN(64, cptr.diff(wild, s)));  /* push prefix */
         luaL_addstring(b, r);  /* push replacement in place of pattern */
         s = cptr.add(wild, l);  /* continue after 'p' */

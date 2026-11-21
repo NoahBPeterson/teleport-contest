@@ -189,7 +189,7 @@ export function droppables(mon) {
     let unihorn;
     let key;
 
-    cptr.memcpy(__static_droppables_dummy, cg, 216);
+    cptr.memcpy(__static_droppables_dummy, cg, 112);
     cptr.stI16o(__static_droppables_dummy, $obj_otyp, NHC.GOLD_PIECE);  /* not STRANGE_OBJECT or tools of interest */
     cptr.st1o(__static_droppables_dummy, $obj_oartifact, 1);  /* so real artifact won't override "don't keep it" */
     pickaxe = (unihorn = (key = null));
@@ -243,7 +243,7 @@ export function droppables(mon) {
                 break;
             case NHC.UNICORN_HORN:
                 /* reject cursed unicorn horns */
-                if ((cptr.ldI32o(obj, $obj_cursed) & 1))
+                if (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0))
                     break;
                 /* keep artifact unihorn in preference to ordinary one */
                 if (!unihorn ||
@@ -301,7 +301,7 @@ export function cursed_object_at(x, y) {
         otmp;
         otmp = cptr.ldPtro(otmp, $obj_v)
     )
-        if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
+        if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0))
             return 1;
     return 0;
 }
@@ -330,7 +330,8 @@ export function dog_nutrition(mtmp, obj) {
                         cptr.ldI32o(obj, $obj_corpsenm),
                         $sizeof_permonst,
                         $permonst_cwt
-                    ) >>> 6)) | 0
+                    ) >>>
+                        0 >>> 6)) | 0
             );
             nutrit = cptr.ldU16o2(
                 mons,
@@ -377,7 +378,7 @@ export function dog_nutrition(mtmp, obj) {
                 nutrit = Math.imul(nutrit, 2);
                 break;
         }
-        if (cptr.ldI32o(obj, $obj_oeaten)) {
+        if (cptr.ldI32o(obj, $obj_oeaten) >>> 0) {
             cptr.stI32o(mtmp, $monst_meating, eaten_stat(cptr.ldI32o(mtmp, $monst_meating), obj));
             nutrit = eaten_stat(nutrit, obj);
         }
@@ -398,7 +399,7 @@ export function dog_nutrition(mtmp, obj) {
          * nutrit made consistent with polymorphed player nutrit in
          * eat.c.  (This also applies to pets eating gold.)
          */
-        cptr.stI32o(mtmp, $monst_meating, (u32div(cptr.ldI32o(obj, $obj_owt), 20) + 1) | 0);
+        cptr.stI32o(mtmp, $monst_meating, (u32div(cptr.ldI32o(obj, $obj_owt) >>> 0, 20) + 1) | 0);
         nutrit = Math.imul(
             5,
             cptr.ldU16o2(
@@ -442,7 +443,7 @@ export function dog_eat(mtmp, obj, x, y, devour) {
             nutrit = ((Math.imul(nutrit, 3)) / 4) | 0;
     }
     cptr.stI64o(edog, $edog_hungrytime, cptr.ldI64o(edog, $edog_hungrytime) + BigInt(nutrit));
-    cptr.stI32o(mtmp, $monst_mconf, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0, 0);
     if (cptr.ldI32o(edog, $edog_mhpmax_penalty)) {
         /* no longer starving */
         cptr.stI32o(
@@ -452,9 +453,15 @@ export function dog_eat(mtmp, obj, x, y, devour) {
         );
         cptr.stI32o(edog, $edog_mhpmax_penalty, 0);
     }
-    if ((cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 &&
-            ((cptr.ldI32o(mtmp, $monst_mfleetim) & 127) | 0) > 1)
-        cptr.stI32o(mtmp, $monst_mfleetim, (cptr.ldI32o(mtmp, $monst_mfleetim) / 2) | 0);
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0) | 0 &&
+            (cptr.ldBits(cptr.add(mtmp, $monst_mfleetim), 0, 7, 0) | 0) > 1)
+        cptr.stBits(
+            cptr.add(mtmp, $monst_mfleetim),
+            0,
+            7,
+            0,
+            u32div(cptr.ldBits(cptr.add(mtmp, $monst_mfleetim), 0, 7, 0), 2)
+        );
     if (cptr.ld1so(mtmp, $monst_mtame) < 20)
         cptr.postinc1(cptr.add(mtmp, $monst_mtame));
     if (x != cptr.ldI16o(mtmp, $monst_mx) || y != cptr.ldI16o(mtmp, $monst_my)) {
@@ -473,7 +480,7 @@ export function dog_eat(mtmp, obj, x, y, devour) {
     /* food items are eaten one at a time; entire stack for other stuff */
     if (cptr.ldI64o(obj, $obj_quan) > 1n && cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS)
         obj = splitobj(obj, 1n);
-    if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
+    if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
         (cptr.stI32o(
             iflags,
             $instance_flags_suppress_price,
@@ -530,7 +537,7 @@ export function dog_eat(mtmp, obj, x, y, devour) {
             pline(__s_it_s_s, devour ? __s_devours : __s_eats, obj_name);
         }
     }
-    if ((cptr.ldI32o(obj, $obj_unpaid) & 1)) {
+    if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0)) {
         void cptr.strcpy(cptr.decay(objnambuf), xname(obj));
         (cptr.stI32o(
             iflags,
@@ -542,12 +549,12 @@ export function dog_eat(mtmp, obj, x, y, devour) {
         cptr.ldPtro(mtmp, $monst_data),
         cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)
     ) &&
-            (cptr.ldI32o(obj, $obj_oerodeproof) & 1) | 0) {
+            cptr.ldBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0) | 0) {
         /* The object's rustproofing is gone now */
-        if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
+        if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0))
             costly_alteration(obj, NHC.COST_DEGRD);
-        cptr.stI32o(obj, $obj_oerodeproof, 0);
-        cptr.stI32o(mtmp, $monst_mstun, 1);
+        cptr.stBits(cptr.add(obj, $obj_oerodeproof), 4, 1, 0, 0);
+        cptr.stBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0, 1);
         if (canseemon(mtmp)) {
             obj_name = distant_name(obj, doname);  /* (see above) */
             if (cptr.ld1so(flags, $flag_verbose))
@@ -568,7 +575,7 @@ export function dog_eat(mtmp, obj, x, y, devour) {
                         (200n /
                             (BigInt.asIntN(
                                 64,
-                                BigInt(cptr.ldI32o(edog, $edog_dropdist) >>> 0) +
+                                BigInt((cptr.ldI32o(edog, $edog_dropdist) >>> 0) >>> 0) +
                                     cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
                                     cptr.ldI64o(edog, $edog_droptime)
                             )))
@@ -578,17 +585,17 @@ export function dog_eat(mtmp, obj, x, y, devour) {
                 impossible(
                     __s_dog_eat_pet_apport_0_d_d_ld_ld_d_u_u,
                     cptr.ldI32o(edog, $edog_apport),
-                    cptr.ldI32o(edog, $edog_dropdist),
+                    cptr.ldI32o(edog, $edog_dropdist) >>> 0,
                     cptr.ldI64o(edog, $edog_droptime),
                     cptr.ldI64o(svm, $instance_globals_saved_m_moves),
                     prior_apport,
-                    cptr.ldI32o(mtmp, $monst_m_id),
-                    cptr.ldI32(edog)
+                    cptr.ldI32o(mtmp, $monst_m_id) >>> 0,
+                    cptr.ldI32(edog) >>> 0
                 );
                 cptr.stI32o(edog, $edog_apport, 1);
             }
         }
-        if ((cptr.ldI32o(obj, $obj_unpaid) & 1)) {
+        if (cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0)) {
             /* edible item owned by shop has been thrown or kicked
                by hero and caught by tame or food-tameable monst */
             oprice = unpaid_cost(obj, NHC.COST_CONTENTS);
@@ -604,7 +611,8 @@ export function dog_eat(mtmp, obj, x, y, devour) {
 
 /** C ref: dogmove.c:348 — @param {CPtr<struct monst>} mtmp */
 function dog_starve(mtmp) {
-    if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0 && !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0) | 0 &&
+            !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
         Your(__s_leash_goes_slack);
     else if (((cptr.ld1uo(
         cptr.ldPtro(
@@ -645,7 +653,7 @@ function dog_hunger(mtmp, edog) {
         } else if (!cptr.ldI32o(edog, $edog_mhpmax_penalty)) {
             /* starving pets are limited in healing */
             let newmhpmax = (cptr.ldI32o(mtmp, $monst_mhpmax) / 3) | 0;
-            cptr.stI32o(mtmp, $monst_mconf, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0, 1);
             cptr.stI32o(
                 edog,
                 $edog_mhpmax_penalty,
@@ -724,7 +732,7 @@ function dog_invent(mtmp, edog, udist) {
                 : void 0);
         if (!rn2((udist + 1) | 0) || !rn2(cptr.ldI32o(edog, $edog_apport)))
             if (rn2(10) < cptr.ldI32o(edog, $edog_apport)) {
-                relobj(mtmp, (cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0, 1);
+                relobj(mtmp, cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) | 0, 1);
                 if (cptr.ldI32o(edog, $edog_apport) > 1)
                     (cptr.stI32o(edog, $edog_apport, cptr.ldI32o(edog, $edog_apport) + -1)) - (-1);
                 cptr.stI32o(edog, $edog_dropdist, udist >>> 0);  /* hpscdi!jon */
@@ -746,12 +754,14 @@ function dog_invent(mtmp, edog, udist) {
             null &&
                 !cptr.strchr(cptr.decay(nofetch), cptr.ld1so(obj, $obj_oclass)) &&
                 cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_MAIL &&
-                !((cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo)) ||
-                    (cptr.ldI32o((obj), $obj_o_id) ==
+                !((cptr.ldI32o((obj), $obj_o_id) >>> 0 ==
+                    cptr.ldI32o(svc, $context_info_achieveo) >>> 0) ||
+                    (cptr.ldI32o((obj), $obj_o_id) >>> 0 ==
                         cptr.ldI32o(
                             svc,
                             $context_info_achieveo + $achievement_tracking_soko_prize_oid
-                        )))) {
+                        ) >>>
+                            0))) {
             let edible = dogfood(mtmp, obj);
 
             if ((edible <= NHC.CADAVER ||
@@ -761,7 +771,7 @@ function dog_invent(mtmp, edog, udist) {
 
             carryamt = can_carry(mtmp, obj);
             if (carryamt > 0 &&
-                    !(cptr.ldI32o(obj, $obj_cursed) & 1) &&
+                    !cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0) &&
                     could_reach_item(mtmp, cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy))) {
                 if (rn2(20) < ((cptr.ldI32o(edog, $edog_apport) + 3) | 0)) {
                     if (rn2(udist) || !rn2(cptr.ldI32o(edog, $edog_apport))) {
@@ -835,7 +845,7 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
             NHM.COULD_SEE) != 0));
     dog_has_minvent = schar((droppables(mtmp) !== null));
 
-    if (!edog || (cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0) {
+    if (!edog || cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0) | 0) {
         cptr.stI16o(gg, $instance_globals_g_gtyp, NHC.APPORT);
         cptr.stI16o(gg, $instance_globals_g_gx, cptr.ldI16(u));
         cptr.stI16o(gg, $instance_globals_g_gy, cptr.ldI16o(u, $you_uy));
@@ -902,24 +912,40 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
                 } else if (cptr.ldI16o(gg, $instance_globals_g_gtyp) == NHC.UNDEF &&
                         in_masters_sight &&
                         !dog_has_minvent &&
-                        (!(cptr.ldI32o3(
-                            svl,
-                            omx,
-                            $sizeof_rm_x21,
-                            omy,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_lit
-                        ) &
-                            1) ||
-                            (cptr.ldI32o3(
-                                svl,
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21,
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm,
-                                $instance_globals_saved_l_level + $rm_lit
-                            ) &
-                                1) |
+                        (!cptr.ldBits(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        omx,
+                                        $sizeof_rm_x21
+                                    ),
+                                    omy,
+                                    $sizeof_rm
+                                ),
+                                $rm_lit
+                            ),
+                            6,
+                            1,
+                            0
+                        ) ||
+                            cptr.ldBits(
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(
+                                            cptr.add(svl, $instance_globals_saved_l_level),
+                                            cptr.ldI16(u),
+                                            $sizeof_rm_x21
+                                        ),
+                                        cptr.ldI16o(u, $you_uy),
+                                        $sizeof_rm
+                                    ),
+                                    $rm_lit
+                                ),
+                                6,
+                                1,
+                                0
+                            ) |
                                 0) &&
                         (otyp == NHC.MANFOOD || m_cansee(mtmp, nx, ny)) &&
                         cptr.ldI32o(edog, $edog_apport) > rn2(8) &&
@@ -945,7 +971,9 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
                 ((cptr.ldI16o(gg, $instance_globals_g_gx)) == cptr.ldI16(u) &&
                     (cptr.ldI16o(gg, $instance_globals_g_gy)) == cptr.ldI16o(u, $you_uy)))
             return -2;
-        appr = (udist >= 9) ? 1 : (((cptr.ldI32o(mtmp, $monst_mflee) & 1)) | 0 ? -1 : 0);
+        appr = (udist >= 9)
+                ? 1
+                : ((cptr.ldBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0)) | 0 ? -1 : 0);
         if (udist > 1) {
             if (!((cptr.ld1so3(
                 svl,
@@ -979,7 +1007,8 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
                     /* assume at most one magic portal per level;
                        [should this be limited to known portals?] */
                     for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
-                        if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL) {
+                        if ((cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) ==
+                                NHC.MAGIC_PORTAL) {
                             if (dist2(
                                 (cptr.ldI16o(t, $trap_tx)),
                                 (cptr.ldI16o(t, $trap_ty)),
@@ -994,7 +1023,7 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
         }
     } else
         appr = 1;  /* gtyp != UNDEF */
-    if ((cptr.ldI32o(mtmp, $monst_mconf) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0))
         appr = 0;
     if (((cptr.ldI16o(gg, $instance_globals_g_gx)) == cptr.ldI16(u) &&
         (cptr.ldI16o(gg, $instance_globals_g_gy)) == cptr.ldI16o(u, $you_uy)) &&
@@ -1096,10 +1125,10 @@ function find_targ(mtmp, dx, dy, maxdist) {
         ))) !==
                 null) {
             /* Is the monster visible to the pet? */
-            if ((!(cptr.ldI32o(targ, $monst_minvis) & 1) ||
+            if ((!cptr.ldBits(cptr.add(targ, $monst_minvis), 1, 1, 0) ||
                 ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) !=
                     0n)) &&
-                    !(cptr.ldI32o(targ, $monst_mundetected) & 1) &&
+                    !cptr.ldBits(cptr.add(targ, $monst_mundetected), 6, 1, 0) &&
                     cptr.ldI16o(targ, $monst_mx) == curx &&
                     cptr.ldI16o(targ, $monst_my) == cury)
                 break;
@@ -1159,7 +1188,7 @@ function find_friends(mtmp, mtarg, maxdist) {
         if (pal) {
             if (cptr.ld1so(pal, $monst_mtame)) {
                 /* Pet won't notice invisible pets */
-                if (!(cptr.ldI32o(pal, $monst_minvis) & 1) ||
+                if (!cptr.ldBits(cptr.add(pal, $monst_minvis), 1, 1, 0) ||
                         ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
                             16777216n) != 0n))
                     return 1;
@@ -1190,7 +1219,7 @@ function score_targ(mtmp, mtarg) {
 
     /* Give 1 in 3 chance of safe breathing even if pet is confused or
      * if you're on the quest start level */
-    if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1) ||
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0) ||
             !rn2(3) ||
             (((cptr.ldI16o(
                 (cptr.add(
@@ -1216,24 +1245,24 @@ function score_targ(mtmp, mtarg) {
         let faith1 = 1;
         let faith2 = 1;
 
-        if ((cptr.ldI32o(mtmp, $monst_isminion) & 1))
+        if (cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0))
             align1 = cptr.ld1so(
                 (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)),
                 $emin_min_align
             );
-        else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1))
+        else if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0))
             align1 = cptr.ld1so(
                 (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)),
                 $epri_shralign
             );
         else
             faith1 = 0;
-        if ((cptr.ldI32o(mtarg, $monst_isminion) & 1))
+        if (cptr.ldBits(cptr.add(mtarg, $monst_isminion), 5, 1, 0))
             align2 = cptr.ld1so(
                 (cptr.ldPtro(cptr.ldPtro((mtarg), $monst_mextra), $mextra_emin)),
                 $emin_min_align
             );  /* MAR */
-        else if ((cptr.ldI32o(mtarg, $monst_ispriest) & 1))
+        else if (cptr.ldBits(cptr.add(mtarg, $monst_ispriest), 7, 1, 0))
             align2 = cptr.ld1so(
                 (cptr.ldPtro(cptr.ldPtro((mtarg), $monst_mextra), $mextra_epri)),
                 $epri_shralign
@@ -1249,7 +1278,7 @@ function score_targ(mtmp, mtarg) {
         if (faith1 &&
                 faith2 &&
                 align1 == align2 &&
-                (cptr.ldI32o(mtarg, $monst_mpeaceful) & 1) | 0) {
+                cptr.ldBits(cptr.add(mtarg, $monst_mpeaceful), 1, 1, 0) | 0) {
             score -= 5000n;
             return score;
         }
@@ -1277,7 +1306,7 @@ function score_targ(mtmp, mtarg) {
             return score;
         }
         /* Target hostile monsters in preference to peaceful ones */
-        if (!(cptr.ldI32o(mtarg, $monst_mpeaceful) & 1))
+        if (!cptr.ldBits(cptr.add(mtarg, $monst_mpeaceful), 1, 1, 0))
             score += 10n;
         /* Is the monster passive? Don't waste energy on it, if so */
         if (cptr.ld1uo2(cptr.ldPtro(mtarg, $monst_data), 0, $sizeof_attack, $permonst_mattk) ==
@@ -1331,7 +1360,7 @@ function score_targ(mtmp, mtarg) {
        similar targets are abundant. */
     score += BigInt(rnd(5));
     /* Pet may decide not to use ranged attack when confused */
-    if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 && !rn2(3))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0) | 0 && !rn2(3))
         score -= 1000n;
     return score;
 }
@@ -1355,7 +1384,7 @@ function best_target(mtmp, forced) {
         return null;
 
     /* If the pet is blind, it's not going to see any target */
-    if (!(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0))
         return null;
 
     /* Search for any monsters lined up with the pet, within an arbitrary
@@ -1400,7 +1429,7 @@ export function pet_ranged_attk(mtmp, forced) {
     let hungry = 0;
 
     /* How hungry is the pet? */
-    if (!(cptr.ldI32o(mtmp, $monst_isminion) & 1)) {
+    if (!cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0)) {
         let dog = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog));
 
         hungry = (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
@@ -1454,7 +1483,7 @@ export function pet_ranged_attk(mtmp, forced) {
                  * the direction from which the ranged attack came;
                  * if it's blind or unseeing, it can't retaliate
                  */
-                if ((cptr.ldI32o(mtarg, $monst_mcansee) & 1) | 0 &&
+                if (cptr.ldBits(cptr.add(mtarg, $monst_mcansee), 7, 1, 0) | 0 &&
                         ((cptr.ldU64o((cptr.ldPtro(mtarg, $monst_data)), $permonst_mflags1) &
                             4096n) ==
                             0n)) {
@@ -1537,7 +1566,7 @@ export function dog_move(mtmp, after) {
          * spend all their energy defending the player.  (They are the only
          * monsters with other structures that can be tame.)
          */
-        if (!edog && !(cptr.ldI32o(mtmp, $monst_isminion) & 1)) {
+        if (!edog && !cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0)) {
             impossible(__s_dog_move_for_non_pet);
             return NHM.MMOVE_NOTHING;
         }
@@ -1617,7 +1646,7 @@ export function dog_move(mtmp, after) {
                 continue;
             if (cursed_object_at(nx, ny))
                 continue;
-            uncursedcnt++;
+            uncursedcnt = i16(uncursedcnt + 1);
         }
 
         better_with_displacing = should_displace(
@@ -1643,7 +1672,7 @@ export function dog_move(mtmp, after) {
                 cptr.st1o(cptr.decay(cursemsg), i, 0, 1);
 
                 /* if leashed, we drag him along. */
-                if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0 &&
+                if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0) | 0 &&
                         dist2((nx), (ny), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 4)
                     continue;
 
@@ -1704,7 +1733,7 @@ export function dog_move(mtmp, after) {
                                     NHC.MS_GUARDIAN ||
                                 cptr.ld1uo(cptr.ldPtro(mtmp2, $monst_data), $permonst_msound) ==
                                     NHC.MS_LEADER) &&
-                                (cptr.ldI32o(mtmp2, $monst_mpeaceful) & 1) | 0 &&
+                                cptr.ldBits(cptr.add(mtmp2, $monst_mpeaceful), 1, 1, 0) | 0 &&
                                 !Conflict())) {
                         continue;
                     }
@@ -1713,16 +1742,16 @@ export function dog_move(mtmp, after) {
                         cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)
                     ) &&
                         rn2(10) &&
-                        (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 &&
+                        cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0) | 0 &&
                         ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
                             4096n) ==
                             0n) &&
-                        (cptr.ldI32o(mtmp2, $monst_mcansee) & 1) | 0 &&
-                        (!(cptr.ldI32o(mtmp2, $monst_minvis) & 1) ||
+                        cptr.ldBits(cptr.add(mtmp2, $monst_mcansee), 7, 1, 0) | 0 &&
+                        (!cptr.ldBits(cptr.add(mtmp2, $monst_minvis), 1, 1, 0) ||
                             ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
                                 16777216n) !=
                                 0n)) &&
-                        !mon_reflects(mtmp, (null))) ||
+                        !mon_reflects(mtmp, cptr.byteView((null)))) ||
                             (cptr.eq(
                                 cptr.ldPtro(mtmp2, $monst_data),
                                 cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)
@@ -1838,14 +1867,14 @@ export function dog_move(mtmp, after) {
 
                     if ((cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 131072n) &&
                             (trap = t_at(nx, ny))) {
-                        if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
+                        if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0)) {
                             if (!Deaf())
                                 whimper(mtmp);
                         } else {
                             /* 1/40 chance of stepping on it anyway, in case
                              * it has to pass one to follow the player...
                              */
-                            if ((cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && rn2(40))
+                            if (cptr.ldBits(cptr.add(trap, $trap_tseen), 5, 1, 0) | 0 && rn2(40))
                                 continue;
                         }
                     }
@@ -1868,7 +1897,7 @@ export function dog_move(mtmp, after) {
                         obj;
                         obj = cptr.ldPtro(obj, $obj_v)
                     ) {
-                        if ((cptr.ldI32o(obj, $obj_cursed) & 1)) {
+                        if (cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)) {
                             cptr.st1o(cptr.decay(cursemsg), i, 1, 1);
                         } else if (can_reach_food &&
                                 (otyp = i16(dogfood(mtmp, obj))) < NHC.MANFOOD &&
@@ -1889,7 +1918,7 @@ export function dog_move(mtmp, after) {
                 /* didn't find something to eat; if we saw a cursed item and
                    aren't being forced to walk on it, usually keep looking */
                 if (cptr.ld1so(cptr.decay(cursemsg), i, 1) &&
-                        !(cptr.ldI32o(mtmp, $monst_mleashed) & 1) &&
+                        !cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0) &&
                         uncursedcnt > 0 &&
                         rn2(Math.imul(13, uncursedcnt)))
                     continue;
@@ -1899,7 +1928,7 @@ export function dog_move(mtmp, after) {
                  * This causes unintended issues for pets trying to follow the
                  * hero.  Thus, only run it if not leashed and >5 tiles away.
                  */
-                if (!(cptr.ldI32o(mtmp, $monst_mleashed) & 1) &&
+                if (!cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0) &&
                         distmin(
                             cptr.ldI16o(mtmp, $monst_mx),
                             cptr.ldI16o(mtmp, $monst_my),
@@ -1931,7 +1960,7 @@ export function dog_move(mtmp, after) {
                         nidist,
                     appr
                 );
-                if ((j == 0 && !rn2(++chcnt)) ||
+                if ((j == 0 && !rn2(chcnt = i16(chcnt + 1))) ||
                         j < 0 ||
                         (j > 0 && !whappr && ((omx == nix && omy == niy && !rn2(3)) || !rn2(12)))) {
                     nix = nx;
@@ -1956,7 +1985,7 @@ export function dog_move(mtmp, after) {
         let wasseen;
 
         if (cptr.ldI64o2(mfp, chi, 8, $mfndposdata_info) & 262144n) {
-            if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
+            if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0)) {
                 pline_mon(
                     mtmp,
                     __s_s_breaks_loose_of_s_leash,
@@ -1995,11 +2024,15 @@ export function dog_move(mtmp, after) {
                don't use glyph_at() here--it would return the pet but we want
                to know whether an object is remembered at this map location */
             let o = (!Hallucination() &&
-                (cptr.ldI32o(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-                ) &
-                    1) |
+                cptr.ldBits(
+                    cptr.add(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+                    ),
+                    4,
+                    1,
+                    0
+                ) |
                     0 &&
                 (((cptr.ldI32o3(
                     svl,
@@ -2233,7 +2266,7 @@ export function dog_move(mtmp, after) {
             if (dog_eat(mtmp, obj, i16(omx), i16(omy), 0) == 2)
                 return NHM.MMOVE_DIED;
         }
-    } else if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0 &&
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0) | 0 &&
             dist2(i16((omx)), i16((omy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 4) {
         /* an incredible kludge, but the only way to keep pooch near
          * after it spends time eating or in a trap, etc.
@@ -2385,15 +2418,23 @@ function can_reach_location(mon, mx, my, fx, fy) {
                 $instance_globals_saved_l_level + $rm_typ
             )) ==
                 NHC.DOOR) &&
-                    (((cptr.ldI32o3(
-                        svl,
-                        i,
-                        $sizeof_rm_x21,
-                        j,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_flags
-                    ) &
-                        31) |
+                    ((cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    i,
+                                    $sizeof_rm_x21
+                                ),
+                                j,
+                                $sizeof_rm
+                            ),
+                            $rm_flags
+                        ),
+                        0,
+                        5,
+                        0
+                    ) |
                         0) & 12))
                 continue;
             if (!could_reach_item(mon, i16(i), i16(j)))
@@ -2409,7 +2450,7 @@ function can_reach_location(mon, mx, my, fx, fy) {
 /** C ref: dogmove.c:1418 — @param {CInt} x @param {CInt} y @param {CPtr} distance */
 function wantdoor(x, y, distance) {
     let ndist;
-    let dist_ptr = distance;
+    let dist_ptr = cptr.castView(distance, "i32");
 
     if (cptr.ldI32(dist_ptr) > (ndist = dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
         cptr.stI16o(gg, $instance_globals_g_gx, x);
@@ -2496,7 +2537,7 @@ export function quickmimic(mtmp) {
     let trycnt = 5;
     let spotted;
     let seeloc;
-    let was_leashed = schar((cptr.ldI32o(mtmp, $monst_mleashed) & 1));
+    let was_leashed = schar(cptr.ldBits(cptr.add(mtmp, $monst_mleashed), 3, 1, 0));
     let buf = new Uint8Array(256);
 
     if (Protection_from_shape_changers() || !cptr.ldI32o(mtmp, $monst_meating))
@@ -2548,7 +2589,7 @@ export function quickmimic(mtmp) {
     cptr.stI32o(
         mtmp,
         $monst_mappearance,
-        cptr.ldI32o2(qm, idx, $sizeof_qmchoices, $qmchoices_mappearance)
+        cptr.ldI32o2(qm, idx, $sizeof_qmchoices, $qmchoices_mappearance) >>> 0
     );
 
     if (spotted || seeloc || canspotmon(mtmp)) {
@@ -2556,7 +2597,7 @@ export function quickmimic(mtmp) {
         let what = ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE)
                 ? cptr.ldPtro2(
                     defsyms,
-                    cptr.ldI32o(mtmp, $monst_mappearance),
+                    cptr.ldI32o(mtmp, $monst_mappearance) >>> 0,
                     $sizeof_symdef,
                     $symdef_explanation
                 )
@@ -2566,7 +2607,7 @@ export function quickmimic(mtmp) {
                         cptr.ldI16o(
                             (cptr.add(
                                 objects,
-                                cptr.ldI32o(mtmp, $monst_mappearance),
+                                cptr.ldI32o(mtmp, $monst_mappearance) >>> 0,
                                 $sizeof_objclass
                             )),
                             $objclass_oc_descr_idx
@@ -2579,7 +2620,7 @@ export function quickmimic(mtmp) {
                         cptr.ldI16o(
                             (cptr.add(
                                 objects,
-                                cptr.ldI32o(mtmp, $monst_mappearance),
+                                cptr.ldI32o(mtmp, $monst_mappearance) >>> 0,
                                 $sizeof_objclass
                             )),
                             $objclass_oc_descr_idx
@@ -2593,7 +2634,7 @@ export function quickmimic(mtmp) {
                             obj_descr,
                             cptr.ldI16((cptr.add(
                                 objects,
-                                cptr.ldI32o(mtmp, $monst_mappearance),
+                                cptr.ldI32o(mtmp, $monst_mappearance) >>> 0,
                                 $sizeof_objclass
                             ))),
                             $sizeof_objdescr
@@ -2602,7 +2643,7 @@ export function quickmimic(mtmp) {
                             obj_descr,
                             cptr.ldI16((cptr.add(
                                 objects,
-                                cptr.ldI32o(mtmp, $monst_mappearance),
+                                cptr.ldI32o(mtmp, $monst_mappearance) >>> 0,
                                 $sizeof_objclass
                             ))),
                             $sizeof_objdescr
@@ -2612,7 +2653,7 @@ export function quickmimic(mtmp) {
                             ? pmname(
                                 cptr.add(
                                     mons,
-                                    cptr.ldI32o(mtmp, $monst_mappearance),
+                                    cptr.ldI32o(mtmp, $monst_mappearance) >>> 0,
                                     $sizeof_permonst
                                 ),
                                 Mgender(mtmp)
@@ -2622,7 +2663,7 @@ export function quickmimic(mtmp) {
         newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         if (was_leashed &&
                 ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_MONSTER ||
-                    !mnum_leashable(cptr.ldI32o(mtmp, $monst_mappearance) | 0))) {
+                    !mnum_leashable((cptr.ldI32o(mtmp, $monst_mappearance) >>> 0) | 0))) {
             Your(__s_leash_goes_slack);
             m_unleash(mtmp, 0);
         }

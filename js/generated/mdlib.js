@@ -254,13 +254,15 @@ function make_version() {
     cptr.stU64o(
         version,
         $version_info_entity_count,
-        (cptr.ldU64o(version, $version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i))
+        (BigInt.asUintN(64, cptr.ldU64o(version, $version_info_entity_count) << 12n)) |
+            BigInt.asUintN(64, BigInt(i))
     );
     i = NHC.NUMMONS;
     cptr.stU64o(
         version,
         $version_info_entity_count,
-        (cptr.ldU64o(version, $version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i))
+        (BigInt.asUintN(64, cptr.ldU64o(version, $version_info_entity_count) << 12n)) |
+            BigInt.asUintN(64, BigInt(i))
     );
     /* free bits in here */
     return;
@@ -418,6 +420,7 @@ function count_and_validate_soundlibopts() {
 
 /** C ref: mdlib.c:641 — @param {CPtr<char>} str @param {CPtr<int>} length_p */
 function opt_out_words(str, length_p) {
+    let __r1, __r2;
     let word;
 
     while (cptr.ld1s(str)) {
@@ -426,7 +429,10 @@ function opt_out_words(str, length_p) {
             cptr.st1(word, 0);
         if (((cptr.ldI32(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str)))) | 0) > 75) {
             (void ((idxopttext < 60)
-                    ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+                    ? ((
+                        __r1 = dupstr(cptr.decay(optbuf)),
+                        cptr.stPtro(opttext, idxopttext++, __r1, 8)
+                    ))
                     : null));
             void cptr.sprintf(cptr.decay(optbuf), __s_pct_s, cptr.decay(opt_indent)),
                     cptr.stI32(
@@ -438,9 +444,9 @@ function opt_out_words(str, length_p) {
                     (cptr.stI32(length_p, cptr.ldI32(length_p) + 1)) - (1);
         }
         void cptr.sprintf(eos(cptr.decay(optbuf)), __s_pct_s, str),
-                cptr.stI32(
-                    length_p,
-                    (cptr.ldI32(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str)))) | 0
+                (
+                    __r2 = Number(BigInt.asIntN(32, cptr.strlen(str))),
+                    cptr.stI32(length_p, (cptr.ldI32(length_p) + __r2) | 0)
                 );
         str = cptr.add(
             str,
@@ -468,6 +474,7 @@ cptr.stPtro(__static_build_options_lua_info, 112, null); /** C ref: mdlib.c:800 
 
 /** C ref: mdlib.c:669 */
 function build_options() {
+    let __r3, __r4, __r5, __r6, __r7, __r8, __r9, __r10, __r11, __r12, __r13, __r14;
     let buf = new Uint8Array(256);
     let i;
     let length = cptr.box(0);
@@ -477,7 +484,7 @@ function build_options() {
     let soundlibcnt;
     build_savebones_compat_string();
     (void ((idxopttext < 60)
-            ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+            ? ((__r3 = dupstr(cptr.decay(optbuf)), cptr.stPtro(opttext, idxopttext++, __r3, 8)))
             : null));
     void cptr.sprintf(
         cptr.decay(optbuf),
@@ -489,11 +496,11 @@ function build_options() {
         __s_empty
     );
     (void ((idxopttext < 60)
-            ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+            ? ((__r4 = dupstr(cptr.decay(optbuf)), cptr.stPtro(opttext, idxopttext++, __r4, 8)))
             : null));
     void cptr.sprintf(cptr.decay(optbuf), __s_options_compiled_into_this_edition);
     (void ((idxopttext < 60)
-            ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+            ? ((__r5 = dupstr(cptr.decay(optbuf)), cptr.stPtro(opttext, idxopttext++, __r5, 8)))
             : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     length.v = 81;  /* force 1st item onto new line */
@@ -507,12 +514,12 @@ function build_options() {
         opt_out_words(cptr.decay(buf), length);
     }
     (void ((idxopttext < 60)
-            ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+            ? ((__r6 = dupstr(cptr.decay(optbuf)), cptr.stPtro(opttext, idxopttext++, __r6, 8)))
             : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     winsyscnt = count_and_validate_winopts();
     (void ((idxopttext < 60)
-            ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+            ? ((__r7 = dupstr(cptr.decay(optbuf)), cptr.stPtro(opttext, idxopttext++, __r7, 8)))
             : null));
     void cptr.sprintf(
         cptr.decay(optbuf),
@@ -520,7 +527,7 @@ function build_options() {
         (winsyscnt > 1) ? __s_s : __s_empty
     );
     (void ((idxopttext < 60)
-            ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+            ? ((__r8 = dupstr(cptr.decay(optbuf)), cptr.stPtro(opttext, idxopttext++, __r8, 8)))
             : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     length.v = 81;  /* force 1st item onto new line */
@@ -567,12 +574,12 @@ function build_options() {
     }
     cnt = 0;
     (void ((idxopttext < 60)
-            ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+            ? ((__r9 = dupstr(cptr.decay(optbuf)), cptr.stPtro(opttext, idxopttext++, __r9, 8)))
             : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     soundlibcnt = count_and_validate_soundlibopts();
     (void ((idxopttext < 60)
-            ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+            ? ((__r10 = dupstr(cptr.decay(optbuf)), cptr.stPtro(opttext, idxopttext++, __r10, 8)))
             : null));
     void cptr.sprintf(
         cptr.decay(optbuf),
@@ -580,7 +587,7 @@ function build_options() {
         (soundlibcnt > 1) ? __s_s : __s_empty
     );
     (void ((idxopttext < 60)
-            ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+            ? ((__r11 = dupstr(cptr.decay(optbuf)), cptr.stPtro(opttext, idxopttext++, __r11, 8)))
             : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     length.v = 81;  /* force 1st item onto new line */
@@ -621,7 +628,7 @@ function build_options() {
     }
 
     (void ((idxopttext < 60)
-            ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8))
+            ? ((__r12 = dupstr(cptr.decay(optbuf)), cptr.stPtro(opttext, idxopttext++, __r12, 8)))
             : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     {
@@ -630,18 +637,18 @@ function build_options() {
            ":TAG:" substitutions are deferred to caller */
         for (i = 0; cptr.ldPtro(__static_build_options_lua_info, i, 8); ++i) {
             (void ((idxopttext < 60)
-                    ? (cptr.stPtro(
-                        opttext,
-                        idxopttext++,
-                        dupstr(cptr.ldPtro(__static_build_options_lua_info, i, 8)),
-                        8
+                    ? ((
+                        __r13 = dupstr(cptr.ldPtro(__static_build_options_lua_info, i, 8)),
+                        cptr.stPtro(opttext, idxopttext++, __r13, 8)
                     ))
                     : null));
         }
     }
 
     /* end with a blank line */
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(__s_empty), 8)) : null));
+    (void ((idxopttext < 60)
+            ? ((__r14 = dupstr(__s_empty), cptr.stPtro(opttext, idxopttext++, __r14, 8)))
+            : null));
     return;
 }
 

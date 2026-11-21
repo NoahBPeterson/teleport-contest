@@ -48,6 +48,7 @@ export let sysopt = cptr.alloc($sizeof_sysopt_s);
 
 /** C ref: sys.c:21 */
 export function sys_early_init() {
+    let __r1;
     let p;
 
     /* Don't assume that these are not already set, and that it is
@@ -100,12 +101,9 @@ export function sys_early_init() {
     cptr.stI32o(sysopt, $sysopt_s_check_plname, 0);
     cptr.stI32o(sysopt, $sysopt_s_seduce, 1);  /* if it's compiled in, default to on */
     sysopt_seduce_set(cptr.ldI32o(sysopt, $sysopt_s_seduce));
-    cptr.stI32o2(
-        sysopt,
-        0,
-        4,
-        $sysopt_s_saveformat,
-        cptr.stI32o2(sysopt, 0, 4, $sysopt_s_bonesformat, NHC.historical)
+    (
+        __r1 = cptr.stI32o2(sysopt, 0, 4, $sysopt_s_bonesformat, NHC.historical),
+        cptr.stI32o2(sysopt, 0, 4, $sysopt_s_saveformat, __r1)
     );
     cptr.stI32o(sysopt, $sysopt_s_accessibility, 0);
 
@@ -149,10 +147,10 @@ export function sysopt_release() {
                 cptr.stPtro(sysopt, $sysopt_s_greppath, null);
     if (cptr.ldPtro(gc, $instance_globals_c_crash_email))
         cptr.free(cptr.ldPtro(gc, $instance_globals_c_crash_email)),
-                cptr.stPtro(gc, $instance_globals_c_crash_email, (null));
+                cptr.stPtro(gc, $instance_globals_c_crash_email, cptr.byteView((null)));
     if (cptr.ldPtro(gc, $instance_globals_c_crash_name))
         cptr.free(cptr.ldPtro(gc, $instance_globals_c_crash_name)),
-                cptr.stPtro(gc, $instance_globals_c_crash_name, (null));
+                cptr.stPtro(gc, $instance_globals_c_crash_name, cptr.byteView((null)));
 
     /* this one's last because it might be used in panic feedback, although
        none of the preceding ones are likely to trigger a controlled panic */

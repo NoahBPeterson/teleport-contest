@@ -1171,8 +1171,8 @@ export function set_uasmon() {
 /* Levitation overrides Flying; set or clear BFlying|I_SPECIAL */
 /** C ref: polyself.c:131 */
 export function float_vs_flight() {
-    let stuck_in_floor = schar((cptr.ldI32o(u, $you_utrap) &&
-        cptr.ldI32o(u, $you_utraptype) != NHC.TT_PIT
+    let stuck_in_floor = schar((cptr.ldI32o(u, $you_utrap) >>> 0 &&
+        cptr.ldI32o(u, $you_utraptype) >>> 0 != NHC.TT_PIT
             ? 1
             : 0));
 
@@ -1336,7 +1336,7 @@ function polyman(fmt, arg) {
             !could_twoweap(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
         untwoweapon();
 
-    if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
+    if (cptr.ldI32o(u, $you_utrap) >>> 0 && cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_PIT) {
         set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);  /* time to escape resets */
     }
     if (was_blind && !Blind()) {
@@ -1950,7 +1950,7 @@ export function polyself(psflags) {
                 $instance_globals_saved_m_mvitals + $mvitals_mvflags
             ) &
                     NHM.G_GENOD)) {
-                was_lit = (cptr.ldI32o(uarm.v, $obj_lamplit) & 1);
+                was_lit = cptr.ldBits(cptr.add(uarm.v, $obj_lamplit), 7, 1, 0);
                 arm_light = artifact_light(uarm.v) ? arti_light_radius(uarm.v) : 0;
 
                 /* allow G_EXTINCT */
@@ -2151,6 +2151,7 @@ const __static_polymon_monsterc = cptr.bytes("monster"); /** C ref: polyself.c:1
 
 /** C ref: polyself.c:735 — @param {CInt} mntmp @returns {CInt} */
 export function polymon(mntmp) {
+    let __r1;
     let buf = new Uint8Array(256);
     let ustuckNam = new Uint8Array(256);
     let sticking = schar((sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
@@ -2214,7 +2215,7 @@ export function polymon(mntmp) {
         /* Human to monster; save human stats */
         cptr.memcpy(cptr.add(u, $you_macurr), cptr.add(u, $you_acurr), 6);
         cptr.memcpy(cptr.add(u, $you_mamax), cptr.add(u, $you_amax), 6);
-        cptr.stBits(cptr.add(u, $you_mfemale), 3, 1, 0, cptr.ld1so(flags, $flag_female));
+        cptr.stBits(cptr.add(u, $you_mfemale), 3, 1, 0, cptr.ld1so(flags, $flag_female) >>> 0);
     } else {
         /* Monster to monster; restore human stats, to be
          * immediately changed to provide stats for the new monster
@@ -2307,12 +2308,9 @@ export function polymon(mntmp) {
     newMaxStr = uasmon_maxStr();
     if (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) & 67108864n) !=
             0n)) {
-        cptr.st1o2(
-            u,
-            NHC.A_STR,
-            1,
-            $you_acurr,
-            cptr.st1o2(u, NHC.A_STR, 1, $you_amax, schar(newMaxStr))
+        (
+            __r1 = cptr.st1o2(u, NHC.A_STR, 1, $you_amax, schar(newMaxStr)),
+            cptr.st1o2(u, NHC.A_STR, 1, $you_acurr, __r1)
         );
     } else {
         /* not a strongmonst(); if hero has exceptional strength, remove it
@@ -2405,7 +2403,7 @@ export function polymon(mntmp) {
     if (was_hiding_under)
         void hideunder(cptr.add(gy, $instance_globals_y_youmonst));
 
-    if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
+    if (cptr.ldI32o(u, $you_utrap) >>> 0 && cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_PIT) {
         set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);  /* time to escape resets */
     }
     if (was_blind && !Blind()) {
@@ -2536,10 +2534,10 @@ export function polymon(mntmp) {
            return early */
     }
     if (Passes_walls() &&
-            cptr.ldI32o(u, $you_utrap) &&
-            (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR ||
-                cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)) {
-        if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR) {
+            cptr.ldI32o(u, $you_utrap) >>> 0 &&
+            (cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_INFLOOR ||
+                cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_BURIEDBALL)) {
+        if (cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_INFLOOR) {
             pline_The(__s_rock_seems_to_no_longer_trap_you);
         } else {
             pline_The(__s_buried_ball_is_no_longer_bound_to_you);
@@ -2547,8 +2545,8 @@ export function polymon(mntmp) {
         }
         reset_utrap(1);
     } else if (likes_lava(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
-            cptr.ldI32o(u, $you_utrap) &&
-            cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA) {
+            cptr.ldI32o(u, $you_utrap) >>> 0 &&
+            cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_LAVA) {
         pline_The(__s_s_now_feels_soothing, hliquid(__s_lava));
         reset_utrap(1);
     }
@@ -2568,15 +2566,15 @@ export function polymon(mntmp) {
         if (Punished()) {
             You(__s_slip_out_of_the_iron_chain);
             unpunish();
-        } else if (cptr.ldI32o(u, $you_utrap) &&
-                cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
+        } else if (cptr.ldI32o(u, $you_utrap) >>> 0 &&
+                cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_BURIEDBALL) {
             You(__s_slip_free_of_the_buried_ball_and_chain);
             buried_ball_to_freedom();
         }
     }
-    if (cptr.ldI32o(u, $you_utrap) &&
-            (cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB ||
-                cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP) &&
+    if (cptr.ldI32o(u, $you_utrap) >>> 0 &&
+            (cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_WEB ||
+                cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_BEARTRAP) &&
             (((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
@@ -2595,17 +2593,17 @@ export function polymon(mntmp) {
                     $permonst_msize
                 ) <=
                     NHM.MZ_SMALL &&
-                    cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP))) {
+                    cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_BEARTRAP))) {
         You(
             __s_are_no_longer_stuck_in_the_s,
-            cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB ? __s_web : __s_bear_trap
+            cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_WEB ? __s_web : __s_bear_trap
         );
         /* probably should burn webs too if PM_FIRE_ELEMENTAL */
         reset_utrap(1);
     }
     if (webmaker(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
-            cptr.ldI32o(u, $you_utrap) &&
-            cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB) {
+            cptr.ldI32o(u, $you_utrap) >>> 0 &&
+            cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_WEB) {
         You(__s_orient_yourself_on_the_web);
         reset_utrap(1);
     }
@@ -2817,7 +2815,7 @@ function break_armor() {
                 cancel_don();
             /* for gold DSM, we don't want Armor_gone() to report that it
                stops shining _after_ we've been told that it is destroyed */
-            if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
+            if (cptr.ldBits(cptr.add(otmp, $obj_lamplit), 7, 1, 0))
                 end_burn(otmp, 0);
 
             You(__s_break_out_of_your_armor);
@@ -3022,14 +3020,14 @@ function drop_weapon(alone) {
             if (cptr.ld1so(u, $you_twoweap)) {
                 otmp = uswapwep.v;
                 uswapwepgone();
-                if ((cptr.ldI32o(otmp, $obj_in_use) & 1))
+                if (cptr.ldBits(cptr.add(otmp, $obj_in_use), 2, 1, 0))
                     updateinv = 0;
                 else if (candropswapwep)
                     dropx(otmp);
             }
             otmp = uwep.v;
             uwepgone();
-            if ((cptr.ldI32o(otmp, $obj_in_use) & 1))
+            if (cptr.ldBits(cptr.add(otmp, $obj_in_use), 2, 1, 0))
                 updateinv = 0;
             else if (candropwep)
                 dropx(otmp);
@@ -3179,7 +3177,8 @@ export function dospit() {
 /** C ref: polyself.c:1481 @returns {CInt} */
 export function doremove() {
     if (!Punished()) {
-        if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
+        if (cptr.ldI32o(u, $you_utrap) >>> 0 &&
+                cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_BURIEDBALL) {
             pline_The(
                 __s_ball_and_chain_are_buried_firmly_in_the,
                 surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
@@ -3284,13 +3283,13 @@ export function dospinweb() {
         pline_The(__s_web_dissolves_into_s, mon_nam(cptr.ldPtro(u, $you_ustuck)));
         return NHM.ECMD_OK;
     }
-    if (cptr.ldI32o(u, $you_utrap)) {
+    if (cptr.ldI32o(u, $you_utrap) >>> 0) {
         You(__s_cannot_spin_webs_while_stuck_in_a_trap);
         return NHM.ECMD_OK;
     }
     exercise(NHC.A_DEX, 1);
     if (ttmp) {
-        switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
+        switch (cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) {
             case NHC.PIT:
             case NHC.SPIKED_PIT:
                 You(__s_spin_a_web_covering_up_the_pit);
@@ -3316,7 +3315,7 @@ export function dospinweb() {
             case NHC.TRAPDOOR:
                 You(
                     __s_web_over_the_s,
-                    (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR)
+                    ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.TRAPDOOR)
                         ? __s_trap_door
                         : __s_hole
                 );
@@ -3343,7 +3342,10 @@ export function dospinweb() {
                 dotrap(ttmp, NHM.NO_TRAP_FLAGS);
                 return NHM.ECMD_TIME;
             default:
-                impossible(__s_webbing_over_trap_type_d, (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0);
+                impossible(
+                    __s_webbing_over_trap_type_d,
+                    cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0
+                );
                 return NHM.ECMD_OK;
         }
     } else if (On_stairs(x, y)) {
@@ -3367,7 +3369,7 @@ export function dospinweb() {
     ttmp = maketrap(x, y, NHC.WEB);
     if (ttmp) {
         You(__s_spin_a_web__2);
-        cptr.stI32o(ttmp, $trap_madeby_u, 1);
+        cptr.stBits(cptr.add(ttmp, $trap_madeby_u), 7, 1, 0, 1);
         feeltrap(ttmp);
         if (cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE)))
             add_damage(x, y, 30n);
@@ -3465,7 +3467,8 @@ export function dogaze() {
                         16777216n) !=
                         0n)) {
                 pline(__s_s_seems_not_to_notice_your_gaze, Monnam(mtmp));
-            } else if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !See_invisible()) {
+            } else if (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0) | 0 &&
+                    !See_invisible()) {
                 You_cant(__s_see_where_to_gaze_at_s, Monnam(mtmp));
             } else if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ==
                 NHC.M_AP_FURNITURE ||
@@ -3478,7 +3481,7 @@ export function dogaze() {
                 You(__s_avoid_gazing_at_s, y_monnam(mtmp));
             } else {
                 if (cptr.ld1so(flags, $flag_confirm) &&
-                        (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 &&
+                        cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0 &&
                         !HConfusion()) {
                     void cptr.sprintf(
                         cptr.decay(qbuf),
@@ -3491,8 +3494,8 @@ export function dogaze() {
                 }
                 setmangry(mtmp, 1);
                 if (helpless(mtmp) ||
-                        (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0 ||
-                        !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) ||
+                        cptr.ldBits(cptr.add(mtmp, $monst_mstun), 7, 1, 0) | 0 ||
+                        !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0) ||
                         !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
                             4096n) ==
                             0n)) {
@@ -3503,11 +3506,11 @@ export function dogaze() {
                  * gazes at *you*--only medusa gaze gets reflected then.
                  */
                 if (adtyp == NHM.AD_CONF) {
-                    if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1))
+                    if (!cptr.ldBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0))
                         Your(__s_gaze_confuses_s, mon_nam(mtmp));
                     else
                         pline(__s_s_is_getting_more_and_more_confused, Monnam(mtmp));
-                    cptr.stI32o(mtmp, $monst_mconf, 1);
+                    cptr.stBits(cptr.add(mtmp, $monst_mconf), 0, 1, 0, 1);
                 } else if (adtyp == NHM.AD_FIRE) {
                     let dmg = d(2, 6);
                     let orig_dmg = dmg;
@@ -3537,7 +3540,7 @@ export function dogaze() {
                     cptr.ldPtro(mtmp, $monst_data),
                     cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)
                 ) &&
-                        !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
+                        !cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0)) {
                     if (!Free_action()) {
                         You(__s_are_frozen_by_s_gaze, s_suffix(mon_nam(mtmp)));
                         nomul((cptr.ldI32o(u, $you_ulevel) > 6 || rn2(4))
@@ -3549,7 +3552,7 @@ export function dogaze() {
                                         $sizeof_attack,
                                         $permonst_mattk + $attack_damd
                                     ))
-                                )
+                                ) | 0
                                 : -200);
                         cptr.stPtro(
                             gm,
@@ -3570,7 +3573,7 @@ export function dogaze() {
                     cptr.ldPtro(mtmp, $monst_data),
                     cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)
                 ) &&
-                        !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
+                        !cptr.ldBits(cptr.add(mtmp, $monst_mcan), 4, 1, 0)) {
                     pline(__s_gazing_at_the_awake_s_is_not_a_very, l_monnam(mtmp));
                     /* as if gazing at a sleeping anything is fruitful... */
                     urgent_pline(__s_you_turn_to_stone__2);
@@ -3610,8 +3613,8 @@ export function dohide() {
     /* can't hide while being held (or holding) or while trapped
        (except for floor hiders [trapper or mimic] in pits) */
     if (cptr.ldPtro(u, $you_ustuck) ||
-            (cptr.ldI32o(u, $you_utrap) &&
-                (cptr.ldI32o(u, $you_utraptype) != NHC.TT_PIT || on_ceiling))) {
+            (cptr.ldI32o(u, $you_utrap) >>> 0 &&
+                (cptr.ldI32o(u, $you_utraptype) >>> 0 != NHC.TT_PIT || on_ceiling))) {
         You_cant(
             __s_hide_while_you_re_s,
             !cptr.ldPtro(u, $you_ustuck)
@@ -3850,12 +3853,12 @@ export function domindblast() {
             cptr.ldI16o(u, $you_uy)
         ) > 64)
             continue;
-        if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
+        if (cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0))
             continue;
         if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n))
             continue;
         u_sen = telepathic(cptr.ldPtro(mtmp, $monst_data)) &&
-            !(cptr.ldI32o(mtmp, $monst_mcansee) & 1)
+            !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0)
                 ? 1
                 : 0;
         if (u_sen || (telepathic(cptr.ldPtro(mtmp, $monst_data)) && rn2(2)) || !rn2(10)) {

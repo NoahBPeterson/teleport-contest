@@ -249,7 +249,7 @@ export function* setuwep(obj) {
      * *whenever* Sunsword is unwielded, from whatever cause. */
     if (cptr.eq(uwep.v, obj) &&
             artifact_light(olduwep) &&
-            (cptr.ldI32o(olduwep, $obj_lamplit) & 1) | 0) {
+            cptr.ldBits(cptr.add(olduwep, $obj_lamplit), 7, 1, 0) | 0) {
         (yield* end_burn(olduwep, 0));
         if (!Blind())
             (yield* pline(__s_s_shining, (yield* Tobjnam(olduwep, __s_stop))));
@@ -348,7 +348,7 @@ function* ready_weapon(wep) {
     } else {
         /* Weapon WILL be wielded after this point */
         res = NHM.ECMD_TIME;
-        if (((cptr.ldI32o((wep.v), $obj_cursed) & 1) | 0 &&
+        if ((cptr.ldBits(cptr.add((wep.v), $obj_cursed), 0, 1, 0) | 0 &&
                 ((cptr.ld1so((wep.v), $obj_oclass) == NHC.WEAPON_CLASS ||
                     is_weptool(wep.v) ||
                     cptr.ldI16o((wep.v), $obj_otyp) == NHC.HEAVY_IRON_BALL ||
@@ -412,12 +412,12 @@ function* ready_weapon(wep) {
             res |= (yield* arti_speak(wep.v));  /* sets ECMD_TIME bit if artifact speaks */
         }
 
-        if (artifact_light(wep.v) && !(cptr.ldI32o(wep.v, $obj_lamplit) & 1)) {
+        if (artifact_light(wep.v) && !cptr.ldBits(cptr.add(wep.v, $obj_lamplit), 7, 1, 0)) {
             (yield* begin_burn(wep.v, 0));
             if (!Blind())
                 (yield* pline(__s_s_to_shine_s, (yield* Tobjnam(wep.v, __s_begin)), arti_light_description(wep.v)));
         }
-        if ((cptr.ldI32o(wep.v, $obj_unpaid) & 1)) {
+        if (cptr.ldBits(cptr.add(wep.v, $obj_unpaid), 2, 1, 0)) {
             let this_shkp;
 
             if ((this_shkp = (yield* shop_keeper(inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))) !==
@@ -531,19 +531,20 @@ export function* dowield() {
             /* previously interrupted armor removal mustn't be resumed */
             reset_remarm();
             /* if player chose a partial stack but can't wield it, undo split */
-            if (cptr.ldI32o(wep, $obj_o_id) &&
-                    cptr.ldI32o(wep, $obj_o_id) ==
-                        cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid))
+            if (cptr.ldI32o(wep, $obj_o_id) >>> 0 &&
+                    cptr.ldI32o(wep, $obj_o_id) >>> 0 ==
+                        cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid) >>> 0)
                 (yield* unsplitobj(wep));
             return NHM.ECMD_FAIL;
-        } else if (cptr.ldI32o(wep, $obj_o_id) &&
-                cptr.ldI32o(wep, $obj_o_id) ==
-                    cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid)) {
+        } else if (cptr.ldI32o(wep, $obj_o_id) >>> 0 &&
+                cptr.ldI32o(wep, $obj_o_id) >>> 0 ==
+                    cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid) >>> 0) {
             /* if wep is the result of supplying a count to getobj()
                we don't want to split something already wielded; for
                any other item, we need to give it its own inventory slot */
             if (uwep.v &&
-                    cptr.ldI32o(uwep.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit)) {
+                    cptr.ldI32o(uwep.v, $obj_o_id) >>> 0 ==
+                        cptr.ldI32o(svc, $context_info_objsplit) >>> 0) {
                 (yield* unsplitobj(wep));
                 /* wep was merged back to uwep, already_wielded uses wep */
                 wep = uwep.v;
@@ -712,13 +713,14 @@ export function* doquiver_core(verb) {
                 (yield* You(__s_already_have_no_ammunition_readied));
             }
             return NHM.ECMD_OK;
-        } else if (cptr.ldI32o(newquiver, $obj_o_id) ==
-                cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid)) {
+        } else if (cptr.ldI32o(newquiver, $obj_o_id) >>> 0 ==
+                cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid) >>> 0) {
             /* if newquiver is the result of supplying a count to getobj()
                we don't want to split something already in the quiver;
                for any other item, we need to give it its own inventory slot */
             if (uquiver.v &&
-                    cptr.ldI32o(uquiver.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit)) {
+                    cptr.ldI32o(uquiver.v, $obj_o_id) >>> 0 ==
+                        cptr.ldI32o(svc, $context_info_objsplit) >>> 0) {
                 (yield* unsplitobj(newquiver));
                 {
                     (yield* pline(__s_that_ammunition_is_already_readied));
@@ -738,7 +740,7 @@ export function* doquiver_core(verb) {
             (yield* You(__s_cannot_s_that, verb));
             return NHM.ECMD_OK;
         } else if (cptr.eq(newquiver, uwep.v)) {
-            let weld_res = !(cptr.ldI32o(uwep.v, $obj_bknown) & 1);
+            let weld_res = !cptr.ldBits(cptr.add(uwep.v, $obj_bknown), 2, 1, 0);
 
             if ((yield* welded(uwep.v))) {
                 (yield* weldmsg(uwep.v));
@@ -947,7 +949,7 @@ export function* wield_tool(obj, verb) {
     } else {
         let oldwep = uwep.v;
 
-        if (((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 &&
+        if ((cptr.ldBits(cptr.add((obj), $obj_cursed), 0, 1, 0) | 0 &&
                 ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS ||
                     is_weptool(obj) ||
                     cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL ||
@@ -1027,7 +1029,7 @@ export function* can_twoweapon() {
     } else if (cptr.ldI16o(uswapwep.v, $obj_otyp) == NHC.CORPSE && (yield* cant_wield_corpse(uswapwep.v))) {
         /* [Note: !TWOWEAPOK() check prevents ever getting here...] */
         ;  /* must be life-saved to reach here; return FALSE */
-    } else if (Glib() || (cptr.ldI32o(uswapwep.v, $obj_cursed) & 1) | 0) {
+    } else if (Glib() || cptr.ldBits(cptr.add(uswapwep.v, $obj_cursed), 0, 1, 0) | 0) {
         if (!Glib())
             (yield* set_bknown(uswapwep.v, 1));
         (yield* drop_uswapwep());
@@ -1048,7 +1050,7 @@ export function* drop_uswapwep() {
        uswapwep must be one-handed; since it's secondary, the hand must
        be the left one */
     void cptr.sprintf(cptr.decay(left_hand), __s_left_s, (yield* body_part(NHC.HAND)));
-    if (!(cptr.ldI32o(obj, $obj_cursed) & 1))
+    if (!cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0))
         /* attempting to two-weapon while Glib */
         (yield* pline(__s_s_from_your_s, (yield* Yobjnam2(obj, __s_slip)), cptr.decay(left_hand)));
     else if (!cptr.ld1so(u, $you_twoweap))
@@ -1106,7 +1108,7 @@ export function* dotwoweapon() {
 /** C ref: wield.c:873 */
 export function* uwepgone() {
     if (uwep.v) {
-        if (artifact_light(uwep.v) && (cptr.ldI32o(uwep.v, $obj_lamplit) & 1) | 0) {
+        if (artifact_light(uwep.v) && cptr.ldBits(cptr.add(uwep.v, $obj_lamplit), 7, 1, 0) | 0) {
             (yield* end_burn(uwep.v, 0));
             if (!Blind())
                 (yield* pline(__s_s_shining, (yield* Tobjnam(uwep.v, __s_stop))));
@@ -1146,6 +1148,7 @@ export function* untwoweapon() {
 /* enchant wielded weapon */
 /** C ref: wield.c:918 — @param {CPtr<struct obj>} otmp @param {CInt} amount @returns {CInt} */
 export function* chwepon(otmp, amount) {
+    let __r1, __r2;
     let color = hcolor((amount < 0)
             ? cptr.ldPtr(c_color_names)
             : cptr.ldPtro(c_color_names, $c_color_names_c_blue));
@@ -1159,7 +1162,7 @@ export function* chwepon(otmp, amount) {
 
         if (amount >= 0 &&
                 uwep.v &&
-                ((cptr.ldI32o((uwep.v), $obj_cursed) & 1) | 0 &&
+                (cptr.ldBits(cptr.add((uwep.v), $obj_cursed), 0, 1, 0) | 0 &&
                     ((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS ||
                         is_weptool(uwep.v) ||
                         cptr.ldI16o((uwep.v), $obj_otyp) == NHC.HEAVY_IRON_BALL ||
@@ -1172,7 +1175,7 @@ export function* chwepon(otmp, amount) {
                     (yield* Yobjnam2(uwep.v, __s_glow)),
                     (yield* an(hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber))))
                 );
-                cptr.stI32o(uwep.v, $obj_bknown, (!Hallucination()) >>> 0);  /* ok to bypass set_bknown() */
+                cptr.stBits(cptr.add(uwep.v, $obj_bknown), 2, 1, 0, (!Hallucination()) >>> 0);  /* ok to bypass set_bknown() */
             } else {
                 /* cursed tin opener is wielded in right hand */
                 void cptr.sprintf(cptr.decay(buf), __s_your_right_s_tingles, (yield* body_part(NHC.HAND)));
@@ -1204,15 +1207,15 @@ export function* chwepon(otmp, amount) {
             multiple ? __s_fuse_and_become : __s_is
         ));
         cptr.stI16o(uwep.v, $obj_otyp, NHC.CRYSKNIFE);
-        cptr.stI32o(uwep.v, $obj_oerodeproof, 0);
+        cptr.stBits(cptr.add(uwep.v, $obj_oerodeproof), 4, 1, 0, 0);
         if (multiple) {
             cptr.stI64o(uwep.v, $obj_quan, 1n);
-            cptr.stI32o(uwep.v, $obj_owt, (yield* weight(uwep.v)) >>> 0);
+            (__r1 = (yield* weight(uwep.v)) >>> 0, cptr.stI32o(uwep.v, $obj_owt, __r1));
         }
-        if ((cptr.ldI32o(uwep.v, $obj_cursed) & 1))
+        if (cptr.ldBits(cptr.add(uwep.v, $obj_cursed), 0, 1, 0))
             (yield* uncurse(uwep.v));
         /* update shop bill to reflect new higher value */
-        if ((cptr.ldI32o(uwep.v, $obj_unpaid) & 1))
+        if (cptr.ldBits(cptr.add(uwep.v, $obj_unpaid), 2, 1, 0))
             (yield* alter_cost(uwep.v, 0n));
         if (otyp != NHC.STRANGE_OBJECT)
             (yield* discover_object((otyp), 1, 1, 1));
@@ -1229,12 +1232,12 @@ export function* chwepon(otmp, amount) {
         ));
         (yield* costly_alteration(uwep.v, NHC.COST_DEGRD));  /* DECHNT? other? */
         cptr.stI16o(uwep.v, $obj_otyp, NHC.WORM_TOOTH);
-        cptr.stI32o(uwep.v, $obj_oerodeproof, 0);
+        cptr.stBits(cptr.add(uwep.v, $obj_oerodeproof), 4, 1, 0, 0);
         if (multiple) {
             cptr.stI64o(uwep.v, $obj_quan, 1n);
-            cptr.stI32o(uwep.v, $obj_owt, (yield* weight(uwep.v)) >>> 0);
+            (__r2 = (yield* weight(uwep.v)) >>> 0, cptr.stI32o(uwep.v, $obj_owt, __r2));
         }
-        if (otyp != NHC.STRANGE_OBJECT && (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0)
+        if (otyp != NHC.STRANGE_OBJECT && cptr.ldBits(cptr.add(otmp, $obj_bknown), 2, 1, 0) | 0)
             (yield* discover_object((otyp), 1, 1, 1));
         if (multiple)
             (yield* encumber_msg());
@@ -1274,18 +1277,19 @@ export function* chwepon(otmp, amount) {
             xtime
         ));
         if (otyp != NHC.STRANGE_OBJECT &&
-                (cptr.ldI32o(uwep.v, $obj_known) & 1) | 0 &&
-                (amount > 0 || (amount < 0 && (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0)))
+                cptr.ldBits(cptr.add(uwep.v, $obj_known), 0, 1, 0) | 0 &&
+                (amount > 0 ||
+                    (amount < 0 && cptr.ldBits(cptr.add(otmp, $obj_bknown), 2, 1, 0) | 0)))
             (yield* discover_object((otyp), 1, 1, 1));
     }
     if (amount < 0)
         (yield* costly_alteration(uwep.v, NHC.COST_DECHNT));
     cptr.st1o(uwep.v, $obj_spe, cptr.ld1so(uwep.v, $obj_spe) + amount);
     if (amount > 0) {
-        if ((cptr.ldI32o(uwep.v, $obj_cursed) & 1))
+        if (cptr.ldBits(cptr.add(uwep.v, $obj_cursed), 0, 1, 0))
             (yield* uncurse(uwep.v));
         /* update shop bill to reflect new higher price */
-        if ((cptr.ldI32o(uwep.v, $obj_unpaid) & 1))
+        if (cptr.ldBits(cptr.add(uwep.v, $obj_unpaid), 2, 1, 0))
             (yield* alter_cost(uwep.v, 0n));
     }
 
@@ -1315,7 +1319,7 @@ export function* chwepon(otmp, amount) {
 export function* welded(obj) {
     if (obj &&
             cptr.eq(obj, uwep.v) &&
-            ((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 &&
+            (cptr.ldBits(cptr.add((obj), $obj_cursed), 0, 1, 0) | 0 &&
                 ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS ||
                     is_weptool(obj) ||
                     cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL ||
@@ -1346,7 +1350,7 @@ export function mwelded(obj) {
     /* caller is responsible for making sure this is a monster's item */
     if (obj &&
             (cptr.ldI64o(obj, $obj_owornmask) & 256n) &&
-            ((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 &&
+            (cptr.ldBits(cptr.add((obj), $obj_cursed), 0, 1, 0) | 0 &&
                 ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS ||
                     is_weptool(obj) ||
                     cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL ||

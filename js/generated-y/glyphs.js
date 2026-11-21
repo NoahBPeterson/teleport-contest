@@ -272,7 +272,7 @@ function* to_custom_symset_entry_callback(glyph, findwhat) {
                 (yield* config_error_add(__s_unimplemented_customization_feature));
         }
     }
-    if (cptr.ldI32o(findwhat, $find_struct_color)) {
+    if (cptr.ldI32o(findwhat, $find_struct_color) >>> 0) {
         if (cptr.ldPtro2(
             gs,
             idx,
@@ -287,7 +287,7 @@ function* to_custom_symset_entry_callback(glyph, findwhat) {
                     $instance_globals_s_symset + $symsetentry_name
                 ),
                 glyph,
-                cptr.ldI32o(findwhat, $find_struct_color),
+                cptr.ldI32o(findwhat, $find_struct_color) >>> 0,
                 cptr.ldI32o(gs, $instance_globals_s_symset_which_set)
             ));
         } else {
@@ -545,12 +545,12 @@ function* init_glyph_cache() {
     glyphid_cache_lsize = 0;
     glyphid_cache_size = 1n;
     while (glyphid_cache_size < 19248n) {
-        ++glyphid_cache_lsize;
-        glyphid_cache_size <<= 1n;
+        glyphid_cache_lsize = ((glyphid_cache_lsize + 1) >>> 0);
+        glyphid_cache_size = BigInt.asUintN(64, glyphid_cache_size << 1n);
     }
 
     glyphid_cache = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, glyphid_cache_size * 16n)))));
-    for (glyph = 0n; glyph < glyphid_cache_size; ++glyph) {
+    for (glyph = 0n; glyph < glyphid_cache_size; glyph = BigInt.asUintN(64, glyph + 1n)) {
         cptr.stI32o(glyphid_cache, glyph, 0, $sizeof_glyphid_cache_t);
         cptr.stPtro2(glyphid_cache, glyph, $sizeof_glyphid_cache_t, $glyphid_cache_t_id, null);
     }
@@ -562,7 +562,7 @@ export function free_glyphid_cache() {
 
     if (!glyphid_cache)
         return;
-    for (idx = 0n; idx < glyphid_cache_size; ++idx) {
+    for (idx = 0n; idx < glyphid_cache_size; idx = BigInt.asUintN(64, idx + 1n)) {
         if (cptr.ldPtro2(glyphid_cache, idx, $sizeof_glyphid_cache_t, $glyphid_cache_t_id)) {
             cptr.free(cptr.ldPtro2(
                 glyphid_cache,
@@ -579,6 +579,7 @@ export function free_glyphid_cache() {
 
 /** C ref: glyphs.c:372 — @param {CInt} glyphnum @param {CPtr<char>} id */
 function* add_glyph_to_cache(glyphnum, id) {
+    let __r1;
     let hash = glyph_hash(id);
     let hash1 = (BigInt(hash >>> 0) & (BigInt.asUintN(64, glyphid_cache_size - 1n)));
     let hash2 = ((BigInt((hash >>> glyphid_cache_lsize) >>> 0) &
@@ -588,15 +589,12 @@ function* add_glyph_to_cache(glyphnum, id) {
     do {
         if (cptr.eq(
             cptr.ldPtro2(glyphid_cache, i, $sizeof_glyphid_cache_t, $glyphid_cache_t_id),
-            (null)
+            cptr.byteView((null))
         )) {
             /* Empty bucket found */
-            cptr.stPtro2(
-                glyphid_cache,
-                i,
-                $sizeof_glyphid_cache_t,
-                $glyphid_cache_t_id,
-                (yield* dupstr(id))
+            (
+                __r1 = (yield* dupstr(id)),
+                cptr.stPtro2(glyphid_cache, i, $sizeof_glyphid_cache_t, $glyphid_cache_t_id, __r1)
             );
             cptr.stI32o(glyphid_cache, i, glyphnum, $sizeof_glyphid_cache_t);
             return;
@@ -619,7 +617,7 @@ function* find_glyph_in_cache(id) {
     do {
         if (cptr.eq(
             cptr.ldPtro2(glyphid_cache, i, $sizeof_glyphid_cache_t, $glyphid_cache_t_id),
-            (null)
+            cptr.byteView((null))
         )) {
             /* Empty bucket found */
             return -1;
@@ -644,7 +642,7 @@ function find_glyphid_in_cache_by_glyphnum(glyphnum) {
 
     if (!glyphid_cache)
         return null;
-    for (idx = 0n; idx < glyphid_cache_size; ++idx) {
+    for (idx = 0n; idx < glyphid_cache_size; idx = BigInt.asUintN(64, idx + 1n)) {
         if (cptr.ldI32o(glyphid_cache, idx, $sizeof_glyphid_cache_t) == glyphnum &&
                 cptr.ldPtro2(glyphid_cache, idx, $sizeof_glyphid_cache_t, $glyphid_cache_t_id) !==
                     null) {
@@ -660,13 +658,13 @@ function glyph_hash(id) {
     let hash = 0;
     let i;
 
-    for (i = 0n; cptr.ld1so(id, i) != 0; ++i) {
+    for (i = 0n; cptr.ld1so(id, i) != 0; i = BigInt.asUintN(64, i + 1n)) {
         let ch = cptr.ld1so(id, i);
         if (65 <= ch && ch <= 90) {
             ch = schar(ch + 32);
         }
         hash = (((hash << 1) >>> 0) | (hash >>> 31)) >>> 0;
-        hash ^= ch;
+        hash = (hash ^ ch >>> 0) >>> 0;
     }
     return hash;
 }
@@ -800,7 +798,7 @@ export function* apply_customizations(which_set, docustomize) {
                                 NHC.H_UTF8)
                             void (yield* set_map_u(
                                 gmap,
-                                cptr.ldI32o(details, $custom_urep_u),
+                                cptr.ldI32o(details, $custom_urep_u) >>> 0,
                                 cptr.ldPtro(
                                     details,
                                     $custom_urep_u + $unicode_representation_utf8str
@@ -813,7 +811,7 @@ export function* apply_customizations(which_set, docustomize) {
                         gmap = cptr.add(glyphmap, cptr.ldI32(details), $sizeof_glyph_map);
                         void set_map_customcolor(
                             gmap,
-                            cptr.ldI32o(details, $custom_nhcolor_nhcolor)
+                            cptr.ldI32o(details, $custom_nhcolor_nhcolor) >>> 0
                         );
                     }
                 }
@@ -842,6 +840,7 @@ cptr.stI32o(__static_shuffle_customizations_offsets, 4, NHC.GLYPH_OBJ_PILETOP_OF
 
 /** C ref: glyphs.c:646 */
 function* shuffle_customizations() {
+    let __r2;
     let j;
 
     for (j = 0; j < 2; j++) {
@@ -878,7 +877,7 @@ function* shuffle_customizations() {
                     tmp_customcolor,
                     cptr.ldI32o(duplicate, idx, 4),
                     4
-                );
+                ) >>> 0;
                 let other_color256idx = cptr.ldU16o(
                     tmp_color256idx,
                     cptr.ldI32o(duplicate, idx, 4),
@@ -890,11 +889,17 @@ function* shuffle_customizations() {
                 if (other) {
                     cptr.stPtro(tmp_u, i, (yield* alloc(16)), 8);
                     cptr.memcpy(cptr.ldPtro(tmp_u, i, 8), other, 16);
-                    if (!cptr.eq(cptr.ldPtro(other, $unicode_representation_utf8str), (null))) {
-                        cptr.stPtro(
-                            cptr.ldPtro(tmp_u, i, 8),
-                            $unicode_representation_utf8str,
-                            (yield* dupstr(cptr.ldPtro(other, $unicode_representation_utf8str)))
+                    if (!cptr.eq(
+                        cptr.ldPtro(other, $unicode_representation_utf8str),
+                        cptr.byteView((null))
+                    )) {
+                        (
+                            __r2 = (yield* dupstr(cptr.ldPtro(other, $unicode_representation_utf8str))),
+                            cptr.stPtro(
+                                cptr.ldPtro(tmp_u, i, 8),
+                                $unicode_representation_utf8str,
+                                __r2
+                            )
                         );
                     }
                 }
@@ -902,7 +907,13 @@ function* shuffle_customizations() {
                 cptr.stI32o(
                     tmp_customcolor,
                     i,
-                    cptr.ldI32o2(obj_glyphs, idx, $sizeof_glyph_map, $glyph_map_entry_customcolor),
+                    cptr.ldI32o2(
+                        obj_glyphs,
+                        idx,
+                        $sizeof_glyph_map,
+                        $glyph_map_entry_customcolor
+                    ) >>>
+                        0,
                     4
                 );
                 cptr.stI16o(
@@ -926,7 +937,8 @@ function* shuffle_customizations() {
                             idx,
                             $sizeof_glyph_map,
                             $glyph_map_entry_customcolor
-                        ) !=
+                        ) >>>
+                            0 !=
                             0) {
                     cptr.stI32o(duplicate, idx, i, 4);
                     cptr.stPtro2(obj_glyphs, idx, $sizeof_glyph_map, $glyph_map_entry_u, null);
@@ -970,7 +982,7 @@ function* shuffle_customizations() {
                 i,
                 $sizeof_glyph_map,
                 $glyph_map_entry_customcolor,
-                cptr.ldI32o(tmp_customcolor, i, 4)
+                cptr.ldI32o(tmp_customcolor, i, 4) >>> 0
             );
             cptr.stI16o2(
                 obj_glyphs,
@@ -1140,6 +1152,7 @@ cptr.stPtro(__static_parse_id_expl_texts, 64, __s_br); /** C ref: glyphs.c:1071 
  * @returns {CInt}
  */
 function* parse_id(id, findwhat) {
+    let __r3, __r4, __r5;
     let fp = null;
     let i = 0;
     let j;
@@ -1157,13 +1170,7 @@ function* parse_id(id, findwhat) {
     let filling_cache = 0;
     let is_S = 0;
     let is_G = 0;
-    let buf = (function () {
-        const flat = new Uint8Array(4 * (128 * 1));
-        const a = [];
-        for (let r = 0; r < 4; r++) a.push(flat.subarray(r * (128 * 1), (r + 1) * (128 * 1)));
-        a.buf = flat;
-        return a;
-    })();
+    let buf = cptr.alloc(4 * 128);
 
     if (cptr.ldI32(findwhat) == NHC.find_nothing && cptr.ldI32o(findwhat, $find_struct_restype)) {
         if (cptr.ldI32o(findwhat, $find_struct_restype) == NHC.res_dump_glyphids) {
@@ -1226,16 +1233,15 @@ function* parse_id(id, findwhat) {
             for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
                 skip_base = 0;
                 skip_this_one = 0;
-                cptr.st1o(
-                    cptr.decay(buf[0]),
-                    0,
-                    cptr.st1o(
-                        cptr.decay(buf[1]),
-                        0,
-                        cptr.st1o(cptr.decay(buf[2]), 0, cptr.st1o(cptr.decay(buf[3]), 0, 0, 1), 1),
-                        1
+                (
+                    __r5 = (
+                        __r4 = (
+                            __r3 = cptr.st1o3(buf, 3, 128, 0, 1, 0, 0),
+                            cptr.st1o3(buf, 2, 128, 0, 1, 0, __r3)
+                        ),
+                        cptr.st1o3(buf, 1, 128, 0, 1, 0, __r4)
                     ),
-                    1
+                    cptr.st1o3(buf, 0, 128, 0, 1, 0, __r5)
                 );
                 if (glyph_is_monster(glyph)) {
                     /* buf2 will hold the distinguishing prefix */
@@ -1265,9 +1271,9 @@ function* parse_id(id, findwhat) {
                     } else if (glyph_is_female_pet(glyph)) {
                         buf2 = __s_pet_female;
                     }
-                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
-                    void cptr.strcat(cptr.decay(buf[0]), buf2);
-                    void cptr.strcat(cptr.decay(buf[0]), buf3);
+                    void cptr.strcpy(cptr.add(buf, 0, 128), __s_g_us);
+                    void cptr.strcat(cptr.add(buf, 0, 128), buf2);
+                    void cptr.strcat(cptr.add(buf, 0, 128), buf3);
                 } else if (glyph_is_body(glyph)) {
                     /* buf2 will hold the distinguishing prefix */
                     /* buf3 will hold the base name */
@@ -1278,9 +1284,9 @@ function* parse_id(id, findwhat) {
                         $sizeof_enum_dump,
                         $enum_dump_nm
                     );
-                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
-                    void cptr.strcat(cptr.decay(buf[0]), buf2);
-                    void cptr.strcat(cptr.decay(buf[0]), buf3);
+                    void cptr.strcpy(cptr.add(buf, 0, 128), __s_g_us);
+                    void cptr.strcat(cptr.add(buf, 0, 128), buf2);
+                    void cptr.strcat(cptr.add(buf, 0, 128), buf3);
                 } else if (glyph_is_statue(glyph)) {
                     /* buf2 will hold the distinguishing prefix */
                     /* buf3 will hold the base name */
@@ -1299,9 +1305,9 @@ function* parse_id(id, findwhat) {
                         $sizeof_enum_dump,
                         $enum_dump_nm
                     );
-                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
-                    void cptr.strcat(cptr.decay(buf[0]), buf2);
-                    void cptr.strcat(cptr.decay(buf[0]), buf3);
+                    void cptr.strcpy(cptr.add(buf, 0, 128), __s_g_us);
+                    void cptr.strcat(cptr.add(buf, 0, 128), buf2);
+                    void cptr.strcat(cptr.add(buf, 0, 128), buf3);
                 } else if (glyph_is_object(glyph)) {
                     i = glyph_to_obj(glyph);
                     /* buf2 will hold the distinguishing prefix */
@@ -1339,11 +1345,11 @@ function* parse_id(id, findwhat) {
                                                 $sizeof_objdescr,
                                                 $objdescr_oc_descr
                                             ))));
-                        void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
+                        void cptr.strcpy(cptr.add(buf, 0, 128), __s_g_us);
                         if (glyph_is_normal_piletop_obj(glyph))
-                            void cptr.strcat(cptr.decay(buf[0]), __s_piletop);
-                        void cptr.strcat(cptr.decay(buf[0]), buf2);
-                        void cptr.strcat(cptr.decay(buf[0]), buf3);
+                            void cptr.strcat(cptr.add(buf, 0, 128), __s_piletop);
+                        void cptr.strcat(cptr.add(buf, 0, 128), buf2);
+                        void cptr.strcat(cptr.add(buf, 0, 128), buf3);
                     }
                 } else if (glyph_is_cmap(glyph) ||
                         glyph_is_cmap_zap(glyph) ||
@@ -1386,12 +1392,12 @@ function* parse_id(id, findwhat) {
                             nh_snprintf(
                                 __s_parse_id,
                                 1025,
-                                cptr.decay(buf[2]),
+                                cptr.add(buf, 2, 128),
                                 128n,
                                 __s_pct_s_us,
                                 cptr.ldPtro(__static_parse_id_altar_text, j, 8)
                             );
-                            buf2 = cptr.decay(buf[2]);
+                            buf2 = cptr.add(buf, 2, 128);
                         } else {
                             buf3 = __s_altar_other;
                             skip_base = 1;
@@ -1405,7 +1411,7 @@ function* parse_id(id, findwhat) {
                         nh_snprintf(
                             __s_parse_id,
                             1042,
-                            cptr.decay(buf[2]),
+                            cptr.add(buf, 2, 128),
                             128n,
                             __s_pct_s,
                             cptr.add(
@@ -1421,13 +1427,13 @@ function* parse_id(id, findwhat) {
                         nh_snprintf(
                             __s_parse_id,
                             1044,
-                            cptr.decay(buf[3]),
+                            cptr.add(buf, 3, 128),
                             128n,
                             __s_s_zap_s,
                             cptr.ldPtro(__static_parse_id_zap_texts, (j / 4) | 0, 8),
-                            fix_glyphname(cptr.decay(buf[2]))
+                            fix_glyphname(cptr.add(buf, 2, 128))
                         );
-                        buf3 = cptr.decay(buf[3]);
+                        buf3 = cptr.add(buf, 3, 128);
                         buf2 = __s_empty;
                         skip_base = 1;
                     } else if (glyph_is_cmap_c(glyph)) {
@@ -1437,17 +1443,17 @@ function* parse_id(id, findwhat) {
                         j = (glyph - NHC.GLYPH_SWALLOW_OFF) | 0;
                         cmap = glyph_to_swallow(glyph);
                         mnum = (j / ((NHC.S_sw_br - NHC.S_sw_tl + 1) | 0)) | 0;
-                        void cptr.strcpy(cptr.decay(buf[3]), __s_swallow);
+                        void cptr.strcpy(cptr.add(buf, 3, 128), __s_swallow);
                         void cptr.strcat(
-                            cptr.decay(buf[3]),
+                            cptr.add(buf, 3, 128),
                             cptr.ldPtro2(monsdump, mnum, $sizeof_enum_dump, $enum_dump_nm)
                         );
-                        void cptr.strcat(cptr.decay(buf[3]), __s_sp);
+                        void cptr.strcat(cptr.add(buf, 3, 128), __s_sp);
                         void cptr.strcat(
-                            cptr.decay(buf[3]),
+                            cptr.add(buf, 3, 128),
                             cptr.ldPtro(__static_parse_id_swallow_texts, cmap, 8)
                         );
-                        buf3 = cptr.decay(buf[3]);
+                        buf3 = cptr.add(buf, 3, 128);
                         skip_base = 1;
                     } else if (glyph_is_explosion(glyph)) {
                         let expl;
@@ -1459,22 +1465,22 @@ function* parse_id(id, findwhat) {
                         nh_snprintf(
                             __s_parse_id,
                             1082,
-                            cptr.decay(buf[2]),
+                            cptr.add(buf, 2, 128),
                             128n,
                             __s_pct_s_sp,
                             cptr.ldPtro(__static_parse_id_expl_type_texts, expl, 8)
                         );
-                        buf2 = cptr.decay(buf[2]);
+                        buf2 = cptr.add(buf, 2, 128);
                         nh_snprintf(
                             __s_parse_id,
                             1085,
-                            cptr.decay(buf[3]),
+                            cptr.add(buf, 3, 128),
                             128n,
                             __s_s_s,
                             __s_expl,
                             cptr.ldPtro(__static_parse_id_expl_texts, i, 8)
                         );
-                        buf3 = cptr.decay(buf[3]);
+                        buf3 = cptr.add(buf, 3, 128);
                         skip_base = 1;
                     }
                     if (!skip_base) {
@@ -1490,38 +1496,38 @@ function* parse_id(id, findwhat) {
                             );
                         }
                     }
-                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
-                    void cptr.strcat(cptr.decay(buf[0]), buf2);
-                    void cptr.strcat(cptr.decay(buf[0]), buf3);
-                    void cptr.strcat(cptr.decay(buf[0]), buf4);
+                    void cptr.strcpy(cptr.add(buf, 0, 128), __s_g_us);
+                    void cptr.strcat(cptr.add(buf, 0, 128), buf2);
+                    void cptr.strcat(cptr.add(buf, 0, 128), buf3);
+                    void cptr.strcat(cptr.add(buf, 0, 128), buf4);
                 } else if (((glyph) == NHC.GLYPH_INVIS_OFF)) {
-                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_invisible);
+                    void cptr.strcpy(cptr.add(buf, 0, 128), __s_g_invisible);
                 } else if (((glyph) == NHC.GLYPH_NOTHING_OFF)) {
-                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_nothing);
+                    void cptr.strcpy(cptr.add(buf, 0, 128), __s_g_nothing);
                 } else if (((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) {
-                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_unexplored);
+                    void cptr.strcpy(cptr.add(buf, 0, 128), __s_g_unexplored);
                 } else if (glyph_is_warning(glyph)) {
                     j = (glyph - NHC.GLYPH_WARNING_OFF) | 0;
                     nh_snprintf(
                         __s_parse_id,
                         1106,
-                        cptr.decay(buf[0]),
+                        cptr.add(buf, 0, 128),
                         128n,
                         __s_g_s_d,
                         __s_warning,
                         j
                     );
                 }
-                if (cptr.eq(memchr(cptr.decay(buf[0]), 0, 128n), (null)))
+                if (cptr.eq(memchr(cptr.add(buf, 0, 128), 0, 128n), (null)))
                     (yield* panic(__s_parse_id_buf_0_overflowed));
                 if (!skip_this_one) {
-                    fix_glyphname(cptr.add(cptr.decay(buf[0]), 2));
+                    fix_glyphname(cptr.add(cptr.add(buf, 0, 128), 2));
                     if (dump_ids) {
-                        void fprintf(fp, __s_04d_s, glyph, cptr.decay(buf[0]));
+                        void fprintf(fp, __s_04d_s, glyph, cptr.add(buf, 0, 128));
                     } else if (filling_cache) {
-                        (yield* add_glyph_to_cache(glyph, cptr.decay(buf[0])));
+                        (yield* add_glyph_to_cache(glyph, cptr.add(buf, 0, 128)));
                     } else if (id) {
-                        if (!(yield* strncmpi((id), cptr.decay((buf[0])), -1))) {
+                        if (!(yield* strncmpi((id), (cptr.add(buf, 0, 128)), -1))) {
                             cptr.stI32(findwhat, NHC.find_glyph);
                             cptr.stI32o(findwhat, $find_struct_val, glyph);
                             cptr.stI32o(findwhat, $find_struct_loadsyms_offset, 0);
@@ -1596,7 +1602,7 @@ export function clear_all_glyphmap_colors() {
     let glyph;
 
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
-        if (cptr.ldI32o2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_customcolor))
+        if (cptr.ldI32o2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_customcolor) >>> 0)
             cptr.stI32o2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_customcolor, 0);
         cptr.stI16o2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_color256idx, 0);
     }

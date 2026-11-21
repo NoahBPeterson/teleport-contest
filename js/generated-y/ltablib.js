@@ -57,7 +57,7 @@ const __s_sort = cptr.lit("sort");
  */
 function* checkfield(L, key, n) {
     (yield* lua_pushstring(L, key));
-    return ((yield* lua_rawget(L, -n)) != 0) ? 1 : 0;
+    return ((yield* lua_rawget(L, -n | 0)) != 0) ? 1 : 0;
 }
 
 /*
@@ -72,7 +72,7 @@ function* checktab(L, arg, what) {
                 (!(what & 1) || (yield* checkfield(L, __s_index, ++n))) &&
                 (!(what & 2) || (yield* checkfield(L, __s_newindex, ++n))) &&
                 (!(what & 4) || (yield* checkfield(L, __s_len, ++n)))) {
-            (yield* lua_settop(L, (-(n) - 1) | 0));  /* pop metatable and tested metamethods */
+            (yield* lua_settop(L, ((-(n) | 0) - 1) | 0));  /* pop metatable and tested metamethods */
         } else
             (yield* luaL_checktype(L, arg, 5));  /* force an error */
     }
@@ -213,7 +213,7 @@ function* addfield(L, b, i) {
 function* tconcat(L) {
     let b = cptr.alloc(1056);
     let last = ((yield* checktab(L, 1, 5)), (yield* luaL_len(L, 1)));
-    let lsep = cptr.box(0n);
+    let lsep = cptr.box(0n, "u64");
     let sep = (yield* luaL_optlstring(L, 2, __s_empty, lsep));
     let i = (yield* luaL_optinteger(L, 3, 1n));
     last = (yield* luaL_optinteger(L, 4, last));
@@ -256,7 +256,8 @@ function* tunpack(L) {
         return 0;  /* empty range */
     n = BigInt.asUintN(64, BigInt.asUintN(64, e) - BigInt.asUintN(64, i));  /* number of elements minus 1 (avoid overflows) */
     if ((__builtin_expect(
-        BigInt(((n >= 2147483647n || !(yield* lua_checkstack(L, Number(BigInt.asIntN(32, (++n)))))
+        BigInt(((n >= 2147483647n ||
+            !(yield* lua_checkstack(L, Number(BigInt.asIntN(32, (n = BigInt.asUintN(64, n + 1n))))))
             ? 1
             : 0) !=
             0)),
@@ -291,15 +292,15 @@ function* tunpack(L) {
 */
 /** C ref: ltablib.c:246 @returns {CUInt} */
 function l_randomizePivot() {
-    let c = cptr.box(clock());
-    let t = cptr.box(time(null));
+    let c = cptr.box(clock(), "u64");
+    let t = cptr.box(time(null), "i64");
     let buff = cptr.alloc(4 * 4);
     let i;
     let rnd = 0;
     cptr.memcpy(buff, c, BigInt.asUintN(64, (8n / 4n) * 4n));
     cptr.memcpy(cptr.add(buff, (8n / 4n), 4), t, BigInt.asUintN(64, (8n / 4n) * 4n));
-    for (i = 0; BigInt(i >>> 0) < (16n / 4n); i++)
-        rnd = (rnd + cptr.ldI32o(buff, i, 4)) | 0;
+    for (i = 0; BigInt(i >>> 0) < (16n / 4n); i = ((i + 1) >>> 0))
+        rnd = (rnd + (cptr.ldI32o(buff, i, 4) >>> 0)) >>> 0;
     return rnd;
 }
 
@@ -355,14 +356,14 @@ function* partition(L, lo, up) {
     /* loop invariant: a[lo .. i] <= P <= a[j .. up] */
     for (; ; ) {
         /* next loop: repeat ++i while a[i] < P */
-        while (void (yield* lua_geti(L, 1, BigInt((++i) >>> 0))), (yield* sort_comp(L, -1, -2))) {
+        while (void (yield* lua_geti(L, 1, BigInt((i = ((i + 1) >>> 0)) >>> 0))), (yield* sort_comp(L, -1, -2))) {
             if ((__builtin_expect(BigInt(((i == (up - 1) >>> 0) != 0)), 0n)))
                 (yield* luaL_error(L, __s_invalid_order_function_for_sorting));
             (yield* lua_settop(L, -2));  /* remove a[i] */
         }
         /* after the loop, a[i] >= P and a[lo .. i - 1] < P */
         /* next loop: repeat --j while P < a[j] */
-        while (void (yield* lua_geti(L, 1, BigInt((--j) >>> 0))), (yield* sort_comp(L, -3, -1))) {
+        while (void (yield* lua_geti(L, 1, BigInt((j = ((j + -1) >>> 0)) >>> 0))), (yield* sort_comp(L, -3, -1))) {
             if ((__builtin_expect(BigInt(((j < i) != 0)), 0n)))
                 (yield* luaL_error(L, __s_invalid_order_function_for_sorting));
             (yield* lua_settop(L, -2));  /* remove a[j] */

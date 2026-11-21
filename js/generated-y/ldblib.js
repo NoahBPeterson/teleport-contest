@@ -344,7 +344,7 @@ function* db_setlocal(L) {
     (yield* checkstack(L, L1, 1));
     (yield* lua_xmove(L, L1, 1));
     name = (yield* lua_setlocal(L1, ar, nvar));
-    if (cptr.eq(name, (null)))
+    if (cptr.eq(name, cptr.byteView((null))))
         (yield* lua_settop(L1, -2));  /* pop value (if not popped by 'lua_setlocal') */
     (yield* lua_pushstring(L, name));
     return 1;
@@ -359,10 +359,10 @@ function* auxupvalue(L, get) {
     let n = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, 2))));  /* upvalue index */
     (yield* luaL_checktype(L, 1, 6));  /* closure */
     name = get ? (yield* lua_getupvalue(L, 1, n)) : (yield* lua_setupvalue(L, 1, n));
-    if (cptr.eq(name, (null)))
+    if (cptr.eq(name, cptr.byteView((null))))
         return 0;
     (yield* lua_pushstring(L, name));
-    lua_rotate(L, (-((get + 1) | 0)), 1);  /* no-op if get is false */
+    lua_rotate(L, (-((get + 1) | 0) | 0), 1);  /* no-op if get is false */
     return (get + 1) | 0;
 }
 
@@ -556,7 +556,7 @@ function* db_debug(L) {
     for (; ; ) {
         let buffer = new Uint8Array(250);
         (fprintf(__stderrp, (__s_pct_s), (__s_lua_debug)), fflush(__stderrp));
-        if (cptr.eq(fgets(cptr.decay(buffer), 250, __stdinp), (null)) ||
+        if (cptr.eq(fgets(cptr.decay(buffer), 250, __stdinp), cptr.byteView((null))) ||
                 strcmp(cptr.decay(buffer), __s_cont) == 0)
             return 0;
         if ((yield* luaL_loadbufferx(
@@ -577,7 +577,7 @@ function* db_traceback(L) {
     let arg = cptr.box(0);
     let L1 = getthread(L, arg);
     let msg = (yield* lua_tolstring(L, ((arg.v + 1) | 0), null));
-    if (cptr.eq(msg, (null)) && !(lua_type(L, ((arg.v + 1) | 0)) <= 0))
+    if (cptr.eq(msg, cptr.byteView((null))) && !(lua_type(L, ((arg.v + 1) | 0)) <= 0))
         (yield* lua_pushvalue(L, (arg.v + 1) | 0));  /* return it untouched */
     else {
         let level = Number(BigInt.asIntN(

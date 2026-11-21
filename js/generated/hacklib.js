@@ -90,7 +90,7 @@ function nh_qsort_idx_cmp(va, vb) {
  * @param {CPtr} compar
  */
 export function nh_deterministic_qsort(base, nmemb, size, compar) {
-    let bytes = base;
+    let bytes = cptr.byteView(base);
     let order;
     let tmp;
     let i;
@@ -99,7 +99,7 @@ export function nh_deterministic_qsort(base, nmemb, size, compar) {
         return;
 
     order = cptr.malloc(BigInt.asUintN(64, nmemb * 8n));
-    tmp = cptr.malloc(BigInt.asUintN(64, nmemb * size));
+    tmp = cptr.byteView(cptr.malloc(BigInt.asUintN(64, nmemb * size)));
     if (!order || !tmp) {
         if (tmp)
             cptr.free(tmp);
@@ -107,7 +107,7 @@ export function nh_deterministic_qsort(base, nmemb, size, compar) {
             cptr.free(order);
         return;
     }
-    for (i = 0n; i < nmemb; ++i)
+    for (i = 0n; i < nmemb; i = BigInt.asUintN(64, i + 1n))
         cptr.stU64o(order, i, i, $sizeof_nh_qsort_index);
 
     nh_qsort_base = bytes;
@@ -115,7 +115,7 @@ export function nh_deterministic_qsort(base, nmemb, size, compar) {
     nh_qsort_cmp_fn = compar;
     cptr.qsort(order, nmemb, 8n, nh_qsort_idx_cmp);
 
-    for (i = 0n; i < nmemb; ++i)
+    for (i = 0n; i < nmemb; i = BigInt.asUintN(64, i + 1n))
         void cptr.memcpy(
             (cptr.add(tmp, (BigInt.asUintN(64, i * size)))),
             (cptr.add(
@@ -581,19 +581,13 @@ export function tabexpand(sbuf) {
 }
 
 /* make a displayable string from a character */
-const __static_visctrl_visctrl_bufs = (function () {
-    const flat = new Uint8Array(5 * (5 * 1));
-    const a = [];
-    for (let r = 0; r < 5; r++) a.push(flat.subarray(r * (5 * 1), (r + 1) * (5 * 1)));
-    a.buf = flat;
-    return a;
-})(); /** C ref: hacklib.c:535 — char[5][5] (function-static) */
+const __static_visctrl_visctrl_bufs = cptr.alloc(5 * 5); /** C ref: hacklib.c:535 — char[5][5] (function-static) */
 let __static_visctrl_nbuf = 0; /** C ref: hacklib.c:536 — int (function-static) */
 
 /** C ref: hacklib.c:533 — @param {CInt} c @returns {CPtr<char>} */
 export function visctrl(c) {
     let i = 0;
-    let ccc = cptr.decay(__static_visctrl_visctrl_bufs[__static_visctrl_nbuf]);
+    let ccc = cptr.add(__static_visctrl_visctrl_bufs, __static_visctrl_nbuf, 5);
     __static_visctrl_nbuf = ((__static_visctrl_nbuf + 1) | 0) % 5;
 
     if (uchar(c) & 128) {
@@ -813,9 +807,9 @@ export function distmin(x0, y0, x1, y1) {
     let dy = i16(((y0 - y1) | 0));
 
     if (dx < 0)
-        dx = i16((-dx));
+        dx = i16((-dx | 0));
     if (dy < 0)
-        dy = i16((-dy));
+        dy = i16((-dy | 0));
     /*  The minimum number of moves to get from (x0,y0) to (x1,y1) is the
      *  larger of the [absolute value of the] two deltas.
      */
@@ -874,7 +868,7 @@ export function online2(x0, y0, x1, y1) {
     /*  If either delta is zero then they're on an orthogonal line,
      *  else if the deltas are equal (signs ignored) they're on a diagonal.
      */
-    return schar((!dy || !dx || dy == dx || dy == -dx ? 1 : 0));
+    return schar((!dy || !dx || dy == dx || dy == (-dx | 0) ? 1 : 0));
 }
 
 /* case-insensitive counted string comparison */
@@ -906,6 +900,7 @@ export function strncmpi(s1, s2, n) {
 /* case-insensitive substring search */
 /** C ref: hacklib.c:804 — @param {CPtr<char>} str @param {CPtr<char>} sub @returns {CPtr<char>} */
 export function strstri(str, sub) {
+    let __r1, __r2;
     let s1;
     let s2;
     let i;
@@ -921,17 +916,15 @@ export function strstri(str, sub) {
     for (i = 0; i < 32; i++)
         cptr.st1o(cptr.decay(tstr), i, cptr.st1o(cptr.decay(tsub), i, 0, 1), 1);  /* init */
     for (k = 0, s1 = str; cptr.ld1s(s1); k++)
-        cptr.postinc1(cptr.add(
-            cptr.decay(tstr),
-            cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; })) & 31,
-            1
-        ));
+        (
+            __r1 = cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; })) & 31,
+            cptr.postinc1(cptr.add(cptr.decay(tstr), __r1, 1))
+        );
     for (s2 = sub; cptr.ld1s(s2); --k)
-        cptr.postinc1(cptr.add(
-            cptr.decay(tsub),
-            cptr.ld1s(cptr.postinc(() => s2, (v) => { s2 = v; })) & 31,
-            1
-        ));
+        (
+            __r2 = cptr.ld1s(cptr.postinc(() => s2, (v) => { s2 = v; })) & 31,
+            cptr.postinc1(cptr.add(cptr.decay(tsub), __r2, 1))
+        );
 
     /* evaluate the info we've collected */
     if (k < 0)

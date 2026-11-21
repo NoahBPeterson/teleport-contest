@@ -491,7 +491,8 @@ one group of families new:
 | 4 | 73f4031 | `bits` for `trap`, `levelflags` and the 18 small records (426 functions vs main) | 13120 | 54 | 99.954% | 3006 | 99.9901% |
 | 5 | e835c28 | `bits` for `you`, `u_have`, `u_event`, `objclass` (499 functions vs main) | 13035 | 53 | 99.307% | 3002 | 99.9901% |
 | 6 | 0ad5a29 | `bits` for `objclass` only (193 functions vs main) | 13120 | 54 | 99.954% | 3006 | 99.9901% |
-| 7 | (this) | `bits` for `you` only (not `u_have`, `u_event`) | | | | | |
+| 7 | 00c420f | `bits` for `you` only (not `u_have`, `u_event`; 268 functions vs main) | 13035 | 53 | 99.307% | 3002 | 99.9901% |
+| 8 | (this) | all families new (as eb3e9b6) + the `bridge.mjs` fix | | | | | |
 
 So the bitfield family (packing, `ldBits`/`stBits`, C struct layout) carries the whole loss. On its
 own it also breaks one session that passes on both base and all-new, so some other family is
@@ -502,6 +503,29 @@ needed with it. Next: split `bits` by struct.
 you 268, rm 237, objclass 193, trap 179, levelflags 110, the other 20 under 50 each
 (`.cache/sw/perstruct.out`). Run 2 tries `rm` first, because the loss only affects drawing and
 animation frames.
+
+**Run 7 found it (Nov 21).** Run 7 (`you` alone) scored 13035, so the loss is in `struct you`'s
+own bitfields. With the bitfield calls normalized (`ldBits`/`stBits` rewritten to main's masked
+`ldI32o`/`stI32o`), only 9 functions still differ from main, and only through `sizeof(struct you)`:
+the new code reads and writes every field the same way. Every bitfield of `you`, `u_event` and
+`objclass` sits at clang's Darwin byte and bit (probe built against `nethack-c/recorder`). What
+moves is the offset of every field after the first bitfield block.
+
+The bug is not in the transpiler. `js/lua-js/bridge.mjs` (hand-written) read Lua's `u.uenmax` at the
+literal offset 2212, main's layout. Packed (as in C) `uenmax` is at 2108 (2188 in run 7), so
+`tut-1.lua`'s `if (u.uenmax < 5)` read another field and engraved "Unfortunately you don't have
+enough energy to cast spells." at (59,2) for heroes with Pw 5 and up. No RNG is drawn, so
+only the screens on that square differ, which is what the judge showed (RNG the same, 78 screens
+and 4 animation frames lost). `isGenocided` had the same problem: `mvitals` stride 12 hard-coded,
+4 when packed.
+
+Fix: the bridge reads `you_uenmax`, `you_uhunger`, `you_uy`, `you_uz`, `sizeof_mvitals`,
+`instance_globals_saved_m_mvitals` and `mvitals_mvflags` from `js/generated/nhfield.js`.
+`sessions-extra/lua-tut-uenmax-{wizard,valkyrie}` teleport onto the engraving: on run 7's js
+without the fix the Wizard fails (RNG 2242/2242, screens 22/28); with it both pass.
+
+No fuzz or targeted session ever entered the tutorial (`OPTIONS=tutorial`), which is why 1.4M
+local steps matched C on both trees.
 
 ### C2JS-063: a Linux recorder and the macOS recorder disagree. OPEN (documented)
 Another team's public recordings (3,447 sessions, made on Linux) were scored against the port.

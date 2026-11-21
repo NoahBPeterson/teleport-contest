@@ -302,6 +302,7 @@ export function stinky_nemesis(mon) {
    overwrites cvt_buf[] */
 /** C ref: questpgr.c:199 — @param {CInt} who @param {CInt} which */
 function qtext_pronoun(who, which) {
+    let __r1;
     let pnoun;
     let godgend;
     let lwhich = lowc(which);  /* H,I,J -> h,i,j */
@@ -324,10 +325,12 @@ function qtext_pronoun(who, which) {
                 : ((lwhich == 105) ? __s_them : ((lwhich == 106) ? __s_their : __s_query));
     } else {
         godgend = (who == 100)
-                ? (cptr.ldI32o(svq, $q_score_godgend) & 3) | 0
+                ? cptr.ldBits(cptr.add(svq, $q_score_godgend), 1, 2, 0) | 0
                 : ((who == 108)
-                    ? (cptr.ldI32o(svq, $q_score_ldrgend) & 3) | 0
-                    : ((who == 110) ? (cptr.ldI32o(svq, $q_score_nemgend) & 3) | 0 : 2));  /* default to neuter */
+                    ? cptr.ldBits(cptr.add(svq, $q_score_ldrgend), 5, 2, 0) | 0
+                    : ((who == 110)
+                        ? cptr.ldBits(cptr.add(svq, $q_score_nemgend), 7, 2, 0) | 0
+                        : 2));  /* default to neuter */
         pnoun = (lwhich == 104)
                 ? cptr.ldPtro2(genders, godgend, $sizeof_Gender, $Gender_he)
                 : ((lwhich == 105)
@@ -339,12 +342,9 @@ function qtext_pronoun(who, which) {
     void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), pnoun);
     /* capitalize for H,I,J */
     if (lwhich != which)
-        cptr.st1o2(
-            gc,
-            0,
-            1,
-            $instance_globals_c_cvt_buf,
-            highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf))
+        (
+            __r1 = highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)),
+            cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, __r1)
         );
     return;
 }
@@ -448,6 +448,7 @@ function convert_arg(c) {
 
 /** C ref: questpgr.c:328 — @param {CPtr<char>} in_line @param {CPtr<char>} out_line */
 function convert_line(in_line, out_line) {
+    let __r2, __r3, __r4;
     let c;
     let cc;
 
@@ -472,12 +473,9 @@ function convert_line(in_line, out_line) {
                             cc = cptr.add(cc, cptr.strlen(cc));
                             continue;  /* for */
                         case 67:
-                            cptr.st1o2(
-                                gc,
-                                0,
-                                1,
-                                $instance_globals_c_cvt_buf,
-                                highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf))
+                            (
+                                __r2 = highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)),
+                                cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, __r2)
                             );
                             break;
                         case 104:
@@ -492,12 +490,9 @@ function convert_line(in_line, out_line) {
                                 c = cptr.add(c, -1);  /* default action */
                             break;
                         case 80:
-                            cptr.st1o2(
-                                gc,
-                                0,
-                                1,
-                                $instance_globals_c_cvt_buf,
-                                highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf))
+                            (
+                                __r3 = highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)),
+                                cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, __r3)
                             );
                             // @FallThrough
                             ;
@@ -508,12 +503,9 @@ function convert_line(in_line, out_line) {
                             );
                             break;
                         case 83:
-                            cptr.st1o2(
-                                gc,
-                                0,
-                                1,
-                                $instance_globals_c_cvt_buf,
-                                highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf))
+                            (
+                                __r4 = highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)),
+                                cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, __r4)
                             );
                             // @FallThrough
                             ;

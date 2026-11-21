@@ -74,7 +74,7 @@ function* os_execute(L) {
     let stat;
     cptr.stI32(__error(), 0);
     stat = system(cmd);
-    if (!cptr.eq(cmd, (null)))
+    if (!cptr.eq(cmd, cptr.byteView((null))))
         return (yield* luaL_execresult(L, stat));
     else {
         (yield* lua_pushboolean(L, stat));  /* true if there is a shell */
@@ -253,9 +253,10 @@ function* l_checktime(L, arg) {
 
 /** C ref: loslib.c:304 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* os_date(L) {
-    let slen = cptr.box(0n);
+    let __r1;
+    let slen = cptr.box(0n, "u64");
     let s = (yield* luaL_optlstring(L, 1, __s_pct_c, slen));
-    let t = cptr.box(((lua_type(L, 2) <= 0) ? (time(null)) : (yield* l_checktime(L, 2))));
+    let t = cptr.box(((lua_type(L, 2) <= 0) ? (time(null)) : (yield* l_checktime(L, 2))), "i64");
     let se = cptr.add(s, slen.v);  /* 's' end */
     let tmr = cptr.alloc(56);
     let stm;
@@ -281,11 +282,18 @@ function* os_date(L) {
                         (yield* luaL_prepbuffsize((b), 1n))
                         ? 1
                         : 0),
-                    (cptr.st1o(
-                        cptr.ldPtr((b)),
-                        (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) -
-                            (1n),
-                        (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; })))
+                    ((
+                        __r1 = (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; }))),
+                        cptr.st1o(
+                            cptr.ldPtr((b)),
+                            (cptr.stU64o(
+                                (b),
+                                $luaL_Buffer_n,
+                                cptr.ldU64o((b), $luaL_Buffer_n) + 1n
+                            )) -
+                                (1n),
+                            __r1
+                        )
                     ))
                 );
             else {
@@ -294,7 +302,11 @@ function* os_date(L) {
                 s = cptr.add(s, 1);  /* skip '%' */
                 s = (yield* checkoption(L, s, cptr.diff(se, s), cptr.add(cptr.decay(cc), 1)));  /* copy specifier to 'cc' */
                 reslen = strftime(buff, 250n, cptr.decay(cc), stm);
-                (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + (reslen)));
+                (cptr.stU64o(
+                    (b),
+                    $luaL_Buffer_n,
+                    BigInt.asUintN(64, cptr.ldU64o((b), $luaL_Buffer_n) + (reslen))
+                ));
             }
         }
         (yield* luaL_pushresult(b));

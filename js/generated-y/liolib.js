@@ -95,7 +95,7 @@ function* l_checkmode(mode) {
     return (cptr.ld1s(mode) != 0 &&
         !cptr.eq(
             cptr.strchr(__s_rwa, cptr.ld1s((cptr.postinc(() => mode, (v) => { mode = v; })))),
-            (null)
+            cptr.byteView((null))
         ) &&
         (cptr.ld1s(mode) != 43 || (void (cptr.preinc(() => mode, (v) => { mode = v; })), 1)) &&
         (strspn(mode, __s_b) == cptr.strlen(mode))
@@ -394,16 +394,20 @@ function* io_lines(L) {
 */
 /** C ref: liolib.c:441 — @param {CPtr<RN>} rn @returns {CInt} */
 function* nextc(rn) {
+    let __r1;
     if ((__builtin_expect(BigInt(((cptr.ldI32o(rn, $RN_n) >= 200) != 0)), 0n))) {
         cptr.st1o2(rn, 0, 1, $RN_buff, 0);  /* invalidate result */
         return 0;  /* fail */
     } else {
-        cptr.st1o2(
-            rn,
-            (cptr.stI32o(rn, $RN_n, cptr.ldI32o(rn, $RN_n) + 1)) - (1),
-            1,
-            $RN_buff,
-            schar(cptr.ldI32o(rn, $RN_c))
+        (
+            __r1 = schar(cptr.ldI32o(rn, $RN_c)),
+            cptr.st1o2(
+                rn,
+                (cptr.stI32o(rn, $RN_n, cptr.ldI32o(rn, $RN_n) + 1)) - (1),
+                1,
+                $RN_buff,
+                __r1
+            )
         );  /* save current char */
         cptr.stI32o(
             rn,
@@ -540,7 +544,7 @@ function* read_line(L, f, chop) {
         (cptr.stU64o(
             (b),
             $luaL_Buffer_n,
-            cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((i)))
+            BigInt.asUintN(64, cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((i))))
         ));
     } while (c != -1 && c != 10);  /* repeat until end of line */
     if (!chop && c == 10)
@@ -568,7 +572,11 @@ function* read_all(L, f) {
     do {
         let p = (yield* luaL_prepbuffsize(b, 1024n));
         nr = fread(p, 1n, 1024n, f);
-        (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + (nr)));
+        (cptr.stU64o(
+            (b),
+            $luaL_Buffer_n,
+            BigInt.asUintN(64, cptr.ldU64o((b), $luaL_Buffer_n) + (nr))
+        ));
     } while (nr == 1024n);
     (yield* luaL_pushresult(b));  /* close buffer */
 }
@@ -587,7 +595,7 @@ function* read_chars(L, f, n) {
     (yield* luaL_buffinit(L, b));
     p = (yield* luaL_prepbuffsize(b, n));  /* prepare buffer to read whole block */
     nr = fread(p, 1n, n, f);  /* try to read 'n' chars */
-    (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + (nr)));
+    (cptr.stU64o((b), $luaL_Buffer_n, BigInt.asUintN(64, cptr.ldU64o((b), $luaL_Buffer_n) + (nr))));
     (yield* luaL_pushresult(b));  /* close buffer */
     return (nr > 0n) ? 1 : 0;  /* true iff read something */
 }
@@ -675,12 +683,12 @@ function* io_readline(L) {
         (yield* lua_pushvalue(L, ((-1001000 - (3 + i)) | 0)));
     n = (yield* g_read(L, cptr.ldPtr(p), 2));  /* 'n' is number of results */
     (void 0);  /* should return at least a nil */
-    if (lua_toboolean(L, -n))
+    if (lua_toboolean(L, -n | 0))
         return n;  /* return them */
     else {
         if (n > 1) {
             /* 2nd result is error message */
-            return (yield* luaL_error(L, __s_pct_s, (yield* lua_tolstring(L, ((-n + 1) | 0), null))));
+            return (yield* luaL_error(L, __s_pct_s, (yield* lua_tolstring(L, (((-n | 0) + 1) | 0), null))));
         }
         if (lua_toboolean(L, -1001003)) {
             (yield* lua_settop(L, 0));  /* clear stack */
@@ -712,7 +720,7 @@ function* g_write(L, f, arg) {
                     : fprintf(f, __s_14g, (yield* lua_tonumberx(L, (arg), null)));
             status = status && (len > 0) ? 1 : 0;
         } else {
-            let l = cptr.box(0n);
+            let l = cptr.box(0n, "u64");
             let s = (yield* luaL_checklstring(L, arg, l));
             status = status && (fwrite(s, 1n, l.v, f) == l.v) ? 1 : 0;
         }
@@ -901,7 +909,7 @@ function* createstdfile(L, f, k, fname) {
     let p = (yield* newprefile(L));
     cptr.stPtr(p, f);
     cptr.stPtro(p, $LStream_closef, io_noclose);
-    if (!cptr.eq(k, (null))) {
+    if (!cptr.eq(k, cptr.byteView((null)))) {
         (yield* lua_pushvalue(L, -1));
         (yield* lua_setfield(L, -1001000, k));  /* add file to registry */
     }

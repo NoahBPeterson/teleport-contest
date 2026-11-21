@@ -70,7 +70,7 @@ let buf = cptr.alloc($sizeof_stat);
    if yes, close it, otherwise leave it open */
 /** C ref: unixunix.c:38 — @param {CInt} fd @returns {CInt} */
 function veryold(fd) {
-    let date = cptr.box(0n);
+    let date = cptr.box(0n, "i64");
 
     if (fstat(fd, buf))
         return 0;  /* cannot get status */

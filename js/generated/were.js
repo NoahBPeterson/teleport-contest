@@ -71,8 +71,8 @@ export function were_change(mon) {
     if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 8n) != 0n)) {
         if (!Protection_from_shape_changers() &&
                 !rn2(night()
-                    ? (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 3 : 30)
-                    : (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 10 : 50))) {
+                    ? (cptr.ldI32o(flags, $flag_moonphase) >>> 0 == NHM.FULL_MOON ? 3 : 30)
+                    : (cptr.ldI32o(flags, $flag_moonphase) >>> 0 == NHM.FULL_MOON ? 10 : 50))) {
             new_were(mon);  /* change into animal form */
             (cptr.stI64o(
                 gw,
@@ -188,9 +188,9 @@ export function new_were(mon) {
     set_mon_data(mon, cptr.add(mons, pm, $sizeof_permonst));
     if (helpless(mon)) {
         /* transformation wakens and/or revitalizes */
-        cptr.stI32o(mon, $monst_msleeping, 0);
-        cptr.stI32o(mon, $monst_mfrozen, 0);  /* not asleep or paralyzed */
-        cptr.stI32o(mon, $monst_mcanmove, 1);
+        cptr.stBits(cptr.add(mon, $monst_msleeping), 7, 1, 0, 0);
+        cptr.stBits(cptr.add(mon, $monst_mfrozen), 0, 7, 0, 0);  /* not asleep or paralyzed */
+        cptr.stBits(cptr.add(mon, $monst_mcanmove), 7, 1, 0, 1);
     }
     /* regenerate by 1/4 of the lost hit points */
     healmon(
@@ -205,7 +205,7 @@ export function new_were(mon) {
     /* vision capability isn't changing so we don't call set_apparxy() to
        update mon's idea of where hero is; peaceful check is redundant */
     if (cptr.ld1so(svc, $context_info_mon_moving) &&
-            !(cptr.ldI32o(mon, $monst_mpeaceful) & 1) &&
+            !cptr.ldBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0) &&
             onscary(cptr.ldI16o(mon, $monst_mux), cptr.ldI16o(mon, $monst_muy), mon) &&
             monnear(mon, cptr.ldI16o(mon, $monst_mux), cptr.ldI16o(mon, $monst_muy)))
         monflee(mon, ((rn2(9) + 2) | 0), 1, 1);  /* 2..10 turns */
@@ -292,7 +292,8 @@ export function you_were() {
             ))
         );
         if (!paranoid_query(
-            schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>> 0) !=
+            schar((((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 & NHM.PARANOID_WERECHANGE) >>>
+                0) !=
                 0)),
             cptr.decay(qbuf)
         ))
@@ -330,7 +331,8 @@ export function you_unwere(purify) {
             !monster_nearby() &&
             (!controllable_poly ||
                 !paranoid_query(
-                    schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>>
+                    schar((((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 &
+                        NHM.PARANOID_WERECHANGE) >>>
                         0) !=
                         0)),
                     __s_remain_in_beast_form

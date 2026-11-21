@@ -774,32 +774,32 @@ export function Luck() { return ((cptr.ld1so(u, $you_uluck) + cptr.ld1so(u, $you
 
 /** C: include/flag.h — the `ParanoidAutoAll` macro body */
 export function ParanoidAutoAll() {
-    return (((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_AUTOALL) >>> 0) != 0);
+    return (((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 & NHM.PARANOID_AUTOALL) >>> 0) != 0);
 }
 
 /** C: include/flag.h — the `ParanoidConfirm` macro body */
 export function ParanoidConfirm() {
-    return (((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_CONFIRM) >>> 0) != 0);
+    return (((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 & NHM.PARANOID_CONFIRM) >>> 0) != 0);
 }
 
 /** C: include/flag.h — the `ParanoidPray` macro body */
 export function ParanoidPray() {
-    return (((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_PRAY) >>> 0) != 0);
+    return (((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 & NHM.PARANOID_PRAY) >>> 0) != 0);
 }
 
 /** C: include/flag.h — the `ParanoidRemove` macro body */
 export function ParanoidRemove() {
-    return (((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_REMOVE) >>> 0) != 0);
+    return (((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 & NHM.PARANOID_REMOVE) >>> 0) != 0);
 }
 
 /** C: include/flag.h — the `ParanoidSwim` macro body */
 export function ParanoidSwim() {
-    return (((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_SWIM) >>> 0) != 0);
+    return (((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 & NHM.PARANOID_SWIM) >>> 0) != 0);
 }
 
 /** C: include/flag.h — the `ParanoidTrap` macro body */
 export function ParanoidTrap() {
-    return (((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_TRAP) >>> 0) != 0);
+    return (((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 & NHM.PARANOID_TRAP) >>> 0) != 0);
 }
 
 /** C: include/youprop.h — the `Passes_walls` macro body */
@@ -949,10 +949,15 @@ export function Slow_digestion() {
 
 /** C: include/rm.h — the `Sokoban` macro body */
 export function Sokoban() {
-    return (cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-    ) & 1);
+    return cptr.ldBits(
+        cptr.add(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
+        ),
+        7,
+        1,
+        0
+    );
 }
 
 /** C: include/youprop.h — the `Stealth` macro body */

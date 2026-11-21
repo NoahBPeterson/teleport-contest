@@ -69,6 +69,10 @@ import { Invocation_lev, depth, level_difficulty } from '../generated/dungeon.js
 import { name_to_mon } from '../generated/mondata.js';
 import { parse_conf_str, parse_config_line } from '../generated/cfgfiles.js';
 import { gu, svm, u } from '../generated/decl.js';
+import {
+    instance_globals_saved_m_mvitals, mvitals_mvflags, sizeof_mvitals,
+    you_uenmax, you_uhunger, you_uy, you_uz,
+} from '../generated/nhfield.js';
 import { interpState, markPortState } from './interp-state.mjs';
 import {
     LuaList, jsPairs, jsSetIndex, jsToString, jsType, libPline, libTableStringify,
@@ -959,15 +963,17 @@ export function monkfoodshop() {
  * svm.mvitals[] entry. dat/tower1.lua asks before naming Dracula's three
  * brides, so a game that genocided vampires gets them nameless.
  *
- * `cptr.ld1uo2(svm, i, 12, 18)` is js/generated/nhlua.js's own expression for
- * `svm.mvitals[i].mvflags`: element stride 12, field offset 18, one unsigned
- * byte. No RNG, no Lua state — the same shape of read as levelFingerprint()'s.
+ * `svm.mvitals[i].mvflags` is read the way js/generated/nhlua.js does, with the
+ * stride and offsets from nhfield.js: struct mvitals holds bitfields, so its
+ * size (12 unpacked, 4 packed as in C) follows the transpiler (C2JS-062). No
+ * RNG, no Lua state — the same shape of read as levelFingerprint()'s.
  */
 const G_GENOD = 0x02;
 const NON_PM = -1;
 export function isGenocided(name) {
     const i = name_to_mon(cstr(name), cptr.box(0));
-    return i !== NON_PM && (cptr.ld1uo2(svm, i, 12, 18) & G_GENOD) !== 0;
+    return i !== NON_PM && (cptr.ld1uo2(svm, i, sizeof_mvitals,
+        instance_globals_saved_m_mvitals + mvitals_mvflags) & G_GENOD) !== 0;
 }
 
 /**
@@ -977,12 +983,15 @@ export function isGenocided(name) {
  * NetHack's memory for it. The offsets are nhl_meta_u_index()'s own: that
  * function is a table of {name, &field, type} triples, and the transpiler
  * emitted it as a 24-byte-stride array of literal `cptr.add(u, N)` pointers
- * (js/generated/nhlua.js:1960-2031), so each N below is the transpiler's answer
- * rather than a guess. `role`, `depth` and `moves` are the three special cases
- * nhl_meta_u_index() handles after the table.
+ * (js/generated/nhlua.js:1960-2031). The getters read nhfield.js's offsets, not
+ * literals: `struct you` holds bitfields, so its layout (and uenmax's offset)
+ * moves with the transpiler's bitfield packing (C2JS-062: a literal 2212 made
+ * tut-1.lua's `u.uenmax < 5` read the wrong field once bitfields were packed).
+ * `role`, `depth` and `moves` are the three special cases nhl_meta_u_index()
+ * handles after the table.
  *
  *   ux  @0   ANY_UCHAR    uhunger @104  ANY_INT
- *   uy  @2   ANY_UCHAR    uenmax  @2212 ANY_INT
+ *   uy  @2   ANY_UCHAR    uenmax  @you_uenmax ANY_INT
  *   role     = gu.urole.name.m       depth = depth(&u.uz), &u.uz == u+24
  *   moves    = svm.moves             invocation_level = Invocation_lev(&u.uz)
  *
@@ -991,12 +1000,12 @@ export function isGenocided(name) {
  * `if (u.invocation_level)` reads it.
  */
 export const uTable = Object.freeze({
-    get depth() { return depth(cptr.add(u, 24)); },
-    get invocation_level() { return Invocation_lev(cptr.add(u, 24)) !== 0; },
+    get depth() { return depth(cptr.add(u, you_uz)); },
+    get invocation_level() { return Invocation_lev(cptr.add(u, you_uz)) !== 0; },
     get ux() { return cptr.ld1uo(u, 0); },
-    get uy() { return cptr.ld1uo(u, 2); },
-    get uhunger() { return cptr.ldI32o(u, 104); },
-    get uenmax() { return cptr.ldI32o(u, 2212); },
+    get uy() { return cptr.ld1uo(u, you_uy); },
+    get uhunger() { return cptr.ldI32o(u, you_uhunger); },
+    get uenmax() { return cptr.ldI32o(u, you_uenmax); },
     get role() { return cptr.cstr(cptr.ldPtro(gu, 8)); },
     get moves() { return Number(cptr.ldI64o(svm, 8)); },
 });

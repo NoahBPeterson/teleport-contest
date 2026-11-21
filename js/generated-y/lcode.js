@@ -163,7 +163,7 @@ export function luaK_exp2const(fs, e, v) {
 ** previous one, return an invalid instruction (to avoid wrong
 ** optimizations).
 */
-let __static_previousinstruction_invalidinstruction = cptr.box(~0); /** C ref: lcode.c:118 — unsigned int (function-static, boxed) */
+let __static_previousinstruction_invalidinstruction = cptr.box(~0 >>> 0, "u32"); /** C ref: lcode.c:118 — unsigned int (function-static, boxed) */
 
 /** C ref: lcode.c:117 — @param {CPtr<FuncState>} fs @returns {CPtr<Instruction>} */
 function previousinstruction(fs) {
@@ -187,12 +187,16 @@ function previousinstruction(fs) {
 export function* luaK_nil(fs, from, n) {
     let l = (from + n - 1) | 0;  /* last register to set nil */
     let previous = previousinstruction(fs);
-    if (((((((cptr.ldI32(previous)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) ==
+    if (((((((cptr.ldI32(previous) >>> 0) >>> 0) &
+        (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>>
+        0))) ==
             NHC.OP_LOADNIL) {
-        let pfrom = (((((((cptr.ldI32(previous)) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+        let pfrom = (((((((cptr.ldI32(previous) >>> 0) >>> 7) &
+            (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                 0)) | 0));  /* get previous range */
         let pl = (pfrom +
-                ((((((((cptr.ldI32(previous)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                ((((((((cptr.ldI32(previous) >>> 0) >>> 16) &
+                    (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) |
                     0)))) | 0;
         if ((pfrom <= from && from <= ((pl + 1) | 0)) ||
@@ -203,15 +207,20 @@ export function* luaK_nil(fs, from, n) {
                 l = pl;  /* l = max(l, pl) */
             (cptr.stI32(
                 previous,
-                (((((cptr.ldI32(previous)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) |
-                    ((((((from) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>>
+                (((((cptr.ldI32(previous) >>> 0) &
+                    (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 7) >>> 0) >>> 0)) >>>
+                    0) |
+                    ((((((from) >>> 0) << 7) >>> 0) &
+                        (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 7) >>> 0)) >>>
                         0)) >>> 0)
             ));
             (cptr.stI32(
                 previous,
-                (((((cptr.ldI32(previous)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) |
+                (((((cptr.ldI32(previous) >>> 0) &
+                    (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 16) >>> 0) >>> 0)) >>>
+                    0) |
                     ((((((l - from) >>> 0) << 16) >>> 0) &
-                        (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
+                        (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 16) >>> 0)) >>>
                         0)) >>> 0)
             ));
             return;
@@ -226,8 +235,9 @@ export function* luaK_nil(fs, from, n) {
 */
 /** C ref: lcode.c:155 — @param {CPtr<FuncState>} fs @param {CInt} pc @returns {CInt} */
 function getjump(fs, pc) {
-    let offset = (((((((((cptr.ldI32o(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4)) >>> 7) &
-        (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>>
+    let offset = (((((((((cptr.ldI32o(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4) >>> 0) >>>
+        7) &
+        (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
         0)) |
         0)) -
             16777215) | 0);
@@ -251,9 +261,11 @@ function* fixjump(fs, pc, dest) {
     (void 0);
     (cptr.stI32(
         jmp,
-        (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 25) >>> 0)) << 7) >>> 0))) >>> 0) |
+        (((((cptr.ldI32(jmp) >>> 0) &
+            (~(((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 7) >>> 0) >>> 0)) >>>
+            0) |
             (((((((((offset) + 16777215) >>> 0))) << 7) >>> 0) &
-                (((~(((~0) << 25) >>> 0)) << 7) >>> 0)) >>>
+                (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 7) >>> 0)) >>>
                 0)) >>> 0)
     ));
 }
@@ -350,8 +362,8 @@ function getjumpcontrol(fs, pc) {
     if (pc >= 1 &&
             (cptr.ld1uo(
                 cptr.decay(luaP_opmodes),
-                ((((((cptr.ldI32((cptr.add(pi, -(1), 4)))) >>> 0) &
-                    (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>>
+                ((((((cptr.ldI32((cptr.add(pi, -(1), 4))) >>> 0) >>> 0) &
+                    (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0))),
                 1
             ) & 16))
@@ -376,17 +388,22 @@ function getjumpcontrol(fs, pc) {
  */
 function patchtestreg(fs, node, reg) {
     let i = getjumpcontrol(fs, node);
-    if (((((((cptr.ldI32(i)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) !=
+    if (((((((cptr.ldI32(i) >>> 0) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>>
+        0))) !=
             NHC.OP_TESTSET)
         return 0;  /* cannot patch other instructions */
     if (reg != 255 &&
             reg !=
-                ((((((((cptr.ldI32(i)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                ((((((((cptr.ldI32(i) >>> 0) >>> 16) &
+                    (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) | 0))))
         (cptr.stI32(
             i,
-            (((((cptr.ldI32(i)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) |
-                ((((((reg) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>>
+            (((((cptr.ldI32(i) >>> 0) &
+                (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 7) >>> 0) >>> 0)) >>>
+                0) |
+                ((((((reg) >>> 0) << 7) >>> 0) &
+                    (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 7) >>> 0)) >>>
                     0)) >>> 0)
         ));
     else {
@@ -395,7 +412,8 @@ function patchtestreg(fs, node, reg) {
         cptr.stI32(
             i,
             ((((((((66) << 0) >>> 0) |
-                ((((((((((((cptr.ldI32(i)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                ((((((((((((cptr.ldI32(i) >>> 0) >>> 16) &
+                    (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) |
                     0)))) >>>
                     0) <<
@@ -406,7 +424,8 @@ function patchtestreg(fs, node, reg) {
                 0 |
                 0) >>>
                 0 |
-                ((((((((((((cptr.ldI32(i)) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>>
+                ((((((((((((cptr.ldI32(i) >>> 0) >>> 15) &
+                    (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
                     0)) |
                     0)))) >>>
                     0) <<
@@ -478,7 +497,9 @@ export function* luaK_patchtohere(fs, list) {
 function* savelineinfo(fs, f, line) {
     let linedif = (line - cptr.ldI32o(fs, $FuncState_previousline)) | 0;
     let pc = (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;  /* last instruction coded */
-    if (Math.abs(linedif) >= 128 || cptr.postinc1(cptr.add(fs, $FuncState_iwthabs)) >= 128) {
+    if (Math.abs(linedif) >= 128 ||
+            (cptr.st1o(fs, $FuncState_iwthabs, cptr.ld1uo(fs, $FuncState_iwthabs) + 1)) - (1) >=
+                128) {
         (cptr.stPtro(
             f,
             $Proto_abslineinfo,
@@ -516,7 +537,7 @@ function* savelineinfo(fs, f, line) {
     (cptr.stPtro(
         f,
         $Proto_lineinfo,
-        (((yield* luaM_growaux_(
+        (cptr.byteView(((yield* luaM_growaux_(
             cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L),
             cptr.ldPtro(f, $Proto_lineinfo),
             pc,
@@ -524,7 +545,7 @@ function* savelineinfo(fs, f, line) {
             1,
             2147483647,
             __s_opcodes
-        ))))
+        )))))
     ));
     cptr.st1o(cptr.ldPtro(f, $Proto_lineinfo), pc, schar(linedif));
     cptr.stI32o(fs, $FuncState_previousline, line);  /* last line saved */
@@ -580,15 +601,18 @@ export function* luaK_code(fs, i) {
     (cptr.stPtro(
         f,
         $Proto_code,
-        (((yield* luaM_growaux_(
-            cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L),
-            cptr.ldPtro(f, $Proto_code),
-            cptr.ldI32o(fs, $FuncState_pc),
-            cptr.add(f, $Proto_sizecode),
-            4,
-            2147483647,
-            __s_opcodes
-        ))))
+        (cptr.castView(
+            ((yield* luaM_growaux_(
+                cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L),
+                cptr.ldPtro(f, $Proto_code),
+                cptr.ldI32o(fs, $FuncState_pc),
+                cptr.add(f, $Proto_sizecode),
+                4,
+                2147483647,
+                __s_opcodes
+            ))),
+            "u32"
+        ))
     ));
     cptr.stI32o(
         cptr.ldPtro(f, $Proto_code),
@@ -931,7 +955,7 @@ function* luaK_intK(fs, n) {
 /** C ref: lcode.c:603 — @param {CPtr<FuncState>} fs @param {CDouble} r @returns {CInt} */
 function* luaK_numberK(fs, r) {
     let o = cptr.alloc(16);
-    let ik = cptr.box(0n);
+    let ik = cptr.box(0n, "i64");
     {
         let io = (o);
         cptr.stF64(((io)), (r));
@@ -942,8 +966,8 @@ function* luaK_numberK(fs, r) {
         return (yield* addk(fs, o, o));  /* use number itself as key */
     else {
         let nbm = 53;
-        let q = ldexp(1, (-nbm + 1) | 0);
-        let k = (ik.v == 0n) ? q : r + r * q;  /* new key */
+        let q = ldexp(1, ((-nbm | 0) + 1) | 0);
+        let k = (ik.v == 0n) ? q : cptr.fmaR(r, r, q);  /* new key */
         let kv = cptr.alloc(16);
         {
             let io = (kv);
@@ -1025,7 +1049,7 @@ export function* luaK_int(fs, reg, i) {
 
 /** C ref: lcode.c:681 — @param {CPtr<FuncState>} fs @param {CInt} reg @param {CDouble} f */
 function* luaK_float(fs, reg, f) {
-    let fi = cptr.box(0n);
+    let fi = cptr.box(0n, "i64");
     if (luaV_flttointeger(f, fi, NHC.F2Ieq) && fitsBx(fi.v))
         (yield* codeAsBx(fs, NHC.OP_LOADF, reg, (Number(BigInt.asIntN(32, ((fi.v)))))));
     else
@@ -1080,25 +1104,31 @@ export function* luaK_setreturns(fs, e, nresults) {
     if (cptr.ldI32(e) == NHC.VCALL)
         (cptr.stI32(
             pc,
-            (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) |
+            (((((cptr.ldI32(pc) >>> 0) &
+                (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 24) >>> 0) >>> 0)) >>>
+                0) |
                 ((((((nresults + 1) >>> 0) << 24) >>> 0) &
-                    (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>>
+                    (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 24) >>> 0)) >>>
                     0)) >>> 0)
         ));
     else {
         (void 0);
         (cptr.stI32(
             pc,
-            (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) |
+            (((((cptr.ldI32(pc) >>> 0) &
+                (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 24) >>> 0) >>> 0)) >>>
+                0) |
                 ((((((nresults + 1) >>> 0) << 24) >>> 0) &
-                    (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>>
+                    (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 24) >>> 0)) >>>
                     0)) >>> 0)
         ));
         (cptr.stI32(
             pc,
-            (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) |
+            (((((cptr.ldI32(pc) >>> 0) &
+                (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 7) >>> 0) >>> 0)) >>>
+                0) |
                 ((((((cptr.ld1uo(fs, $FuncState_freereg))) << 7) >>> 0) &
-                    (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>>
+                    (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 7) >>> 0)) >>>
                     0)) >>> 0)
         ));
         (yield* luaK_reserveregs(fs, 1));
@@ -1138,9 +1168,10 @@ export function luaK_setoneret(fs, e) {
                 cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code),
                 cptr.ldI32o((e), $expdesc_u),
                 4
-            ))) >>>
+            ) >>>
+                0)) >>>
                 7) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                 0)) | 0))
         );
     } else if (cptr.ldI32(e) == NHC.VVARARG) {
@@ -1151,10 +1182,11 @@ export function luaK_setoneret(fs, e) {
                 cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code),
                 cptr.ldI32o((e), $expdesc_u),
                 4
-            ))) &
-                (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>>
+            ) >>>
+                0)) &
+                (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 24) >>> 0) >>> 0)) >>>
                 0) |
-                ((33554432 & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>>
+                ((33554432 & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 24) >>> 0)) >>> 0)) >>>
                 0),
             4
         ));
@@ -1325,8 +1357,11 @@ function* discharge2reg(fs, e, reg) {
                 );
                 (cptr.stI32(
                     pc,
-                    (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) |
-                        ((((((reg) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>>
+                    (((((cptr.ldI32(pc) >>> 0) &
+                        (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 7) >>> 0) >>> 0)) >>>
+                        0) |
+                        ((((((reg) >>> 0) << 7) >>> 0) &
+                            (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 7) >>> 0)) >>>
                             0)) >>> 0)
                 ));  /* instruction will put result in 'reg' */
                 break;
@@ -1379,8 +1414,9 @@ function* code_loadbool(fs, A, op) {
 /** C ref: lcode.c:900 — @param {CPtr<FuncState>} fs @param {CInt} list @returns {CInt} */
 function need_value(fs, list) {
     for (; list != -1; list = getjump(fs, list)) {
-        let i = cptr.ldI32(getjumpcontrol(fs, list));
-        if (((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != NHC.OP_TESTSET)
+        let i = cptr.ldI32(getjumpcontrol(fs, list)) >>> 0;
+        if (((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))) !=
+                NHC.OP_TESTSET)
             return 1;
     }
     return 0;  /* not found */
@@ -1650,15 +1686,18 @@ function negatecondition(fs, e) {
     (void 0);
     (cptr.stI32(
         pc,
-        (((((cptr.ldI32(pc)) & (~(((~(((~0) << 1) >>> 0)) << 15) >>> 0))) >>> 0) |
-            (((((((((((((((cptr.ldI32(pc)) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>>
+        (((((cptr.ldI32(pc) >>> 0) &
+            (~(((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 15) >>> 0) >>> 0)) >>>
+            0) |
+            (((((((((((((((cptr.ldI32(pc) >>> 0) >>> 15) &
+                (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
                 0)) |
                 0))) ^
                 1)) >>>
                 0) <<
                 15) >>>
                 0) &
-                (((~(((~0) << 1) >>> 0)) << 15) >>> 0)) >>>
+                (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 15) >>> 0)) >>>
                 0)) >>> 0)
     ));
 }
@@ -1682,13 +1721,15 @@ function* jumponcond(fs, e, cond) {
             cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code),
             cptr.ldI32o((e), $expdesc_u),
             4
-        ));
-        if (((((((ie) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == NHC.OP_NOT) {
+        ) >>> 0);
+        if (((((((ie) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))) ==
+                NHC.OP_NOT) {
             removelastinstruction(fs);  /* remove previous OP_NOT */
             return (yield* condjump(
                 fs,
                 NHC.OP_TEST,
-                ((((((((ie) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((ie) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 0,
                 0,
                 !cond
@@ -1878,7 +1919,7 @@ function isSCint(e) {
  * @returns {CInt}
  */
 function isSCnumber(e, pi, isfloat) {
-    let i = cptr.box(0n);
+    let i = cptr.box(0n, "i64");
     if (cptr.ldI32(e) == NHC.VKINT)
         i.v = cptr.ldI64o(e, $expdesc_u);
     else if (cptr.ldI32(e) == NHC.VKFLT &&
@@ -1964,7 +2005,7 @@ function validop(op, v1, v2) {
         case 11:
         case 13:
             {
-                let i = cptr.box(0n);
+                let i = cptr.box(0n, "i64");
                 return (luaV_tointegerns(v1, i, NHC.F2Ieq) && luaV_tointegerns(v2, i, NHC.F2Ieq)
                         ? 1
                         : 0);
@@ -2166,11 +2207,11 @@ function* finishbinexpneg(fs, e1, e2, op, line, event) {
         return 0;  /* not an integer constant */
     else {
         let i2 = cptr.ldI64o(e2, $expdesc_u);
-        if (!(fitsC(i2) && fitsC(-i2)))
+        if (!(fitsC(i2) && fitsC(BigInt.asIntN(64, -i2))))
             return 0;  /* not in the proper range */
         else {
             let v2 = (Number(BigInt.asIntN(32, ((i2)))));
-            (yield* finishbinexpval(fs, e1, e2, op, (((-v2) + 127) | 0), 0, line, NHC.OP_MMBINI, event));
+            (yield* finishbinexpval(fs, e1, e2, op, (((-v2 | 0) + 127) | 0), 0, line, NHC.OP_MMBINI, event));
             /* correct metamethod argument */
             (cptr.stI32o(
                 cptr.ldPtro(cptr.ldPtr(fs), $Proto_code),
@@ -2179,11 +2220,12 @@ function* finishbinexpneg(fs, e1, e2, op, line, event) {
                     cptr.ldPtro(cptr.ldPtr(fs), $Proto_code),
                     (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0,
                     4
-                )) &
-                    (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>>
+                ) >>>
+                    0) &
+                    (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 16) >>> 0) >>> 0)) >>>
                     0) |
                     (((((((v2) + 127) >>> 0) << 16) >>> 0) &
-                        (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
+                        (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 16) >>> 0)) >>>
                         0)) >>>
                     0),
                 4
@@ -2476,23 +2518,30 @@ export function* luaK_infix(fs, op, v) {
  */
 function* codeconcat(fs, e1, e2, line) {
     let ie2 = previousinstruction(fs);
-    if (((((((cptr.ldI32(ie2)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) ==
+    if (((((((cptr.ldI32(ie2) >>> 0) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>>
+        0))) ==
             NHC.OP_CONCAT) {
-        let n = ((((((((cptr.ldI32(ie2)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+        let n = ((((((((cptr.ldI32(ie2) >>> 0) >>> 16) &
+            (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                 0)) | 0)));  /* # of elements concatenated in 'e2' */
         (void 0);
         freeexp(fs, e2);
         (cptr.stI32(
             ie2,
-            (((((cptr.ldI32(ie2)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) |
+            (((((cptr.ldI32(ie2) >>> 0) &
+                (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 7) >>> 0) >>> 0)) >>>
+                0) |
                 ((((((cptr.ldI32o(e1, $expdesc_u)) >>> 0) << 7) >>> 0) &
-                    (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>>
+                    (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 7) >>> 0)) >>>
                     0)) >>> 0)
         ));  /* correct first element ('e1') */
         (cptr.stI32(
             ie2,
-            (((((cptr.ldI32(ie2)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) |
-                ((((((n + 1) >>> 0) << 16) >>> 0) & (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
+            (((((cptr.ldI32(ie2) >>> 0) &
+                (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 16) >>> 0) >>> 0)) >>>
+                0) |
+                ((((((n + 1) >>> 0) << 16) >>> 0) &
+                    (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 16) >>> 0)) >>>
                     0)) >>> 0)
         ));  /* will concatenate one more element */
     } else {
@@ -2683,12 +2732,15 @@ export function* luaK_setlist(fs, base, nelems, tostore) {
 function finaltarget(code, i) {
     let count;
     for (count = 0; count < 100; count++) {
-        let pc = cptr.ldI32o(code, i, 4);
-        if (((((((pc) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != NHC.OP_JMP)
+        let pc = cptr.ldI32o(code, i, 4) >>> 0;
+        if (((((((pc) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))) !=
+                NHC.OP_JMP)
             break;
         else
             i = (i +
-                    ((((((((pc) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                    ((((((((pc) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) |
+                        0)) -
                         16777215 +
                         1)) | 0;
     }
@@ -2706,7 +2758,9 @@ export function* luaK_finish(fs) {
     for (i = 0; i < cptr.ldI32o(fs, $FuncState_pc); i++) {
         let pc = cptr.add(cptr.ldPtro(p, $Proto_code), i, 4);
         (void 0);
-        switch (((((((cptr.ldI32(pc)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)))) {
+        switch (((((((cptr.ldI32(pc) >>> 0) >>> 0) &
+            (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)))) {
             case NHC.OP_RETURN0:
             case NHC.OP_RETURN1:
                 {
@@ -2715,8 +2769,11 @@ export function* luaK_finish(fs) {
                     /* else use OP_RETURN to do the extra work */
                     (cptr.stI32(
                         pc,
-                        (((((cptr.ldI32(pc)) & (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) |
-                            (((((70) << 0) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>>
+                        (((((cptr.ldI32(pc) >>> 0) &
+                            (~(((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0) >>> 0)) >>>
+                            0) |
+                            (((((70) << 0) >>> 0) &
+                                (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>>
                                 0)) >>> 0)
                     ));
                 }  /* FALLTHROUGH */
@@ -2726,17 +2783,20 @@ export function* luaK_finish(fs) {
                     if (cptr.ld1uo(fs, $FuncState_needclose))
                         (cptr.stI32(
                             pc,
-                            (((((cptr.ldI32(pc)) & (~(((~(((~0) << 1) >>> 0)) << 15) >>> 0))) >>>
+                            (((((cptr.ldI32(pc) >>> 0) &
+                                (~(((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 15) >>> 0) >>> 0)) >>>
                                 0) |
-                                ((32768 & (((~(((~0) << 1) >>> 0)) << 15) >>> 0)) >>> 0)) >>> 0)
+                                ((32768 & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 15) >>> 0)) >>>
+                                    0)) >>> 0)
                         ));  /* signal that it needs to close */
                     if (cptr.ld1uo(p, $Proto_is_vararg))
                         (cptr.stI32(
                             pc,
-                            (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>>
+                            (((((cptr.ldI32(pc) >>> 0) &
+                                (~(((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 24) >>> 0) >>> 0)) >>>
                                 0) |
                                 ((((((cptr.ld1uo(p, $Proto_numparams) + 1) >>> 0) << 24) >>> 0) &
-                                    (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>>
+                                    (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 24) >>> 0)) >>>
                                     0)) >>> 0)
                         ));  /* signal that it is vararg */
                     break;
