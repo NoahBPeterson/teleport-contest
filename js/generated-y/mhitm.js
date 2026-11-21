@@ -349,7 +349,7 @@ export function* fightm(mtmp) {
         if ((yield* itsstuck(mtmp)))
             return 0;
     }
-    has_u_swallowed = ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+    has_u_swallowed = (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))
             ? 1
             : 0);
@@ -369,7 +369,7 @@ export function* fightm(mtmp) {
          */
         if (!cptr.eq(mon, mtmp) && !(cptr.ldI32o((mon), $monst_mhp) < 1)) {
             if (monnear(mtmp, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) {
-                if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
+                if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
                         (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))) {
                     if (!rn2(4)) {
                         (yield* set_ustuck(null));
@@ -844,34 +844,22 @@ export function* mattackm(magr, mdef) {
                             cptr.add(mons, NHC.PM_BROWN_PUDDING, $sizeof_permonst)
                         )) &&
                             (mwep &&
-                                ((cptr.ldBits(
-                                    cptr.add(
-                                        cptr.add(
-                                            objects,
-                                            cptr.ldI16o(mwep, $obj_otyp),
-                                            $sizeof_objclass
-                                        ),
-                                        $objclass_oc_material
-                                    ),
-                                    3,
-                                    5,
-                                    0
-                                ) |
+                                (((cptr.ldI32o2(
+                                    objects,
+                                    cptr.ldI16o(mwep, $obj_otyp),
+                                    $sizeof_objclass,
+                                    $objclass_oc_material
+                                ) &
+                                    31) |
                                     0) ==
                                     NHC.IRON ||
-                                    (cptr.ldBits(
-                                        cptr.add(
-                                            cptr.add(
-                                                objects,
-                                                cptr.ldI16o(mwep, $obj_otyp),
-                                                $sizeof_objclass
-                                            ),
-                                            $objclass_oc_material
-                                        ),
-                                        3,
-                                        5,
-                                        0
-                                    ) |
+                                    ((cptr.ldI32o2(
+                                        objects,
+                                        cptr.ldI16o(mwep, $obj_otyp),
+                                        $sizeof_objclass,
+                                        $objclass_oc_material
+                                    ) &
+                                        31) |
                                         0) ==
                                         NHC.METAL)) &&
                             cptr.ldI32o(mdef, $monst_mhp) > 1 &&
@@ -960,7 +948,7 @@ export function* mattackm(magr, mdef) {
                 ) > 1)
                     continue;
                 /* Engulfing attacks are directed at the hero if possible. -dlc */
-                if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (magr))))) {
                     strike = 0;
                 } else if ((strike = (tmp > rnd((20 + i) | 0))) != 0) {
@@ -1124,15 +1112,13 @@ function* hitmm(magr, mdef, mattk, mwep, dieroll) {
             : 0));
     let silverhit = schar((weaponhit &&
         mwep &&
-        (cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(mwep, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) |
+        ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(mwep, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31) |
             0) ==
             NHC.SILVER
             ? 1
@@ -2013,7 +1999,7 @@ export function* slept_monst(mon) {
     if (helpless(mon) &&
             cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) &&
             !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
-            !(cptr.ldI32o(u, $you_uswallow) & 1)) {
+            !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         (yield* pline_mon(mon, __s_s_grip_relaxes, (yield* s_suffix((yield* Monnam(mon))))));
         (yield* unstuck(mon));
     }

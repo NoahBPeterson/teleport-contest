@@ -551,7 +551,7 @@ export function* tactics(mtmp) {
         case 134217728n:
             mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
 
-            if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+            if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                     cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp))
                 (yield* expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 1));
 

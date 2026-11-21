@@ -4363,21 +4363,9 @@ export function oid_price_adjustment(obj, oid) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
 
     if (!((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
-        cptr.ldBits(
-            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
-            0,
-            1,
-            0
-        ) |
-            0) &&
+        (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) &&
             (cptr.ld1so(obj, $obj_oclass) != NHC.GEM_CLASS ||
-                (cptr.ldBits(
-                    cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
-                    3,
-                    5,
-                    0
-                ) |
-                    0) !=
+                ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) !=
                     NHC.GLASS)) {
         res = ((u32mod(oid, 4)) == 0);  /* id%4 ==0 -> +1, ==1..3 -> 0 */
     }
@@ -4408,25 +4396,21 @@ function get_cost(obj, shkp) {
     /* shopkeeper may notice if the player isn't very knowledgeable -
        especially when gem prices are concerned */
     if (!(cptr.ldI32o(obj, $obj_dknown) & 1) ||
-            !cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            )) {
+            !(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                1)) {
         if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS &&
-                (cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_material
-                    ),
-                    3,
-                    5,
-                    0
-                ) |
+                ((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_material
+                ) &
+                    31) |
                     0) ==
                     NHC.GLASS) {
             let i;
@@ -4772,37 +4756,31 @@ function set_cost(obj, shkp) {
     /* shopkeeper may notice if the player isn't very knowledgeable -
        especially when gem prices are concerned */
     if (!(cptr.ldI32o(obj, $obj_dknown) & 1) ||
-            !cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            )) {
+            !(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                1)) {
         if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) {
             /* different shop keepers give different prices */
-            if ((cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            if (((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                 0) ==
                 NHC.GEMSTONE ||
-                    (cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_material
-                        ),
-                        3,
-                        5,
-                        0
-                    ) |
+                    ((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
                         0) ==
                         NHC.GLASS) {
                 tmp = BigInt((u32mod(
@@ -5068,15 +5046,8 @@ function shk_names_obj(shkp, obj, fmt, amt, arg) {
      * scrolls/books (that is, blank and mail), but only if the
      * object is within the shk's area of interest/expertise.
      */
-    if (!cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_magic
-        ),
-        4,
-        1,
-        0
-    ) &&
+    if (!(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_magic) &
+        1) &&
             saleable(shkp, obj) &&
             (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS ||
                 cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS ||
@@ -5084,15 +5055,12 @@ function shk_names_obj(shkp, obj, fmt, amt, arg) {
                 cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS ||
                 cptr.ldI16o(obj, $obj_otyp) == NHC.MIRROR)) {
         was_unknown = schar(was_unknown |
-                !cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_name_known
-                    ),
-                    0,
-                    1,
-                    0
-                ));
+                !(cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) & 1));
         discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1);
     }
     obj_name = paydoname(obj);
@@ -6774,7 +6742,7 @@ function litter_scatter(litter, x, y, shkp) {
     {
         /* Scatter objects haphazardly into the shop */
         if (Punished() &&
-                !(cptr.ldI32o(u, $you_uswallow) & 1) &&
+                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
                 ((cptr.ldI16o(uchain.v, $obj_ox) == x && cptr.ldI16o(uchain.v, $obj_oy) == y) ||
                     (cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR &&
                         cptr.ldI16o(uball.v, $obj_ox) == x &&
@@ -7992,24 +7960,18 @@ function shk_embellish(itm, cost) {
                     o = cptr.ld1so(itm, $obj_oclass);
                 if (o == NHC.FOOD_CLASS)
                     return __s_gourmets_delight;
-                if (cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(itm, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_name_known
-                    ),
-                    0,
-                    1,
-                    0
-                ) | 0
-                        ? cptr.ldBits(
-                            cptr.add(
-                                cptr.add(objects, cptr.ldI16o(itm, $obj_otyp), $sizeof_objclass),
-                                $objclass_oc_magic
-                            ),
-                            4,
-                            1,
-                            0
-                        ) | 0
+                if ((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(itm, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) & 1) | 0
+                        ? (cptr.ldI32o2(
+                            objects,
+                            cptr.ldI16o(itm, $obj_otyp),
+                            $sizeof_objclass,
+                            $objclass_oc_magic
+                        ) & 1) | 0
                         : (o == NHC.AMULET_CLASS ||
                             o == NHC.RING_CLASS ||
                             o == NHC.WAND_CLASS ||
@@ -8303,15 +8265,13 @@ export function check_unpaid_usage(otmp, altusage) {
     if (!(cptr.ldI32o(otmp, $obj_unpaid) & 1) ||
             !cptr.ld1so(u, $you_ushops) ||
             (cptr.ld1so(otmp, $obj_spe) <= 0 &&
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_charged
-                    ),
-                    5,
-                    1,
-                    0
-                ) | 0))
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(otmp, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_charged
+                ) &
+                    1) | 0))
         return;
     shkp = shop_keeper(cptr.ld1so(u, $you_ushops));
     if (!shkp || !inhishop(shkp))

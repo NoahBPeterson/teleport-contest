@@ -1029,7 +1029,7 @@ export function historical_sfi_obj(nhfp, d_obj, myname) {
  */
 export function historical_sfo_objclass(nhfp, d_objclass, myname) {
     norm_ptrs_objclass(d_objclass);
-    bwrite(cptr.ldI32(nhfp), d_objclass, 72);
+    bwrite(cptr.ldI32(nhfp), d_objclass, 120);
 }
 
 /**
@@ -1042,7 +1042,7 @@ export function historical_sfi_objclass(nhfp, d_objclass, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_objclass, 72);
+    mread(cptr.ldI32(nhfp), d_objclass, 120);
     norm_ptrs_objclass(d_objclass);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);
@@ -1218,7 +1218,7 @@ export function historical_sfi_trap(nhfp, d_trap, myname) {
  */
 export function historical_sfo_you(nhfp, d_you, myname) {
     norm_ptrs_you(d_you);
-    bwrite(cptr.ldI32(nhfp), d_you, 2864);
+    bwrite(cptr.ldI32(nhfp), d_you, 2840);
 }
 
 /**
@@ -1231,7 +1231,7 @@ export function historical_sfi_you(nhfp, d_you, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_eof)) {
         sfstruct_read_error();
     }
-    mread(cptr.ldI32(nhfp), d_you, 2864);
+    mread(cptr.ldI32(nhfp), d_you, 2840);
     norm_ptrs_you(d_you);
     if (cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == -1)
         cptr.st1o(nhfp, $NHFILE_eof, 1);

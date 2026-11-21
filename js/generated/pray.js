@@ -697,7 +697,7 @@ function in_trouble() {
 
     if (BlindedTimeout() > 1n &&
             !(HBlinded() & -16777216n) &&
-            (!(cptr.ldI32o(u, $you_uswallow) & 1) ||
+            (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
                 !attacktype_fordmg(
                     cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
                     NHM.AT_ENGL,
@@ -1094,7 +1094,7 @@ function fix_worst_trouble(trouble) {
  */
 /** C ref: pray.c:610 — @param {CInt} resp_god */
 function god_zaps_you(resp_god) {
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         pline(__s_suddenly_a_bolt_of_lightning_comes_down);
         pline(__s_it_strikes_s, mon_nam(cptr.ldPtro(u, $you_ustuck)));
         if (!Resists_Elem(cptr.ldPtro(u, $you_ustuck), NHC.SHOCK_RES)) {
@@ -1128,7 +1128,7 @@ function god_zaps_you(resp_god) {
     }
 
     pline(__s_s_is_not_deterred, align_gname(resp_god));
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         pline(__s_a_wide_angle_disintegration_beam_aimed, mon_nam(cptr.ldPtro(u, $you_ustuck)));
         if (!Resists_Elem(cptr.ldPtro(u, $you_ustuck), NHC.DISINT_RES)) {
             pline(__s_s_disintegrates_into_a_pile_of_dust, Monnam(cptr.ldPtro(u, $you_ustuck)));
@@ -1388,7 +1388,7 @@ function angrygods(resp_god) {
 function at_your_feet(str) {
     if (Blind())
         str = cptr.ldPtro(c_common_strings, $c_common_strings_c_Something);
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* barrier between you and the floor */
         pline(
             __s_s_s_into_s_s,
@@ -1672,15 +1672,13 @@ function give_spell() {
                if hero has a magic marker to write something on it
                (doesn't matter if marker is out of charges); it will
                become discovered (below) without needing to be read */
-            if (!cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, NHC.SPE_BLANK_PAPER, $sizeof_objclass),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            ) ||
+            if (!(cptr.ldI32o2(
+                objects,
+                NHC.SPE_BLANK_PAPER,
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                1) ||
                     carrying(NHC.MAGIC_MARKER))
                 break;
         }
@@ -2902,7 +2900,7 @@ export function dosacrifice() {
         $instance_globals_saved_l_level + $rm_typ
     )) ==
         NHC.ALTAR) ||
-            (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
         You(__s_are_not_s_an_altar, (Levitation() || Flying()) ? __s_over : __s_on);
         return NHM.ECMD_OK;
     } else if (HConfusion() || HStun()) {
@@ -3465,7 +3463,7 @@ export function dopray() {
         /* if you've been true to your god you can't die while you pray */
         if (!Blind())
             You(__s_are_surrounded_by_a_shimmering_light);
-        cptr.stI32o(u, $you_uinvulnerable, 1);
+        cptr.stBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0, 1);
     }
 
     return NHM.ECMD_TIME;
@@ -3475,7 +3473,7 @@ export function dopray() {
 function prayer_done() {
     let alignment = cptr.ld1so(gp, $instance_globals_p_p_aligntyp);
 
-    cptr.stI32o(u, $you_uinvulnerable, 0);
+    cptr.stBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0, 0);
     if (cptr.ldI32o(gp, $instance_globals_p_p_type) == -2) {
         /* praying at an unaligned altar, not necessarily in Gehennom */
         You(__s_s_diabolical_laughter_all_around_you, !Deaf() ? __s_hear : __s_intuit);

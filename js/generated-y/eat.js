@@ -654,15 +654,12 @@ let getobj_else = 0;
 export function is_edible(obj) {
     /* protect invocation tools but not Rider corpses (handled elsewhere)*/
     /* if (obj->oclass != FOOD_CLASS && obj_resists(obj, 0, 0)) */
-    if (cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_unique
-        ),
-        6,
-        1,
-        0
-    ))
+    if ((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(obj, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_unique
+    ) & 1))
         return 0;
     /* above also prevents the Amulet from being eaten, so we must never
        allow fake amulets to be eaten either [which is already the case] */
@@ -685,15 +682,13 @@ export function is_edible(obj) {
                 cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
                 cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)
             ) ||
-                ((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_material
-                    ),
-                    3,
-                    5,
-                    0
-                ) |
+                (((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_material
+                ) &
+                    31) |
                     0) ==
                     NHC.IRON)))
         return 1;
@@ -707,15 +702,13 @@ export function is_edible(obj) {
                 : 0));
 
     if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GELATINOUS_CUBE &&
-            ((cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            (((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                 0) <=
                 NHC.WOOD) &&
             !(cptr.ldPtro((obj), $obj_cobj) !== null))
@@ -4079,15 +4072,13 @@ function* eatspecial() {
         (yield* vault_gd_watching(NHM.GD_EATGOLD));
         return;
     }
-    if ((cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) |
+    if (((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+        31) |
         0) ==
             NHC.PAPER) {
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SCR_MAIL)
@@ -4175,30 +4166,26 @@ function* foodword(otmp) {
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS)
         return __s_food;
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS &&
-            (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                 0) ==
                 NHC.GLASS &&
             (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0)
         (yield* discover_object((cptr.ldI16o(otmp, $obj_otyp)), 1, 1, 1));
     return cptr.ldPtro(
         foodwords,
-        cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ),
+        (cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31),
         8
     );
 }
@@ -4217,7 +4204,7 @@ function* fpostfx(otmp) {
                 (yield* you_unwere(1));
             break;
         case NHC.CARROT:
-            if (!(cptr.ldI32o(u, $you_uswallow) & 1) ||
+            if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) ||
                     !attacktype_fordmg(
                         cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
                         NHM.AT_ENGL,
@@ -4358,15 +4345,13 @@ function* edibility_prompts(otmp) {
     /* 5.0: decaying globs don't become tainted anymore; in 3.6, they did */
     let cadaver = schar((cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE));
     let stoneorslime = 0;
-    let material = cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) | 0;
+    let material = (cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+            31) | 0;
     let mnum = cptr.ldI32o(otmp, $obj_corpsenm);
     let rotted = 0n;
 
@@ -4632,15 +4617,13 @@ function* doeat_nonfood(otmp) {
         ll_conduct++;
         (yield* livelog_printf(32n, __s_ate_for_the_first_time_s__2, (yield* food_xname(otmp, 0))));
     }
-    material = cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) | 0;
+    material = (cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+            31) | 0;
     if (material == NHC.LEATHER ||
             material == NHC.BONE ||
             material == NHC.DRAGON_HIDE ||
@@ -4673,15 +4656,13 @@ function* doeat_nonfood(otmp) {
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         void (yield* rottenfood(otmp));
         nodelicious = 1;
-    } else if ((cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) |
+    } else if (((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+        31) |
         0) ==
             NHC.PAPER)
         nodelicious = 1;
@@ -4726,12 +4707,12 @@ export function* doeat() {
     if ((yield* check_capacity(null)))
         return NHM.ECMD_OK;
 
-    if ((cptr.ldI32o(u, $you_uedibility) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uedibility), 6, 1, 0)) {
         let res = (yield* edibility_prompts(otmp.v));
 
         if (res) {
             (yield* Your(__s_s_stops_tingling_and_your_sense_of, (yield* body_part(NHC.NOSE))));
-            cptr.stI32o(u, $you_uedibility, 0);
+            cptr.stBits(cptr.add(u, $you_uedibility), 6, 1, 0, 0);
             if (res == 1)
                 return NHM.ECMD_OK;
         }
@@ -4922,15 +4903,13 @@ export function* doeat() {
         /* No checks for WAX, LEATHER, BONE, DRAGON_HIDE.  These are
          * all handled in the != FOOD_CLASS case, above.
          */
-        switch (cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(otmp.v, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) |
+        switch ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(otmp.v, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31) |
                 0) {
             case NHC.FLESH:
                 if (!((cptr.stI64o(
@@ -5194,7 +5173,7 @@ function* bite() {
 export function* gethungry() {
     let accessorytime;
 
-    if ((cptr.ldI32o(u, $you_uinvulnerable) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0) | 0 ||
             cptr.ld1so(iflags, $instance_flags_debug_hunger))
         return;  /* you don't feel hungrier */
 
@@ -5284,19 +5263,13 @@ export function* gethungry() {
                 if (uleft.v &&
                         cptr.ldI16o(uleft.v, $obj_otyp) != NHC.MEAT_RING &&
                         (cptr.ld1so(uleft.v, $obj_spe) ||
-                            !cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        objects,
-                                        cptr.ldI16o(uleft.v, $obj_otyp),
-                                        $sizeof_objclass
-                                    ),
-                                    $objclass_oc_charged
-                                ),
-                                5,
-                                1,
-                                0
-                            ) ||
+                            !(cptr.ldI32o2(
+                                objects,
+                                cptr.ldI16o(uleft.v, $obj_otyp),
+                                $sizeof_objclass,
+                                $objclass_oc_charged
+                            ) &
+                                1) ||
                             (cptr.ldI16o(uleft.v, $obj_otyp) == NHC.RIN_PROTECTION &&
                                 ((EProtection() & -131073n) == 0n ||
                                     ((EProtection() & -131073n) == 262144n &&
@@ -5313,19 +5286,13 @@ export function* gethungry() {
                 if (uright.v &&
                         cptr.ldI16o(uright.v, $obj_otyp) != NHC.MEAT_RING &&
                         (cptr.ld1so(uright.v, $obj_spe) ||
-                            !cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        objects,
-                                        cptr.ldI16o(uright.v, $obj_otyp),
-                                        $sizeof_objclass
-                                    ),
-                                    $objclass_oc_charged
-                                ),
-                                5,
-                                1,
-                                0
-                            ) ||
+                            !(cptr.ldI32o2(
+                                objects,
+                                cptr.ldI16o(uright.v, $obj_otyp),
+                                $sizeof_objclass,
+                                $objclass_oc_charged
+                            ) &
+                                1) ||
                             (cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_PROTECTION &&
                                 (EProtection() & -262145n) == 0n)))
                     (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
@@ -5965,7 +5932,9 @@ export function* vomit() {
            dealing with some esoteric body_part() */
         (yield* Your(__s_jaw_gapes_convulsively));
     } else {
-        if (Sick() && (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE) != 0)
+        if (Sick() &&
+                ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) &
+                    NHM.SICK_VOMITABLE) != 0)
             (yield* make_sick(0n, null, 1, NHM.SICK_VOMITABLE));
         /* if not enough in stomach to actually vomit then dry heave;
            vomiting_dialog() gives a vomit message when its countdown

@@ -1280,7 +1280,7 @@ function* can_do_extcmd(extcmd) {
     if (!wizard() && (ecflags & NHM.WIZMODECMD)) {
         (yield* pline(cptr.decay(unavailcmd), cptr.ldPtro(extcmd, $ext_func_tab_ef_txt)));
         return 0;
-    } else if ((cptr.ldI32o(u, $you_uburied) & 1) | 0 && !(ecflags & NHM.IFBURIED)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0) | 0 && !(ecflags & NHM.IFBURIED)) {
         (yield* You_cant(__s_do_that_while_you_are_buried));
         return 0;
     } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && (ecflags & NHM.NOFUZZERCMD)) {
@@ -1878,7 +1878,7 @@ export function* domonability() {
         return NHM.ECMD_TIME;
     } else if (cptr.ld1uo(uptr, $permonst_msound) == NHC.MS_SHRIEK) {
         (yield* You(__s_shriek));
-        if ((cptr.ldI32o(u, $you_uburied) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0))
             (yield* pline(__s_unfortunately_sound_does_not_carry_well));
         else
             (yield* aggravate());
@@ -2023,9 +2023,9 @@ export function* makemap_prepost(pre, wiztower) {
         );
         void __builtin___memset_chk(svu, 0, 16n, __builtin_object_size(svu, 0));
         cptr.stPtro(u, $you_ustuck, null);
-        cptr.stI32o(u, $you_uswallow, cptr.stI32o(u, $you_uswldtim, 0));
+        cptr.stBits(cptr.add(u, $you_uswallow), 0, 1, 0, cptr.stI32o(u, $you_uswldtim, 0));
         (yield* set_uinwater(0));  /* u.uinwater = 0 */
-        cptr.stI32o(u, $you_uundetected, 0);  /* not hidden, even if means are available */
+        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);  /* not hidden, even if means are available */
         (yield* dmonsfree());  /* purge dead monsters from 'fmon' */
         (yield* dobjsfree());
 

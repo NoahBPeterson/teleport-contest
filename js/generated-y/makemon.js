@@ -2381,7 +2381,7 @@ export function* create_critters(cnt, mptr, neverask) {
         /* if in water, try to encourage an aquatic monster
            by finding and then specifying another wet location */
         if (!mptr &&
-                (cptr.ldI32o(u, $you_uinwater) & 1) | 0 &&
+                cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 &&
                 (yield* enexto(c, x, y, cptr.add(mons, NHC.PM_GIANT_EEL, $sizeof_permonst))))
             x = cptr.ldI16(c), y = cptr.ldI16o(c, $nhcoord_y);
 
@@ -3819,15 +3819,13 @@ export function* bagotricks(bag, tipping, seencount) {
         ));
         /* now known to be empty if sufficiently discovered */
         if ((cptr.ldI32o(bag, $obj_dknown) & 1) | 0 &&
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(bag, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_name_known
-                    ),
-                    0,
-                    1,
-                    0
-                ) |
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(bag, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) &
+                    1) |
                     0) {
             cptr.stI32o(bag, $obj_cknown, 1);
             (yield* update_inventory());  /* for perm_invent */

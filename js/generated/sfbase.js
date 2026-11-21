@@ -2393,7 +2393,7 @@ export function sfi_obj(nhfp, d_obj, myname) {
  */
 export function sfo_objclass(nhfp, d_objclass, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 72n, 1, complex_dump(d_objclass));
+        sf_log(nhfp, myname, 120n, 1, complex_dump(d_objclass));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2447,7 +2447,7 @@ export function sfi_objclass(nhfp, d_objclass, myname) {
             sfo_objclass(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_objclass, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 72n, 1, complex_dump(d_objclass));
+            sf_log(nhfp, myname, 120n, 1, complex_dump(d_objclass));
     }
 }
 
@@ -2855,7 +2855,7 @@ export function sfi_trap(nhfp, d_trap, myname) {
  */
 export function sfo_you(nhfp, d_you, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        sf_log(nhfp, myname, 2864n, 1, complex_dump(d_you));
+        sf_log(nhfp, myname, 2840n, 1, complex_dump(d_you));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (cptr.ldPtro2(
             sfoprocs,
@@ -2909,7 +2909,7 @@ export function sfi_you(nhfp, d_you, myname) {
             sfo_you(cptr.ldPtro(nhfp, $NHFILE_nhfpconvert), d_you, myname);
         }
         if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-            sf_log(nhfp, myname, 2864n, 1, complex_dump(d_you));
+            sf_log(nhfp, myname, 2840n, 1, complex_dump(d_you));
     }
 }
 

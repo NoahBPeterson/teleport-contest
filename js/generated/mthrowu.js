@@ -570,15 +570,13 @@ export function thitu(tlev, dam, objp, name) {
             cptr.stPtr(objp, obj = null);  /* potionhit() uses up the potion */
         } else {
             if (obj &&
-                    (cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_material
-                        ),
-                        3,
-                        5,
-                        0
-                    ) |
+                    ((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
                         0) ==
                         NHC.SILVER &&
                     (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM ||
@@ -909,15 +907,13 @@ export function ohitmon(mtmp, otmp, range, verbose) {
         potionhit(mtmp, otmp, NHM.POTHIT_OTHER_THROW);
         return 1;
     } else {
-        let material = cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) | 0;
+        let material = (cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+                31) | 0;
         let harmless = schar((stone_missile(otmp) && passes_rocks(cptr.ldPtro(mtmp, $monst_data))
                 ? 1
                 : 0));
@@ -2933,7 +2929,7 @@ function m_lined_up(mtarg, mtmp) {
     if (utarget &&
             Upolyd() &&
             rn2(25) &&
-            ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 ||
+            (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 ||
                 (U_AP_TYPE() != NHC.M_AP_NOTHING && U_AP_TYPE() != NHC.M_AP_MONSTER)))
         return 0;
 
@@ -3045,26 +3041,22 @@ export function hit_bars(objp, objx, objy, barsx, barsy, breakflags) {
                         : (is_flimsy(otmp)
                             ? 3
                             : ((cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS ||
-                                (cptr.ldBits(
-                                    cptr.add(
-                                        cptr.add(objects, obj_type, $sizeof_objclass),
-                                        $objclass_oc_material
-                                    ),
-                                    3,
-                                    5,
-                                    0
-                                ) |
+                                ((cptr.ldI32o2(
+                                    objects,
+                                    obj_type,
+                                    $sizeof_objclass,
+                                    $objclass_oc_material
+                                ) &
+                                    31) |
                                     0) ==
                                     NHC.GOLD ||
-                                (cptr.ldBits(
-                                    cptr.add(
-                                        cptr.add(objects, obj_type, $sizeof_objclass),
-                                        $objclass_oc_material
-                                    ),
-                                    3,
-                                    5,
-                                    0
-                                ) |
+                                ((cptr.ldI32o2(
+                                    objects,
+                                    obj_type,
+                                    $sizeof_objclass,
+                                    $objclass_oc_material
+                                ) &
+                                    31) |
                                     0) ==
                                     NHC.SILVER)
                                 ? 4

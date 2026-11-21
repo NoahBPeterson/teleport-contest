@@ -596,7 +596,7 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
             } else
                 return 0;  /* other objects cannot cause blindness yet */
             if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
-                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
                 return 0;  /* can't affect eyes while inside monster */
             break;
         case NHM.AT_ENGL:
@@ -614,7 +614,7 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
             if (is_you && ublindf.v)
                 return 0;
             if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
-                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
                 return 0;  /* can't affect eyes while inside monster */
             check_visor = 1;
             break;
@@ -2193,7 +2193,7 @@ export function cvt_prop_to_mseenres(prop) {
 export function monstseesu(seenres) {
     let mtmp;
 
-    if (seenres == 0n || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+    if (seenres == 0n || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
         return;
 
     for (
@@ -2228,7 +2228,7 @@ export function monstseesu(seenres) {
 export function monstunseesu(seenres) {
     let mtmp;
 
-    if (seenres == 0n || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+    if (seenres == 0n || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
         return;
 
     for (

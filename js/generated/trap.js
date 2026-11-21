@@ -1030,15 +1030,13 @@ export function burnarmor(victim) {
             case 0:
                 item = hitting_u ? uarmh.v : which_armor(victim, 4n);
                 if (item) {
-                    mat_idx = cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(item, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_material
-                        ),
-                        3,
-                        5,
-                        0
-                    ) | 0;
+                    mat_idx = (cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(item, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                            31) | 0;
                     void cptr.sprintf(
                         cptr.decay(buf),
                         __s_s_s,
@@ -1176,7 +1174,7 @@ export function erode_obj(otmp, ostr, type, ef_flags) {
                 cptr.ldI16o(u, $you_uy)
             ) <=
                 2) &&
-                ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0))
+                (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0))
             ? 1
             : 0));
 
@@ -1189,15 +1187,13 @@ export function erode_obj(otmp, ostr, type, ef_flags) {
             cost_type = NHC.COST_BURN;
             break;
         case NHM.ERODE_RUST:
-            vulnerable = schar(((cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            vulnerable = schar((((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                 0) ==
                     NHC.IRON));
             cost_type = NHC.COST_RUST;
@@ -1753,7 +1749,7 @@ export function fall_through(td, ftflags) {
                     16n) !=
                     0n) ||
                 (ceiling_hider(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
-                    (cptr.ldI32o(u, $you_uundetected) & 1) | 0)) &&
+                    cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0)) &&
                 !((ftflags & NHM.TOOKPLUNGE) >>> 0))) {
         dont_fall = __s_don_t_fall_in;
     } else if (cptr.ld1uo(
@@ -2099,7 +2095,7 @@ export function animate_statue(statue, x, y, cause, fail_reason) {
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_objects
             ) !== null))
-        cptr.stI32o(u, $you_uundetected, 0);
+        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
 
     if (fail_reason)
         cptr.stI32(fail_reason, NHM.AS_OK);
@@ -2337,15 +2333,13 @@ function check_in_air(mtmp, trflags) {
 export function wearing_iron_shoes(mtmp) {
     let armf = which_armor(mtmp, 32n);
     return schar((armf &&
-        (cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(armf, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) |
+        ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(armf, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31) |
             0) ==
             NHC.IRON
             ? 1
@@ -4713,15 +4707,13 @@ export function immune_to_trap(mon, ttype) {
                 obj = cptr.ldPtr(obj)
             ) {
                 /* rust traps can currently hit only worn armor and weapons */
-                if (((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_material
-                    ),
-                    3,
-                    5,
-                    0
-                ) |
+                if ((((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_material
+                ) &
+                    31) |
                     0) ==
                     NHC.IRON) &&
                         cptr.ldI64o(obj, $obj_owornmask)) {
@@ -4760,19 +4752,13 @@ export function immune_to_trap(mon, ttype) {
                         cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_FIREBALL) &&
                             (!is_you ||
                                 ((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
-                                    cptr.ldBits(
-                                        cptr.add(
-                                            cptr.add(
-                                                objects,
-                                                cptr.ldI16o(obj, $obj_otyp),
-                                                $sizeof_objclass
-                                            ),
-                                            $objclass_oc_name_known
-                                        ),
-                                        0,
-                                        1,
-                                        0
-                                    ) | 0)))
+                                    (cptr.ldI32o2(
+                                        objects,
+                                        cptr.ldI16o(obj, $obj_otyp),
+                                        $sizeof_objclass,
+                                        $objclass_oc_name_known
+                                    ) &
+                                        1) | 0)))
                         continue;
                     return NHC.TRAP_NOT_IMMUNE;
                 }
@@ -6387,9 +6373,9 @@ export function float_up() {
         } else {
             You(__s_float_up_slightly_but_your_s_is_still, body_part(NHC.LEG));
         }
-    } else if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         spoteffects(1);
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* FIXME: this isn't correct for trapper/lurker above */
         if (((cptr.ldU64o(
             (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
@@ -6518,7 +6504,7 @@ export function float_down(hmask, emask) {
             return 1;
         }
     }
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         You(
             __s_float_down_but_you_are_still_s,
             (dmgtype_fromattack(
@@ -6557,7 +6543,7 @@ export function float_down(hmask, emask) {
     }
     /* check for falling into pool - added by GAN 10/20/86 */
     if (!Flying()) {
-        if (!(cptr.ldI32o(u, $you_uswallow) & 1) && cptr.ldPtro(u, $you_ustuck)) {
+        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) && cptr.ldPtro(u, $you_ustuck)) {
             if (sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
                 You(
                     __s_aren_t_able_to_maintain_your_hold_on_s,
@@ -6598,7 +6584,7 @@ export function float_down(hmask, emask) {
                             )
                         )))) &&
                 !Swimming() &&
-                !(cptr.ldI32o(u, $you_uinwater) & 1))
+                !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
             no_msg = drown();
 
         if (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
@@ -6646,7 +6632,7 @@ export function float_down(hmask, emask) {
                 !no_msg) {
             You_feel(__s_heavier);
             /* u.uinwater msgs already in spoteffects()/drown() */
-        } else if (!(cptr.ldI32o(u, $you_uinwater) & 1) && !no_msg) {
+        } else if (!cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) && !no_msg) {
             if (!(emask & 1048576n)) {
                 if ((cptr.ldI32o(
                     svl,
@@ -6744,7 +6730,7 @@ export function float_down(hmask, emask) {
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
                     )
                 ))) &&
-            !(cptr.ldI32o(u, $you_uswallow) & 1) &&
+            !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
             on_level(cptr.add(u, $you_uz), current_dungeon_level))
         void pickup(1);
     return 1;
@@ -6830,7 +6816,7 @@ function dofiretrap(box) {
 
     if ((box && !(cptr.ld1so((box), $obj_where) == NHM.OBJ_INVENT))
             ? is_pool(cptr.ldI16o(box, $obj_ox), cptr.ldI16o(box, $obj_oy))
-            : ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0) {
+            : (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0) {
         pline(
             __s_a_cascade_of_steamy_bubbles_erupts_from,
             the(box ? xname(box) : surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
@@ -7281,13 +7267,7 @@ export function lava_damage(obj, x, y) {
        and books--let fire damage deal with them), cloth, leather, wood, bone
        unless it's inherently or explicitly fireproof or contains something;
        note: potions are glass so fall through to fire_damage() and boil */
-    if ((cptr.ldBits(
-        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
-        3,
-        5,
-        0
-    ) |
-        0) <
+    if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) <
         NHC.DRAGON_HIDE &&
             ocls != NHC.SCROLL_CLASS &&
             ocls != NHC.SPBOOK_CLASS &&
@@ -7847,7 +7827,7 @@ export function rescued_from_terrain(how) {
                 You(
                     __s_s_s_s__4,
                     cptr.decay(__static_rescued_from_terrain_find_yourself),
-                    (cptr.ldI32o(u, $you_uinwater) & 1) | 0 ? __s_in : __s_on,
+                    cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 ? __s_in : __s_on,
                     hliquid(__s_water)
                 );
                 mesggiven = 1;
@@ -7888,7 +7868,7 @@ export function drown() {
 
     feel_newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* in case Blind, map the water here */
     /* happily wading in the same contiguous pool */
-    if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 &&
             is_pool(
                 i16(((cptr.ldI16(u) - cptr.ldI32o(u, $you_dx)) | 0)),
                 i16(((cptr.ldI16o(u, $you_uy) - cptr.ldI32o(u, $you_dy)) | 0))
@@ -7901,7 +7881,7 @@ export function drown() {
             return 0;
     }
 
-    if (!(cptr.ldI32o(u, $you_uinwater) & 1)) {
+    if (!cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         You(
             __s_s_into_the_s_c,
             is_solid ? __s_plunge : __s_fall,
@@ -8070,7 +8050,7 @@ export function drown() {
         pline(__s_you_re_still_drowning);
     }
 
-    if ((cptr.ldI32o(u, $you_uinwater) & 1))
+    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
         set_uinwater(0);  /* u.uinwater = 0 */
     rescued_from_terrain(NHC.DROWNING);
     return 1;
@@ -8623,12 +8603,7 @@ function unsqueak_ok(obj) {
 
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL &&
             (cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
-            cptr.ldBits(
-                cptr.add(cptr.add(objects, NHC.POT_OIL, $sizeof_objclass), $objclass_oc_name_known),
-                0,
-                1,
-                0
-            ) | 0)
+            (cptr.ldI32o2(objects, NHC.POT_OIL, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0)
         return NHC.GETOBJ_SUGGEST;
 
     /* downplay all other potions, including unidentified oil
@@ -10256,15 +10231,13 @@ export function lava_effects() {
                     continue;
                 }
                 /* set obj->in_use for items which will be destroyed below */
-                if ((((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_material
-                    ),
-                    3,
-                    5,
-                    0
-                ) |
+                if (((((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_material
+                ) &
+                    31) |
                     0) <=
                     NHC.WOOD) ||
                     cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS) &&
@@ -10291,15 +10264,13 @@ export function lava_effects() {
          */
         if (uarmf.v &&
                 ((cptr.ldI32o(uarmf.v, $obj_in_use) & 1) | 0 ||
-                    (((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(uarmf.v, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_material
-                        ),
-                        3,
-                        5,
-                        0
-                    ) |
+                    ((((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(uarmf.v, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
                         0) <=
                         NHC.WOOD) &&
                         !(cptr.ldI32o(uarmf.v, $obj_oerodeproof) & 1)))) {
@@ -10540,7 +10511,7 @@ export function sink_into_lava() {
         ;
     } else if (!is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
         reset_utrap(0);  /* this shouldn't happen either */
-    } else if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+    } else if (!cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
         /* ordinarily we'd have to be fire resistant to survive long
            enough to become stuck in lava, but it can happen without
            resistance if water walking boots allow survival and then
@@ -10728,7 +10699,7 @@ export function trapname(ttyp, override) {
 
         if (nameidx == total_names) {
             let fem = schar((Upolyd()
-                    ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
+                    ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
                     : cptr.ld1so(flags, $flag_female)));
 
             /* inspired by "tourist trap" */

@@ -822,7 +822,7 @@ function use_camera(obj) {
 
     if ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 && !rn2(2)) {
         void zapyourself(obj, 1);
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         You(
             __s_take_a_picture_of_s_s,
             s_suffix(mon_nam(cptr.ldPtro(u, $you_ustuck))),
@@ -1266,7 +1266,7 @@ function use_stethoscope(obj) {
     let res = cptr.box(0);
     let rx;
     let ry;
-    let interference = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+    let interference = schar((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
         is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)) &&
         !rn2((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_HEALER) ? 10 : 3)
             ? 1
@@ -1298,7 +1298,11 @@ function use_stethoscope(obj) {
 
     cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16(u)),
             cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(u, $you_uy));  /* tentative, reset below */
-    cptr.st1o(gn, $instance_globals_n_notonhead, schar((cptr.ldI32o(u, $you_uswallow) & 1)));
+    cptr.st1o(
+        gn,
+        $instance_globals_n_notonhead,
+        schar(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
+    );
     if (cptr.ldPtro(u, $you_usteed) && cptr.ldI32o(u, $you_dz) > 0) {
         if (interference) {
             pline(__s_s_interferes, Monnam(cptr.ldPtro(u, $you_ustuck)));
@@ -1306,11 +1310,11 @@ function use_stethoscope(obj) {
         } else
             mstatusline(cptr.ldPtro(u, $you_usteed));
         return res.v;
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
             (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy) || cptr.ldI32o(u, $you_dz))) {
         mstatusline(cptr.ldPtro(u, $you_ustuck));
         return res.v;
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && interference) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && interference) {
         pline(__s_s_interferes, Monnam(cptr.ldPtro(u, $you_ustuck)));
         mstatusline(cptr.ldPtro(u, $you_ustuck));
         return res.v;
@@ -1530,7 +1534,7 @@ function use_magic_whistle(obj) {
     } else if ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 && !rn2(2)) {
         You(
             __s_produce_a_shigh_s,
-            ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ? __s_very : __s_empty,
+            (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ? __s_very : __s_empty,
             Deaf() ? __s_frequency_vibration : __s_pitched_humming_noise
         );
         wake_nearby(1);
@@ -1542,7 +1546,7 @@ function use_magic_whistle(obj) {
             Deaf() ? cptr.decay(alt_whistle_str) : cptr.decay(whistle_str),
             Hallucination()
                 ? __s_normal
-                : ((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !Deaf())
+                : (((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 && !Deaf())
                     ? __s_strange_high_pitched
                     : __s_strange)
         );
@@ -1563,15 +1567,13 @@ function magic_whistled(obj) {
     let disappearbuf = new Uint8Array(267);
     let oseen;
     let nseen;
-    let already_discovered = schar(((cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_name_known
-        ),
-        0,
-        1,
-        0
-    ) |
+    let already_discovered = schar((((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(obj, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_name_known
+    ) &
+        1) |
             0) != 0));
     let omx;
     let omy;
@@ -1885,7 +1887,7 @@ function use_leash(obj) {
     let cc = cptr.alloc(4);
     let mtmp;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* if the leash isn't in use, assume we're trying to leash
            the engulfer; if it is use, distinguish between removing
            it from the engulfer versus from some other creature
@@ -2254,7 +2256,7 @@ function use_mirror(obj) {
         }
         return NHM.ECMD_TIME;
     }
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (useeit)
             You(
                 __s_reflect_s_s,
@@ -2477,8 +2479,8 @@ function use_bell(optr) {
     ;
     You(__s_ring_s, the(xname(obj)));
 
-    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ||
-            ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && ordinary)) {
+    if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
+            (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && ordinary)) {
         pline(__s_but_the_sound_is_muffled);
 
     } else if (invoking && ordinary) {
@@ -2542,7 +2544,7 @@ function use_bell(optr) {
         /* charged Bell of Opening */
         consume_obj_charge(obj, 1);
 
-        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             if (!(cptr.ldI32o(obj, $obj_cursed) & 1))
                 void openit();
             else
@@ -2633,7 +2635,8 @@ function use_candelabrum(obj) {
         You(__s_cannot_make_fire_under_water);
         return;
     }
-    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+            (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
         if (!Blind())
             pline_The(__s_s_s_for_a_moment_then_s, s, vtense(s, __s_flicker), vtense(s, __s_die));
         return;
@@ -2691,7 +2694,7 @@ function use_candle(optr) {
     let q;
     let was_lamplit;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         You(cptr.decay(no_elbow_room));
         return;
     }
@@ -3194,7 +3197,7 @@ function light_cocktail(optr) {
     let buf = new Uint8Array(256);
     let split1off;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         You(cptr.decay(no_elbow_room));
         return;
     }
@@ -3558,14 +3561,14 @@ export function jump(magic) {
     } else if (!magic && cptr.ldPtro(u, $you_usteed) && stucksteed(0)) {
         /* stucksteed gave "<steed> won't move" message */
         return NHM.ECMD_OK;
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (magic) {
             You(__s_bounce_around_a_little);
             return NHM.ECMD_TIME;
         }
         pline(__s_you_ve_got_to_be_kidding);
         return NHM.ECMD_OK;
-    } else if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         if (magic) {
             You(__s_swish_around_a_little);
             return NHM.ECMD_TIME;
@@ -3938,7 +3941,7 @@ export function use_unicorn_horn(optr) {
         cptr.stI32o(trouble_list, trouble_count++, NHC.SICK, 4);
     if ((((HBlinded()) && !((HBlinded()) & -16777216n)) ? ((HBlinded()) & 16777215n) : 0n) >
         BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) &&
-            !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+            !(cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                 attacktype_fordmg(
                     cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
                     NHM.AT_ENGL,
@@ -4197,7 +4200,7 @@ function figurine_location_checks(obj, cc, quietly) {
     let y;
 
     if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) &&
-            (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
         if (!quietly)
             You(__s_don_t_have_enough_room_in_here);
         return 0;
@@ -4284,7 +4287,7 @@ function use_figurine(optr) {
     let y;
     let cc = cptr.alloc(4);
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* can't activate a figurine while swallowed */
         if (!figurine_location_checks(obj, null, 0))
             return NHM.ECMD_OK;
@@ -4449,15 +4452,13 @@ function touchstone_ok(obj) {
     /* don't suggest identified gems */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS &&
             !((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_name_known
-                    ),
-                    0,
-                    1,
-                    0
-                ) | 0))
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) &
+                    1) | 0))
         return NHC.GETOBJ_SUGGEST;
 
     return NHC.GETOBJ_DOWNPLAY;
@@ -4480,12 +4481,7 @@ function use_stone(tstone) {
         observe_object(tstone);
     known = schar((cptr.ldI16o(tstone, $obj_otyp) == NHC.TOUCHSTONE &&
         (cptr.ldI32o(tstone, $obj_dknown) & 1) | 0 &&
-        cptr.ldBits(
-            cptr.add(cptr.add(objects, NHC.TOUCHSTONE, $sizeof_objclass), $objclass_oc_name_known),
-            0,
-            1,
-            0
-        ) | 0
+        (cptr.ldI32o2(objects, NHC.TOUCHSTONE, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
             ? 1
             : 0));
     void cptr.sprintf(
@@ -4540,26 +4536,22 @@ function use_stone(tstone) {
     oclass = cptr.ld1so(obj, $obj_oclass);
     /* prevent non-gemstone rings from being treated like gems */
     if (oclass == NHC.RING_CLASS &&
-            (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                 0) !=
                 NHC.GEMSTONE &&
-            (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                 0) !=
                 NHC.MINERAL)
         oclass = NHC.RANDOM_CLASS;  /* something that's neither gem nor ring */
@@ -4582,15 +4574,13 @@ function use_stone(tstone) {
                 return NHM.ECMD_TIME;
             } else {
                 /* either a ring or the touchstone was not effective */
-                if ((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_material
-                    ),
-                    3,
-                    5,
-                    0
-                ) |
+                if (((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_material
+                ) &
+                    31) |
                     0) ==
                         NHC.GLASS) {
                     do_scratch = 1;
@@ -4609,15 +4599,13 @@ function use_stone(tstone) {
             );
             break;  /* gem or ring */
         default:
-            switch (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            switch ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                     0) {
                 case NHC.CLOTH:
                     pline(__s_s_a_little_more_polished_now, Tobjnam(tstone, __s_look));
@@ -4714,7 +4702,7 @@ function use_trap(otmp) {
         what = __s_without_hands;
     else if (HStun())
         what = __s_while_stunned;
-    else if ((cptr.ldI32o(u, $you_uswallow) & 1))
+    else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
         what = (dmgtype_fromattack(
             (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
             NHM.AD_DGST,
@@ -4905,7 +4893,7 @@ export function use_whip(obj) {
         if (!getdir(null))
             return (res | NHM.ECMD_CANCEL);
 
-        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             mtmp = cptr.ldPtro(u, $you_ustuck);
             rx = cptr.ldI16o(mtmp, $monst_mx);
             ry = cptr.ldI16o(mtmp, $monst_my);
@@ -4942,7 +4930,7 @@ export function use_whip(obj) {
         if (proficient < 0)
             proficient = 0;
 
-        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             There(__s_is_not_enough_room_to_flick_your);
 
         } else if (Underwater()) {
@@ -5585,7 +5573,7 @@ export function use_pole(obj, autohit) {
     let freehit = 0;
 
     /* Are you allowed to use the pole? */
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         pline(cptr.decay(not_enough_room));
         return NHM.ECMD_OK;
     }
@@ -6041,7 +6029,7 @@ function use_grapple(obj) {
     let otmp;
 
     /* Are you allowed to use the hook? */
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         pline(cptr.decay(not_enough_room));
         return NHM.ECMD_OK;
     }
@@ -6738,15 +6726,12 @@ function apply_ok(obj) {
     if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS) {
         /* permit applying unknown potions, but don't suggest them */
         if (!(cptr.ldI32o(obj, $obj_dknown) & 1) ||
-                !cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_name_known
-                    ),
-                    0,
-                    1,
-                    0
-                ))
+                !(cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) & 1))
             return NHC.GETOBJ_DOWNPLAY;
 
         /* only applicable potion is oil, and it will only be suggested as a
@@ -6771,25 +6756,16 @@ function apply_ok(obj) {
             return NHC.GETOBJ_SUGGEST;
 
         if (cptr.ldI16o(obj, $obj_otyp) != NHC.TOUCHSTONE &&
-                (cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, NHC.TOUCHSTONE, $sizeof_objclass),
-                        $objclass_oc_name_known
-                    ),
-                    0,
-                    1,
-                    0
-                ) |
+                ((cptr.ldI32o2(objects, NHC.TOUCHSTONE, $sizeof_objclass, $objclass_oc_name_known) &
+                    1) |
                     0 ||
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_name_known
-                        ),
-                        0,
-                        1,
-                        0
-                    ) | 0))
+                    (cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_name_known
+                    ) &
+                        1) | 0))
             return NHC.GETOBJ_EXCLUDE_SELECTABLE;
 
         return NHC.GETOBJ_SUGGEST;
@@ -7119,15 +7095,12 @@ function flip_through_book(obj) {
 
         pline(
             __s_the_s_ink_in_this_spellbook_is_s,
-            cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_magic
-                ),
-                4,
-                1,
-                0
-            ) | 0
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_magic
+            ) & 1) | 0
                 ? __s_magical
                 : __s_empty,
             cptr.ldPtro(__static_flip_through_book_fadeness, findx, 8)

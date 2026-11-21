@@ -346,15 +346,13 @@ export function befriend_with_obj(ptr, obj) {
         : (((cptr.ldU64o((ptr), $permonst_mflags2) & 4194304n) != 0n) &&
             cptr.ld1so((obj), $obj_oclass) == NHC.FOOD_CLASS &&
             (cptr.ld1so((ptr), $permonst_mlet) != NHC.S_UNICORN ||
-                (cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o((obj), $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_material
-                    ),
-                    3,
-                    5,
-                    0
-                ) |
+                ((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o((obj), $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_material
+                ) &
+                    31) |
                     0) ==
                     NHC.VEGGY ||
                 (cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE &&
@@ -367,15 +365,12 @@ export function befriend_with_obj(ptr, obj) {
 export function bimanual(otmp) {
     return ((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS ||
         cptr.ld1so(otmp, $obj_oclass) == NHC.TOOL_CLASS) &&
-        cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_big
-            ),
-            0,
-            1,
-            0
-        ) | 0
+        (cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_big
+        ) & 1) | 0
         ? 1
         : 0);
 }
@@ -1271,15 +1266,8 @@ export function is_blunt_weapon(o) {
                 $objclass_oc_subtyp
             ) !=
                 NHC.P_NONE)) &&
-        (((cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o((o), $obj_otyp), $sizeof_objclass),
-                $objclass_oc_dir
-            ),
-            0,
-            3,
-            0
-        ) |
+        ((((cptr.ldI32o2(objects, cptr.ldI16o((o), $obj_otyp), $sizeof_objclass, $objclass_oc_dir) &
+            7) |
             0) &
             NHM.WHACK) != 0)
         ? 1
@@ -1344,26 +1332,22 @@ export function is_cmap_water(i) { return ((i) == NHC.S_pool || (i) == NHC.S_wat
 
 /** C: include/objclass.h — the `is_corrodeable(otmp)` macro body */
 export function is_corrodeable(otmp) {
-    return ((cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) |
+    return (((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+        31) |
         0) ==
         NHC.COPPER ||
-        (cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) |
+        ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31) |
             0) ==
             NHC.IRON
         ? 1
@@ -1372,15 +1356,13 @@ export function is_corrodeable(otmp) {
 
 /** C: include/objclass.h — the `is_crackable(otmp)` macro body */
 export function is_crackable(otmp) {
-    return ((cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o((otmp), $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) |
+    return (((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o((otmp), $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+        31) |
         0) ==
         NHC.GLASS &&
         cptr.ld1so((otmp), $obj_oclass) == NHC.ARMOR_CLASS
@@ -1390,50 +1372,42 @@ export function is_crackable(otmp) {
 
 /** C: include/objclass.h — the `is_damageable(otmp)` macro body */
 export function is_damageable(otmp) {
-    return (((cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) |
+    return ((((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+        31) |
         0) ==
         NHC.IRON) ||
         is_flammable(otmp) ||
         is_rottable(otmp) ||
-        ((cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) |
+        (((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31) |
             0) ==
             NHC.COPPER ||
-            (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                 0) ==
                 NHC.IRON) ||
-        ((cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o((otmp), $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) |
+        (((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o((otmp), $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31) |
             0) ==
             NHC.GLASS &&
             cptr.ld1so((otmp), $obj_oclass) == NHC.ARMOR_CLASS)
@@ -1491,15 +1465,13 @@ export function is_elven_weapon(otmp) {
 
 /** C: include/obj.h — the `is_flimsy(otmp)` macro body */
 export function is_flimsy(otmp) {
-    return ((cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o((otmp), $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) |
+    return (((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o((otmp), $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+        31) |
         0) <=
         NHC.LEATHER ||
         cptr.ldI16o((otmp), $obj_otyp) == NHC.RUBBER_HOSE
@@ -1602,26 +1574,22 @@ export function is_magical_trap(ttyp) {
 
 /** C: include/objclass.h — the `is_metallic(otmp)` macro body */
 export function is_metallic(otmp) {
-    return ((cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) |
+    return (((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+        31) |
         0) >=
         NHC.IRON &&
-        (cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) |
+        ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31) |
             0) <=
             NHC.MITHRIL
         ? 1
@@ -2096,26 +2064,22 @@ export function spot_shows_engravings(x, y) {
 
 /** C: include/obj.h — the `stone_missile(o)` macro body */
 export function stone_missile(o) {
-    return (((cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o((o), $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) |
+    return ((((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o((o), $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+        31) |
         0) ==
         NHC.GEMSTONE ||
-        ((cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o((o), $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) |
+        (((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o((o), $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31) |
             0) ==
             NHC.MINERAL)) &&
         cptr.ld1so((o), $obj_oclass) != NHC.RING_CLASS

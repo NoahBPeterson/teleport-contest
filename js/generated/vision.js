@@ -405,7 +405,7 @@ export function does_block(x, y, lev) {
         if (cptr.ld1so(lev, $rm_typ) == NHC.CLOUD ||
                 ((cptr.ld1so(lev, $rm_typ)) == NHC.WATER) ||
                 cptr.ld1so(lev, $rm_typ) == NHC.LAVAWALL ||
-                (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && is_moat(i16(x), i16(y))))
+                ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 && is_moat(i16(x), i16(y))))
             return 1;
     }  /* gs.seethru */
 
@@ -762,7 +762,7 @@ export function vision_recalc(control) {
         get_unused_cs(next_array, next_rmin, next_rmax);
 
         /* You see nothing, nothing can see you --- if swallowed or refreshing. */
-        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || control == 2) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 || control == 2) {
             /* do nothing -- get_unused_cs() nulls out the new work area */
             ;
         } else if (Blind()) {
@@ -837,7 +837,7 @@ export function vision_recalc(control) {
             let lo_col;
             let has_night_vision = 1;  /* hero has night vision */
 
-            if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+            if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
                     !(((cptr.ldI16o(
                         (cptr.add(
                             svd,

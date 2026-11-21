@@ -761,14 +761,16 @@ export function* steal(mtmp, objnambuf) {
                     cptr.ldI64o(otmp, $obj_owornmask)) ||
                     (cptr.eq(
                         otmp,
-                        ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
+                        (((cptr.ldBits(cptr.add(u, $you_uhandedness), 7, 1, 0) | 0) ==
+                            NHM.LEFT_HANDED)
                             ? uleft.v
                             : uright.v)
                     ) &&
                         (yield* welded(uwep.v))) ||
                     (cptr.eq(
                         otmp,
-                        ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
+                        (((cptr.ldBits(cptr.add(u, $you_uhandedness), 7, 1, 0) | 0) ==
+                            NHM.LEFT_HANDED)
                             ? uright.v
                             : uleft.v)
                     ) &&
@@ -1040,7 +1042,7 @@ export function* mpickobj(mtmp, otmp) {
        the light to be extinguished rather than letting it shine through */
     if (obj_sheds_light(otmp) && attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_ENGL)) {
         /* this is probably a burning object that you dropped or threw */
-        if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+        if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
             (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) &&
                 !Blind())
             (yield* pline(__s_s_out, (yield* Tobjnam(otmp, __s_go))));

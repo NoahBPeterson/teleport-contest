@@ -1844,19 +1844,12 @@ export function from_what(propidx) {
                         ? __s_a_potion_or_spell
                         : (((EFast() & 32n) != 0n &&
                             (cptr.ldI32o(uarmf.v, $obj_dknown) & 1) | 0 &&
-                            cptr.ldBits(
-                                cptr.add(
-                                    cptr.add(
-                                        objects,
-                                        cptr.ldI16o(uarmf.v, $obj_otyp),
-                                        $sizeof_objclass
-                                    ),
-                                    $objclass_oc_name_known
-                                ),
-                                0,
-                                1,
-                                0
-                            ) | 0)
+                            (cptr.ldI32o2(
+                                objects,
+                                cptr.ldI16o(uarmf.v, $obj_otyp),
+                                $sizeof_objclass,
+                                $objclass_oc_name_known
+                            ) & 1) | 0)
                             ? ysimple_name(uarmf.v)
                             : (EFast()
                                 ? __s_worn_equipment

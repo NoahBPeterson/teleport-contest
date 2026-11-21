@@ -1165,7 +1165,7 @@ function enlght_halfdmg(category, final) {
 /* is hero actively using water walking capability on water (or lava)? */
 /** C ref: insight.c:224 @returns {CInt} */
 function walking_on_water() {
-    if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 || Levitation() || Flying())
+    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 || Levitation() || Flying())
         return 0;
     return schar((((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
         cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) &&
@@ -1252,15 +1252,13 @@ function cause_known(propindx) {
             continue;
         if (cptr.ld1uo2(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) ==
             propindx &&
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_name_known
-                    ),
-                    0,
-                    1,
-                    0
-                ) |
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(o, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) &
+                    1) |
                     0 &&
                 (cptr.ldI32o(o, $obj_dknown) & 1) | 0)
             return 1;
@@ -1404,7 +1402,9 @@ export function enlightenment(mode, final) {
         256n,
         __s_s_the_s_s_attributes,
         cptr.decay(tmpbuf),
-        ((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) &&
+        ((Upolyd()
+            ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
+            : cptr.ld1so(flags, $flag_female)) &&
             cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
             ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)
             : cptr.ldPtro(gu, $instance_globals_u_urole)
@@ -1524,7 +1524,7 @@ function background_enlightenment(unused_mode, final) {
     /* note that if poly'd, we need to use u.mfemale instead of flags.female
        to access hero's saved gender-as-human/elf/&c rather than current */
     innategend = (Upolyd()
-        ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
+        ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
         : cptr.ld1so(flags, $flag_female))
             ? 1
             : 0;
@@ -2382,7 +2382,7 @@ function status_enlightenment(mode, final) {
             ((__s_underwater)),
             ((__s_empty))
         );
-    } else if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         enlght_line(
             cptr.decay((You_)),
             final ? cptr.decay((were)) : cptr.decay((are)),
@@ -2407,7 +2407,9 @@ function status_enlightenment(mode, final) {
             ((from_what(NHC.WWALKING)))
         );
     }
-    if (Upolyd() && ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 || U_AP_TYPE() != NHC.M_AP_NOTHING))
+    if (Upolyd() &&
+            (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 ||
+                U_AP_TYPE() != NHC.M_AP_NOTHING))
         youhiding(1, final);
 
     /* internal troubles, mostly in the order that prayer ranks them */
@@ -2434,7 +2436,7 @@ function status_enlightenment(mode, final) {
             );
     }
     if (Strangled()) {
-        if ((cptr.ldI32o(u, $you_uburied) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0)) {
             enlght_line(
                 cptr.decay((You_)),
                 final ? cptr.decay((were)) : cptr.decay((are)),
@@ -2467,7 +2469,7 @@ function status_enlightenment(mode, final) {
                 cptr.decay(buf),
                 __s_sdied_from_s,
                 cptr.decay(You_),
-                (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE)
+                ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_NONVOMITABLE)
                     ? __s_terminal_illness
                     : __s_food_poisoning
             );  /* has trailing space */
@@ -2475,14 +2477,14 @@ function status_enlightenment(mode, final) {
         } else {
             /* unlike death due to sickness, report the two cases separately
                because it is possible to cure one without curing the other */
-            if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE)
+            if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_NONVOMITABLE)
                 enlght_line(
                     cptr.decay((You_)),
                     final ? cptr.decay((were)) : cptr.decay((are)),
                     ((__s_terminally_sick_from_illness)),
                     ((__s_empty))
                 );
-            if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE)
+            if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_VOMITABLE)
                 enlght_line(
                     cptr.decay((You_)),
                     final ? cptr.decay((were)) : cptr.decay((are)),
@@ -2607,7 +2609,7 @@ function status_enlightenment(mode, final) {
                     ) != 0))
             void cptr.strcpy(cptr.decay(heldmon), __s_an_unseen_creature);
     }
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(u, $you_ustuck), (null))))), 0n)
                 ? __assert_rtn(__s_status_enlightenment, __s_insight_c, 1108, __s_u_ustuck_null)
                 : void 0);  /* implied by u.uswallow */
@@ -3416,7 +3418,7 @@ function attributes_enlightenment(unused_mode, final) {
             (__s_hallucinations),
             (from_what(NHC.HALLUC_RES))
         );
-    if ((cptr.ldI32o(u, $you_uedibility) & 1))
+    if (cptr.ldBits(cptr.add(u, $you_uedibility), 6, 1, 0))
         enlght_line(
             cptr.decay((You_)),
             final ? cptr.decay((could)) : cptr.decay((can)),
@@ -3777,7 +3779,7 @@ function attributes_enlightenment(unused_mode, final) {
             0n)) {
         let has_lid = has_ceiling(cptr.add(u, $you_uz));
 
-        if (has_lid && !(cptr.ldI32o(u, $you_uinwater) & 1)) {
+        if (has_lid && !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
             enlght_line(
                 cptr.decay((You_)),
                 final ? cptr.decay((could)) : cptr.decay((can)),
@@ -3789,9 +3791,11 @@ function attributes_enlightenment(unused_mode, final) {
                 cptr.decay(buf),
                 __s_to_the_ceiling_if_s_s_s,
                 !has_lid ? __s_there_was_one : __s_empty,
-                (!has_lid && (cptr.ldI32o(u, $you_uinwater) & 1) | 0) ? __s_and__2 : __s_empty,
-                (cptr.ldI32o(u, $you_uinwater) & 1) | 0
-                    ? (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0
+                (!has_lid && cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0)
+                    ? __s_and__2
+                    : __s_empty,
+                cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0
+                    ? ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0
                         ? __s_you_weren_t_underwater
                         : __s_you_weren_t_in_the_water)
                     : __s_empty
@@ -3835,7 +3839,8 @@ function attributes_enlightenment(unused_mode, final) {
         );
     /* actively swimming (in water but not under it) handled earlier */
     if (Swimming() &&
-            (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || !(cptr.ldI32o(u, $you_uinwater) & 1)))
+            ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
+                !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)))
         enlght_line(
             cptr.decay((You_)),
             final ? cptr.decay((could)) : cptr.decay((can)),
@@ -4364,7 +4369,7 @@ export function youhiding(via_enlghtmt, msgflag) {
         } else {
             ;  /* something unexpected; leave 'buf' as-is */
         }
-    } else if ((cptr.ldI32o(u, $you_uundetected) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0)) {
         bp = eos(cptr.decay(buf));  /* points past "hiding" */
         if (cptr.ld1so(
             cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
@@ -6301,7 +6306,7 @@ export function mstatusline(mtmp) {
            this used to have that backwards and checked sticks() first */
         void cptr.strcat(
             cptr.decay(info),
-            (cptr.ldI32o(u, $you_uswallow) & 1) | 0
+            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0
                 ? ((dmgtype_fromattack((pm), NHM.AD_DGST, NHM.AT_ENGL) !== null)
                     ? __s_digesting_you
                     : ((((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) &&
@@ -6357,10 +6362,10 @@ export function ustatusline() {
     cptr.st1o(cptr.decay(info), 0, 0, 1);
     if (Sick()) {
         void cptr.strcat(cptr.decay(info), __s_dying_from);
-        if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE)
+        if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_VOMITABLE)
             void cptr.strcat(cptr.decay(info), __s_food_poisoning__2);
-        if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) {
-            if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE)
+        if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_NONVOMITABLE) {
+            if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_VOMITABLE)
                 void cptr.strcat(cptr.decay(info), __s_and);
             void cptr.strcat(cptr.decay(info), __s_illness);
         }
@@ -6410,14 +6415,14 @@ export function ustatusline() {
         void cptr.strcat(cptr.decay(info), __s_trapped__2);
     if (Fast())
         void cptr.strcat(cptr.decay(info), Very_fast() ? __s_very_fast__2 : __s_fast__2);
-    if ((cptr.ldI32o(u, $you_uundetected) & 1))
+    if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0))
         void cptr.strcat(cptr.decay(info), __s_concealed);
     else if (U_AP_TYPE() != NHC.M_AP_NOTHING)
         void cptr.strcat(cptr.decay(info), __s_disguised);
     if (Invis())
         void cptr.strcat(cptr.decay(info), __s_invisible__3);
     if (cptr.ldPtro(u, $you_ustuck)) {
-        if ((cptr.ldI32o(u, $you_uswallow) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
             void cptr.strcat(
                 cptr.decay(info),
                 (dmgtype_fromattack(
@@ -6438,7 +6443,7 @@ export function ustatusline() {
            fiddling with just for self-probing while engulfed */
         void cptr.strcat(cptr.decay(info), a_monnam(cptr.ldPtro(u, $you_ustuck)));
     }
-    if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
+    if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
             (reg = visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null &&
             (ln = cptr.strlen(cptr.decay(info))) < 256n)
         nh_snprintf(

@@ -1145,13 +1145,7 @@ function veggy_item(obj, otyp) {
     }
 
     if (oclass == NHC.FOOD_CLASS) {
-        if ((cptr.ldBits(
-            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
-            3,
-            5,
-            0
-        ) |
-            0) ==
+        if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) ==
             NHC.VEGGY ||
                 otyp == NHC.EGG)
             return 1;

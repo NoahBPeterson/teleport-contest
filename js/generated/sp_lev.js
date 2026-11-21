@@ -5090,15 +5090,13 @@ function create_object(o, croom) {
     cptr.stI32o(otmp, $obj_greased, (cptr.ldI16o(o, $object_greased) ? 1 : 0) >>> 0);
 
     if (cptr.ldI32o(o, $object_quan) > 0 &&
-            cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_merge
-                ),
-                1,
-                1,
-                0
-            ) |
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_merge
+            ) &
+                1) |
                 0) {
         cptr.stI64o(otmp, $obj_quan, BigInt(cptr.ldI32o(o, $object_quan)));
         cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
@@ -7114,15 +7112,12 @@ export function lspo_object(L) {
         quancnt--;
     } while ((quancnt > 0n) &&
             ((cptr.ldI16o(tmpobj, $object_id) > NHC.STRANGE_OBJECT) &&
-                !cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(tmpobj, $object_id), $sizeof_objclass),
-                        $objclass_oc_merge
-                    ),
-                    1,
-                    1,
-                    0
-                )));
+                !(cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(tmpobj, $object_id),
+                    $sizeof_objclass,
+                    $objclass_oc_merge
+                ) & 1)));
 
     if (lua_type(L, -1) == 6) {
         (lua_rotate(L, -2, -1), lua_settop(L, -2));

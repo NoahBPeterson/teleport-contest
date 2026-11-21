@@ -1574,55 +1574,47 @@ export function* dogfood(mon, obj) {
                     cptr.ldI16o(obj, $obj_otyp) == NHC.RIN_SLOW_DIGESTION)
                 return NHC.TABU;
             if (mon_hates_silver(mon) &&
-                    (cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_material
-                        ),
-                        3,
-                        5,
-                        0
-                    ) |
+                    ((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
                         0) ==
                         NHC.SILVER)
                 return NHC.TABU;
             if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)) &&
-                    ((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_material
-                        ),
-                        3,
-                        5,
-                        0
-                    ) |
+                    (((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
                         0) <=
                         NHC.WOOD))
                 return NHC.ACCFOOD;
             if (((cptr.ldU64o((mptr), $permonst_mflags1) & 2147483648n) != 0n) &&
                     is_metallic(obj) &&
-                    (((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_material
-                        ),
-                        3,
-                        5,
-                        0
-                    ) |
+                    ((((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
                         0) ==
                         NHC.IRON) ||
                         !cptr.eq(mptr, cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)))) {
                 /* Non-rustproofed ferrous-based metals are preferred. */
-                return (((cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_material
-                    ),
-                    3,
-                    5,
-                    0
-                ) |
+                return ((((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_material
+                ) &
+                    31) |
                     0) ==
                     NHC.IRON) &&
                     !(cptr.ldI32o(obj, $obj_oerodeproof) & 1))
@@ -1709,7 +1701,7 @@ export function* tamedog(mtmp, obj, givemsg) {
 
     /* make grabber let go now, whether it becomes tame or not */
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
-        if ((cptr.ldI32o(u, $you_uswallow) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
             (yield* expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 1));
         else if (!(Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
             (yield* unstuck(mtmp));

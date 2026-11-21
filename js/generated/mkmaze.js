@@ -2971,7 +2971,7 @@ export function movebubbles() {
                             cptr.stI16o(mon, $monst_mx, cptr.stI16o(mon, $monst_my, 0));
                             cptr.stI64o(mon, $monst_mstate, cptr.ldI64o(mon, $monst_mstate) | 16n);
                         }
-                        if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
+                        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
                                 ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
                             cons = alloc(24);
                             cptr.stI16o(cons, $container_x, x);

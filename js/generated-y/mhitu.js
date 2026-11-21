@@ -577,24 +577,10 @@ export function mswings_verb(mwep, bash) {
         is_wet_towel(mwep)
             ? 1
             : 0);
-    let thrust = (((cptr.ldBits(
-        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_dir),
-        0,
-        3,
-        0
-    ) |
-        0) &
+    let thrust = ((((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) &
         NHM.PIERCE) !=
         0 &&
-        (((cptr.ldBits(
-            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_dir),
-            0,
-            3,
-            0
-        ) |
-            0) &
-            -2) ==
-            0 ||
+        ((((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) & -2) == 0 ||
             !rn2(2))
             ? 1
             : 0);
@@ -680,7 +666,7 @@ function* wildmiss(mtmp, mattk) {
             ? 1
             : 0));
     let unotthere = schar((Displaced() != 0));
-    let usubmerged = schar(((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0) != 0));
+    let usubmerged = schar((((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0) != 0));
 
     /* the reasons for wildmiss end up getting checked twice so that the
        impossible can be given, if warranted, before the early returns */
@@ -1098,17 +1084,17 @@ export function* mattacku(mtmp) {
         nomul(0);
     if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
         return 1;
-    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+    if ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
             !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 2n) != 0n))
         return 0;
 
     /* If swallowed, can only be affected by u.ustuck */
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (!cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
             return 0;
         cptr.stI16o(cptr.ldPtro(u, $you_ustuck), $monst_mux, cptr.ldI16(u));
         cptr.stI16o(cptr.ldPtro(u, $you_ustuck), $monst_muy, cptr.ldI16o(u, $you_uy));
-        if ((cptr.ldI32o(u, $you_uinvulnerable) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0))
             return 0;  /* stomachs can't hurt you! */
         range2.v = 0;
         foundyou.v = 1;
@@ -1141,13 +1127,13 @@ export function* mattacku(mtmp) {
         }
     }
 
-    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
             !range2.v &&
             foundyou.v &&
-            !(cptr.ldI32o(u, $you_uswallow) & 1)) {
+            !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (!canspotmon(mtmp))
             (yield* map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
-        cptr.stI32o(u, $you_uundetected, 0);
+        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
         if (((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
@@ -1327,7 +1313,7 @@ export function* mattacku(mtmp) {
             U_AP_TYPE() &&
             !range2.v &&
             foundyou.v &&
-            !(cptr.ldI32o(u, $you_uswallow) & 1)) {
+            !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         let sticky = sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
 
         if (!canspotmon(mtmp))
@@ -1353,7 +1339,7 @@ export function* mattacku(mtmp) {
     if (U_AP_TYPE() == NHC.M_AP_OBJECT &&
             !range2.v &&
             foundyou.v &&
-            !(cptr.ldI32o(u, $you_uswallow) & 1)) {
+            !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (!canspotmon(mtmp))
             (yield* map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
         if (!youseeit.v)
@@ -1449,7 +1435,7 @@ export function* mattacku(mtmp) {
         mdat = cptr.ldPtro(mtmp, $monst_data);  /* update cached value in case of were change */
     }
 
-    if ((cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
         /* monsters won't attack you */
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
             (yield* pline_mon(mtmp, __s_s_loosens_its_grip_slightly, (yield* Monnam(mtmp))));
@@ -1497,7 +1483,8 @@ export function* mattacku(mtmp) {
         }
         mon_currwep = null;
         mattk = (yield* getmattk(mtmp, cptr.add(gy, $instance_globals_y_youmonst), i, sum, alt_attk));
-        if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && cptr.ld1u(mattk) != NHM.AT_ENGL) ||
+        if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+            cptr.ld1u(mattk) != NHM.AT_ENGL) ||
                 (skipnonmagc && cptr.ld1u(mattk) != NHM.AT_MAGC) ||
                 (cptr.ld1so(gs, $instance_globals_s_skipdrin) &&
                     cptr.ld1u(mattk) == NHM.AT_TENT &&
@@ -1579,7 +1566,7 @@ export function* mattacku(mtmp) {
             case NHM.AT_ENGL:
                 if (!range2.v) {
                     if (foundyou.v) {
-                        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
                                 (!cptr.ldI32o(mtmp, $monst_mspec_used) &&
                                     tmp > (j = rnd((20 + i) | 0)))) {
                             /* force swallowing monster to be displayed
@@ -1869,15 +1856,12 @@ export function* u_slip_free(mtmp, mattk) {
                 : __s_grabs_you_but_cannot_hold_onto,
             (cptr.ldI32o(obj, $obj_greased) & 1) | 0 ? __s_greased : __s_slippery,
             ((cptr.ldI32o(obj, $obj_greased) & 1) | 0 ||
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_name_known
-                    ),
-                    0,
-                    1,
-                    0
-                ) | 0)
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) & 1) | 0)
                 ? (yield* xname(obj))
                 : cloak_simple_name(obj)
         ));
@@ -2147,7 +2131,7 @@ export function* gulp_blnd_check() {
     let mattk;
 
     if (!Blinded() &&
-            (cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
             (mattk = attacktype_fordmg(
                 cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
                 NHM.AT_ENGL,
@@ -2182,7 +2166,7 @@ function* gulpmu(mtmp, mattk) {
     let i;
     let physical_damage = 0;
 
-    if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         let omx = cptr.ldI16o(mtmp, $monst_mx);
         let omy = cptr.ldI16o(mtmp, $monst_my);
 
@@ -2298,7 +2282,7 @@ function* gulpmu(mtmp, mattk) {
 
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
         (yield* vision_recalc(2));  /* hero can't see anything */
-        cptr.stI32o(u, $you_uswallow, 1);
+        cptr.stBits(cptr.add(u, $you_uswallow), 0, 1, 0, 1);
         /* for digestion, shorter time is more dangerous;
            for other swallowings, longer time means more
            chances for the swallower to attack */
@@ -2533,7 +2517,7 @@ function* gulpmu(mtmp, mattk) {
     if (tmp)
         (yield* stop_occupation());
 
-    if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         ;  /* life-saving has already expelled swallowed hero */
     } else if (touch_petrifies(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
             !(yield* Resists_Elem(mtmp, NHC.STONE_RES))) {

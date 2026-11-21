@@ -1371,12 +1371,7 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
     let o_typ = i16(((by_align || !otmp) ? 0 : cptr.ldI16o(otmp, $obj_otyp)));
     let unique = schar((!by_align &&
         otmp &&
-        cptr.ldBits(
-            cptr.add(cptr.add(objects, o_typ, $sizeof_objclass), $objclass_oc_unique),
-            6,
-            1,
-            0
-        ) | 0
+        (cptr.ldI32o2(objects, o_typ, $sizeof_objclass, $objclass_oc_unique) & 1) | 0
             ? 1
             : 0));
     let eligible = cptr.alloc(33 * 2);
@@ -1795,15 +1790,13 @@ export function shade_glare(obj) {
     let arti;
 
     /* any silver object is effective */
-    if ((cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) |
+    if (((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(obj, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+        31) |
         0) ==
             NHC.SILVER)
         return 1;
@@ -1855,12 +1848,7 @@ export function restrict_name(otmp, name) {
         __builtin_object_size(cptr.decay(sametype), 0)
     );  /* FALSE */
     cptr.st1o(cptr.decay(sametype), otyp, 1, 1);
-    if (!cptr.ldBits(
-        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
-        0,
-        1,
-        0
-    ) &&
+    if (!(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) &&
             (odesc = (cptr.ldPtro2(
                 obj_descr,
                 cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx),
@@ -1876,12 +1864,7 @@ export function restrict_name(otmp, name) {
         ) {
             if (cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) != ocls)
                 break;
-            if (!cptr.ldBits(
-                cptr.add(cptr.add(objects, i, $sizeof_objclass), $objclass_oc_name_known),
-                0,
-                1,
-                0
-            ) &&
+            if (!(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) &&
                     (other = (cptr.ldPtro2(
                         obj_descr,
                         cptr.ldI16o(
@@ -2487,15 +2470,13 @@ export function touch_artifact(obj, mon) {
         touch_blasted = 1;
         dmg = d(((Antimagic() ? 2 : 4)), ((self_willed ? 10 : 4)));
         /* add half (maybe quarter) of the usual silver damage bonus */
-        if ((cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) |
+        if (((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(obj, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31) |
             0) ==
             NHC.SILVER &&
                 (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM ||
@@ -3152,7 +3133,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 NHM.IN_SIGHT) !=
                 0)) ||
         (youattack &&
-            ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+            (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                 (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))) &&
             !Blind())
             ? 1
@@ -3270,7 +3251,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             wepdesc = __s_the_razor_sharp_blade;
             /* not really beheading, but so close, why add another SPFX */
             if (youattack &&
-                    ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                    (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef))))) {
                 You(__s_slice_s_wide_open, mon_nam(mdef));
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
@@ -3327,7 +3308,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                     ))) {
 
             if (youattack &&
-                    ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                    (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))))
                 return 0;
             wepdesc = cptr.ldPtro2(
@@ -3340,7 +3321,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 if (!((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 32768n) ==
                     0n) ||
                         cptr.ld1so(gn, $instance_globals_n_notonhead) ||
-                        (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+                        cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
                     if (youattack)
                         pline(__s_somehow_you_miss_s_wildly, mon_nam(mdef));
                     else if (vis)
@@ -3500,15 +3481,13 @@ function invoke_ok(obj) {
 
     /* artifacts and other special items */
     if (cptr.ld1so(obj, $obj_oartifact) ||
-            cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_unique
-                ),
-                6,
-                1,
-                0
-            ) |
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_unique
+            ) &
+                1) |
                 0 ||
             (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR &&
                 !(cptr.ldI32o(obj, $obj_known) & 1)))
@@ -4556,15 +4535,13 @@ export function retouch_object(objp, loseit) {
         let buf = new Uint8Array(256);
         let dmg = 0;
         let tmp;
-        let ag = schar(((cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_material
-            ),
-            3,
-            5,
-            0
-        ) |
+        let ag = schar((((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(obj, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) &
+            31) |
             0) ==
             NHC.SILVER &&
             (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM ||

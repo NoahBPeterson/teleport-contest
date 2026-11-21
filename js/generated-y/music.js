@@ -440,7 +440,7 @@ function* charm_monsters(distance) {
     let mtmp;
     let mtmp2;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1))
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
         distance = 0;
 
     for (
@@ -973,15 +973,13 @@ function* do_improvisation(instr) {
 
     /* if won't yield special effect, make sound of mundane counterpart */
     if (!do_spec || cptr.ld1so(instr, $obj_spe) <= 0)
-        while (cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(itmp, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_magic
-            ),
-            4,
-            1,
-            0
-        )) {
+        while ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(itmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_magic
+        ) &
+                1)) {
             cptr.stI16o(itmp, $obj_otyp, cptr.ldI16o(itmp, $obj_otyp) - 1);
             mundane = 1;
         }

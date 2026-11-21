@@ -519,7 +519,7 @@ export function wipeout_text(engr, cnt, seed) {
 export function can_reach_floor(check_pit) {
     let t;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
             (cptr.ldPtro(u, $you_ustuck) &&
                 !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
                 attacktype(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), NHM.AT_HUGS)) ||
@@ -566,7 +566,7 @@ export function can_reach_floor(check_pit) {
     if (cptr.ldPtro(u, $you_usteed) &&
             (cptr.ldI16o2(u, NHC.P_RIDING, $sizeof_skills, $you_weapon_skills)) < NHC.P_BASIC)
         return 0;
-    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
             ceiling_hider(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
         return 0;
 
@@ -961,7 +961,7 @@ function stylus_ok(obj) {
 function* u_can_engrave() {
     let levtyp = SURFACE_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (((cptr.ldU64o(
             (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
             $permonst_mflags1
@@ -1050,7 +1050,7 @@ function doengrave_ctx_init(de) {
     cptr.st1o(
         de,
         $_doengrave_ctx_jello,
-        schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+        schar((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
             !(((cptr.ldU64o(
                 (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
                 $permonst_mflags1
@@ -1191,19 +1191,13 @@ function* doengrave_sfx_item_WAN(de) {
         case NHC.WAN_DIGGING:
             cptr.st1o(de, $_doengrave_ctx_ptext, 1);
             cptr.stI32o(de, $_doengrave_ctx_type, NHM.ENGRAVE);
-            if (!cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        objects,
-                        cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
-                        $sizeof_objclass
-                    ),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            )) {
+            if (!(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                    1)) {
                 if (cptr.ld1so(flags, $flag_verbose))
                     (yield* pline(
                         __s_this_s_is_a_wand_of_digging,
@@ -1245,19 +1239,13 @@ function* doengrave_sfx_item_WAN(de) {
         case NHC.WAN_FIRE:
             cptr.st1o(de, $_doengrave_ctx_ptext, 1);
             cptr.stI32o(de, $_doengrave_ctx_type, NHM.BURN);
-            if (!cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        objects,
-                        cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
-                        $sizeof_objclass
-                    ),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            )) {
+            if (!(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                    1)) {
                 if (cptr.ld1so(flags, $flag_verbose))
                     (yield* pline(
                         __s_this_s_is_a_wand_of_fire,
@@ -1273,19 +1261,13 @@ function* doengrave_sfx_item_WAN(de) {
         case NHC.WAN_LIGHTNING:
             cptr.st1o(de, $_doengrave_ctx_ptext, 1);
             cptr.stI32o(de, $_doengrave_ctx_type, NHM.BURN);
-            if (!cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        objects,
-                        cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
-                        $sizeof_objclass
-                    ),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            )) {
+            if (!(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                    1)) {
                 if (cptr.ld1so(flags, $flag_verbose))
                     (yield* pline(
                         __s_this_s_is_a_wand_of_lightning,
@@ -1322,19 +1304,13 @@ function* doengrave_sfx_item(de) {
         case NHC.RING_CLASS:
         case NHC.GEM_CLASS:
             /* diamonds & other hard gems should work */
-            if (cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        objects,
-                        cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
-                        $sizeof_objclass
-                    ),
-                    $objclass_oc_tough
-                ),
-                1,
-                1,
-                0
-            )) {
+            if ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_tough
+            ) &
+                    1)) {
                 cptr.stI32o(de, $_doengrave_ctx_type, NHM.ENGRAVE);
                 break;
             }
@@ -1726,19 +1702,12 @@ export function* doengrave() {
         /* Identify stylus */
         if (cptr.ld1so(de, $_doengrave_ctx_doknown)) {
             (yield* learnwand(cptr.ldPtro(de, $_doengrave_ctx_otmp)));
-            if (cptr.ldBits(
-                cptr.add(
-                    cptr.add(
-                        objects,
-                        cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
-                        $sizeof_objclass
-                    ),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            ))
+            if ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) & 1))
                 (yield* more_experienced(0, 10));
         }
         if (cptr.ld1so(de, $_doengrave_ctx_teleengr)) {

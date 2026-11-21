@@ -820,7 +820,7 @@ export function* pick_lock(pick, rx, ry, container) {
             (yield* pline(cptr.decay(__static_pick_lock_no_longer), __s_hold_the, what));
             reset_pick();
             return -1;
-        } else if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+        } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
                 (cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box) &&
                     !can_reach_floor(1))) {
             (yield* pline(cptr.decay(__static_pick_lock_no_longer), __s_reach_the, __s_lock));
@@ -848,7 +848,7 @@ export function* pick_lock(pick, rx, ry, container) {
             0n)) {
         (yield* You_cant(__s_hold_s_you_have_no_hands, (yield* doname(pick))));
         return 0;
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         (yield* You_cant(
             __s_sunlock_s,
             (picktyp == NHC.CREDIT_CARD) ? __s_empty : __s_lock_or,
@@ -1250,7 +1250,7 @@ export function* doforce() {
      *  allow force with edged weapon to be performed on doors.
      */
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         (yield* You_cant(__s_force_anything_from_inside_here));
         return NHM.ECMD_OK;
     }
@@ -2056,15 +2056,13 @@ function* chest_shatter_msg(otmp) {
     thing = (yield* singular(otmp, xname));
     cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic, save_HBlinded),
             cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked, save_BBlinded);
-    switch (cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_material
-        ),
-        3,
-        5,
-        0
-    ) |
+    switch ((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) &
+        31) |
             0) {
         case NHC.PAPER:
             disposition = __s_is_torn_to_shreds;

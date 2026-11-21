@@ -836,7 +836,7 @@ function describe_decor() {
             : 0));
     waterhere = schar((dfeature && !strcmp(dfeature, __s_pool_of_water) ? 1 : 0));
     if (doorhere ||
-            ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ||
+            (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
             (ltyp == NHC.ICE && IS_POOL(cptr.ld1so(iflags, $instance_flags_prev_decor))))
         dfeature = null;
     /*
@@ -1190,7 +1190,7 @@ export function pickup(what) {
         else
             count = 0;
 
-        if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             let t;
 
             /* no auto-pick if no-pick move, nothing there, or in a pool */
@@ -1274,7 +1274,7 @@ export function pickup(what) {
         }
 
         add_valid_menu_class(0);  /* reset */
-        if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             objchain_p = cptr.add(
                 cptr.add(
                     cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_objects),
@@ -1499,7 +1499,7 @@ export function pickup(what) {
             cptr.free(pick_list.v);
     }
 
-    if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
@@ -1719,7 +1719,7 @@ export function query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
        hero should be shown as an extra, fake item */
     engulfer_minvent = schar((olist.v &&
         cptr.ld1so(olist.v, $obj_where) == NHM.OBJ_MINVENT &&
-        ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+        (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
             (cptr.eq(cptr.ldPtro(u, $you_ustuck), (cptr.ldPtro(olist.v, $obj_v)))))
             ? 1
             : 0));
@@ -2925,7 +2925,7 @@ export function pickup_object(obj, count, telekinesis) {
         return 0;
     } else if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MINVENT &&
             cptr.ldI64o(obj, $obj_owornmask) != 0n &&
-            ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+            (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                 (cptr.eq(cptr.ldPtro(u, $you_ustuck), (cptr.ldPtro(obj, $obj_v)))))) {
         You_cant(__s_pick_s_up, ysimple_name(obj));
         return 0;
@@ -3020,7 +3020,7 @@ export function pick_obj(otmp) {
        latter, its <ox,oy> probably won't be set */
     void get_obj_location(otmp, ox, oy, 0);
 
-    robshop = schar((!(cptr.ldI32o(u, $you_uswallow) & 1) &&
+    robshop = schar((!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
         !cptr.eq(otmp, uball.v) &&
         costly_spot(ox.v, oy.v)
             ? 1
@@ -3823,7 +3823,7 @@ export function loot_mon(mtmp, passed_info, prev_loot) {
         }
     }
     /* 3.4.0 introduced ability to pick things up from swallower's stomach */
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         let count = passed_info ? cptr.ldI32(passed_info) : 0;
 
         timepassed = pickup(count);
@@ -5239,15 +5239,12 @@ function tip_ok(obj) {
     /* include horn of plenty if sufficiently discovered */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.HORN_OF_PLENTY &&
             (cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
-            cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            ) | 0)
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) & 1) | 0)
         return NHC.GETOBJ_SUGGEST;
 
     /* allow trying anything else in inventory */
@@ -5582,7 +5579,7 @@ function tipcontainer(box) {
         dstheld = schar((targetbox && (cptr.ld1so((targetbox), $obj_where) == NHM.OBJ_INVENT)
                 ? 1
                 : 0));
-        if ((cptr.ldI32o(u, $you_uswallow) & 1))
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
             highdrop = (altarizing = 0);
         terse = schar((!(highdrop ||
                 altarizing ||
@@ -5767,15 +5764,13 @@ function tipcontainer_gettarget(box, cancelled) {
         if (!Is_container(otmp) ||
                 (cptr.ldI16o(otmp, $obj_otyp) == NHC.BAG_OF_TRICKS &&
                     (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 &&
-                    cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_name_known
-                        ),
-                        0,
-                        1,
-                        0
-                    ) | 0))
+                    (cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(otmp, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_name_known
+                    ) &
+                        1) | 0))
             continue;
         if (!n_conts++)
             hands_available = u_handsy();  /* might issue message */

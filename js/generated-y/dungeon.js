@@ -2617,7 +2617,7 @@ export function* u_on_newpos(x, y) {
     cptr.stI16(u, x);
     cptr.stI16o(u, $you_uy, y);
     (yield* Y.icall(cliparound()(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
-    cptr.stI32o(u, $you_uundetected, 0);
+    cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
     /* ridden steed always shares hero's location */
     if (cptr.ldPtro(u, $you_usteed))
         cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_mx, cptr.ldI16(u)),
@@ -2633,7 +2633,7 @@ export function* u_on_newpos(x, y) {
     } else {
         /* still on same level; might have come close enough to
            generic object(s) to redisplay them as specific objects */
-        if (!Blind() && !Hallucination() && !(cptr.ldI32o(u, $you_uswallow) & 1))
+        if (!Blind() && !Hallucination() && !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
             (yield* see_nearby_objects());
     }
     (yield* earth_sense());
@@ -2942,7 +2942,7 @@ export function surface(x, y) {
     let levtyp = SURFACE_AT(x, y);
 
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
-            (cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
             ((cptr.ldU64o(
                 (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
                 $permonst_mflags1
@@ -2984,7 +2984,7 @@ export function surface(x, y) {
                 ? __s_air_bubble
                 : ((levtyp == NHC.CLOUD) ? __s_cloud : __s_air);
     else if (is_pool(x, y))
-        return (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+        return ((cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 &&
             !(((cptr.ldI16o(
                 (cptr.add(
                     svd,

@@ -702,12 +702,7 @@ function learn() {
 
     void cptr.sprintf(
         cptr.decay(splname),
-        cptr.ldBits(
-            cptr.add(cptr.add(objects, booktype, $sizeof_objclass), $objclass_oc_name_known),
-            0,
-            1,
-            0
-        ) | 0
+        (cptr.ldI32o2(objects, booktype, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
             ? __s_quot_pct_s_quot
             : __s_the_s_spell,
         (cptr.ldPtro(
@@ -1508,7 +1503,7 @@ function cast_chain_lightning() {
         Hallucination() ? rn2_on_display_rng(6) : 5
     );
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         // TODO: damage the engulfer
         return;
     }
@@ -1708,7 +1703,7 @@ function cast_protection() {
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_typ
                 );
-                atmosphere = (pm && (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+                atmosphere = (pm && cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
                         ? ((cptr.eq(pm, cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst)))
                             ? __s_mist
                             : (is_whirly(pm)
@@ -1718,7 +1713,7 @@ function cast_protection() {
                                     : (((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n)
                                         ? __s_maw
                                         : __s_ooze))))
-                        : ((cptr.ldI32o(u, $you_uinwater) & 1) | 0
+                        : (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0
                             ? hliquid(__s_water)
                             : ((rmtyp == NHC.CLOUD)
                                 ? __s_cloud
@@ -2067,7 +2062,7 @@ export function spelleffects(spell_otyp, atme, force) {
                                     $instance_globals_saved_l_level + $rm_typ
                                 )) <=
                                     NHC.DBWALL) ||
-                                (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+                                cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
                             /* Spell is reflected back to center */
                             cptr.stI32o(u, $you_dx, cptr.ldI16(cc));
                             cptr.stI32o(u, $you_dy, cptr.ldI16o(cc, $nhcoord_y));
@@ -2099,13 +2094,7 @@ export function spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_EXTRA_HEALING:
         case NHC.SPE_DRAIN_LIFE:
         case NHC.SPE_STONE_TO_FLESH:
-            if ((cptr.ldBits(
-                cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_dir),
-                0,
-                3,
-                0
-            ) |
-                0) !=
+            if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) !=
                     NHM.NODIR) {
                 if (otyp == NHC.SPE_HEALING || otyp == NHC.SPE_EXTRA_HEALING) {
                     /* healing and extra healing are actually potion effects,
@@ -2337,7 +2326,7 @@ function throwspell() {
     let uc = cptr.alloc(4);
     let mtmp;
 
-    if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         pline(__s_you_re_joking_in_this_weather);
         return 0;
     } else if ((((cptr.ldI16o(
@@ -2377,7 +2366,7 @@ function throwspell() {
             10) {
         pline_The(__s_spell_dissipates_over_the_distance);
         return 0;
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         pline_The(__s_spell_is_cut_short);
         exercise(NHC.A_WIS, 0);  /* What were you THINKING! */
         cptr.stI32o(u, $you_dx, 0);

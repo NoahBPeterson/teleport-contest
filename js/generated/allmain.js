@@ -531,7 +531,7 @@ export function moveloop_core() {
                  * requires that encumbrance and movement rate be
                  * recalculated.
                  */
-                if ((cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+                if (cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
                     /* for the moment at least, you're in tiptop shape */
                     mvl_wtcap = NHC.UNENCUMBERED;
                 } else if (!Upolyd()
@@ -559,7 +559,7 @@ export function moveloop_core() {
 
                 regen_pw(mvl_wtcap);
 
-                if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+                if (!cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
                     if (Teleportation() && !rn2(85)) {
                         let old_ux = cptr.ldI16(u);
                         let old_uy = cptr.ldI16o(u, $you_uy);
@@ -624,7 +624,7 @@ export function moveloop_core() {
                 if (!rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0))
                     u_wipe_engr(rnd(3));
                 if ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 &&
-                        !(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+                        !cptr.ldBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0)) {
                     if (cptr.ldI32o(u, $you_udg_cnt))
                         (cptr.stI32o(u, $you_udg_cnt, cptr.ldI32o(u, $you_udg_cnt) + -1)) - (-1);
                     if (!cptr.ldI32o(u, $you_udg_cnt)) {
@@ -755,7 +755,7 @@ export function moveloop_core() {
         /* vision while buried or underwater is updated here */
         if (Underwater())
             under_water(0);
-        else if ((cptr.ldI32o(u, $you_uburied) & 1))
+        else if (cptr.ldBits(cptr.add(u, $you_uburied), 5, 1, 0))
             under_ground(0);
 
         see_nearby_monsters();
@@ -783,7 +783,7 @@ export function moveloop_core() {
             see_monsters();
             see_objects();
             see_traps();
-            if ((cptr.ldI32o(u, $you_uswallow) & 1))
+            if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
                 swallowed(0);
         } else if (Unblind_telepat() || Warning() || Warn_of_mon() || any_visible_region()) {
             see_monsters();
@@ -1209,7 +1209,7 @@ export function newgame() {
 export function welcome(new_game) {
     let buf = new Uint8Array(256);
     let currentgend = schar((Upolyd()
-            ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
+            ? cptr.ldBits(cptr.add(u, $you_mfemale), 3, 1, 0) | 0
             : cptr.ld1so(flags, $flag_female)));
     let adrift = schar((cptr.ld1so(u, $you_ualign) !=
             cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)));

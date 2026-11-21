@@ -320,7 +320,7 @@ function* cursetxt(mtmp, undirected) {
                     NHC.M_AP_OBJECT &&
                     cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) ==
                         NHC.STRANGE_OBJECT) ||
-                (cptr.ldI32o(u, $you_uundetected) & 1) | 0)
+                cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0)
             point_msg = __s_and_curses_in_your_general_direction;
         else if (Displaced() &&
                 (cptr.ldI16o(mtmp, $monst_mux) != cptr.ldI16(u) ||

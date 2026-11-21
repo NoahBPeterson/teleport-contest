@@ -428,7 +428,7 @@ export function* done2() {
         if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
             nomul(0);
         if (cptr.ldI64o(gm, $instance_globals_m_multi) == 0n) {
-            cptr.stI32o(u, $you_uinvulnerable, 0);  /* avoid ctrl-C bug -dlc */
+            cptr.stBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0, 0);  /* avoid ctrl-C bug -dlc */
             cptr.stI64o(u, $you_usleep, 0n);
         }
 
@@ -1003,7 +1003,7 @@ function* savelife(how) {
     (yield* curs_on_u());
     if (!cptr.ld1so(svc, $context_info_mon_moving))
         (yield* endmultishot(0));
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* might drop hero onto a trap that kills her all over again */
         (yield* expels(
             cptr.ldPtro(u, $you_ustuck),

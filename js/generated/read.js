@@ -627,12 +627,7 @@ const __s_type_name_or_symbol = cptr.lit(" [type name or symbol]");
 
 /** C ref: read.c:58 — @param {CInt} scrolltyp @returns {CInt} */
 function learnscrolltyp(scrolltyp) {
-    if (!cptr.ldBits(
-        cptr.add(cptr.add(objects, scrolltyp, $sizeof_objclass), $objclass_oc_name_known),
-        0,
-        1,
-        0
-    )) {
+    if (!(cptr.ldI32o2(objects, scrolltyp, $sizeof_objclass, $objclass_oc_name_known) & 1)) {
         discover_object((scrolltyp), 1, 1, 1);
         more_experienced(0, 10);
         return 1;
@@ -1310,12 +1305,7 @@ export function doread() {
         }
     }
     if (!seffects(scroll)) {
-        if (!cptr.ldBits(
-            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
-            0,
-            1,
-            0
-        )) {
+        if (!(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1)) {
             if (cptr.ld1so(gk, $instance_globals_k_known))
                 learnscroll(scroll);
             else
@@ -1378,26 +1368,21 @@ export function charge_ok(obj) {
         return NHC.GETOBJ_SUGGEST;
 
     if (cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS &&
-            cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_charged
-                ),
-                5,
-                1,
-                0
-            ) |
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_charged
+            ) &
+                1) |
                 0 &&
             (cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
-            cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            ) | 0)
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) & 1) | 0)
         return NHC.GETOBJ_SUGGEST;
 
     if (is_weptool(obj))
@@ -1408,38 +1393,31 @@ export function charge_ok(obj) {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN ||
                 (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP) ||
                 (cptr.ldI16o(obj, $obj_otyp) == NHC.MAGIC_LAMP &&
-                    !cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, NHC.MAGIC_LAMP, $sizeof_objclass),
-                            $objclass_oc_name_known
-                        ),
-                        0,
-                        1,
-                        0
-                    ))) {
+                    !(cptr.ldI32o2(
+                        objects,
+                        NHC.MAGIC_LAMP,
+                        $sizeof_objclass,
+                        $objclass_oc_name_known
+                    ) &
+                        1))) {
             return NHC.GETOBJ_SUGGEST;
         }
         /* suggest chargeable tools only if discovered, to prevent leaking
            info (e.g. revealing if an unidentified 'flute' is magic or not) */
-        if (cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_charged
-            ),
-            5,
-            1,
-            0
-        )) {
+        if ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(obj, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_charged
+        ) &
+                1)) {
             return ((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_name_known
-                    ),
-                    0,
-                    1,
-                    0
-                ) | 0)
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) & 1) | 0)
                     ? NHC.GETOBJ_SUGGEST
                     : NHC.GETOBJ_DOWNPLAY;
         }
@@ -1466,15 +1444,13 @@ export function recharge(obj, curse_bless) {
         if (cptr.ld1so(obj, $obj_oclass) == NHC.WAND_CLASS) {
             let lim = (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_WISHING)
                     ? 1
-                    : (((cptr.ldBits(
-                        cptr.add(
-                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                            $objclass_oc_dir
-                        ),
-                        0,
-                        3,
-                        0
-                    ) |
+                    : ((((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_dir
+                    ) &
+                        7) |
                         0) !=
                         NHM.NODIR)
                         ? 8
@@ -1537,15 +1513,13 @@ export function recharge(obj, curse_bless) {
             }
 
         } else if (cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS &&
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                        $objclass_oc_charged
-                    ),
-                    5,
-                    1,
-                    0
-                ) |
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_charged
+                ) &
+                    1) |
                     0) {
             /* charging does not affect ring's curse/bless status */
             let s = is_blessed ? rnd(3) : (is_cursed ? -rnd(2) : 1);
@@ -1593,15 +1567,13 @@ export function recharge(obj, curse_bless) {
         } else if (cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) {
             let rechrg = (cptr.ldI32o(obj, $obj_recharged) & 7) | 0;
 
-            if (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_charged
-                ),
-                5,
-                1,
-                0
-            )) {
+            if ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_charged
+            ) &
+                    1)) {
                 /* tools don't have a limit, but the counter used does */
                 if (rechrg < 7)
                     (cptr.stI32o(obj, $obj_recharged, cptr.ldI32o(obj, $obj_recharged) + 1)) - (1);
@@ -2040,15 +2012,12 @@ function seffect_enchant_armor(sobjp) {
        blessed scrolls are more effective. */
     if (special_armor)
         ++s;
-    if (!cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_magic
-        ),
-        4,
-        1,
-        0
-    ))
+    if (!(cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_magic
+    ) & 1))
         ++s;
     if (sblessed)
         ++s;
@@ -2231,15 +2200,12 @@ function seffect_destroy_armor(sobjp) {
         if (gets_choice) {
             let atmp;
 
-            if (!cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(sobj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            ))
+            if (!(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(sobj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) & 1))
                 pline(__s_this_is_s, an(actualoname(sobj)));
             cptr.st1o(gk, $instance_globals_k_known, 1);
             atmp = getobj(__s_destroy, any_worn_armor_ok, NHM.GETOBJ_PROMPT);
@@ -2446,15 +2412,12 @@ function seffect_remove_curse(sobjp) {
                     if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) {
                         /* mergeable weapon test covers ammo,
                            missiles, spears, daggers & knives */
-                        if (!cptr.ldBits(
-                            cptr.add(
-                                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                                $objclass_oc_merge
-                            ),
-                            1,
-                            1,
-                            0
-                        ))
+                        if (!(cptr.ldI32o2(
+                            objects,
+                            cptr.ldI16o(obj, $obj_otyp),
+                            $sizeof_objclass,
+                            $objclass_oc_merge
+                        ) & 1))
                             wornmask = 0n;
                     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) {
                         /* possibly ought to check whether
@@ -2627,7 +2590,7 @@ function seffect_taming(sobjp) {
     let results;
     let vis_results;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         candidates = 1;
         results = (vis_results = maybe_tame(cptr.ldPtro(u, $you_ustuck), sobj));
     } else {
@@ -2681,12 +2644,7 @@ function seffect_genocide(sobjp) {
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS ||
-        cptr.ldBits(
-            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
-            0,
-            1,
-            0
-        ) | 0
+        (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
             ? 1
             : 0));
 
@@ -2764,12 +2722,7 @@ function seffect_charging(sobjp) {
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS ||
-        cptr.ldBits(
-            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
-            0,
-            1,
-            0
-        ) | 0
+        (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
             ? 1
             : 0));
     let otmp;
@@ -2829,12 +2782,7 @@ function seffect_fire(sobjp) {
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
     let confused = schar((HConfusion() != 0n));
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS ||
-        cptr.ldBits(
-            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
-            0,
-            1,
-            0
-        ) | 0
+        (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
             ? 1
             : 0));
     let cc = cptr.alloc(4);
@@ -2941,7 +2889,7 @@ function seffect_earth(sobjp) {
         let nboulders = 0;
 
         /* Identify the scroll */
-        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             You_hear(__s_rumbling);
         } else {
             if (!avoid_ceiling(cptr.add(u, $you_uz))) {
@@ -3040,12 +2988,7 @@ function seffect_stinking_cloud(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS ||
-        cptr.ldBits(
-            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
-            0,
-            1,
-            0
-        ) | 0
+        (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
             ? 1
             : 0));
 
@@ -3110,12 +3053,7 @@ function seffect_identify(sobjp) {
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS ||
-        cptr.ldBits(
-            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
-            0,
-            1,
-            0
-        ) | 0
+        (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
             ? 1
             : 0));
 
@@ -3302,12 +3240,7 @@ export function seffects(sobj) {
     sobj = cptr.box(sobj);
     let otyp = cptr.ldI16o(sobj.v, $obj_otyp);
 
-    if (cptr.ldBits(
-        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_magic),
-        4,
-        1,
-        0
-    ))
+    if ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_magic) & 1))
         exercise(NHC.A_WIS, 1);  /* just for trying */
 
     switch (otyp) {
@@ -3411,7 +3344,7 @@ export function drop_boulder_on_player(confused, helmet_protects, byu, skip_uswa
     let otmp2;
 
     /* hit monster if swallowed */
-    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !skip_uswallow) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && !skip_uswallow) {
         drop_boulder_on_monster(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), confused, byu);
         return;
     }
@@ -3517,7 +3450,7 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
             pline(__s_s_is_hit_by_s, Monnam(mtmp), doname(otmp2));
             if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !canspotmon(mtmp))
                 map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-        } else if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+        } else if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                 (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))
             You_hear(
                 __s_something_hit_s_s_over_your_s,
@@ -3566,7 +3499,7 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
             wakeup(mtmp, byu);
         }
         wake_nearto(x, y, 16);
-    } else if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+    } else if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
             (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))) {
         obfree(otmp2, null);
         /* fall through to player */
@@ -3700,8 +3633,8 @@ export function litroom(on, obj) {
         (cptr.ldI32o(obj, $obj_blessed) & 1) | 0
             ? 1
             : 0));
-    let no_op = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
-        ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ||
+    let no_op = schar((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
+        (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0 ||
         (((cptr.ldI16o(
             (cptr.add(
                 svd,
@@ -3759,7 +3692,7 @@ export function litroom(on, obj) {
                swallowed won't be affected--the interior is still lit */
             if (still_lit)
                 pline_The(__s_ambient_light_seems_dimmer);
-            else if ((cptr.ldI32o(u, $you_uswallow) & 1))
+            else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
                 pline(__s_it_seems_even_darker_in_here_than_before);
             else
                 You(__s_are_surrounded_by_darkness);
@@ -3775,7 +3708,7 @@ export function litroom(on, obj) {
                     impact_arti_light(otmp, 0, schar((!Blind())));
             }
         }
-        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             if (Blind())
                 ;  /* no feedback */
             else if ((dmgtype_fromattack(
@@ -4541,7 +4474,7 @@ export function punish(sobj) {
      *  Place ball & chain if not swallowed.  If swallowed, the ball & chain
      *  variables will be set at the next call to placebc().
      */
-    if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         placebc();
         if (Blind())
             set_bc(1);  /* set up ball and chain variables */

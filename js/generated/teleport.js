@@ -439,7 +439,7 @@ export function goodpos(x, y, mtmp, gpflags) {
         if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
                 !cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) &&
                 (!cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) ||
-                    !(cptr.ldI32o(u, $you_uswallow) & 1)) &&
+                    !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) &&
                 (!cptr.ldPtro(u, $you_usteed) || !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))))
             return 0;
     }
@@ -888,7 +888,7 @@ export function teleds(nux, nuy, teleds_flags) {
             unplacebc();  /* have to move the ball */
     }
     reset_utrap(0);
-    was_swallowed = (cptr.ldI32o(u, $you_uswallow) & 1);  /* set_ustuck(Null) clears uswallow */
+    was_swallowed = cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0);  /* set_ustuck(Null) clears uswallow */
     set_ustuck(null);
     cptr.stI16o(u, $you_ux0, cptr.ldI16(u));
     cptr.stI16o(u, $you_uy0, cptr.ldI16o(u, $you_uy));
@@ -2536,7 +2536,7 @@ function rloc_to_core(mtmp, x, y, rlocflags) {
         place_worm_tail_randomly(mtmp, x, y);
 
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
-        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             u_on_newpos(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
             check_special_room(0);
             docrt();
@@ -3311,7 +3311,7 @@ export function u_teleport_mon(mtmp, give_feedback) {
         if (give_feedback)
             pline(__s_s_resists_your_magic, Monnam(mtmp));
         return 0;
-    } else if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+    } else if ((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) &&
             noteleport_level(mtmp)) {
         if (give_feedback)

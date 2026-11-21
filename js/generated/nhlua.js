@@ -2866,7 +2866,7 @@ function nhl_gamestate(L) {
         )
                 ? __assert_rtn(__s_nhl_gamestate, __s_nhlua_c, 1906, __s_gg_gmst_ubak_null)
                 : void 0);
-        void cptr.memcpy(u, cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), 2864n);
+        void cptr.memcpy(u, cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), 2840n);
         (__builtin_expect(
             BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_disco), (null))))),
             0n
@@ -2918,8 +2918,8 @@ function nhl_gamestate(L) {
             cptr.stPtro(gg, $instance_globals_g_gmst_invent, otmp);
         }
         cptr.stI32o(gl, $instance_globals_l_lastinvnr, 51);  /* next inv letter to try to use will be 'a' */
-        cptr.stPtro(gg, $instance_globals_g_gmst_ubak, alloc(2864));
-        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), u, 2864n);
+        cptr.stPtro(gg, $instance_globals_g_gmst_ubak, alloc(2840));
+        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), u, 2840n);
         cptr.stPtro(gg, $instance_globals_g_gmst_disco, alloc(962));
         void cptr.memcpy(
             cptr.ldPtro(gg, $instance_globals_g_gmst_disco),

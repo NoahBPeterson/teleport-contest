@@ -768,12 +768,12 @@ export function* loot_classify(sort_item, obj) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let oclass = cptr.ld1so(obj, $obj_oclass);
     let seen;
-    let discovered = schar((cptr.ldBits(
-        cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_name_known),
-        0,
-        1,
-        0
-    ) | 0
+    let discovered = schar(((cptr.ldI32o2(
+        objects,
+        otyp,
+        $sizeof_objclass,
+        $objclass_oc_name_known
+    ) & 1) | 0
             ? 1
             : 0));
 
@@ -894,15 +894,13 @@ export function* loot_classify(sort_item, obj) {
              *  7) discovered gray stones ("touchstone"),
              *  8) seen rocks ("rock").
              */
-            switch (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_material
-                ),
-                3,
-                5,
-                0
-            ) |
+            switch ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) &
+                31) |
                     0) {
                 case NHC.GEMSTONE:
                     k = !seen ? 1 : (!discovered ? 2 : 3);
@@ -1203,15 +1201,13 @@ function* sortloot_cmp(vptr1, vptr2) {
            below the range of obj->spe.  oc_uses_known means that obj->known
            matters, which usually indirectly means that obj->spe is relevant.
            Lots of objects use obj->spe for some other purpose (see obj.h). */
-        if (cptr.ldBits(
-            cptr.add(
-                cptr.add(objects, cptr.ldI16o(obj1, $obj_otyp), $sizeof_objclass),
-                $objclass_oc_uses_known
-            ),
-            2,
-            1,
-            0
-        ) |
+        if ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(obj1, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_uses_known
+        ) &
+            1) |
             0 &&
                 cptr.ld1so(obj1, $obj_oclass) != NHC.FOOD_CLASS) {
             val1 = (cptr.ldI32o(obj1, $obj_known) & 1) | 0 ? cptr.ld1so(obj1, $obj_spe) : -1000;
@@ -1713,15 +1709,13 @@ export function* addinv_core2(obj) {
             cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS &&
             cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_BLANK_PAPER &&
             !Blind() &&
-            !cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_name_known
-                ),
-                0,
-                1,
-                0
-            )) {
+            !(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                1)) {
         (yield* observe_object(obj));
         (yield* pline(__s_you_decipher_the_label_on_s, (yield* yname(obj))));
         (yield* discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1));
@@ -2001,7 +1995,7 @@ export function* hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
     if (drop_fmt)
         (yield* pline(drop_fmt, drop_arg));
     cptr.stI32o(obj, $obj_nomerge, 0);
-    if (can_reach_floor(1) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+    if (can_reach_floor(1) || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
         (yield* dropx(obj));
     } else {
         (yield* freeinv(obj));
@@ -5916,7 +5910,7 @@ export function* look_here(obj_cnt, lookhere_flags) {
         obj_cnt >= cptr.ldI32o(flags, $flag_pile_limit)
             ? 1
             : 0));
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         let mtmp = cptr.ldPtro(u, $you_ustuck);
 
         /*
@@ -5999,7 +5993,7 @@ export function* look_here(obj_cnt, lookhere_flags) {
     dfeature = (yield* dfeature_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(fbuf2)));
     if (dfeature &&
             !strcmp(dfeature, __s_pool_of_water) &&
-            ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
+            (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) | 0)
         dfeature = null;
 
     if (Blind()) {
@@ -6280,15 +6274,12 @@ export function* mergable(otmp, obj) {
             cptr.ldI16o(obj, $obj_otyp) != cptr.ldI16o(otmp, $obj_otyp) ||
             (cptr.ldI32o(obj, $obj_nomerge) & 1) | 0 ||
             (cptr.ldI32o(otmp, $obj_nomerge) & 1) | 0 ||
-            !cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_merge
-                ),
-                1,
-                1,
-                0
-            ))
+            !(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_merge
+            ) & 1))
         return 0;
 
     /* coins of the same kind will always merge */
@@ -6719,7 +6710,7 @@ export function* useupf(obj, numused) {
     }
     (yield* delobj(otmp));
     if (at_u &&
-            (cptr.ldI32o(u, $you_uundetected) & 1) | 0 &&
+            cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0 &&
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
@@ -7358,7 +7349,8 @@ export function* display_minventory(mon, dflags, title) {
     let selected = cptr.box(null);
     let do_all = (dflags & NHM.MINV_ALL) != 0;
     let incl_hero = (do_all &&
-        ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))
+        (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
+            (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))
             ? 1
             : 0);
     let have_inv = (cptr.ldPtro(mon, $monst_minvent) !== null);

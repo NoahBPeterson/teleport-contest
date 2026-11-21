@@ -612,12 +612,7 @@ export function wearslot(obj) {
             break;
         case NHC.WEAPON_CLASS:
             res = 1280n;
-            if (cptr.ldBits(
-                cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_merge),
-                1,
-                1,
-                0
-            ))
+            if ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_merge) & 1))
                 res |= 512n;
             break;
         case NHC.TOOL_CLASS:
@@ -1108,19 +1103,13 @@ export function m_dowear(mon, creation) {
     if (!(cptr.ldPtro((mon), $monst_mw)) ||
             !((cptr.ld1so((cptr.ldPtro((mon), $monst_mw)), $obj_oclass) == NHC.WEAPON_CLASS ||
                 cptr.ld1so((cptr.ldPtro((mon), $monst_mw)), $obj_oclass) == NHC.TOOL_CLASS) &&
-                cptr.ldBits(
-                    cptr.add(
-                        cptr.add(
-                            objects,
-                            cptr.ldI16o((cptr.ldPtro((mon), $monst_mw)), $obj_otyp),
-                            $sizeof_objclass
-                        ),
-                        $objclass_oc_big
-                    ),
-                    0,
-                    1,
-                    0
-                ) | 0))
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o((cptr.ldPtro((mon), $monst_mw)), $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_big
+                ) &
+                    1) | 0))
         m_dowear_type(mon, 8n, creation, 0);
     m_dowear_type(mon, 16n, creation, 0);
     if (!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 524288n) != 0n) &&

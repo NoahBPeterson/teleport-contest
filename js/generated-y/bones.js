@@ -258,15 +258,12 @@ function* resetobjs(ochain, restore) {
         } else {
             /* do not zero out o_ids for ghost levels anymore */
 
-            if (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_uses_known
-                ),
-                2,
-                1,
-                0
-            ))
+            if ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_uses_known
+            ) & 1))
                 cptr.stI32o(otmp, $obj_known, 0);
             cptr.stI32o(otmp, $obj_dknown, cptr.stI32o(otmp, $obj_bknown, 0));
             cptr.stI32o(otmp, $obj_rknown, 0);
@@ -605,7 +602,7 @@ export function can_make_bones() {
         return 0;
     if (no_bones_level(cptr.add(u, $you_uz)))
         return 0;  /* no bones for specific levels */
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         return 0;  /* no bones when swallowed */
     }
     if (!Is_branchlev(cptr.add(u, $you_uz))) {

@@ -447,15 +447,13 @@ export function* mk_mplayer(ptr, x, y, special) {
             if (special && rn2(2))
                 otmp = (yield* mk_artifact(otmp, -128, 99, 0));
             /* usually increase stack size if stackable weapon */
-            if (cptr.ldBits(
-                cptr.add(
-                    cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
-                    $objclass_oc_merge
-                ),
-                1,
-                1,
-                0
-            ) |
+            if ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_merge
+            ) &
+                1) |
                 0 &&
                     !cptr.ld1so(otmp, $obj_oartifact) &&
                     monmightthrowwep(otmp))

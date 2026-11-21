@@ -668,7 +668,7 @@ export function boulder_hits_pool(otmp, rx, ry, pushing) {
             }
         }
         if (!fills_up || !pushing) {
-            if (!(cptr.ldI32o(u, $you_uinwater) & 1)) {
+            if (!cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
                 if (pushing
                         ? !Blind()
                         : ((cptr.ld1uo(
@@ -695,7 +695,7 @@ export function boulder_hits_pool(otmp, rx, ry, pushing) {
             }
 
             if (fills_up &&
-                    (cptr.ldI32o(u, $you_uinwater) & 1) | 0 &&
+                    cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 &&
                     dist2((rx), (ry), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) == 0) {
                 set_uinwater(0);  /* u.uinwater = 0 */
                 docrt();
@@ -1086,15 +1086,13 @@ export function doaltarobj(obj) {
  * already, prompt the player to call its object type. */
 /** C ref: do.c:395 — @param {CPtr<struct obj>} obj */
 export function trycall(obj) {
-    if (!cptr.ldBits(
-        cptr.add(
-            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
-            $objclass_oc_name_known
-        ),
-        0,
-        1,
-        0
-    ) &&
+    if (!(cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(obj, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_name_known
+    ) &
+        1) &&
             !cptr.ldPtro2(
                 objects,
                 cptr.ldI16o(obj, $obj_otyp),
@@ -1608,7 +1606,7 @@ function drop(obj) {
         setuswapwep(null);
     }
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* barrier between you and the floor */
         if (cptr.ld1so(flags, $flag_verbose)) {
             let onam_p;
@@ -1689,7 +1687,7 @@ function drop(obj) {
 /** C ref: do.c:786 — @param {CPtr<struct obj>} obj */
 export function dropx(obj) {
     freeinv(obj);
-    if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (ship_object(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0))
             return;
         if (((cptr.ld1so3(
@@ -1722,7 +1720,7 @@ export function dropz(obj, with_impact) {
     if (cptr.eq(obj, uswapwep.v))
         setuswapwep(null);
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* hero has dropped an item while inside an engulfer */
         if (!cptr.eq(obj, uball.v)) {
             /* moving shop item into engulfer's inventory treated as theft */
@@ -2079,11 +2077,11 @@ function menu_drop(retry) {
 /** C ref: do.c:1110 — @param {CPtr<char>} updn @returns {CInt} */
 function u_stuck_cannot_go(updn) {
     if (cptr.ldPtro(u, $you_ustuck)) {
-        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 ||
                 !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             You(
                 __s_are_s_and_cannot_go_s,
-                !(cptr.ldI32o(u, $you_uswallow) & 1)
+                !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)
                     ? __s_being_held
                     : ((dmgtype_fromattack(
                         (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
@@ -2234,8 +2232,8 @@ export function dodown() {
 
     if (Upolyd() &&
             ceiling_hider(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst)) &&
-            (cptr.ldI32o(u, $you_uundetected) & 1) | 0) {
-        cptr.stI32o(u, $you_uundetected, 0);
+            cptr.ldBits(cptr.add(u, $you_uundetected), 2, 1, 0) | 0) {
+        cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);
         if (Flying()) {
             You(__s_fly_out_of_hiding);
         } else {
@@ -2828,7 +2826,7 @@ export function goto_level(newlevel, at_stairs, falling, portal) {
     fill_pit(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     set_ustuck(null);  /* clear u.ustuck and u.uswallow */
     set_uinwater(0);  /* u.uinwater = 0 */
-    cptr.stI32o(u, $you_uundetected, 0);  /* not hidden, even if means are available */
+    cptr.stBits(cptr.add(u, $you_uundetected), 2, 1, 0, 0);  /* not hidden, even if means are available */
     if (!cptr.ld1so(iflags, $instance_flags_nofollowers))
         keepdogs(0);
     recalc_mapseen();  /* recalculate map overview before we leave the level */

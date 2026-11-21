@@ -742,7 +742,7 @@ export function* wiz_kill() {
                 }
                 break;
             }
-        } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             mtmp = (dist2(
                 ((cptr.ldI16(cc))),
                 ((cptr.ldI16o(cc, $nhcoord_y))),
@@ -774,7 +774,7 @@ export function* wiz_kill() {
                be referred to as "it" */
             let tame = !!cptr.ld1so(mtmp, $monst_mtame);
             let seen = (canspotmon(mtmp) ||
-                ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                     cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
                     ? 1
                     : 0);
@@ -1792,7 +1792,7 @@ export function* wiz_intrinsic() {
             else if (p.v == NHC.PROT_FROM_SHAPE_CHANGERS)
                 (yield* rescham());
             if (p.v == NHC.WWALKING || p.v == NHC.LEVITATION || p.v == NHC.FLYING) {
-                if ((cptr.ldI32o(u, $you_uinwater) & 1))
+                if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
                     void (yield* pooleffects(0));
             }
         }
@@ -2229,12 +2229,12 @@ function* misc_stats(win, total_count, total_size) {
 function* you_sanity_check() {
     let mtmp;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !cptr.ldPtro(u, $you_ustuck)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && !cptr.ldPtro(u, $you_ustuck)) {
         /* this probably ought to be panic() */
         (yield* impossible(__s_sanity_check_swallowed_by_nothing));
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
         /* try to recover from whatever the problem is */
-        cptr.stI32o(u, $you_uswallow, 0);
+        cptr.stBits(cptr.add(u, $you_uswallow), 0, 1, 0, 0);
         cptr.stI32o(u, $you_uswldtim, 0);
         (yield* docrt());
     }

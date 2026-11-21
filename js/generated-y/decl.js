@@ -2291,7 +2291,7 @@ export function decl_globals_init() {
     __builtin___memset_chk(iflags, 0, 432n, __builtin_object_size(iflags, 0));
     __builtin___memset_chk(a11y, 0, 16n, __builtin_object_size(a11y, 0));
     __builtin___memset_chk(disp, 0, 3n, __builtin_object_size(disp, 0));
-    __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
+    __builtin___memset_chk(u, 0, 2840n, __builtin_object_size(u, 0));
     __builtin___memset_chk(ubirthday, 0, 8n, __builtin_object_size(ubirthday, 0));
     __builtin___memset_chk(urealtime, 0, 24n, __builtin_object_size(urealtime, 0));
 
